@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"sourceRoot": "./",
+		"outDir": "./dist/",
+		"noImplicitAny": true,
+		"strict": true,
+		"module": "commonjs",
+		"target": "es2021",
+		"jsx": "react",
+		"sourceMap": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"resolveJsonModule": true,
+	},
+}

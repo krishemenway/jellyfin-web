@@ -1,0 +1,42 @@
+{
+  "name": "jellyfin-web",
+  "version": "1.0.0",
+  "description": "web client for jellyfin",
+  "main": "App.tsx",
+  "repository": "",
+  "scripts": {
+    "dev-server": "node ./dev-server.js",
+    "build": "npm run build-prod",
+    "build-dev": "webpack --mode development",
+    "build-prod": "webpack --mode production",
+    "watch": "webpack --mode development --watch"
+  },
+  "engines": {
+    "node": "22.13.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@jellyfin/sdk": "^0.11.0",
+    "@residualeffect/reactor": "^4.3.0",
+    "@residualeffect/rereactor": "^3.0.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/react-router-dom": "^5.3.3",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "date-fns": "^4.1.0",
+    "express": "^4.19.2",
+    "express-http-proxy": "^2.0.0",
+    "file-loader": "^6.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-jss": "^10.10.0",
+    "react-router-dom": "^6.26.0",
+    "ts-loader": "^9.5.1",
+    "tsconfig-paths-webpack-plugin": "^4.1.0",
+    "typescript": "^5.5.4",
+    "webpack": "^5.93.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
