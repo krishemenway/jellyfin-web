@@ -13,11 +13,13 @@ import { MusicAlbumIcon } from "Music/MusicAlbumIcon";
 import { PhotoAlbumIcon } from "PhotoAlbum/PhotoAlbumIcon";
 import { TVIcon } from "Shows/TVIcon";
 import { PeopleIcon } from "People/PeopleIcon";
+import { StudioIcon } from "Studios/StudioIcon";
+import { GenreIcon } from "Genres/GenreIcon";
 
 export const IconForItemType : React.FC<{ itemType?: BaseItemKind, collectionType?: CollectionType }&IconProps> = (props) => {
 	switch (props.itemType) {
 		case "CollectionFolder":
-			switch(props.collectionType) {
+			switch(props.collectionType?.toLowerCase()) {
 				case "music": return <MusicIcon  {...props} />;
 				case "movies": return <MovieIcon {...props} />;
 				case "photos": return <PhotoIcon {...props} />;
@@ -34,6 +36,8 @@ export const IconForItemType : React.FC<{ itemType?: BaseItemKind, collectionTyp
 		case "AggregateFolder": return <CollectionIcon {...props} />;
 		case "Playlist": return <PlaylistIcon {...props} />;
 		case "Person": return <PeopleIcon {...props} />;
+		case "Studio": return <StudioIcon {...props} />;
+		case "Genre": return <GenreIcon {...props} />;
 		default: return <QuestionMarkIcon {...props} />;
 	}
 }
