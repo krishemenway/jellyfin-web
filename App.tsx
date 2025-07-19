@@ -42,7 +42,7 @@ import Tags from "Tags/Tags";
 import Genre from "Genres/Genre";
 import Genres from "Genres/Genres";
 
-const App: React.FC = () => {
+const App: React.FC<{ basePath: string }> = (props) => {
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 	React.useEffect(() => { ThemeService.Instance.ApplyThemeToCssVariables(theme); }, [theme]);
 
@@ -102,11 +102,11 @@ const App: React.FC = () => {
 					]
 				},
 				{ path: "*", element: <NotFound /> },
-			])}
+			], { basename: props.basePath })}
 		/>
 	);
 };
 
-(window as any).initialize = (element: Element) => {
-	createRoot(element).render(<App />);
-};
+ /* Pass in the DOM element to render inside of into the initialize function and watch react do it's thing. */
+declare global { interface Window { initialize?: (element: Element, basePath: string) => void; } }
+window.initialize = window.initialize ?? ((element, basePath) => { createRoot(element).render(<App basePath={basePath} />); });
