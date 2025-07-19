@@ -1,16 +1,14 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
-import PageWithNavigation from "NavigationBar/PageWithNavigation";
-import StudioIcon from "Studios/StudioIcon";
+import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { StudioIcon } from "Studios/StudioIcon";
 
-const Studio: React.FC = () => {
-	const routeParams = useParams<{ studio: string }>();
+export const Studio: React.FC = () => {
+	const routeParams = useParams<{ studioId: string }>();
 
 	return (
 		<PageWithNavigation icon={<StudioIcon size={24} />}>
-			Studio {routeParams.studio}
+			Studio {routeParams.studioId}
 		</PageWithNavigation>
 	)
 };
-
-export default Studio;

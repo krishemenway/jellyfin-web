@@ -1,5 +1,5 @@
 import { BaseItemDto, BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generated-client/models";
-import { Computed, FilteredObservable, Observable, RateLimiter, RateLimitType, Unsubscribe } from "@residualeffect/reactor";
+import { Computed, FilteredObservable, Observable, RateLimiter, RateLimitType } from "@residualeffect/reactor";
 import { EditableField } from "Common/EditableField";
 import { Receiver } from "Common/Receiver";
 import { getArtistsApi, getItemsApi, getPersonsApi } from "@jellyfin/sdk/lib/utils/api";

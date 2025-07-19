@@ -1,8 +1,8 @@
 import * as React from "react";
-import Layout from "Common/Layout";
-import NavigationBar from "NavigationBar/NavigationBar";
+import { Layout } from "Common/Layout";
+import { NavigationBar } from "NavigationBar/NavigationBar";
 
-const PageWithNavigation: React.FC<{ icon?: React.ReactElement; children?: React.ReactNode }> = (props) => {
+export const PageWithNavigation: React.FC<{ icon?: React.ReactElement; children?: React.ReactNode }> = (props) => {
 	return (
 		<Layout direction="column" px="3%" py={24}>
 			<NavigationBar icon={props.icon} />
@@ -10,5 +10,3 @@ const PageWithNavigation: React.FC<{ icon?: React.ReactElement; children?: React
 		</Layout>
 	);
 };
-
-export default PageWithNavigation;

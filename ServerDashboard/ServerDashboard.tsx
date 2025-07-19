@@ -1,9 +1,7 @@
 import * as React from "react";
 
-const Dashboard: React.FC = () => {
+export const ServerDashboard: React.FC = () => {
 	return (
 		<></>
 	);
 };
-
-export default Dashboard;

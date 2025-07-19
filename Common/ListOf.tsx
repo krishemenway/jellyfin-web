@@ -1,14 +1,7 @@
 import * as React from "react";
 import { ApplyLayoutStyleProps, StyleLayoutPropsWithRequiredDirection } from "Common/Layout";
 
-export interface ListPropsOf<TItem> {
-	items: readonly TItem[];
-	renderItem: (item: TItem, index: number) => JSX.Element;
-	createKey: (item: TItem, index: number) => string;
-	emptyListView?: JSX.Element;
-
-	key?: string;
-
+export interface ListStyleProps {
 	listLayout?: StyleLayoutPropsWithRequiredDirection;
 	listItemLayout?: StyleLayoutPropsWithRequiredDirection;
 
@@ -16,7 +9,16 @@ export interface ListPropsOf<TItem> {
 	listItemClassName?: (first: boolean, last: boolean) => string;
 }
 
-function ListOf<TItem>(props: ListPropsOf<TItem>): JSX.Element {
+export interface ListPropsOf<TItem> extends ListStyleProps {
+	items: readonly TItem[];
+	renderItem: (item: TItem, index: number) => React.ReactNode;
+	createKey: (item: TItem, index: number) => string;
+	emptyListView?: JSX.Element;
+
+	key?: string;
+}
+
+export function ListOf<TItem>(props: ListPropsOf<TItem>): JSX.Element {
 	if (!props.items || props.items.length === 0) {
 		return props.emptyListView ?? <></>;
 	}
@@ -37,5 +39,3 @@ function ListOf<TItem>(props: ListPropsOf<TItem>): JSX.Element {
 		</ol>
 	);
 }
-
-export default ListOf;

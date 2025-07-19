@@ -42,7 +42,7 @@ export class ThemeService {
 	}
 
 	public ApplyThemeToCssVariables(theme: Theme): void {
-		let root = window.document.querySelector(":root") as HTMLElement;
+		const root = window.document.querySelector(":root") as HTMLElement;
 
 		root.style.setProperty("--PageBackgroundColor", theme.PageBackgroundColor);
 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import TranslatedText, { useTranslatedText } from "Common/TranslatedText";
+import { TranslatedText, useTranslatedText } from "Common/TranslatedText";
 import { useBackgroundStyles } from "Common/AppStyles";
 import { ApplyLayoutStyleProps, StyleLayoutProps } from "Common/Layout";
 
@@ -51,5 +51,4 @@ const ForwardedButton: React.ForwardRefRenderFunction<HTMLButtonElement, ButtonP
 	);
 };
 
-const Button = React.forwardRef(ForwardedButton);
-export default Button;
+export const Button = React.forwardRef(ForwardedButton);

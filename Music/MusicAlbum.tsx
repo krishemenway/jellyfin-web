@@ -1,15 +1,15 @@
 import * as React from "react";
-import PageWithNavigation from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { useParams } from "react-router-dom";
-import Layout from "Common/Layout";
+import { Layout } from "Common/Layout";
 import { ItemService } from "Items/ItemsService";
 import { Loading } from "Common/Loading";
-import LoadingSpinner from "Common/LoadingSpinner";
-import LoadingErrorMessages from "Common/LoadingErrorMessages";
-import NotFound from "Common/NotFound";
-import IconForItemType from "Items/IconForItemType";
+import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
+import { NotFound } from "Common/NotFound";
+import { IconForItemType } from "Items/IconForItemType";
 
-const MusicAlbum: React.FC = () => {
+export const MusicAlbum: React.FC = () => {
 	const routeParams = useParams<{ albumId: string; songId?: string; }>();
 
 	if (routeParams.albumId === undefined) {
@@ -23,8 +23,8 @@ const MusicAlbum: React.FC = () => {
 		<PageWithNavigation icon={<IconForItemType itemType="MusicAlbum" size={24} />}>
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.albumId).Item, ItemService.Instance.FindOrCreateItemData(routeParams.albumId).Children]}
-				whenNotStarted={<LoadingSpinner />}
-				whenLoading={<LoadingSpinner />}
+				whenNotStarted={<LoadingIcon size={48} />}
+				whenLoading={<LoadingIcon size={48} />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(album, children) => (
 					<Layout direction="column">
@@ -35,5 +35,3 @@ const MusicAlbum: React.FC = () => {
 		</PageWithNavigation>
 	);
 };
-
-export default MusicAlbum;

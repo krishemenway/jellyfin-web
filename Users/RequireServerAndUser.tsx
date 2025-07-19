@@ -1,11 +1,11 @@
 import * as React from "react";
 import { useObservable } from "@residualeffect/rereactor";
-import Layout from "Common/Layout";
-import Login from "Users/Login";
+import { Layout } from "Common/Layout";
+import { Login } from "Users/Login";
 import { ServerService } from "Servers/ServerService";
-import ConnectToServer from "Servers/ConnectToServer";
+import { ConnectToServer } from "Servers/ConnectToServer";
 
-const RequireServerAndUser: React.FC<{ children: React.ReactNode }> = (props) => {
+export const RequireServerAndUser: React.FC<{ children: React.ReactNode }> = (props) => {
 	const servers = useObservable(ServerService.Instance.Servers);
 
 	if (servers.length === 0) {
@@ -18,5 +18,3 @@ const RequireServerAndUser: React.FC<{ children: React.ReactNode }> = (props) =>
 
 	return <>{React.Children.map(props.children, (c) => c)}</>;
 };
-
-export default RequireServerAndUser;

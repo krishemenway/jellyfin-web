@@ -2,15 +2,22 @@ import * as React from "react";
 import { Property } from "csstype";
 
 export interface StyleLayoutPropsWithRequiredDirection extends StyleLayoutProps {
-	direction: "row" | "row-reverse" | "column" | "column-reverse";
+	direction: Property.FlexDirection;
+}
+
+export interface PercentWidthWithGap {
+	itemsPerRow: number;
+	gap: number;
 }
 
 export interface StyleLayoutProps {
-	direction?: "row" | "row-reverse" | "column" | "column-reverse";
-	gap?: number;
-	alignItems?: "center"|"start"|"end";
-	alignSelf?: "center"|"start"|"end";
-	justifyContent?: "center"|"start"|"end"|"space-between";
+	direction?: Property.FlexDirection;
+	gap?: Property.Gap|number;
+	grow?: Property.FlexGrow;
+
+	alignItems?: Property.AlignItems;
+	alignSelf?: Property.AlignSelf;
+	justifyContent?: Property.JustifyContent;
 	wrap?: boolean;
 
 	position?: Property.Position;
@@ -40,8 +47,7 @@ export interface StyleLayoutProps {
 
 	minWidth?: number|string;
 	maxWidth?: number|string;
-	width?: number|string;
-	widthByItemsPerRow?: number;
+	width?: number|string|PercentWidthWithGap;
 
 	minHeight?: number|string;
 	maxHeight?: number|string;
@@ -54,19 +60,16 @@ interface LayoutParams extends StyleLayoutPropsWithRequiredDirection {
 	elementType?: React.ElementType;
 }
 
-const Layout: React.FC<LayoutParams> = (props) => {
-	return React.createElement(props.elementType ?? "div", { 
-		className: props.className,
-		style: ApplyLayoutStyleProps(props),
-	}, props.children);
-};
-
-function CalculateItemsPerRowPercentage(props?: Partial<StyleLayoutPropsWithRequiredDirection>) {
-	if (props?.widthByItemsPerRow === undefined) {
-		return undefined;
+function CalculateItemsPerRowPercentage(width?: number|string|PercentWidthWithGap) {
+	if (width === undefined || typeof width === "string" || typeof width === "number") {
+		return width;
 	}
 
-	return `${100 / props.widthByItemsPerRow}%`;
+	if (width.itemsPerRow <= 0) {
+		throw new Error("Invalid number of items per row");
+	}
+
+	return `calc((100% - ${(width.itemsPerRow) * width.gap}px) / ${width.itemsPerRow})`;
 }
 
 export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequiredDirection>): React.CSSProperties {
@@ -74,6 +77,7 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		display: "flex",
 		flexDirection: props?.direction,
 		gap: props?.gap,
+		flexGrow: props?.grow,
 		alignItems: props?.alignItems,
 		alignSelf: props?.alignSelf,
 		justifyContent: props?.justifyContent,
@@ -94,13 +98,13 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		paddingLeft: props?.px,
 		paddingRight: props?.px,
 		borderWidth: props?.bw,
-		borderTopStyle: !!props?.bt ? "solid" : undefined,
-		borderBottomStyle: !!props?.bb ? "solid" : undefined,
-		borderLeftStyle: !!props?.bl ? "solid" : undefined,
-		borderRightStyle: !!props?.br ? "solid" : undefined,
+		borderTopStyle: !props?.bt ? undefined : "solid",
+		borderBottomStyle: !props?.bb ? undefined : "solid",
+		borderLeftStyle: !props?.bl ? undefined : "solid",
+		borderRightStyle: !props?.br ? undefined : "solid",
 		minWidth: props?.minWidth,
 		maxWidth: props?.maxWidth,
-		width: props?.width ?? CalculateItemsPerRowPercentage(props),
+		width: CalculateItemsPerRowPercentage(props?.width),
 		minHeight: props?.minHeight,
 		maxHeight: props?.maxHeight,
 		height: props?.height,
@@ -108,4 +112,9 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 	};
 }
 
-export default Layout;
+export const Layout: React.FC<LayoutParams> = (props) => {
+	return React.createElement(props.elementType ?? "div", { 
+		className: props.className,
+		style: ApplyLayoutStyleProps(props),
+	}, props.children);
+};

@@ -4,7 +4,7 @@ import { BaseItemDto, ImageType } from "@jellyfin/sdk/lib/generated-client/model
 import { getImageApi } from "@jellyfin/sdk/lib/utils/api";
 import { ServerService } from "Servers/ServerService";
 
-const ItemImage: React.FC<{ className?: string, item: BaseItemDto, type: ImageType }> = (props) => {
+export const ItemImage: React.FC<{ className?: string, item: BaseItemDto, type: ImageType, width?: string|number, maxWidth?: string|number }> = (props) => {
 	const imageUrl = useComputed(() => getImageApi(ServerService.Instance.CurrentApi).getItemImageUrl(props.item, props.type));
 
 	return (
@@ -12,8 +12,7 @@ const ItemImage: React.FC<{ className?: string, item: BaseItemDto, type: ImageTy
 			className={props.className}
 			src={imageUrl}
 			alt={props.item.Name ?? undefined}
+			style={{ width: props.width, maxWidth: props.maxWidth }}
 		/>
-	)
-}
-
-export default ItemImage;
+	);
+};

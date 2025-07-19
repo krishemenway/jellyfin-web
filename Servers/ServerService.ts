@@ -3,6 +3,7 @@ import { ObservableArray } from "@residualeffect/reactor";
 import { EditableField } from "Common/EditableField";
 import { Receiver } from "Common/Receiver";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 interface JellyfinCredentials {
 	Servers: ServerConnection[]
@@ -65,7 +66,7 @@ export class ServerService {
 	}
 
 	public TryAddServer(): void {
-		this.AddServerResult.Start(async (_) => this.CheckSystemInfoForHost(this.ServerHost.Current.Value));
+		this.AddServerResult.Start(async (abort) => this.CheckSystemInfoForHost(this.ServerHost.Current.Value, abort));
 	}
 
 	public SelectServerConnection(connection: ServerConnection): void {
@@ -90,10 +91,10 @@ export class ServerService {
 		}
 	}
 
-	private CheckSystemInfoForHost(host: string): Promise<boolean> {
-		return getSystemApi(this.CreateJellyfin().createApi(host)).getPublicSystemInfo()
+	private CheckSystemInfoForHost(host: string, abort?: AbortController): Promise<boolean> {
+		return getSystemApi(this.CreateJellyfin().createApi(host)).getPublicSystemInfo({ signal: abort?.signal })
 			.then((response) => {
-				if (!!response.data.Id) {
+				if (Nullable.HasValue(response.data.Id)) {
 					this.Servers.unshift({
 						Id: response.data.Id,
 						Name: response.data.ServerName!,
@@ -102,9 +103,9 @@ export class ServerService {
 						LastConnectionMode: ConnectionMode.Manual,
 						LocalAddress: response.data.LocalAddress!,
 						Version: response.data.Version!,
-						AccessToken: "",
-						ExchangeToken: "",
-						UserId: "",
+						AccessToken: null,
+						ExchangeToken: null,
+						UserId: null,
 					});
 					this.SetServersToLocalStorage();
 					this.ResetApiForCurrentServer();

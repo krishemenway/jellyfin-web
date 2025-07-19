@@ -1,11 +1,11 @@
 import * as React from "react";
-import LinkToItem from "Items/LinkToItem";
+import { LinkToItem } from "Items/LinkToItem";
 import { BaseItemDto, ImageType } from "@jellyfin/sdk/lib/generated-client/models";
-import ItemImage from "Items/ItemImage";
+import { ItemImage } from "Items/ItemImage";
 import { createStyles } from "Common/AppStyles";
-import ListOf from "Common/ListOf";
+import { ListOf } from "Common/ListOf";
 
-const ItemsGrid: React.FC<{ items: BaseItemDto[], imageType?: ImageType }> = (props) => {
+export const ItemsGrid: React.FC<{ items: BaseItemDto[], imageType?: ImageType }> = (props) => {
 	const classes = useItemGridClasses();
 
 	return (
@@ -66,5 +66,3 @@ const useItemGridClasses = createStyles({
 		backdrop: { width: "16.666666666666666666666666666667%", },
 	},
 });
-
-export default ItemsGrid;

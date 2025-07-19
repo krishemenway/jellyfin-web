@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useObservable } from "@residualeffect/rereactor";
 import { EditableField } from "Common/EditableField";
-import Button from "Common/Button";
-import Layout from "Common/Layout";
+import { Button } from "Common/Button";
+import { Layout } from "Common/Layout";
 
 interface TabDefinition {
 	id: string;
@@ -32,5 +32,3 @@ export const Tabs: React.FC<TabsProps> = (props) => {
 		</Layout>
 	);
 };
-
-export default Tabs;

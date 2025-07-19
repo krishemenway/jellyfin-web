@@ -1,46 +1,26 @@
 import * as React from "react";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { useBackgroundStyles } from "Common/AppStyles";
-import Button from "Common/Button";
-import EditIcon from "Common/EditIcon";
-import HyperLink from "Common/HyperLink";
-import JellyfinIcon from "Common/JellyfinIcon";
-import Layout, { StyleLayoutProps } from "Common/Layout";
-import ListOf from "Common/ListOf";
+import { Button } from "Common/Button";
+import { EditIcon } from "Common/EditIcon";
+import { HyperLink } from "Common/HyperLink";
+import { JellyfinIcon } from "Common/JellyfinIcon";
+import { Layout, StyleLayoutProps } from "Common/Layout";
+import { ListOf } from "Common/ListOf";
 import { Loading } from "Common/Loading";
 import { AnchoredModal, CenteredModal } from "Common/Modal";
-import TranslatedText from "Common/TranslatedText";
-import IconForItem from "Items/IconForItem";
+import { TranslatedText } from "Common/TranslatedText";
+import { IconForItem } from "Items/IconForItem";
 import { ItemService } from "Items/ItemsService";
-import MenuIcon from "NavigationBar/MenuIcon";
-import Search from "NavigationBar/Search";
-import DashboardIcon from "ServerDashboard/DashboardIcon";
+import { MenuIcon } from "NavigationBar/MenuIcon";
+import { Search } from "NavigationBar/Search";
+import { DashboardIcon } from "ServerDashboard/DashboardIcon";
 import { ServerService } from "Servers/ServerService";
-import AuthorizeQuickConnect from "Users/AuthorizeQuickConnect";
+import { AuthorizeQuickConnect } from "Users/AuthorizeQuickConnect";
 import { LoginService } from "Users/LoginService";
-import SettingsIcon from "Users/SettingsIcon";
-import SignOutIcon from "Users/SignOutIcon";
+import { SettingsIcon } from "Users/SettingsIcon";
+import { SignOutIcon } from "Users/SignOutIcon";
 import { UserViewStore } from "Users/UserViewStore";
-
-const NavigationBar: React.FC<{ icon?: React.ReactElement; }> = (props) => {
-	const background = useBackgroundStyles();
-
-	React.useEffect(() => { UserViewStore.Instance.LoadUserViews(); }, []);
-
-	return (
-		<Layout className={background.panel} direction="row" gap={16} px={16} py={8} width="calc(100% + 32px)" mx={-16}>
-			<Loading
-				receivers={[UserViewStore.Instance.UserViews]}
-				whenNotStarted={<NavigationButton />}
-				whenLoading={<NavigationButton />}
-				whenError={(errors) => <NavigationButton />}
-				whenReceived={(libraries) => <OpenNavigationButton libraries={libraries} />}
-			/>
-			{props.icon && (<Layout direction="row" alignItems="center">{props.icon}</Layout>)}
-			<Layout direction="row" alignItems="center"><Search /></Layout>
-		</Layout>
-	);
-};
 
 const NavigationButton: React.FC<{ onClick?: (element: HTMLButtonElement) => void; }> = (props) => {
 	return <Button direction="row" type="button" disabled={props.onClick === undefined} onClick={props.onClick ?? (() => { })} py={4} px={4}><MenuIcon size="22" /></Button>;
@@ -55,8 +35,8 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 	return (
 		<>
 			<NavigationButton onClick={(element) => { setOpenAnchor(element); }} />
-			<AnchoredModal open={anchor !== null} onClosed={closeNavigation} anchorAlignment={{ horizontal: "center", vertical: "bottom" }} anchorElement={anchor}>
-				<Layout direction="column" maxWidth={300} className={background.alternatePanel}>
+			<AnchoredModal alternatePanel open={anchor !== null} onClosed={closeNavigation} anchorAlignment={{ horizontal: "right", vertical: "bottom" }} anchorElement={anchor}>
+				<Layout direction="column" maxWidth={300}>
 					<HyperLink direction="row" to="/" gap={16} className={background.transparent} py={16} px={16}>
 						<JellyfinIcon size="48" />
 
@@ -72,7 +52,7 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 						<ListOf
 							items={props.libraries}
 							createKey={(l, i) => l.Id ?? i.toString()}
-							listItemLayout={{ direction: "column", widthByItemsPerRow: 3, alignItems: "center" }}
+							listItemLayout={{ direction: "column", width: { itemsPerRow: 3, gap: 0 }, alignItems: "center" }}
 							listLayout={{ direction: "row", wrap: true }}
 							renderItem={(library) => (
 								<HyperLink className={background.transparent} width="100%" px={8} py={8} direction="column" gap={8} to={ItemService.UrlForItem(library)}>
@@ -142,4 +122,22 @@ const NavigationDivider: React.FC = () => {
 	return <hr style={{ width: "100%", margin: "0", borderWidth: "thin" }} />;
 }
 
-export default NavigationBar;
+export const NavigationBar: React.FC<{ icon?: React.ReactElement; }> = (props) => {
+	const background = useBackgroundStyles();
+
+	React.useEffect(() => { UserViewStore.Instance.LoadUserViews(); }, []);
+
+	return (
+		<Layout className={background.panel} direction="row" gap={16} px={16} py={8} width="calc(100% + 32px)" mx={-16}>
+			<Loading
+				receivers={[UserViewStore.Instance.UserViews]}
+				whenNotStarted={<NavigationButton />}
+				whenLoading={<NavigationButton />}
+				whenError={() => <NavigationButton />}
+				whenReceived={(libraries) => <OpenNavigationButton libraries={libraries} />}
+			/>
+			{props.icon && (<Layout direction="row" alignItems="center">{props.icon}</Layout>)}
+			<Layout direction="row" alignItems="center"><Search /></Layout>
+		</Layout>
+	);
+};

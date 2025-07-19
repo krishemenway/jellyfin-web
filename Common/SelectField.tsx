@@ -1,6 +1,6 @@
 import * as React from "react";
 import { EditableField } from "Common/EditableField";
-import TranslatedText from "Common/TranslatedText";
+import { TranslatedText } from "Common/TranslatedText";
 
 interface SelectFieldProps {
 	className?: string;
@@ -16,5 +16,4 @@ const ForwardedSelectField: React.ForwardRefRenderFunction<HTMLSelectElement, Se
 	);
 };
 
-const SelectField = React.forwardRef(ForwardedSelectField);
-export default SelectField;
+export const SelectField = React.forwardRef(ForwardedSelectField);

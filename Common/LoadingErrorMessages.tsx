@@ -1,8 +1,8 @@
 import * as React from "react";
-import ListOf from "Common/ListOf";
-import TranslatedText from "Common/TranslatedText";
+import { ListOf } from "Common/ListOf";
+import { TranslatedText } from "Common/TranslatedText";
 
-const LoadingErrorMessages: React.FC<{ errorTextKeys: string[] }> = (props) => {
+export const LoadingErrorMessages: React.FC<{ errorTextKeys: string[] }> = (props) => {
 	return (
 		<ListOf
 			items={props.errorTextKeys}
@@ -12,5 +12,3 @@ const LoadingErrorMessages: React.FC<{ errorTextKeys: string[] }> = (props) => {
 		/>
 	);
 };
-
-export default LoadingErrorMessages;

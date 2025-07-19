@@ -6,41 +6,44 @@ import { ResetModalOnLocationChange } from "Common/Modal";
 import { useObservable } from "@residualeffect/rereactor";
 import { ThemeService } from "Users/ThemeService";
 
-import NotFound from "Common/NotFound";
-import LoadingErrorMessages from "Common/LoadingErrorMessages";
+import { NotFound } from "Common/NotFound";
+import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 
-import ServerDashboard from "ServerDashboard/ServerDashboard";
-import MetadataEditor from "ServerDashboard/MetadataEditor";
+import { ServerDashboard } from "ServerDashboard/ServerDashboard";
+import { MetadataEditor } from "ServerDashboard/MetadataEditor";
 
-import Home from "Home/Home";
-import Person from "People/Person";
+import { Home } from "Home/Home";
+import { Person } from "People/Person";
 
-import Settings from "Users/Settings";
-import RequireServerAndUser from "Users/RequireServerAndUser";
+import { Settings } from "Users/Settings";
+import { RequireServerAndUser } from "Users/RequireServerAndUser";
 
-import Shows from "Shows/Shows";
-import Show from "Shows/Show";
+import { Shows } from "Shows/Shows";
+import { Show } from "Shows/Show";
 
-import Movie from "Movies/Movie";
-import Movies from "Movies/Movies";
+import { Movie } from "Movies/Movie";
+import { Movies } from "Movies/Movies";
 
-import MusicAlbum from "Music/MusicAlbum";
-import MusicAlbums from "Music/MusicAlbums";
+import { Studio } from "Studios/Studio";
+import { Studios } from "Studios/Studios";
 
-import PhotoAlbum from "PhotoAlbum/PhotoAlbum";
-import PhotoAlbums from "PhotoAlbum/PhotoAlbums";
+import { MusicAlbum } from "Music/MusicAlbum";
+import { MusicAlbums } from "Music/MusicAlbums";
 
-import MusicArtist from "Music/Artist";
-import MusicArtists from "Music/Artists";
+import { PhotoAlbum } from "PhotoAlbum/PhotoAlbum";
+import { PhotoAlbums } from "PhotoAlbum/PhotoAlbums";
 
-import Collection from "Collections/Collection";
-import Collections from "Collections/Collections";
+import { MusicArtist } from "Music/Artist";
+import { MusicArtists } from "Music/Artists";
 
-import Tag from "Tags/Tag";
-import Tags from "Tags/Tags";
+import { Collection } from "Collections/Collection";
+import { Collections } from "Collections/Collections";
 
-import Genre from "Genres/Genre";
-import Genres from "Genres/Genres";
+import { Tag } from "Tags/Tag";
+import { Tags } from "Tags/Tags";
+
+import { Genre } from "Genres/Genre";
+import { Genres } from "Genres/Genres";
 
 const App: React.FC<{ basePath: string }> = (props) => {
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
@@ -85,6 +88,9 @@ const App: React.FC<{ basePath: string }> = (props) => {
 
 						{ path: "/Movies/:libraryId", element: <Movies /> },
 						{ path: "/Movie/:movieId", element: <Movie /> },
+
+						{ path: "/Studios/:libraryId", element: <Studios /> },
+						{ path: "/Studio/:studioId", element: <Studio /> },
 
 						{ path: "/Collections", element: <Collections /> },
 						{ path: "/Collection/:collectionId", element: <Collection /> },

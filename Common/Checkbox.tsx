@@ -7,7 +7,7 @@ export interface CheckBoxProps {
 	className?: string;
 }
 
-const CheckBox: React.FC<CheckBoxProps> = (props) => {
+export const Checkbox: React.FC<CheckBoxProps> = (props) => {
 	const value = useObservable(props.field.Current);
 
 	return (
@@ -20,5 +20,3 @@ const CheckBox: React.FC<CheckBoxProps> = (props) => {
 		/>
 	);
 };
-
-export default CheckBox;

@@ -1,6 +1,6 @@
 import * as React from "react";
-import Layout from "Common/Layout";
-import TranslatedText from "Common/TranslatedText";
+import { Layout } from "Common/Layout";
+import { TranslatedText } from "Common/TranslatedText";
 import { ObservableArray } from "@residualeffect/reactor";
 import { ItemFilter } from "@jellyfin/sdk/lib/generated-client/models";
 import { useObservable } from "@residualeffect/rereactor";
@@ -13,7 +13,7 @@ export class ItemListService {
 	public Filters: ObservableArray<ItemFilter>;
 }
 
-const ItemListFilters: React.FC<{ service: ItemListService }> = (props) => {
+export const ItemListFilters: React.FC<{ service: ItemListService }> = (props) => {
 	const filters = useObservable(props.service.Filters);
 
 	return (
@@ -23,5 +23,3 @@ const ItemListFilters: React.FC<{ service: ItemListService }> = (props) => {
 		</Layout>
 	);
 };
-
-export default ItemListFilters;

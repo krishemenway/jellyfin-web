@@ -1,13 +1,11 @@
 import * as React from "react";
-import PageWithNavigation from "NavigationBar/PageWithNavigation";
-import TagIcon from "Tags/TagIcon";
+import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { StudioIcon } from "Studios/StudioIcon";
 
-const Studios: React.FC = () => {
+export const Studios: React.FC = () => {
 	return (
-		<PageWithNavigation icon={<TagIcon size={24} />}>
+		<PageWithNavigation icon={<StudioIcon size={24} />}>
 			All Studios
 		</PageWithNavigation>
-	)
+	);
 };
-
-export default Studios;

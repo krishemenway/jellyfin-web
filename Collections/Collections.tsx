@@ -1,9 +1,9 @@
 import * as React from "react";
-import PageWithNavigation from "NavigationBar/PageWithNavigation";
-import IconForItemType from "Items/IconForItemType";
-import ItemListFilters, { ItemListService } from "Items/ItemListFilters";
+import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { IconForItemType } from "Items/IconForItemType";
+import { ItemListFilters, ItemListService } from "Items/ItemListFilters";
 
-const Collections: React.FC = () => {
+export const Collections: React.FC = () => {
 	const itemListService = React.useMemo(() => new ItemListService(), []);
 
 	return (
@@ -12,5 +12,3 @@ const Collections: React.FC = () => {
 		</PageWithNavigation>
 	);
 };
-
-export default Collections;

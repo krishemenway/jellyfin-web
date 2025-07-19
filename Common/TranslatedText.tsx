@@ -3,13 +3,14 @@ import { Computed, Observable } from "@residualeffect/reactor";
 import { useObservable } from "@residualeffect/rereactor";
 import { Receiver } from "Common/Receiver";
 import * as defaultLanguage from "strings/en-us.json";
+import { ApplyLayoutStyleProps, StyleLayoutProps } from "Common/Layout";
 
 class TranslationService {
 	constructor() {
 		this.CurrentCulture = new Observable<string>(this.DefaultLanguage());
 		this.Translations = new Receiver("Failed to load translations");
 		this.UseRTL = new Computed<boolean>(() => this.RTLLanguages.indexOf(this.CurrentCulture.Value) > -1);
-		this.Translations.Start((_) => new Promise((resolve) => { resolve(defaultLanguage); }));
+		this.Translations.Start(() => new Promise((resolve) => { resolve(defaultLanguage); }));
 	}
 
 	public Translations: Receiver<Record<string, string>>;
@@ -27,8 +28,10 @@ class TranslationService {
 			return navigator.language;
 		}
 
-		if ((navigator as any).userLanguage) { // IE Support
-			return (navigator as any).userLanguage;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const internetExplorerNavigator = navigator as any;
+		if (internetExplorerNavigator.userLanguage !== undefined && typeof internetExplorerNavigator.userLanguage === "string") {
+			return internetExplorerNavigator.userLanguage;
 		}
 
 		if (navigator.languages?.length) {
@@ -66,9 +69,16 @@ export function useTranslatedText(key?: string, textProps?: string[]): string|un
 	return textFromStore;
 }
 
-const TranslatedText: React.FC<{ textKey: string, textProps?: string[] }> = (props) => {
-	const translated = useTranslatedText(props.textKey, props.textProps);
-	return <>{translated}</>;
-}
+export const TranslatedText: React.FC<{ textKey: string, textProps?: string[], formatText?: (translatedText?: string) => string, elementType?: string, layout?: StyleLayoutProps, className?: string }> = (props) => {
+	let translated = useTranslatedText(props.textKey, props.textProps);
 
-export default TranslatedText;
+	if (props.formatText !== undefined) {
+		translated = props.formatText(translated);
+	}
+
+	if (props.elementType !== undefined) {
+		return React.createElement(props.elementType, { className: props.className, style: ApplyLayoutStyleProps(props.layout) }, <>{translated}</>);
+	} else {
+		return <>{translated}</>;
+	}
+}

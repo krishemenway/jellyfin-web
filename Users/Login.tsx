@@ -1,31 +1,19 @@
 import * as React from "react";
-import Button from "Common/Button";
-import Checkbox from "Common/Checkbox";
-import TranslatedText from "Common/TranslatedText";
-import TextField from "Common/TextField";
+import { Button } from "Common/Button";
+import { Checkbox } from "Common/Checkbox";
+import { TranslatedText } from "Common/TranslatedText";
+import { TextField } from "Common/TextField";
 import { useBackgroundStyles } from "Common/AppStyles";
 import { Loading } from "Common/Loading";
-import LoadingSpinner from "Common/LoadingSpinner";
-import LoadingErrorMessages from "Common/LoadingErrorMessages";
-import Layout from "Common/Layout";
+import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
+import { Layout } from "Common/Layout";
 import { LoginService } from "Users/LoginService";
-import JellyfinIcon from "Common/JellyfinIcon";
+import { JellyfinIcon } from "Common/JellyfinIcon";
 import { CenteredModal } from "Common/Modal";
 import { useObservable } from "@residualeffect/rereactor";
-import FieldLabel from "Common/FieldLabel";
-import Form from "Common/Form";
-
-const Login: React.FC = () => {
-	const background = useBackgroundStyles();
-
-	return (
-		<Layout direction="column" gap={16} alignItems="center" my={32}>
-			<JellyfinIcon size="100" />
-			<Layout direction="column" className={background.panel}><SignInWithCredentials /></Layout>
-			<Layout direction="column" className={background.panel}><SignInWithQuickConnect /></Layout>
-		</Layout>
-	);
-};
+import { FieldLabel } from "Common/FieldLabel";
+import { Form } from "Common/Form";
 
 const SignInWithQuickConnect: React.FC = () => {
 	React.useEffect(() => { return () => LoginService.Instance.Dispose(); }, []);
@@ -38,7 +26,7 @@ const SignInWithQuickConnect: React.FC = () => {
 				receivers={[LoginService.Instance.QuickConnectResult]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenNotStarted={<StartQuickConnect />}
-				whenLoading={<LoadingSpinner />}
+				whenLoading={<LoadingIcon size={48} />}
 				whenReceived={(result) => <ReceivedQuickConnectResult code={result.Code} />}
 			/>
 		</Layout>
@@ -56,7 +44,7 @@ const ReceivedQuickConnectResult: React.FC<{ code?: string }> = (props) => {
 			whenNotStarted={<WaitingForQuickConnectAuthenticationView code={props.code} />}
 			whenLoading={<WaitingForQuickConnectAuthenticationView code={props.code} />}
 			whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-			whenReceived={(_) => <></>}
+			whenReceived={() => <></>}
 		/>
 	);
 }
@@ -120,4 +108,14 @@ const SignInWithCredentials: React.FC = () => {
 	);
 };
 
-export default Login;
+export const Login: React.FC = () => {
+	const background = useBackgroundStyles();
+
+	return (
+		<Layout direction="column" gap={16} alignItems="center" my={32}>
+			<JellyfinIcon size="100" />
+			<Layout direction="column" className={background.panel}><SignInWithCredentials /></Layout>
+			<Layout direction="column" className={background.panel}><SignInWithQuickConnect /></Layout>
+		</Layout>
+	);
+};

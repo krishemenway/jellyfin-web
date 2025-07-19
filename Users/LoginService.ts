@@ -29,7 +29,7 @@ export class LoginService {
 	}
 
 	public SignInWithCredentials(): void {
-		this.AuthenticationResponse.Start(async (_) => {
+		this.AuthenticationResponse.Start(async () => {
 			const userName = this.UserName.Current.Value;
 			const password = this.Password.Current.Value;
 
@@ -38,8 +38,8 @@ export class LoginService {
 	}
 
 	public FindQuickConnectTokenAndBeginWaitingForAuthentication(): void {
-		this.QuickConnectResult.Start(async (_): Promise<QuickConnectResult> => {
-			const response = await getQuickConnectApi(ServerService.Instance.CurrentApi).initiateQuickConnect({ headers: { Authorization: ServerService.Instance.CurrentApi.authorizationHeader }});
+		this.QuickConnectResult.Start(async (abort): Promise<QuickConnectResult> => {
+			const response = await getQuickConnectApi(ServerService.Instance.CurrentApi).initiateQuickConnect({ signal: abort.signal, headers: { Authorization: ServerService.Instance.CurrentApi.authorizationHeader }});
 
 			if (response.data.Secret !== undefined) {
 				this.StartQuickConnectPolling(response.data.Secret);
@@ -56,7 +56,7 @@ export class LoginService {
 	private StartQuickConnectPolling(secret: string): void {
 		this.QuickConnectPollingIntervalId = window.setInterval(() => {
 			this.QuickConnectResult.Start(async (abort): Promise<QuickConnectResult> => {
-				const result = (await getQuickConnectApi(ServerService.Instance.CurrentApi).getQuickConnectState({ secret: secret })).data;
+				const result = (await getQuickConnectApi(ServerService.Instance.CurrentApi).getQuickConnectState({ secret: secret }, { signal: abort.signal })).data;
 
 				if (result.Authenticated === true) {
 					this.WhenAuthenticated(secret);
@@ -75,8 +75,8 @@ export class LoginService {
 
 	private WhenAuthenticated(secret: string): void {
 		this.StopQuickConnectPolling();
-		this.AuthenticationResponse.Start(async (_) => {
-			const response = (await getUserApi(ServerService.Instance.CurrentApi).authenticateWithQuickConnect({ quickConnectDto: { Secret: secret }})).data;
+		this.AuthenticationResponse.Start(async (abort) => {
+			const response = (await getUserApi(ServerService.Instance.CurrentApi).authenticateWithQuickConnect({ quickConnectDto: { Secret: secret }}, { signal: abort.signal })).data;
 
 			if (!response.User?.Id) {
 				throw new Error("Missing User Id");

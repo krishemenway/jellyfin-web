@@ -1,15 +1,16 @@
 import * as React from "react";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
-import ListOf from "Common/ListOf";
+import { StyleLayoutProps } from "Common/Layout";
+import { ListOf, ListStyleProps } from "Common/ListOf";
+import { HyperLink } from "Common/HyperLink";
 
-const ItemStudios: React.FC<{ item: BaseItemDto }> = (props) => {
+export const ItemStudios: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutProps, linkClassName?: string }&ListStyleProps> = (props) => {
 	return (
 		<ListOf
 			items={props.item.Studios ?? []}
-			createKey={(s, i) => s.Id ?? s.Name ?? i.toString()}
-			renderItem={(s) => <>{s.Name}</>}
+			createKey={(studio, index) => studio.Id ?? index.toString()}
+			renderItem={(studio) => <HyperLink to={`/Studio/${studio.Id}`} direction="row" {...props.linkLayout} className={props.linkClassName}>{studio.Name}</HyperLink>}
+			{...props}
 		/>
 	);
 };
-
-export default ItemStudios;

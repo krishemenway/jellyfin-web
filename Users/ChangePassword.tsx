@@ -1,8 +1,8 @@
 import * as React from "react";
 import { EditableField } from "Common/EditableField";
-import TextField from "Common/TextField";
-import Form from "Common/Form";
-import Button from "Common/Button";
+import { TextField } from "Common/TextField";
+import { Form } from "Common/Form";
+import { Button } from "Common/Button";
 import { Receiver } from "Common/Receiver";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { ServerService } from "Servers/ServerService";
@@ -36,7 +36,7 @@ class ChangePasswordService {
 	private static _instance: ChangePasswordService;
 }
 
-const ChangePassword: React.FC<{ }> = () => {
+export const ChangePassword: React.FC = () => {
 	return (
 		<Form direction="column" onSubmit={(() => ChangePasswordService.Instance.ChangePassword())}>
 			<TextField field={ChangePasswordService.Instance.Current} />
@@ -46,5 +46,3 @@ const ChangePassword: React.FC<{ }> = () => {
 		</Form>
 	);
 };
-
-export default ChangePassword;

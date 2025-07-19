@@ -18,7 +18,7 @@ interface TextFieldProps {
 
 const ForwardedTextField: React.ForwardRefRenderFunction<HTMLInputElement, TextFieldProps> = (props, ref) => {
 	const background = useBackgroundStyles();
-	const value = useObservable(props.field.Current);
+	const currentValue = useObservable(props.field.Current);
 
 	return (
 		<input
@@ -26,7 +26,7 @@ const ForwardedTextField: React.ForwardRefRenderFunction<HTMLInputElement, TextF
 			ref={ref}
 			id={props.field.FieldId}
 			className={props.className ?? background.field}
-			value={value}
+			value={currentValue}
 			onBlur={() => props.onBlur && props.onBlur()}
 			onChange={(evt) => { props.field.OnChange(evt.currentTarget.value); }}
 			autoFocus={true}
@@ -36,5 +36,4 @@ const ForwardedTextField: React.ForwardRefRenderFunction<HTMLInputElement, TextF
 	);
 };
 
-const TextField = React.forwardRef(ForwardedTextField);
-export default TextField;
+export const TextField = React.forwardRef(ForwardedTextField);

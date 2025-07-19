@@ -1,14 +1,14 @@
 import * as React from "react";
-import TranslatedText from "Common/TranslatedText";
-import TextField from "Common/TextField";
-import Layout from "Common/Layout";
-import Button from "Common/Button";
-import Form from "Common/Form";
+import { TranslatedText } from "Common/TranslatedText";
+import { TextField } from "Common/TextField";
+import { Layout } from "Common/Layout";
+import { Button } from "Common/Button";
+import { Form } from "Common/Form";
 import { ServerService } from "Servers/ServerService";
-import FieldLabel from "Common/FieldLabel";
+import { FieldLabel } from "Common/FieldLabel";
 import { useBackgroundStyles } from "Common/AppStyles";
 
-const ConnectToServer: React.FC = () => {
+export const ConnectToServer: React.FC = () => {
 	const background = useBackgroundStyles();
 
 	return (
@@ -25,5 +25,3 @@ const ConnectToServer: React.FC = () => {
 		</Form>
 	);
 };
-
-export default ConnectToServer;

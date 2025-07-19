@@ -1,32 +1,13 @@
 import * as React from "react";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
-import LinkToItem from "Items/LinkToItem";
-import ItemImage from "Items/ItemImage";
-import { createStyles } from "Common/AppStyles";
-import ListOf from "Common/ListOf";
-import Layout from "Common/Layout";
+import { LinkToItem } from "Items/LinkToItem";
+import { ItemImage } from "Items/ItemImage";
+import { createStyles, useBackgroundStyles } from "Common/AppStyles";
+import { Layout } from "Common/Layout";
 
-const ItemsRow: React.FC<{ items: BaseItemDto[], mx?: number, my?: number }> = (props) => {
-	return (
-		<ListOf
-			items={props.items}
-			createKey={(item, i) => item.Id ?? i.toString()}
-			renderItem={(item) => <BaseItemDtoListItem item={item} />}
-			listLayout={{ direction: "row", gap: 8, wrap: false, overflowX: "scroll", overflowY: "hidden", minWidth: "100%", mx: props.mx, my: props.my }}
-		/>
-	);
-};
-
-const BaseItemDtoListItem: React.FC<{ item: BaseItemDto }> = (props) => {
-	const items = itemStyles();
-
-	return (
-		<LinkToItem direction="column" {...props}>
-			<ItemImage className={items.itemImage} {...props} type="Primary" />
-			<Layout direction="row" justifyContent="center" elementType="caption">{props.item.Name}</Layout>
-		</LinkToItem>
-	);
-};
+interface ItemsRowProps {
+	items: BaseItemDto[];
+}
 
 const itemStyles = createStyles({
 	banner: { },
@@ -73,4 +54,18 @@ const itemStyles = createStyles({
 	},
 });
 
-export default ItemsRow;
+export const ItemsRow: React.FC<ItemsRowProps> = (props) => {
+	const items = itemStyles();
+	const background = useBackgroundStyles();
+
+	return (
+		<Layout direction="row" px={8} py={8} gap={8} wrap className={background.panel}>
+			{props.items.map((item) => (
+				<LinkToItem item={item} className={background.button} direction="column" gap={4} width={{ itemsPerRow: 7, gap: 8 }}>
+					<ItemImage item={item} className={items.itemImage} type="Primary" />
+					<Layout direction="row" justifyContent="center" elementType="p">{item.Name}</Layout>
+				</LinkToItem>
+			))}
+		</Layout>
+	);
+};
