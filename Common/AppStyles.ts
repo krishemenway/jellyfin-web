@@ -10,7 +10,7 @@ export const useGlobalStyles = createUseStyles({
 		menu, nav, output, ruby, section, summary, time, mark, audio, video, button, text, tspan, input`]: {
 			color: "var(--PrimaryTextColor)",
 			fill: "var(--PrimaryTextColor)",
-			borderWith: "0",
+			borderWidth: "0",
 			borderColor: "var(--PanelBorderColor)",
 			borderStyle: "none",
 			margin: "0",
