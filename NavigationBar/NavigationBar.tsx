@@ -11,7 +11,6 @@ import { Loading } from "Common/Loading";
 import { AnchoredModal, CenteredModal } from "Common/Modal";
 import { TranslatedText } from "Common/TranslatedText";
 import { IconForItem } from "Items/IconForItem";
-import { ItemService } from "Items/ItemsService";
 import { MenuIcon } from "NavigationBar/MenuIcon";
 import { Search } from "NavigationBar/Search";
 import { DashboardIcon } from "ServerDashboard/DashboardIcon";
@@ -21,6 +20,7 @@ import { LoginService } from "Users/LoginService";
 import { SettingsIcon } from "Users/SettingsIcon";
 import { SignOutIcon } from "Users/SignOutIcon";
 import { UserViewStore } from "Users/UserViewStore";
+import { LinkToItem } from "Items/LinkToItem";
 
 const NavigationButton: React.FC<{ onClick?: (element: HTMLButtonElement) => void; }> = (props) => {
 	return <Button direction="row" type="button" disabled={props.onClick === undefined} onClick={props.onClick ?? (() => { })} py={4} px={4}><MenuIcon size="22" /></Button>;
@@ -35,7 +35,7 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 	return (
 		<>
 			<NavigationButton onClick={(element) => { setOpenAnchor(element); }} />
-			<AnchoredModal alternatePanel open={anchor !== null} onClosed={closeNavigation} anchorAlignment={{ horizontal: "right", vertical: "bottom" }} anchorElement={anchor}>
+			<AnchoredModal alternatePanel open={anchor !== null} onClosed={closeNavigation} opensInDirection="right" anchorElement={anchor}>
 				<Layout direction="column" maxWidth={300}>
 					<HyperLink direction="row" to="/" gap={16} className={background.transparent} py={16} px={16}>
 						<JellyfinIcon size="48" />
@@ -50,15 +50,18 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 						<NavigationDivider />
 						<Layout direction="row" elementType="h3" py={16} px={16}><TranslatedText textKey="HeaderLibraries" /></Layout>
 						<ListOf
+							direction="row" wrap
 							items={props.libraries}
-							createKey={(l, i) => l.Id ?? i.toString()}
-							listItemLayout={{ direction: "column", width: { itemsPerRow: 3, gap: 0 }, alignItems: "center" }}
-							listLayout={{ direction: "row", wrap: true }}
-							renderItem={(library) => (
-								<HyperLink className={background.transparent} width="100%" px={8} py={8} direction="column" gap={8} to={ItemService.UrlForItem(library)}>
+							forEachItem={(library, index) => (
+								<LinkToItem
+									key={library.Id ?? index.toString()} item={library}
+									direction="column" alignItems="center" px={8} py={8} gap={8}
+									width={{ itemsPerRow: 3, gap: 0 }}
+									className={background.transparent}
+								>
 									<Layout direction="row" justifyContent="center"><IconForItem item={library} size={24} /></Layout>
 									<Layout direction="row" justifyContent="center">{library.Name}</Layout>
-								</HyperLink>
+								</LinkToItem>
 							)}
 						/>
 					</Layout>

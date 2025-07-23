@@ -14,20 +14,13 @@ const outsideModalClickHandlerEvents: ObservableArray<(evt: MouseEvent) => void>
 const escapeModalKeyHandlerEvents: ObservableArray<(evt: KeyboardEvent) => void> = new ObservableArray([]);
 const closedFuncs: ObservableArray<() => void> = new ObservableArray([]);
 
-type HorizontalAlignment = "left"|"right";
-type VerticalAlignment = "top"|"bottom";
-
-interface ModalAnchorAlignment {
-	vertical: VerticalAlignment;
-	horizontal: HorizontalAlignment;
-}
-
 interface ModalProps {
 	open: boolean;
 	className?: string;
 	alternatePanel?: boolean;
 	onClosed: () => void;
 	children: React.ReactNode;
+	maxWidth?: string;
 }
 
 export const ResetModalOnLocationChange: React.FC = () => {
@@ -92,6 +85,7 @@ export const CenteredModal: React.FC<ModalProps> = (props) => {
 
 		modalRoot.className = modalClasses.anchoredModalOverlay;
 		element.className = `${modalClasses.centeredModal} ${props.alternatePanel ? background.alternatePanel : background.panel} ${props.className ?? ""}`;
+		element.style.maxWidth = props.maxWidth ?? "";
 
 		body.className = modalRoot.hasChildNodes() ? `${modalClasses.isOpen} ${modalClasses.darken}` : "";
 	}, [ props.open ]);
@@ -100,7 +94,7 @@ export const CenteredModal: React.FC<ModalProps> = (props) => {
 
 export interface AnchoredModalProps extends ModalProps {
 	anchorElement: HTMLElement|null;
-	anchorAlignment: ModalAnchorAlignment;
+	opensInDirection: "left"|"right";
 }
 
 export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
@@ -142,29 +136,21 @@ export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
 		element.style.zIndex = (++lastZIndex).toString();
 
 		if (props.anchorElement !== null) {
-			element.style.top = CalculateTopOffset(props.anchorElement, props.anchorAlignment.vertical) + "px";
-			element.style.left = CalculateHorizontalOffset(props.anchorElement, props.anchorAlignment.horizontal) + "px";
+			const anchorRect = props.anchorElement.getBoundingClientRect();
+
+			element.style.top = `${anchorRect.bottom + 2}px`;
+
+			if (props.opensInDirection === "right") {
+				element.style.left = `${anchorRect.left + anchorRect.width / 2}px`;
+			} else {
+				element.style.right = `${body.clientWidth - anchorRect.left}px`;
+			}
 		}
 
 		body.className = modalRoot.hasChildNodes() ? modalClasses.isOpen : "";
 	}, [ props.open ]);
 	return portal;
 };
-
-function CalculateTopOffset(anchorElement: HTMLElement, alignment: VerticalAlignment): number {
-	const boundingClientRect = anchorElement.getBoundingClientRect();
-	return alignment === "bottom" ? boundingClientRect.bottom : boundingClientRect.top;
-}
-
-function CalculateHorizontalOffset(anchorElement: HTMLElement, alignment: HorizontalAlignment): number {
-	const anchorRect = anchorElement.getBoundingClientRect();
-
-	if (alignment == "left") {
-		return anchorRect.left + anchorRect.width / 2;
-	} else {
-		return anchorRect.left + anchorRect.width / 2;
-	}
-}
 
 const useStyles = createUseStyles({
 	anchoredModalOverlay: {

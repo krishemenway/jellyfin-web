@@ -14,14 +14,13 @@ import { TranslatedText } from "Common/TranslatedText";
 import { ItemImage } from "Items/ItemImage";
 import { ItemService } from "Items/ItemsService";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
-import { IconForItemType } from "Items/IconForItemType";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { ItemFavoriteIcon } from "Items/ItemFavoriteIcon";
 import { useBackgroundStyles } from "Common/AppStyles";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { LinkToItem } from "Items/LinkToItem";
-import { ItemNameWithContext } from "Items/ItemNameWithContext";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
+import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 class PersonData {
 	constructor(id: string) {
@@ -85,7 +84,7 @@ export const Person: React.FC = () => {
 	React.useEffect(() => personData.Load(), [routeParams.personId])
 
 	return (
-		<PageWithNavigation icon={<IconForItemType itemType="Person" size={24} />}>
+		<PageWithNavigation itemKind="Person">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.personId).Item, personData.CreditedItems]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
@@ -98,20 +97,19 @@ export const Person: React.FC = () => {
 
 							<ItemExternalLinks
 								item={person}
+								direction="row" gap={8}
 								linkClassName={background.button}
-								linkLayout={{ direction: "row", width: "100%", py: 8, justifyContent: "center"}}
-								listLayout={{ direction: "row", gap: 8 }}
-								listItemLayout={{ direction: "row", grow: 1 }}
+								linkLayout={{ direction: "row", width: "100%", py: 8, justifyContent: "center", grow: 1 }}
 							/>
 						</Layout>
 
-						<Layout direction="column" maxWidth="calc(80% - 16px)" gap={32}>
+						<Layout direction="column" grow={1} gap={32}>
 							<Layout direction="row" justifyContent="space-between">
 								<Layout direction="row" fontSize="32px" className="person-name">{person.Name}</Layout>
 								<ItemActionsMenu actions={[[
 									{
 										textKey: "AddToFavorites",
-										action: () => { console.log("Add To Favorites.") },
+										action: () => { console.error("Add To Favorites Missing.") },
 										icon: <ItemFavoriteIcon size={24} />,
 									},
 								]]} />
@@ -122,20 +120,7 @@ export const Person: React.FC = () => {
 
 							<table style={{ width: "75%" }}>
 								<thead><tr><th style={{ width: "15%" }}></th><th></th><th style={{ width: "15%" }}></th></tr></thead>
-								<tbody>
-								{creditedItems.map((creditedItem, index) => (
-									<tr key={creditedItem.Id ?? index.toString()}>
-										<td>
-											<ItemImage item={creditedItem} type="Primary" maxWidth="100%" />
-										</td>
-										<td>
-											<LinkToItem direction="row" item={creditedItem}><ItemNameWithContext item={creditedItem} /></LinkToItem>
-											<Layout direction="row">Role/Part/Credit</Layout>
-										</td>
-										<td>{creditedItem.ProductionYear}</td>
-									</tr>
-								))}
-								</tbody>
+								<tbody>{creditedItems.map((item, index) => <CreditedItem key={item.Id ?? index.toString()} creditedItem={item} />)}</tbody>
 							</table>
 						</Layout>
 					</Layout>
@@ -144,6 +129,23 @@ export const Person: React.FC = () => {
 		</PageWithNavigation>
 	);
 };
+
+const CreditedItem: React.FC<{ creditedItem: BaseItemDto }> = ({ creditedItem }) => {
+	const creditedNameFuncForType = BaseItemKindServiceFactory.FindOrNull(creditedItem.Type)?.personCreditName ?? ((i) => i.Name);
+
+	return (
+		<tr >
+			<td>
+				<ItemImage item={creditedItem} type="Primary" maxWidth="100%" />
+			</td>
+			<td>
+				<LinkToItem direction="row" item={creditedItem}>{creditedNameFuncForType(creditedItem)}</LinkToItem>
+				<Layout direction="row">Role/Part/Credit</Layout>
+			</td>
+			<td>{creditedItem.ProductionYear}</td>
+		</tr>
+	)
+}
 
 const PersonAgeBirthAndDeath: React.FC<{ person: BaseItemDto }> = (props) => {
 	if (!props.person.PremiereDate) {

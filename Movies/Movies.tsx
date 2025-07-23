@@ -4,31 +4,32 @@ import { ItemService } from "Items/ItemsService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { useParams } from "react-router-dom";
-import { ItemsGrid } from "Items/ItemsGrid";
+import { ItemsGrid } from "ItemList/ItemsGrid";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { NotFound } from "Common/NotFound";
-import { IconForItemType } from "Items/IconForItemType";
-import { ItemListFilters, ItemListService } from "Items/ItemListFilters";
+import { ItemListFilters } from "ItemList/ItemListFilters";
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
 
 export const Movies: React.FC = () => {
 	const routeParams = useParams<{ libraryId: string }>();
-	const itemListService = React.useMemo(() => new ItemListService(), [routeParams.libraryId]);
+	const itemKind = BaseItemKind.Movie;
+	const service = ItemService.Instance.FindOrCreateItemList(routeParams.libraryId);
 
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.libraryId).LoadChildrenWithAbort(), [routeParams.libraryId]);
+	React.useEffect(() => service.LoadWithAbort(), [routeParams.libraryId]);
 
 	if (routeParams.libraryId === undefined) {
 		return <NotFound />;
 	}
 
 	return (
-		<PageWithNavigation icon={<IconForItemType itemType="Movie" size={24} />}>
-			<ItemListFilters service={itemListService} />
+		<PageWithNavigation itemKind={itemKind}>
+			<ItemListFilters itemKind={itemKind} itemId={routeParams.libraryId} service={service} />
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.libraryId).Children]}
+				receivers={[service.List]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon size={48} />}
 				whenNotStarted={<LoadingIcon size={48} />}
-				whenReceived={(items) => <ItemsGrid items={items} />}
+				whenReceived={() => <ItemsGrid service={service} />}
 			/>
 		</PageWithNavigation>
 	);

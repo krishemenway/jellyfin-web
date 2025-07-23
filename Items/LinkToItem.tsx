@@ -2,8 +2,9 @@ import * as React from "react";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { StyleLayoutPropsWithRequiredDirection } from "Common/Layout";
 import { HyperLink } from "Common/HyperLink";
-import { ItemService } from "Items/ItemsService";
+import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 export const LinkToItem: React.FC<{ item: BaseItemDto; className?: string; children: React.ReactNode }&StyleLayoutPropsWithRequiredDirection> = (props) => {
-	return <HyperLink to={ItemService.UrlForItem(props.item)} {...props} />;
+	const findUrlForItemFuncOrDefault = BaseItemKindServiceFactory.FindOrNull(props.item.Type)?.findUrl ?? ((item) => `/${item.Type?.toString()}/${item.Id}`);
+	return <HyperLink to={findUrlForItemFuncOrDefault(props.item)} {...props} />;
 };

@@ -3,7 +3,6 @@ import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { useParams } from "react-router-dom";
 import { Layout } from "Common/Layout";
 import { NotFound } from "Common/NotFound";
-import { IconForItemType } from "Items/IconForItemType";
 import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
@@ -24,6 +23,15 @@ import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { ItemGenres } from "Items/ItemGenres";
 import { ItemStudios } from "Items/ItemStudios";
 import { TranslatedText } from "Common/TranslatedText";
+import { ItemPlayedIcon } from "Items/ItemPlayedIcon";
+import { DownloadIcon } from "Common/DownloadIcon";
+import { EditIcon } from "Common/EditIcon";
+import { DeleteIcon } from "Common/DeleteIcon";
+import { IdentifyIcon } from "Items/IdentifyIcon";
+import { EditImagesIcon } from "Items/EditImagesIcon";
+import { RefreshIcon } from "Common/RefreshIcon";
+import { AddToPlaylistIcon } from "Playlists/AddToPlaylistIcon";
+import { AddToCollectionIcon } from "Collections/AddToCollectionIcon";
 
 const SeasonForShow: React.FC<{ season: BaseItemDto }> = (props) => {
 	const [seasonOpen, setSeasonOpen] = React.useState(props.season.IndexNumber === 1);
@@ -45,7 +53,7 @@ const SeasonForShow: React.FC<{ season: BaseItemDto }> = (props) => {
 						</Button>
 
 						<Collapsible open={seasonOpen}>
-							<ItemsRow items={episodes} />
+							<ItemsRow items={episodes} itemName={(item) => `${item.IndexNumber}. ${item.Name}`} />
 						</Collapsible>
 					</>
 				)}
@@ -74,7 +82,7 @@ export const Show: React.FC = () => {
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.showId).LoadChildrenWithAbort(), [routeParams.showId]);
 
 	return (
-		<PageWithNavigation icon={<IconForItemType itemType="Movie" size={24} />}>
+		<PageWithNavigation itemKind="Movie">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.showId).Item, ItemService.Instance.FindOrCreateItemData(routeParams.showId).Children]}
 				whenNotStarted={<LoadingIcon size={48} />}
@@ -90,57 +98,99 @@ export const Show: React.FC = () => {
 
 							<ItemStudios
 								item={show}
+								direction="row" gap={8}
 								linkClassName={background.button}
-								linkLayout={{ direction: "row", width: "100%", py: 8, justifyContent: "center"}}
-								listLayout={{ direction: "row", gap: 8 }}
-								listItemLayout={{ direction: "row", grow: 1 }}
+								linkLayout={{ direction: "row", width: "100%", py: 8, justifyContent: "center", grow: 1 }}
 							/>
 
 							<ItemExternalLinks
 								item={show}
+								direction="row" gap={8}
 								linkClassName={background.button}
-								linkLayout={{ direction: "row", width: "100%", py: 8, justifyContent: "center"}}
-								listLayout={{ direction: "row", gap: 8 }}
-								listItemLayout={{ direction: "row", grow: 1 }}
+								linkLayout={{ direction: "row", width: "100%", py: 8, justifyContent: "center", grow: 1}}
 							/>
 
 							<ItemGenres
 								item={show}
+								direction="row" gap={8}
 								linkClassName={background.button}
-								linkLayout={{ direction: "row", width: "100%", py: 8, justifyContent: "center"}}
-								listLayout={{ direction: "row", gap: 8 }}
-								listItemLayout={{ direction: "row", grow: 1 }}
+								linkLayout={{ direction: "row", width: "100%", py: 8, justifyContent: "center", grow: 1}}
 							/>
 						</Layout>
 
-						<Layout direction="column" maxWidth="calc(80% - 16px)" gap={32}>
+						<Layout direction="column" grow={1} gap={32}>
 							<Layout direction="row" fontSize="32px" justifyContent="space-between">
 								<Layout direction="row" className="show-name">{show.Name}</Layout>
-								<ItemActionsMenu actions={[[
-									{
-										textKey: "AddToFavorites",
-										action: () => { console.log("Add To Favorites.") },
-										icon: <ItemFavoriteIcon size={24} />,
-									},
-									// TODO: Mark Watched
-									// TODO: Add to Collection
-									// TODO: Add to Playlist
-									// TODO: Download All
-									// TODO: Delete Series
-									// TODO: Edit Metadata
-									// TODO: Edit Images
-									// TODO: Identify
-									// TODO: Refresh Metadata
-								]]} />
+								<ItemActionsMenu actions={[
+									// Viewing / Downloading
+									[
+										{
+											textKey: "DownloadAll",
+											icon: <DownloadIcon size={24} />,
+											action: () => { console.error("Mark Played Missing.") },
+										},
+									],
+									// User-based actions
+									[
+										{
+											textKey: "AddToFavorites",
+											icon: <ItemFavoriteIcon size={24} />,
+											action: () => {  },
+										},
+										{
+											textKey: "MarkPlayed",
+											icon: <ItemPlayedIcon size={24} />,
+											action: () => { console.error("Mark Played Missing.") },
+										},
+										{
+											textKey: "AddToCollection",
+											icon: <AddToCollectionIcon size={24} />,
+											action: () => { console.error("Add to collection Missing.") },
+										},
+										{
+											textKey: "AddToPlaylist",
+											icon: <AddToPlaylistIcon size={24} />,
+											action: () => { console.error("Add to Playlist Missing.") },
+										},
+									],
+									// Server-based actions
+									[
+										{
+											textKey: "EditMetadata",
+											icon: <EditIcon size={24} />,
+											action: () => { console.error("Edit Metadata Missing.") },
+										},
+										{
+											textKey: "EditImages",
+											icon: <EditImagesIcon size={24} />,
+											action: () => { console.error("Edit Images Missing.") },
+										},
+										{
+											textKey: "Identify",
+											icon: <IdentifyIcon size={24} />,
+											action: () => { console.error("Identify Missing.") },
+										},
+										{
+											textKey: "RefreshMetadata",
+											icon: <RefreshIcon size={24} />,
+											action: () => { console.error("Refresh Metadata Missing.") },
+										},
+										{
+											textKey: "DeleteSeries",
+											icon: <DeleteIcon size={24} />,
+											action: () => { console.error("Delete Series Missing.") },
+										},
+									]
+								]} />
 							</Layout>
 
-							<Layout direction="row" fontSize="12px" className="show-overview">{show.Overview}</Layout>
+							{Nullable.HasValue(show.Overview) && <Layout direction="row" fontSize="12px" className="show-overview">{show.Overview}</Layout>}
 
 							<Layout direction="row" gap={8}>
 								<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: 4, py: 4 }} />
 								<ItemTags
 									item={show}
-									listLayout={{ direction: "row", gap: 8, wrap: true }}
+									direction="row" gap={8} wrap
 									linkClassName={background.button}
 									linkLayout={{ px: 4, py: 4 }}
 								/>
@@ -152,9 +202,8 @@ export const Show: React.FC = () => {
 							{/* TODO: Next Up */}
 							<ListOf
 								items={seasons}
-								createKey={(season, index) => season.Id ?? index.toString()}
-								listLayout={{ direction: "column", gap: 8 }}
-								renderItem={(season) => <SeasonForShow season={season} />}
+								direction="column" gap={8}
+								forEachItem={(season, index) => <SeasonForShow key={season.Id ?? index.toString()} season={season} />}
 							/>
 							{/* TODO: Cast & Crew */}
 							{/* TODO: More like this */}

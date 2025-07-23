@@ -7,6 +7,7 @@ import { Layout } from "Common/Layout";
 
 interface ItemsRowProps {
 	items: BaseItemDto[];
+	itemName: (item: BaseItemDto) => React.ReactNode;
 }
 
 const itemStyles = createStyles({
@@ -23,7 +24,7 @@ const itemStyles = createStyles({
 	},
 
 	itemImage: {
-		maxHeight: "220px",
+		maxHeight: "340px",
 		objectFit: "contain",
 	},
 
@@ -63,7 +64,7 @@ export const ItemsRow: React.FC<ItemsRowProps> = (props) => {
 			{props.items.map((item) => (
 				<LinkToItem item={item} className={background.button} direction="column" gap={4} width={{ itemsPerRow: 7, gap: 8 }}>
 					<ItemImage item={item} className={items.itemImage} type="Primary" />
-					<Layout direction="row" justifyContent="center" elementType="p">{item.Name}</Layout>
+					<Layout direction="row" justifyContent="center" alignItems="end" py={8} grow={1} elementType="p">{props.itemName(item)}</Layout>
 				</LinkToItem>
 			))}
 		</Layout>

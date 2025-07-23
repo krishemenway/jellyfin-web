@@ -14,6 +14,7 @@ export interface StyleLayoutProps {
 	direction?: Property.FlexDirection;
 	gap?: Property.Gap|number;
 	grow?: Property.FlexGrow;
+	basis?: Property.FlexBasis;
 
 	alignItems?: Property.AlignItems;
 	alignSelf?: Property.AlignSelf;
@@ -78,6 +79,7 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		flexDirection: props?.direction,
 		gap: props?.gap,
 		flexGrow: props?.grow,
+		flexBasis: props?.basis,
 		alignItems: props?.alignItems,
 		alignSelf: props?.alignSelf,
 		justifyContent: props?.justifyContent,

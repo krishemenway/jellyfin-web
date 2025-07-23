@@ -10,13 +10,15 @@ import { Button } from "Common/Button";
 import { CloseIcon } from "Common/CloseIcon";
 import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
-import { IconForItemType } from "Items/IconForItemType";
+import { IconForItemKind } from "Items/IconForItemKind";
 import { InfinityIcon } from "NavigationBar/InfinityIcon";
 import { LinkToItem } from "Items/LinkToItem";
 import { ItemImage } from "Items/ItemImage";
 import { ListOf } from "Common/ListOf";
 import { TranslatedText } from "Common/TranslatedText";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
+import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 const useSearchStyles = createStyles({
 	searchIcon: {
@@ -42,24 +44,28 @@ const LoadedSearchResults: React.FC<{ results: SearchResults }> = (props) => {
 				)}
 
 				{props.results.AllTypes.map((type) => (
-					<Button px={8} py={8} direction="row" key={type} type="button" selected={selectedType === type} onClick={() => props.results.SelectedType.Value = type}><IconForItemType itemType={type} size={24} /></Button>
+					<Button px={8} py={8} direction="row" key={type} type="button" selected={selectedType === type} onClick={() => props.results.SelectedType.Value = type}><IconForItemKind itemKind={type} size={24} /></Button>
 				))}
 			</Layout>
 
 			<ListOf
 				items={selectedItems}
-				createKey={(item, index) => item.Id ?? index.toString()}
-				listLayout={{ direction: "column" }}
-				listItemLayout={{ direction: "row", py: 8, px: 8 }}
+				direction="column"
 				emptyListView={<TranslatedText textKey="SearchResultsEmpty" textProps={[query]} elementType="div" layout={{ px: 8, py: 8 }} />}
-				renderItem={(item) => (
-					<LinkToItem key={item.Id} item={item} direction="row" height={24} gap={16}>
-						<ItemImage item={item} type="Primary" />
-						<Layout direction="row">{item.Name}</Layout>
-					</LinkToItem>
-				)}
+				forEachItem={(item, index) => <SearchResult key={item.Id ?? index.toString()} item={item} />}
 			/>
 		</Layout>
+	);
+};
+
+const SearchResult: React.FC<{ item: BaseItemDto }> = (props) => {
+	const searchResultNameFunc = BaseItemKindServiceFactory.FindOrNull(props.item.Type)?.searchResultName ?? ((item) => item.Name);
+
+	return (
+		<LinkToItem item={props.item} direction="row" alignItems="center" gap={16} px={8} py={8} maxHeight="3em">
+			<ItemImage item={props.item} type="Primary" maxWidth="3em" />
+			<Layout direction="row">{searchResultNameFunc(props.item)}</Layout>
+		</LinkToItem>
 	);
 };
 
@@ -78,7 +84,8 @@ export const Search: React.FC = () => {
 				anchorElement={textRef}
 				open={(textRef ?? false) && resultsVisible}
 				onClosed={() => SearchService.Instance.Clear()}
-				anchorAlignment={{ horizontal: "left", vertical: "bottom" }}>
+				opensInDirection="right"
+			>
 				<Layout direction="column" className={background.panel} minHeight={300} minWidth={320} maxWidth={500}>
 					<Layout direction="row" justifyContent="space-between" px={8} py={8}>
 						<Layout direction="row" alignItems="center">Search Results</Layout>

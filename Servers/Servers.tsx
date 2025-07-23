@@ -22,9 +22,8 @@ export const Servers: React.FC = () => {
 		<Layout direction="column" className={background.panel}>
 			<ListOf
 				items={servers}
-				createKey={(server) => server.Id}
-				listLayout={{ direction: "column" }}
-				renderItem={(server) => <SelectServerButton server={server} />}
+				direction="column"
+				forEachItem={(server) => <SelectServerButton key={server.Id} server={server} />}
 			/>
 
 			<ConnectToServer />

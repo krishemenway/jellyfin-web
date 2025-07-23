@@ -31,11 +31,11 @@ import { Studios } from "Studios/Studios";
 import { MusicAlbum } from "Music/MusicAlbum";
 import { MusicAlbums } from "Music/MusicAlbums";
 
-import { PhotoAlbum } from "PhotoAlbum/PhotoAlbum";
-import { PhotoAlbums } from "PhotoAlbum/PhotoAlbums";
+import { PhotoAlbum } from "Photos/PhotoAlbum";
+import { PhotoAlbums } from "Photos/PhotoAlbums";
 
-import { MusicArtist } from "Music/Artist";
-import { MusicArtists } from "Music/Artists";
+import { MusicArtist } from "Music/MusicArtist";
+import { MusicArtists } from "Music/MusicArtists";
 
 import { Collection } from "Collections/Collection";
 import { Collections } from "Collections/Collections";
@@ -72,17 +72,17 @@ const App: React.FC<{ basePath: string }> = (props) => {
 
 						{ path: "/Person/:personId", element: <Person /> },
 
+						{ path: "/Shows/:libraryId", element: <Shows /> },
 						{ path: "/Show/:showId", element: <Show /> },
 						{ path: "/Show/:showId/Season/:seasonId", element: <Show /> },
 						{ path: "/Show/:showId/Episode/:episodeId", element: <Show /> },
-						{ path: "/Shows/:libraryId", element: <Shows /> },
 
+						{ path: "/Music/:libraryId", element: <MusicAlbums /> },
 						{ path: "/Music/Albums/:libraryId", element: <MusicAlbums /> },
 						{ path: "/Music/Album/:albumId", element: <MusicAlbum /> },
-						{ path: "/Music/:libraryId", element: <MusicAlbums /> },
 
-						{ path: "/Music/Artist/:artistId", element: <MusicArtist /> },
 						{ path: "/Music/Artists/:libraryId", element: <MusicArtists /> },
+						{ path: "/Music/Artist/:artistId", element: <MusicArtist /> },
 
 						{ path: "/Photo/Albums/:libraryId", element: <PhotoAlbums /> },
 						{ path: "/Photo/Album/:albumId", element: <PhotoAlbum /> },
@@ -93,7 +93,7 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ path: "/Studios/:libraryId", element: <Studios /> },
 						{ path: "/Studio/:studioId", element: <Studio /> },
 
-						{ path: "/Collections", element: <Collections /> },
+						{ path: "/Collections/:collectionsId", element: <Collections /> },
 						{ path: "/Collection/:collectionId", element: <Collection /> },
 
 						{ path: "/Tags/:tag", element: <Tag /> },

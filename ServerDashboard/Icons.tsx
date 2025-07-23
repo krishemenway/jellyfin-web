@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseItemKind, CollectionType } from "@jellyfin/sdk/lib/generated-client/models";
 import { ListOf } from "Common/ListOf";
-import { IconForItemType } from "Items/IconForItemType";
+import { IconForItemKind } from "Items/IconForItemKind";
 import { Layout } from "Common/Layout";
 
 export const Icons: React.FC = () => {
@@ -9,28 +9,26 @@ export const Icons: React.FC = () => {
 		<Layout direction="column" alignItems="center" py={32} gap={32}>
 			<Layout direction="row">Item Types</Layout>
 			<ListOf
+				direction="row" wrap gap={32} maxWidth={800}
 				items={Object.keys(BaseItemKind).map((t) => t as BaseItemKind).filter((i) => i !== "CollectionFolder")}
-				createKey={(kind) => kind}
-				renderItem={(kind) => (
-					<Layout direction="column" alignItems="center">
-						<IconForItemType itemType={kind} size={32} />
+				forEachItem={(kind) => (
+					<Layout key={kind} direction="column" alignItems="center">
+						<IconForItemKind itemKind={kind} size={32} />
 						<Layout direction="row">{kind}</Layout>
 					</Layout>
 				)}
-				listLayout={{ direction: "row", wrap: true, gap: 32, maxWidth: 800 }}
 			/>
 
 			<Layout direction="row">Collection Types</Layout>
 			<ListOf
 				items={Object.keys(CollectionType).map((c) => c as CollectionType)}
-				createKey={(collectionType) => collectionType}
-				renderItem={(collectionType) => (
-					<Layout direction="column" alignItems="center">
-						<IconForItemType itemType="CollectionFolder" collectionType={collectionType} size={32} />
+				direction="row" wrap gap={32} maxWidth={800}
+				forEachItem={(collectionType) => (
+					<Layout key={collectionType} direction="column" alignItems="center">
+						<IconForItemKind itemKind="CollectionFolder" collectionType={collectionType} size={32} />
 						<Layout direction="row">{collectionType}</Layout>
 					</Layout>
 				)}
-				listLayout={{ direction: "row", wrap: true, gap: 32, maxWidth: 800 }}
 			/>
 		</Layout>
 	);

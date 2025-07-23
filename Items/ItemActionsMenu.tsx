@@ -4,16 +4,11 @@ import { AnchoredModal } from "Common/Modal";
 import { Button } from "Common/Button";
 import { ItemActionsIcon } from "Items/ItemActionsIcon";
 import { TranslatedText } from "Common/TranslatedText";
-
-export interface ItemAction {
-	icon: JSX.Element,
-	textKey: string;
-	action: () => void;
-}
+import { MenuAction } from "Common/MenuAction";
 
 export interface ItemActionProps {
 	className?: string;
-	actions: ItemAction[][];
+	actions: MenuAction[][];
 }
 
 export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
@@ -26,18 +21,17 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 				<ItemActionsIcon size={24} />
 			</Button>
 
-			<AnchoredModal alternatePanel anchorAlignment={{ horizontal: "left", vertical: "bottom" }} anchorElement={anchor} open={anchor !== null} onClosed={closeNavigation}>
+			<AnchoredModal alternatePanel opensInDirection="left" anchorElement={anchor} open={anchor !== null} onClosed={closeNavigation}>
 				<ListOf
 					items={props.actions ?? []}
-					createKey={(_, index) => index.toString()}
-					listLayout={{ direction: "row", gap: 8 }}
-					renderItem={(group) => (
+					direction="column" gap={8}
+					forEachItem={(group, index) => (
 						<ListOf
+							key={index.toString()}
 							items={group}
-							createKey={(a) => a.textKey}
-							listLayout={{ direction: "row", gap: 8 }}
-							renderItem={(action) => (
-								<Button type="button" direction="row" onClick={() => { closeNavigation(); action.action(); }}>
+							direction="column"
+							forEachItem={(action) => (
+								<Button key={action.textKey} type="button" direction="row" onClick={() => { closeNavigation(); action.action(); }} px={8} py={4} gap={8} alignItems="center">
 									{action.icon}
 									<TranslatedText textKey={action.textKey} />
 								</Button>
