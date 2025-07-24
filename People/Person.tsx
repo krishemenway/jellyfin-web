@@ -77,7 +77,7 @@ export const Person: React.FC = () => {
 	const background = useBackgroundStyles();
 
 	if (!routeParams.personId) {
-		return <NotFound />;
+		return <PageWithNavigation itemKind="Person"><NotFound /></PageWithNavigation>;
 	}
 
 	const personData = PersonService.Instance.FindOrCreatePersonData(routeParams.personId);

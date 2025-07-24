@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseItemKindService } from "Items/BaseItemKindService";
-import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
+import { VideoIcon } from "Movies/VideoIcon";
 
 export const VideoService: BaseItemKindService = {
-	findIcon: (props) => <QuestionMarkIcon {...props} />,
+	findIcon: (props) => <VideoIcon {...props} />,
 };

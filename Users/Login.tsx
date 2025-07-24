@@ -14,6 +14,7 @@ import { CenteredModal } from "Common/Modal";
 import { useObservable } from "@residualeffect/rereactor";
 import { FieldLabel } from "Common/FieldLabel";
 import { Form } from "Common/Form";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 const SignInWithQuickConnect: React.FC = () => {
 	React.useEffect(() => { return () => LoginService.Instance.Dispose(); }, []);
@@ -34,7 +35,7 @@ const SignInWithQuickConnect: React.FC = () => {
 };
 
 const ReceivedQuickConnectResult: React.FC<{ code?: string }> = (props) => {
-	if (props.code === undefined) {
+	if (!Nullable.HasValue(props.code)) {
 		return <LoadingErrorMessages errorTextKeys={["UnknownError"]} />
 	}
 

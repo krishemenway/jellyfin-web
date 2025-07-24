@@ -31,6 +31,7 @@ export interface StyleLayoutProps {
 	overflowX?: Property.OverflowX;
 
 	fontSize?: Property.FontSize;
+	textAlign?: Property.TextAlign;
 
 	mx?: number,
 	my?: number;
@@ -111,6 +112,7 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		maxHeight: props?.maxHeight,
 		height: props?.height,
 		fontSize: props?.fontSize,
+		textAlign: props?.textAlign,
 	};
 }
 

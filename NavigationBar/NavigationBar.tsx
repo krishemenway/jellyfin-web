@@ -13,7 +13,7 @@ import { TranslatedText } from "Common/TranslatedText";
 import { IconForItem } from "Items/IconForItem";
 import { MenuIcon } from "NavigationBar/MenuIcon";
 import { Search } from "NavigationBar/Search";
-import { DashboardIcon } from "ServerDashboard/DashboardIcon";
+import { DashboardIcon } from "ServerAdmin/DashboardIcon";
 import { ServerService } from "Servers/ServerService";
 import { AuthorizeQuickConnect } from "Users/AuthorizeQuickConnect";
 import { LoginService } from "Users/LoginService";

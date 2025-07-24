@@ -1,8 +1,8 @@
 import * as React from "react";
 import { BaseItemKindService } from "Items/BaseItemKindService";
-import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
+import { SeasonIcon } from "Shows/SeasonIcon";
 
 export const SeasonService: BaseItemKindService = {
-	findIcon: (props) => <QuestionMarkIcon {...props} />,
+	findIcon: (props) => <SeasonIcon {...props} />,
 	findUrl: (item) => `/Show/${item.SeriesId}/Season/${item.Id}`,
 };

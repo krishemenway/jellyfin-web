@@ -8,10 +8,11 @@ import { ThemeService } from "Users/ThemeService";
 
 import { NotFound } from "Common/NotFound";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
+import { ItemListView } from "ItemList/ItemListView";
 
-import { ServerDashboard } from "ServerDashboard/ServerDashboard";
-import { MetadataEditor } from "ServerDashboard/MetadataEditor";
-import { Icons } from "ServerDashboard/Icons";
+import { ServerDashboard } from "ServerAdmin/ServerDashboard";
+import { MetadataEditor } from "ServerAdmin/MetadataEditor";
+import { Icons } from "ServerAdmin/Icons";
 
 import { Home } from "Home/Home";
 import { Person } from "People/Person";
@@ -19,26 +20,15 @@ import { Person } from "People/Person";
 import { Settings } from "Users/Settings";
 import { RequireServerAndUser } from "Users/RequireServerAndUser";
 
-import { Shows } from "Shows/Shows";
 import { Show } from "Shows/Show";
-
 import { Movie } from "Movies/Movie";
-import { Movies } from "Movies/Movies";
+import { MusicAlbum } from "Music/MusicAlbum";
+import { PhotoAlbum } from "Photos/PhotoAlbum";
+import { MusicArtist } from "Music/MusicArtist";
+import { Collection } from "Collections/Collection";
 
 import { Studio } from "Studios/Studio";
 import { Studios } from "Studios/Studios";
-
-import { MusicAlbum } from "Music/MusicAlbum";
-import { MusicAlbums } from "Music/MusicAlbums";
-
-import { PhotoAlbum } from "Photos/PhotoAlbum";
-import { PhotoAlbums } from "Photos/PhotoAlbums";
-
-import { MusicArtist } from "Music/MusicArtist";
-import { MusicArtists } from "Music/MusicArtists";
-
-import { Collection } from "Collections/Collection";
-import { Collections } from "Collections/Collections";
 
 import { Tag } from "Tags/Tag";
 import { Tags } from "Tags/Tags";
@@ -72,28 +62,28 @@ const App: React.FC<{ basePath: string }> = (props) => {
 
 						{ path: "/Person/:personId", element: <Person /> },
 
-						{ path: "/Shows/:libraryId", element: <Shows /> },
+						{ path: "/Shows/:libraryId", element: <ItemListView itemKind="Series" paramName="libraryId" /> },
 						{ path: "/Show/:showId", element: <Show /> },
 						{ path: "/Show/:showId/Season/:seasonId", element: <Show /> },
 						{ path: "/Show/:showId/Episode/:episodeId", element: <Show /> },
 
-						{ path: "/Music/:libraryId", element: <MusicAlbums /> },
-						{ path: "/Music/Albums/:libraryId", element: <MusicAlbums /> },
+						{ path: "/Music/:libraryId", element: <ItemListView itemKind="MusicAlbum" paramName="libraryId" /> },
+						{ path: "/Music/Albums/:libraryId", element: <ItemListView itemKind="MusicAlbum" paramName="libraryId" /> },
 						{ path: "/Music/Album/:albumId", element: <MusicAlbum /> },
 
-						{ path: "/Music/Artists/:libraryId", element: <MusicArtists /> },
+						{ path: "/Music/Artists/:libraryId", element: <ItemListView itemKind="MusicArtist" paramName="libraryId" /> },
 						{ path: "/Music/Artist/:artistId", element: <MusicArtist /> },
 
-						{ path: "/Photo/Albums/:libraryId", element: <PhotoAlbums /> },
+						{ path: "/Photo/Albums/:libraryId", element: <ItemListView itemKind="PhotoAlbum" paramName="libraryId" /> },
 						{ path: "/Photo/Album/:albumId", element: <PhotoAlbum /> },
 
-						{ path: "/Movies/:libraryId", element: <Movies /> },
+						{ path: "/Movies/:libraryId", element: <ItemListView itemKind="Movie" paramName="libraryId" /> },
 						{ path: "/Movie/:movieId", element: <Movie /> },
 
-						{ path: "/Studios/:libraryId", element: <Studios /> },
+						{ path: "/Studios", element: <Studios /> },
 						{ path: "/Studio/:studioId", element: <Studio /> },
 
-						{ path: "/Collections/:collectionsId", element: <Collections /> },
+						{ path: "/Collections/:collectionsId", element: <ItemListView itemKind="BoxSet" paramName="collectionsId" /> },
 						{ path: "/Collection/:collectionId", element: <Collection /> },
 
 						{ path: "/Tags/:tag", element: <Tag /> },

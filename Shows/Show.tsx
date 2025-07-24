@@ -74,15 +74,15 @@ export const Show: React.FC = () => {
 	const background = useBackgroundStyles();
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
 
-	if (routeParams.showId === undefined) {
-		return <NotFound />;
+	if (!Nullable.HasValue(routeParams.showId)) {
+		return <PageWithNavigation itemKind="Series"><NotFound /></PageWithNavigation>;
 	}
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.showId).LoadItemWithAbort(), [routeParams.showId]);
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.showId).LoadChildrenWithAbort(), [routeParams.showId]);
 
 	return (
-		<PageWithNavigation itemKind="Movie">
+		<PageWithNavigation itemKind="Series">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.showId).Item, ItemService.Instance.FindOrCreateItemData(routeParams.showId).Children]}
 				whenNotStarted={<LoadingIcon size={48} />}

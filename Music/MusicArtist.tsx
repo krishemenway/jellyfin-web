@@ -12,7 +12,7 @@ export const MusicArtist: React.FC = () => {
 	const routeParams = useParams<{ artistId: string }>();
 
 	if (routeParams.artistId === undefined) {
-		return <NotFound />;
+		return <PageWithNavigation itemKind="MusicArtist"><NotFound /></PageWithNavigation>;
 	}
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.artistId).LoadItemWithAbort(), [routeParams.artistId]);

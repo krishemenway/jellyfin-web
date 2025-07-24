@@ -12,7 +12,7 @@ export const PhotoAlbum: React.FC = () => {
 	const routeParams = useParams<{ albumId: string }>();
 
 	if (routeParams.albumId === undefined) {
-		return <NotFound />;
+		return <PageWithNavigation itemKind="PhotoAlbum"><NotFound /></PageWithNavigation>;
 	}
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.albumId).LoadItemWithAbort(), [routeParams.albumId]);

@@ -20,8 +20,8 @@ export const Movie: React.FC = () => {
 	const routeParams = useParams<{ movieId: string }>();
 	const background = useBackgroundStyles();
 
-	if (routeParams.movieId === undefined) {
-		return <NotFound />;
+	if (!Nullable.HasValue(routeParams.movieId)) {
+		return <PageWithNavigation itemKind="Movie"><NotFound /></PageWithNavigation>;
 	}
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.movieId).LoadItemWithAbort(), [routeParams.movieId]);

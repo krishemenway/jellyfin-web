@@ -2,13 +2,13 @@ import { BaseItemDto, BaseItemKind, ItemFields } from "@jellyfin/sdk/lib/generat
 import { Computed, FilteredObservable, Observable, RateLimiter, RateLimitType } from "@residualeffect/reactor";
 import { EditableField } from "Common/EditableField";
 import { Receiver } from "Common/Receiver";
-import { getArtistsApi, getItemsApi, getPersonsApi } from "@jellyfin/sdk/lib/utils/api";
+import { getArtistsApi, getGenresApi, getItemsApi, getPersonsApi, getStudiosApi } from "@jellyfin/sdk/lib/utils/api";
 import { ServerService } from "Servers/ServerService";
 import { ItemsApiGetItemsRequest } from "@jellyfin/sdk/lib/generated-client/api/items-api";
 
 export class SearchResults {
-	constructor(artists: BaseItemDto[], people: BaseItemDto[], restOfItems: BaseItemDto[]) {
-		this.AllItems = artists.concat(people).concat(restOfItems).sort((a, b) => (b.UserData?.LastPlayedDate ?? "0001").localeCompare(a.UserData?.LastPlayedDate ?? "0001"));
+	constructor(artists: BaseItemDto[], people: BaseItemDto[], restOfItems: BaseItemDto[], studios: BaseItemDto[]) {
+		this.AllItems = artists.concat(people).concat(studios).concat(restOfItems).sort((a, b) => (b.UserData?.LastPlayedDate ?? "0001").localeCompare(a.UserData?.LastPlayedDate ?? "0001"));
 		this.ItemsByType = this.GroupItemsByType(this.AllItems);
 		this.AllTypes = Object.keys(this.ItemsByType).map((t) => t as BaseItemKind);
 
@@ -78,7 +78,9 @@ export class SearchService {
 			getArtistsApi(ServerService.Instance.CurrentApi).getArtists(request, { signal: a.signal }).then((response) => response.data.Items ?? []),
 			getPersonsApi(ServerService.Instance.CurrentApi).getPersons(request, { signal: a.signal }).then((response) => response.data.Items ?? []),
 			getItemsApi(ServerService.Instance.CurrentApi).getItems(request, { signal: a.signal }).then((response) => response.data.Items ?? []),
-		]).then(([artists, people, itemsByType]) => new SearchResults(artists, people, itemsByType)));
+			getStudiosApi(ServerService.Instance.CurrentApi).getStudios(request, { signal: a.signal }).then((response) => response.data.Items ?? []),
+			getGenresApi(ServerService.Instance.CurrentApi).getGenres(request, { signal: a.signal }).then((response) => response.data.Items ?? []),
+		]).then(([artists, people, itemsByType, studios]) => new SearchResults(artists, people, itemsByType, studios)));
 	}
 
 	public Clear(): void {

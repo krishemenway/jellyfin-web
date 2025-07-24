@@ -28,7 +28,7 @@ export class ItemListService {
 	}
 
 	public LoadWithAbort(): () => void {
-		this.List.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: this.Id }, { signal: a.signal }).then((response) => response.data.Items ?? []));
+		this.List.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: this.Id, fields: ["DateCreated"] }, { signal: a.signal }).then((response) => response.data.Items ?? []));
 		return () => this.List.AbortWhenLoading();
 	}
 

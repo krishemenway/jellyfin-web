@@ -4,11 +4,11 @@ import { NavigationBar } from "NavigationBar/NavigationBar";
 import { IconForItemKind } from "Items/IconForItemKind";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
 
-export const PageWithNavigation: React.FC<{ icon?: React.ReactElement; itemKind?: BaseItemKind; children?: React.ReactNode }> = (props) => {
+export const PageWithNavigation: React.FC<{ icon?: React.ReactElement; itemKind?: BaseItemKind; children?: React.ReactNode; }> = (props) => {
 	return (
 		<Layout direction="column" px="3%" py={24}>
 			<NavigationBar icon={props.icon ?? <IconForItemKind itemKind={props.itemKind} size={22} />} />
-			<Layout direction="column" children={props.children} />
+			<Layout direction="column" gap={16} className="page-content" children={props.children} />
 		</Layout>
 	);
 };
