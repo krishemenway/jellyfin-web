@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseItemKindService } from "Items/BaseItemKindService";
-import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
+import { FolderIcon } from "Common/FolderIcon";
 
 export const FolderService: BaseItemKindService = {
-	findIcon: (props) => <QuestionMarkIcon {...props} />,
+	findIcon: (props) => <FolderIcon {...props} />,
 };
