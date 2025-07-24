@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseItemKindService } from "Items/BaseItemKindService";
-import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
+import { AudioBookIcon } from "Books/AudioBookIcon";
 
 export const AudioBookService: BaseItemKindService = {
-	findIcon: (props) => <QuestionMarkIcon {...props} />,
+	findIcon: (props) => <AudioBookIcon {...props} />,
 };
