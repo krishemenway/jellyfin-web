@@ -30,6 +30,8 @@ export interface Theme {
 
 	PrimaryTextColor: string;
 	SecondaryTextColor: string;
+
+	FontFamily: string;
 }
 
 export class ThemeService {
@@ -45,6 +47,7 @@ export class ThemeService {
 		const root = window.document.querySelector(":root") as HTMLElement;
 
 		root.style.setProperty("--PageBackgroundColor", theme.PageBackgroundColor);
+		root.style.setProperty("--FontFamily", theme.FontFamily);
 
 		root.style.setProperty("--PanelBackgroundColor", theme.PanelBackgroundColor);
 		root.style.setProperty("--PanelBorderColor", theme.PanelBorderColor);
@@ -77,6 +80,7 @@ export class ThemeService {
 	public AllThemes: Theme[] = [
 		{
 			Name: "Default",
+			FontFamily: "Segoe UI",
 			PageBackgroundColor: "#101010",
 
 			PanelBackgroundColor: "#202020",

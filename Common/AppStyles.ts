@@ -19,7 +19,7 @@ export const useGlobalStyles = createUseStyles({
 			font: "inherit",
 			verticalAlign: "baseline",
 			boxSizing: "border-box",
-			fontFamily: "'Segoe UI','Frutiger','Frutiger Linotype','Dejavu Sans','Helvetica Neue',Arial,sans-serif",
+			fontFamily: "var(--FontFamily),Arial,sans-serif",
 			background: "transparent",
 			textDecoration: "none",
 		},
