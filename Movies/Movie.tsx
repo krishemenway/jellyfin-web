@@ -15,6 +15,7 @@ import { ItemGenres } from "Items/ItemGenres";
 import { useBackgroundStyles } from "Common/AppStyles";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
+import { ItemOverview } from "Items/ItemOverview";
 
 export const Movie: React.FC = () => {
 	const routeParams = useParams<{ movieId: string }>();
@@ -64,12 +65,12 @@ export const Movie: React.FC = () => {
 								/>
 							</Layout>
 						</Layout>
-						<Layout direction="column" grow={1} gap={32}>
+						<Layout direction="column" grow gap={32}>
 							<Layout direction="row" fontSize="32px" justifyContent="space-between">
 								<Layout direction="row" className="show-name">{movie.Name}</Layout>
 								<ItemActionsMenu actions={[]} />
 							</Layout>
-							{Nullable.HasValue(movie.Overview) && <Layout direction="row" fontSize="12px" className="movie-overview">{movie.Overview}</Layout>}
+							<ItemOverview item={movie} />
 						</Layout>
 					</Layout>
 				)}

@@ -5,6 +5,7 @@ import { useGlobalStyles } from "Common/AppStyles";
 import { ResetModalOnLocationChange } from "Common/Modal";
 import { useObservable } from "@residualeffect/rereactor";
 import { ThemeService } from "Users/ThemeService";
+import { ResponsiveBreakpointContext, useResponsiveBreakpoint } from "Common/ResponsiveBreakpointContext";
 
 import { NotFound } from "Common/NotFound";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
@@ -36,6 +37,22 @@ import { Tags } from "Tags/Tags";
 import { Genre } from "Genres/Genre";
 import { Genres } from "Genres/Genres";
 
+const Layout: React.FC = () => {
+	const ResponsiveProvider = ResponsiveBreakpointContext.Provider;
+	const breakpoint = useResponsiveBreakpoint();
+	console.log("breakpoint", breakpoint);
+
+	return (
+		<ResponsiveProvider value={breakpoint}>
+			<RequireServerAndUser>
+				<Outlet />
+			</RequireServerAndUser>
+
+			<ResetModalOnLocationChange />
+		</ResponsiveProvider>
+	);
+}
+
 const App: React.FC<{ basePath: string }> = (props) => {
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 	React.useEffect(() => { ThemeService.Instance.ApplyThemeToCssVariables(theme); }, [theme]);
@@ -47,15 +64,7 @@ const App: React.FC<{ basePath: string }> = (props) => {
 			router={createBrowserRouter([
 				{
 					path: "/",
-					element: (
-						<>
-							<RequireServerAndUser>
-								<Outlet />
-							</RequireServerAndUser>
-
-							<ResetModalOnLocationChange />
-						</>
-					),
+					element: <Layout />,
 					errorElement: <LoadingErrorMessages errorTextKeys={["UnknownError"]}/>,
 					children: [
 						{ path: "/Settings", element: <Settings /> },

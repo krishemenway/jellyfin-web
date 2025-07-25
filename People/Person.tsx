@@ -17,10 +17,10 @@ import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { ItemFavoriteIcon } from "Items/ItemFavoriteIcon";
 import { useBackgroundStyles } from "Common/AppStyles";
-import { Nullable } from "Common/MissingJavascriptFunctions";
 import { LinkToItem } from "Items/LinkToItem";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
+import { ItemOverview } from "Items/ItemOverview";
 
 class PersonData {
 	constructor(id: string) {
@@ -103,7 +103,7 @@ export const Person: React.FC = () => {
 							/>
 						</Layout>
 
-						<Layout direction="column" grow={1} gap={32}>
+						<Layout direction="column" grow gap={32}>
 							<Layout direction="row" justifyContent="space-between">
 								<Layout direction="row" fontSize="32px" className="person-name">{person.Name}</Layout>
 								<ItemActionsMenu actions={[[
@@ -115,7 +115,7 @@ export const Person: React.FC = () => {
 								]]} />
 							</Layout>
 
-							{Nullable.HasValue(person.Overview) ? <Layout direction="row" fontSize="12px" className="person-overview">{person.Overview}</Layout> : <></>}
+							<ItemOverview item={person} />
 							<PersonAgeBirthAndDeath person={person} />
 
 							<table style={{ width: "75%" }}>

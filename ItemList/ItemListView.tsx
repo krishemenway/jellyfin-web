@@ -17,6 +17,7 @@ import { ItemService } from "Items/ItemsService";
 import { LinkToItem } from "Items/LinkToItem";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { useParams } from "react-router-dom";
+import { ResponsiveBreakpoint, ResponsiveBreakpointContext } from "Common/ResponsiveBreakpointContext";
 
 export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = (props) => {
 	const routeParams = useParams();
@@ -53,16 +54,19 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 
 const ItemsGrid: React.FC<{ service: ItemListService; imageType?: ImageType; shape: ImageShape }> = (props) => {
 	const items = useObservable(props.service.FilteredAndSortedItems);
-	
+	const breakpoint = React.useContext(ResponsiveBreakpointContext);
+	const itemsPerRow = breakpoint === ResponsiveBreakpoint.Desktop ? 9 : breakpoint === ResponsiveBreakpoint.Tablet ? 6 : 2;
+
 	return (
 		<ListOf
 			items={items}
-			direction="row" wrap gap={16}
+			direction="row" wrap gap={10}
 			forEachItem={(item, index) => (
 				<ItemsGridItem
 					item={item}
 					imageType={props.imageType}
 					shape={props.shape}
+					itemsPerRow={itemsPerRow}
 					key={item.Id ?? index.toString()}
 				/>
 			)}
@@ -70,7 +74,7 @@ const ItemsGrid: React.FC<{ service: ItemListService; imageType?: ImageType; sha
 	);
 };
 
-const ItemsGridItem: React.FC<{ item: BaseItemDto; imageType?: ImageType; shape: ImageShape }> = (props) => {
+const ItemsGridItem: React.FC<{ item: BaseItemDto; imageType?: ImageType; shape: ImageShape; itemsPerRow: number }> = (props) => {
 	const background = useBackgroundStyles();
 	const classes = useItemGridClasses();
 	const width = props.shape !== ImageShape.Landscape ? 220 : 330;
@@ -78,7 +82,7 @@ const ItemsGridItem: React.FC<{ item: BaseItemDto; imageType?: ImageType; shape:
 	const shapeClass = props.shape === ImageShape.Landscape ? classes.landscape : props.shape == ImageShape.Portrait ? classes.portrait : classes.square;
 
 	return (
-		<LinkToItem item={props.item} className={`${background.transparent} ${shapeClass}`} direction="column" justifyContent="center" alignItems="center" py={8} px={8} gap={16} width={{ itemsPerRow: 8, gap: 16 }}>
+		<LinkToItem item={props.item} className={`${background.transparent} ${shapeClass}`} direction="column" justifyContent="center" alignItems="center" py={8} px={8} gap={16} width={{ itemsPerRow: props.itemsPerRow, gap: 10 }}>
 			<ItemImage item={props.item} className={classes.itemImage} type={props.imageType ?? ImageType.Primary} fillWidth={width} fillHeight={height} />
 			<Layout direction="column" py={4} textAlign="center">{props.item.Name}</Layout>
 		</LinkToItem>

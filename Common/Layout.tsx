@@ -13,7 +13,7 @@ export interface PercentWidthWithGap {
 export interface StyleLayoutProps {
 	direction?: Property.FlexDirection;
 	gap?: Property.Gap|number;
-	grow?: Property.FlexGrow;
+	grow?: Property.FlexGrow|true;
 	basis?: Property.FlexBasis;
 
 	alignItems?: Property.AlignItems;
@@ -79,7 +79,7 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		display: "flex",
 		flexDirection: props?.direction,
 		gap: props?.gap,
-		flexGrow: props?.grow,
+		flexGrow: props?.grow === true ? 1 : props?.grow,
 		flexBasis: props?.basis,
 		alignItems: props?.alignItems,
 		alignSelf: props?.alignSelf,

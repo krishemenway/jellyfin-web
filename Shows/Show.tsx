@@ -32,6 +32,7 @@ import { EditImagesIcon } from "Items/EditImagesIcon";
 import { RefreshIcon } from "Common/RefreshIcon";
 import { AddToPlaylistIcon } from "Playlists/AddToPlaylistIcon";
 import { AddToCollectionIcon } from "Collections/AddToCollectionIcon";
+import { ItemOverview } from "Items/ItemOverview";
 
 const SeasonForShow: React.FC<{ season: BaseItemDto }> = (props) => {
 	const [seasonOpen, setSeasonOpen] = React.useState(props.season.IndexNumber === 1);
@@ -49,7 +50,7 @@ const SeasonForShow: React.FC<{ season: BaseItemDto }> = (props) => {
 					<>
 						<Button type="button" onClick={() => setSeasonOpen(!seasonOpen)} direction="row" fontSize="22px" py={8} px={8} gap={8}>
 							<Layout direction="row">{props.season.Name}</Layout>
-							<Layout direction="row"><YearOrMonthRange episodes={episodes} /></Layout>
+							<Layout direction="row"><ProductionYearRangeForEpisodes episodes={episodes} /></Layout>
 						</Button>
 
 						<Collapsible open={seasonOpen}>
@@ -62,7 +63,7 @@ const SeasonForShow: React.FC<{ season: BaseItemDto }> = (props) => {
 	);
 };
 
-const YearOrMonthRange: React.FC<{ episodes: BaseItemDto[] }> = (props) => {
+const ProductionYearRangeForEpisodes: React.FC<{ episodes: BaseItemDto[] }> = (props) => {
 	const allYears = React.useMemo(() => props.episodes.filter((e) => Nullable.HasValue(e.ProductionYear)).map((e) => e.ProductionYear), [props.episodes]);
 	const earliest = React.useMemo(() => Array.Min(allYears, (e) => e), [allYears]);
 	const newest = React.useMemo(() => Array.Max(allYears, (e) => e), [allYears]);
@@ -118,7 +119,7 @@ export const Show: React.FC = () => {
 							/>
 						</Layout>
 
-						<Layout direction="column" grow={1} gap={32}>
+						<Layout direction="column" grow gap={24}>
 							<Layout direction="row" fontSize="32px" justifyContent="space-between">
 								<Layout direction="row" className="show-name">{show.Name}</Layout>
 								<ItemActionsMenu actions={[
@@ -184,7 +185,7 @@ export const Show: React.FC = () => {
 								]} />
 							</Layout>
 
-							{Nullable.HasValue(show.Overview) && <Layout direction="row" fontSize="12px" className="show-overview">{show.Overview}</Layout>}
+							<ItemOverview item={show} />
 
 							<Layout direction="row" gap={8}>
 								<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: 4, py: 4 }} />
