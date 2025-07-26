@@ -47,21 +47,21 @@ export const Movie: React.FC = () => {
 									item={movie}
 									direction="row" gap={8}
 									linkClassName={background.button}
-									linkLayout={{ direction: "row", width: "100%", py: 8, justifyContent: "center", grow: 1}}
+									linkLayout={{ direction: "column", width: "100%", py: 8, textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 								/>
 
 								<ItemGenres
 									item={movie}
 									direction="row" gap={8}
 									linkClassName={background.button}
-									linkLayout={{ direction: "row", width: "100%", py: 8, justifyContent: "center", grow: 1}}
+									linkLayout={{ direction: "column", width: "100%", py: 8, textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 								/>
 
 								<ItemStudios
 									item={movie}
 									direction="column" gap={8}
 									linkClassName={background.button}
-									linkLayout={{ direction: "row", width: "100%", py: 8, justifyContent: "center", grow: 1 }}
+									linkLayout={{ direction: "column", width: "100%", py: 8, textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 								/>
 							</Layout>
 						</Layout>
