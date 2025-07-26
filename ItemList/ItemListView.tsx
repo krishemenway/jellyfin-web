@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BaseItemDto, BaseItemKind, ImageType } from "@jellyfin/sdk/lib/generated-client/models";
-import { useObservable } from "@residualeffect/rereactor";
+import { useComputed } from "@residualeffect/rereactor";
 import { createStyles, useBackgroundStyles } from "Common/AppStyles";
 import { Layout } from "Common/Layout";
 import { ListOf } from "Common/ListOf";
@@ -10,22 +10,23 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
 import { ItemListFilters } from "ItemList/ItemListFilters";
-import { ItemListService } from "ItemList/ItemListService";
-import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { ImageShape, ItemImage } from "Items/ItemImage";
 import { ItemService } from "Items/ItemsService";
 import { LinkToItem } from "Items/LinkToItem";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { useParams } from "react-router-dom";
-import { ResponsiveBreakpoint, ResponsiveBreakpointContext } from "Common/ResponsiveBreakpointContext";
+import { Settings, SettingsStore } from "Users/SettingsStore";
+import { ItemListViewOptionsService } from "ItemList/ItemListViewOptionsService";
+import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
+import { ResponsiveBreakpoint, useBreakpoint } from "Common/ResponsiveBreakpointContext";
 
 export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = (props) => {
 	const routeParams = useParams();
 	const libraryId = routeParams[props.paramName];
-	const service = ItemService.Instance.FindOrCreateItemList(libraryId);
-	const itemKindService = BaseItemKindServiceFactory.FindOrNull(props.itemKind);
+	const itemList = React.useMemo(() => ItemService.Instance.FindOrCreateItemList(libraryId), [libraryId]);
 
-	React.useEffect(() => service.LoadWithAbort(), [libraryId]);
+	React.useEffect(() => itemList.LoadWithAbort(), [libraryId]);
+	React.useEffect(() => SettingsStore.Instance.LoadSettings(libraryId), [libraryId]);
 
 	if (!Nullable.HasValue(libraryId)) {
 		return <PageWithNavigation itemKind={props.itemKind}><NotFound /></PageWithNavigation>;
@@ -33,44 +34,46 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 
 	return (
 		<PageWithNavigation itemKind={props.itemKind}>
-			<Layout direction="column" gap={16} py={16}>
-				<ItemListFilters
-					itemId={libraryId} service={service}
-					sortOptions={itemKindService?.sortOptions ?? []}
-					filterOptions={itemKindService?.filterOptions ?? []}
-				/>
-
-				<Loading
-					receivers={[service.List]}
-					whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-					whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-					whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-					whenReceived={() => <ItemsGrid service={service} shape={itemKindService?.primaryShape ?? ImageShape.Portrait} />}
-				/>
-			</Layout>
+			<Loading
+				receivers={[itemList.List, SettingsStore.Instance.Settings]}
+				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
+				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
+				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
+				whenReceived={(items, settings) => <ItemsGrid id={libraryId} items={items} settings={settings} itemKind={props.itemKind} />}
+			/>
 		</PageWithNavigation>
 	);
 };
 
-const ItemsGrid: React.FC<{ service: ItemListService; imageType?: ImageType; shape: ImageShape }> = (props) => {
-	const items = useObservable(props.service.FilteredAndSortedItems);
-	const breakpoint = React.useContext(ResponsiveBreakpointContext);
-	const itemsPerRow = breakpoint === ResponsiveBreakpoint.Desktop ? 9 : breakpoint === ResponsiveBreakpoint.Tablet ? 6 : 2;
+const ItemsGrid: React.FC<{ id: string, items: BaseItemDto[]; itemKind: BaseItemKind; settings: Settings }> = (props) => {
+	const breakpoint = useBreakpoint();
+	const itemKindService = BaseItemKindServiceFactory.FindOrNull(props.itemKind);
+	const viewOptions = React.useMemo(() => new ItemListViewOptionsService(props.id, props.settings, itemKindService), [props.id, props.settings, itemKindService])
+
+	const filteredAndSortedItems = useComputed(() => {
+		const filterFunc = viewOptions.ViewOptions.Value.FilterFunc.Value;
+		const sortFunc = viewOptions.ViewOptions.Value.SortByFunc.Value;
+
+		return props.items.filter(filterFunc).sort(sortFunc);
+	});
 
 	return (
-		<ListOf
-			items={items}
-			direction="row" wrap gap={10}
-			forEachItem={(item, index) => (
-				<ItemsGridItem
-					item={item}
-					imageType={props.imageType}
-					shape={props.shape}
-					itemsPerRow={itemsPerRow}
-					key={item.Id ?? index.toString()}
-				/>
-			)}
-		/>
+		<Layout direction="column" gap={16} py={16}>
+			<ItemListFilters service={viewOptions} />
+
+			<ListOf
+				items={filteredAndSortedItems}
+				direction="row" wrap gap={10}
+				forEachItem={(item, index) => (
+					<ItemsGridItem
+						item={item}
+						shape={itemKindService?.primaryShape ?? ImageShape.Portrait}
+						itemsPerRow={breakpoint === ResponsiveBreakpoint.Desktop ? 9 : breakpoint === ResponsiveBreakpoint.Tablet ? 6 : 2}
+						key={item.Id ?? index.toString()}
+					/>
+				)}
+			/>
+		</Layout>
 	);
 };
 

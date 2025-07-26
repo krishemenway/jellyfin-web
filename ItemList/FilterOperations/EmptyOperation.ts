@@ -3,6 +3,7 @@ import { FilterOperation } from "ItemList/FilterOperation";
 
 export const EmptyOperation: FilterOperation = {
 	Name: "Empty",
+	Display: () => ["IsEmpty"],
 	SupportsTypes: ["string", "string[]", "number[]"],
 	Operation: (value) => {
 		if (!Nullable.HasValue(value)) {
@@ -19,6 +20,7 @@ export const EmptyOperation: FilterOperation = {
 
 export const NotEmptyOperation: FilterOperation = {
 	Name: "NotEmpty",
+	Display: () => ["IsNotEmpty"],
 	SupportsTypes: ["string", "string[]", "number[]"],
 	Operation: (value) => {
 		if (!Nullable.HasValue(value)) {

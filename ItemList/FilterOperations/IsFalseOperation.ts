@@ -4,6 +4,7 @@ import { FilterOperation } from "ItemList/FilterOperation";
 export const IsFalseOperation: FilterOperation = {
 	Name: "IsFalse",
 	SupportsTypes: ["boolean"],
+	Display: () => ["IsFalse"],
 	Operation: (value) => {
 		if (!Nullable.HasValue(value)) {
 			return true;

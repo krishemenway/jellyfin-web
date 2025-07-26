@@ -3,6 +3,7 @@ import { FilterOperation } from "ItemList/FilterOperation";
 
 export const ContainOperation: FilterOperation = {
 	Name: "Contains",
+	Display: (filterValue) => ["Contains", filterValue],
 	SupportsTypes: ["string", "string[]", "number[]"],
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
@@ -31,8 +32,9 @@ export const ContainOperation: FilterOperation = {
 	}
 }
 
-export const DoesNotContainOperation: FilterOperation = {
-	Name: "DoesNotContain",
+export const NotContainOperation: FilterOperation = {
+	Name: "NotContain",
+	Display: (filterValue) => ["NotContain", filterValue],
 	SupportsTypes: ["string", "string[]", "number[]"],
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {

@@ -28,4 +28,8 @@ export class Nullable {
 	public static HasValue<T>(value: T|undefined|null) {
 		return value !== null && value !== undefined;
 	}
+
+	public static ValueOrDefault<T, T2>(obj: T|undefined|null, defaultValue: T2, valueSelector: (o: T) => T2): T2 {
+		return Nullable.HasValue(obj) ? valueSelector(obj) : defaultValue;
+	}
 }

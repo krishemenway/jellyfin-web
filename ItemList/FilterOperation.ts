@@ -4,4 +4,5 @@ export interface FilterOperation {
 	Name: string;
 	Operation: FilterOperationFunc;
 	SupportsTypes: string[];
+	Display: (filterValue: string) => string[];
 }

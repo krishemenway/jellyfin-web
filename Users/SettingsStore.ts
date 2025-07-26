@@ -1,4 +1,5 @@
 import { getDisplayPreferencesApi } from "@jellyfin/sdk/lib/utils/api";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 
@@ -7,8 +8,14 @@ export class Settings {
 		this._settingsFromServer = settingsFromServer;
 	}
 
-	public ReadAsJson<T>(key: string): T {
-		return JSON.parse(this.Read(key));
+	public ReadAsJson<T>(key: string, defaultValue: T): T {
+		const value = this.Read(key);
+
+		if (!Nullable.HasValue(value) || value === "") {
+			return defaultValue;
+		}
+
+		return JSON.parse(value);
 	}
 
 	public Read(key: string): string {
@@ -23,10 +30,16 @@ export class SettingsStore {
 		this.Settings = new Receiver("UnknownError");
 	}
 
-	public LoadSettings(): void {
-		this.Settings.Start((a) => getDisplayPreferencesApi(ServerService.Instance.CurrentApi).getDisplayPreferences({ client: "emby", userId: ServerService.Instance.CurrentUserId, displayPreferencesId: "" }, { signal: a.signal }).then((response) => {
+	public LoadSettings(id?: string): () => void {
+		if (id === undefined) {
+			throw new Error("Cannot load settings for missing id");
+		}
+
+		this.Settings.Start((a) => getDisplayPreferencesApi(ServerService.Instance.CurrentApi).getDisplayPreferences({ client: "emby", userId: ServerService.Instance.CurrentUserId, displayPreferencesId: id }, { signal: a.signal }).then((response) => {
 			return new Settings(response.data.CustomPrefs ?? {});
 		}));
+
+		return () => this.Settings.AbortWhenLoading();
 	}
 
 	public Settings: Receiver<Settings>;

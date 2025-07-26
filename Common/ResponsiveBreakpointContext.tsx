@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Nullable } from "./MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export enum ResponsiveBreakpoint {
 	Mobile = 1,
@@ -7,17 +7,21 @@ export enum ResponsiveBreakpoint {
 	Desktop = 3,
 }
 
-export const ResponsiveBreakpointContext = React.createContext(ResponsiveBreakpoint.Desktop);
+const Context = React.createContext(ResponsiveBreakpoint.Desktop);
 
-export function useResponsiveBreakpoint(): ResponsiveBreakpoint {
+export function useBreakpoint(): ResponsiveBreakpoint {
+	return React.useContext(Context);
+}
+
+export function useCalculatedBreakpoint(): [ResponsiveBreakpoint, React.Provider<ResponsiveBreakpoint>] {
 	const isTablet = useMediaQuery("(min-width: 600px) and (max-width: 979px)");
 	const isDesktop = useMediaQuery("(min-width: 980px)", true);
 
 	if (isDesktop) {
-		return ResponsiveBreakpoint.Desktop;
+		return [ResponsiveBreakpoint.Desktop, Context.Provider];
 	}
 
-	return isTablet ? ResponsiveBreakpoint.Tablet : ResponsiveBreakpoint.Mobile;
+	return isTablet ? [ResponsiveBreakpoint.Tablet, Context.Provider] : [ResponsiveBreakpoint.Mobile, Context.Provider];
 }
 
 function useMediaQuery(query: string, defaultValue?: boolean): boolean {

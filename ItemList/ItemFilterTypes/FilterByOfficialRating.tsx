@@ -1,11 +1,10 @@
 import * as React from "react";
 import { ContainOperation, NotContainOperation } from "ItemList/FilterOperations/ContainOperation";
-import { EmptyOperation, NotEmptyOperation } from "ItemList/FilterOperations/EmptyOperation";
 import { ItemFilterType, ItemFilterTypeProps } from "ItemList/ItemFilterType";
 import { Layout } from "Common/Layout";
 import { TextField } from "Common/TextField";
 
-const GenreEditor: React.FC<ItemFilterTypeProps> = (props) => {
+const OfficialRatingPicker: React.FC<ItemFilterTypeProps> = (props) => {
 	return (
 		<Layout direction="column">
 			<TextField field={props.filter.FilterValue} />
@@ -13,15 +12,13 @@ const GenreEditor: React.FC<ItemFilterTypeProps> = (props) => {
 	);
 };
 
-export const FilterByGenre: ItemFilterType = {
-	type: "FilterByGenre",
-	labelKey: "Genres",
-	editor: GenreEditor,
-	targetField: (item) => item.Genres,
+export const FilterByStudio: ItemFilterType = {
+	type: "FilterByOfficialRating",
+	labelKey: "LabelParentalRating",
+	editor: OfficialRatingPicker,
+	targetField: (item) => item.OfficialRating,
 	operations: [
 		ContainOperation,
 		NotContainOperation,
-		EmptyOperation,
-		NotEmptyOperation,
 	],
 };

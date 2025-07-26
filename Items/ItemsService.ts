@@ -15,7 +15,7 @@ export class ItemService {
 		return this._itemDataByItemId[id] ?? (this._itemDataByItemId[id] = new ItemDataService(id));
 	}
 
-	public FindOrCreateItemList(id?: string): ItemListService {
+	public FindOrCreateItemList(id: string|undefined): ItemListService {
 		if (id === undefined) {
 			throw new Error("Missing id for loading");
 		}

@@ -5,7 +5,7 @@ import { useGlobalStyles } from "Common/AppStyles";
 import { ResetModalOnLocationChange } from "Common/Modal";
 import { useObservable } from "@residualeffect/rereactor";
 import { ThemeService } from "Users/ThemeService";
-import { ResponsiveBreakpointContext, useResponsiveBreakpoint } from "Common/ResponsiveBreakpointContext";
+import { useCalculatedBreakpoint } from "Common/ResponsiveBreakpointContext";
 
 import { NotFound } from "Common/NotFound";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
@@ -38,9 +38,7 @@ import { Genre } from "Genres/Genre";
 import { Genres } from "Genres/Genres";
 
 const Layout: React.FC = () => {
-	const ResponsiveProvider = ResponsiveBreakpointContext.Provider;
-	const breakpoint = useResponsiveBreakpoint();
-	console.log("breakpoint", breakpoint);
+	const [breakpoint, ResponsiveProvider] = useCalculatedBreakpoint();
 
 	return (
 		<ResponsiveProvider value={breakpoint}>
