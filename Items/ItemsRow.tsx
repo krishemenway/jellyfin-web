@@ -62,7 +62,7 @@ export const ItemsRow: React.FC<ItemsRowProps> = (props) => {
 	return (
 		<Layout direction="row" px={8} py={8} gap={8} wrap className={background.panel}>
 			{props.items.map((item) => (
-				<LinkToItem item={item} className={background.button} direction="column" gap={4} width={{ itemsPerRow: 7, gap: 8 }}>
+				<LinkToItem key={item.Id} item={item} className={background.button} direction="column" gap={4} width={{ itemsPerRow: 7, gap: 8 }}>
 					<ItemImage item={item} className={items.itemImage} type="Primary" />
 					<Layout direction="row" justifyContent="center" alignItems="end" py={8} grow elementType="p">{props.itemName(item)}</Layout>
 				</LinkToItem>
