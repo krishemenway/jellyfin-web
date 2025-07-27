@@ -22,6 +22,7 @@ export class Receiver<TReceivedData> {
 		this.Abort = new AbortController();
 		this.WritableData = new Observable(Receiver.NotStarted);
 		this.IsBusy = new Computed(() => this.WritableData.Value.State === LoadState.Loading);
+		this.HasData = new Computed(() => this.WritableData.Value.State === LoadState.Received);
 	}
 
 	/**
@@ -103,6 +104,7 @@ export class Receiver<TReceivedData> {
 	/** Access to receiver data including State, Error and ReceivedData */
 	public get Data(): ReadOnlyObservable<ReceiverData<TReceivedData>> { return this.WritableData; }
 	public IsBusy: Computed<boolean>;
+	public HasData: Computed<boolean>;
 	public DefaultErrorTextKey: string;
 
 	private static NotStarted = { ReceivedData: null, State: LoadState.NotStarted, ErrorMessage: "" };

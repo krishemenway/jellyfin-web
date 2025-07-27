@@ -9,6 +9,10 @@ export class UserViewStore {
 	}
 
 	public LoadUserViews(): void {
+		if (this.UserViews.HasData.Value) {
+			return;
+		}
+
 		this.UserViews.Start((abort) => getUserViewsApi(ServerService.Instance.CurrentApi).getUserViews({ userId: ServerService.Instance.CurrentUserId }, { signal: abort.signal }).then((value) => value.data.Items ?? []))
 	}
 

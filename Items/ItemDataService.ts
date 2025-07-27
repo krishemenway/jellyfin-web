@@ -13,11 +13,19 @@ export class ItemDataService {
 	}
 
 	public LoadItemWithAbort(): () => void {
+		if (this.Item.HasData.Value) {
+			return () => { };
+		}
+
 		this.Item.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ids: [this.Id], fields: ["Overview", "Tags", "ExternalUrls", "Genres", "Studios", "People"] }, { signal: a.signal }).then((response) => (response.data.Items ?? [])[0] ));
 		return () => this.Item.AbortWhenLoading();
 	}
 
 	public LoadChildrenWithAbort(): () => void {
+		if (this.Children.HasData.Value) {
+			return () => { };
+		}
+
 		this.Children.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: this.Id }, { signal: a.signal }).then((response) => response.data.Items ?? []));
 		return () => this.Children.AbortWhenLoading();
 	}

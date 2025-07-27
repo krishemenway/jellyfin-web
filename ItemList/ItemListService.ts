@@ -10,8 +10,10 @@ export class ItemListService {
 	}
 
 	public LoadWithAbort(): () => void {
-		this.List.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: this.Id, fields: ["DateCreated", "Genres", "Tags"] }, { signal: a.signal }).then((response) => response.data.Items ?? []));
-		return () => this.List.AbortWhenLoading();
+		if (this.List.HasData.Value) {
+			return () => { };
+		}
+
 	}
 
 	public Id: string;
