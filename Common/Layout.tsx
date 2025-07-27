@@ -71,7 +71,7 @@ function CalculateItemsPerRowPercentage(width?: number|string|PercentWidthWithGa
 		throw new Error("Invalid number of items per row");
 	}
 
-	return `calc((100% - ${(width.itemsPerRow) * width.gap}px) / ${width.itemsPerRow})`;
+	return `calc(100% / ${width.itemsPerRow} - ${(width.itemsPerRow - 1) * width.gap / width.itemsPerRow}px)`;
 }
 
 export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequiredDirection>): React.CSSProperties {
