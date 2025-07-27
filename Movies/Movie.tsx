@@ -66,7 +66,7 @@ export const Movie: React.FC = () => {
 							</Layout>
 						</Layout>
 						<Layout direction="column" grow gap={32}>
-							<Layout direction="row" fontSize="32px" justifyContent="space-between">
+							<Layout direction="row" fontSize="2em" justifyContent="space-between">
 								<Layout direction="row" className="show-name">{movie.Name}</Layout>
 								<ItemActionsMenu actions={[]} />
 							</Layout>
