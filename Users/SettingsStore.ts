@@ -39,7 +39,7 @@ export class SettingsStore {
 			return new Settings(response.data.CustomPrefs ?? {});
 		}));
 
-		return () => this.Settings.AbortWhenLoading();
+		return () => this.Settings.ResetIfLoading();
 	}
 
 	public Settings: Receiver<Settings>;

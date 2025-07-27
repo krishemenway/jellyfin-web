@@ -36,8 +36,8 @@ class PersonData {
 		}));
 
 		return () => {
-			this.Person.AbortWhenLoading();
-			this.CreditedItems.AbortWhenLoading();
+			this.Person.ResetIfLoading();
+			this.CreditedItems.ResetIfLoading();
 		};
 	}
 
@@ -105,7 +105,7 @@ export const Person: React.FC = () => {
 
 						<Layout direction="column" grow gap={32}>
 							<Layout direction="row" justifyContent="space-between">
-								<Layout direction="row" fontSize="32px" className="person-name">{person.Name}</Layout>
+								<Layout direction="row" fontSize="2em" className="person-name">{person.Name}</Layout>
 								<ItemActionsMenu actions={[[
 									{
 										textKey: "AddToFavorites",

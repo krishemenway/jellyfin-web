@@ -76,9 +76,9 @@ export class Receiver<TReceivedData> {
 		this.SetWritableData(Receiver.Unloaded);
 	}
 
-	public AbortWhenLoading(): void {
+	public ResetIfLoading(): void {
 		if (this.IsBusy.Value) {
-			this.Abort.abort();
+			this.Reset();
 		}
 	}
 

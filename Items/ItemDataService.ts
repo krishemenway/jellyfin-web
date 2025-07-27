@@ -18,7 +18,7 @@ export class ItemDataService {
 		}
 
 		this.Item.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ids: [this.Id], fields: ["Overview", "Tags", "ExternalUrls", "Genres", "Studios", "People"] }, { signal: a.signal }).then((response) => (response.data.Items ?? [])[0] ));
-		return () => this.Item.AbortWhenLoading();
+		return () => this.Item.ResetIfLoading();
 	}
 
 	public LoadChildrenWithAbort(): () => void {
@@ -27,7 +27,7 @@ export class ItemDataService {
 		}
 
 		this.Children.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: this.Id }, { signal: a.signal }).then((response) => response.data.Items ?? []));
-		return () => this.Children.AbortWhenLoading();
+		return () => this.Children.ResetIfLoading();
 	}
 
 	public Id: string;
