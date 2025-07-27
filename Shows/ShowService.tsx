@@ -10,10 +10,24 @@ import { FilterByContinueWatching } from "ItemList/ItemFilterTypes/FilterByConti
 import { FilterByPremiereDate } from "ItemList/ItemFilterTypes/FilterByPremiereDate";
 import { FilterByIsFavorite } from "ItemList/ItemFilterTypes/FilterByIsFavorite";
 import { FilterByHasSubtitles } from "ItemList/ItemFilterTypes/FilterByHasSubtitles";
+import { FilterByOfficialRating } from "ItemList/ItemFilterTypes/FilterByOfficialRating";
+import { FilterBySeriesStatus } from "ItemList/ItemFilterTypes/FilterBySeriesStatus";
+import { SortByName } from "ItemList/ItemSortTypes/SortByName";
+import { SortByDatePlayed } from "ItemList/ItemSortTypes/SortByDatePlayed";
+import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
+import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
+import { SortByCriticRating } from "ItemList/ItemSortTypes/SortByCriticRating";
 
 export const ShowService: BaseItemKindService = {
 	findIcon: (props) => <TVIcon {...props} />,
 	findUrl: (item) => `/Show/${item.Id}`,
+	sortOptions: [
+		SortByName,
+		SortByDatePlayed,
+		SortByDateCreated,
+		SortByCommunityRating,
+		SortByCriticRating,
+	],
 	filterOptions: [
 		FilterByName,
 		FilterByGenre,
@@ -23,8 +37,8 @@ export const ShowService: BaseItemKindService = {
 		FilterByContinueWatching,
 		FilterByPremiereDate,
 		FilterByIsFavorite,
-		// FilterBySeriesStatus,
+		FilterBySeriesStatus,
 		FilterByHasSubtitles,
-		// FilterByOfficialRating,
+		FilterByOfficialRating,
 	]
 };
