@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Layout } from "Common/Layout";
 import { Button } from "Common/Button";
-import { CenteredModal } from "Common/Modal";
+import { AnchoredModal } from "Common/Modal";
 import { AddIcon } from "Common/AddIcon";
 import { useObservable } from "@residualeffect/rereactor";
 import { ListOf } from "Common/ListOf";
@@ -32,6 +32,8 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 	const filters = useObservable(listOptions.Filters);
 	const newFilter = useObservable(listOptions.NewFilter);
 	const stopEditingNewFilter = () => listOptions.NewFilter.Value = undefined;
+	const [filterButtonRef, setFilterButtonRef] = React.useState<HTMLButtonElement|null>(null);
+	const [sortButtonRef, setSortButtonRef] = React.useState<HTMLButtonElement|null>(null);
 
 	return (
 		<>
@@ -39,7 +41,7 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 				{(props.service.ItemKindService?.filterOptions ?? []).length > 0 && (
 					<Layout direction="row" gap={8} alignItems="center">
 						<TranslatedText textKey="Filters" elementType="div" formatText={(t) => `${t}:`} />
-						<Button px={8} py={4} type="button" onClick={() => setAddFilterOpen(true)}><AddIcon size={16} /></Button>
+						<Button px={8} py={4} type="button" onClick={() => setAddFilterOpen(true)} ref={(element) => { setFilterButtonRef(element); }}><AddIcon size={16} /></Button>
 						<ListOf
 							items={filters}
 							direction="row" gap={8}
@@ -51,7 +53,7 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 				{(props.service.ItemKindService?.sortOptions ?? []).length > 0 && (
 					<Layout direction="row" gap={8} alignItems="center">
 						<TranslatedText textKey="HeaderSortBy" elementType="div" formatText={(t) => `${t}:`} />
-						<Button px={8} py={4} type="button" onClick={() => setAddSortOpen(true)}><AddIcon size={16} /></Button>
+						<Button px={8} py={4} type="button" onClick={() => setAddSortOpen(true)} ref={(element) => { setSortButtonRef(element); }}><AddIcon size={16} /></Button>
 						<ListOf
 							items={sorts}
 							direction="row" gap={8}
@@ -61,17 +63,17 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 				)}
 			</Layout>
 
-			<CenteredModal open={addFilterOpen} onClosed={() => setAddFilterOpen(false)}>
+			<AnchoredModal anchorElement={filterButtonRef} open={addFilterOpen} opensInDirection="right" onClosed={() => setAddFilterOpen(false)}>
 				<PickFilterModal filterOptions={props.service.ItemKindService?.filterOptions ?? []} onPicked={(option) => props.service.CreateNewFilter(option)} onClosed={() => setAddFilterOpen(false)} />
-			</CenteredModal>
+			</AnchoredModal>
 
-			<CenteredModal open={newFilter !== undefined} onClosed={stopEditingNewFilter}>
+			<AnchoredModal anchorElement={filterButtonRef} open={newFilter !== undefined} opensInDirection="right" onClosed={stopEditingNewFilter}>
 				{newFilter && <ConfigureFilterModal listOptions={listOptions} newFilter={newFilter} onClosed={stopEditingNewFilter} />}
-			</CenteredModal>
+			</AnchoredModal>
 
-			<CenteredModal open={addSortOpen} onClosed={() => setAddSortOpen(false)} maxWidth="20%">
+			<AnchoredModal anchorElement={sortButtonRef} open={addSortOpen} opensInDirection="right" onClosed={() => setAddSortOpen(false)} maxWidth="20%">
 				<PickSortOptionModal sortOptions={props.service.ItemKindService?.sortOptions ?? []} onPicked={(option, reversed) => listOptions.AddSort(option, reversed)} onClosed={() => setAddSortOpen(false)} />
-			</CenteredModal>
+			</AnchoredModal>
 		</>
 	);
 };
@@ -107,8 +109,9 @@ const PickSortOptionModal: React.FC<{ sortOptions: ItemSortOption[]; onPicked: (
 			items={props.sortOptions}
 			direction="row" wrap
 			px={16} py={16} gap={16} grow
+			maxWidth="400px"
 			forEachItem={(sortOption) => (
-				<Layout key={sortOption.labelKey} direction="column" basis="0px" grow minWidth="20%" maxWidth="33%" justifyContent="space-between" textAlign="center" gap="1em">
+				<Layout key={sortOption.labelKey} direction="column" width={{ itemsPerRow: 2, gap: 16 }} justifyContent="space-between" textAlign="center" gap="1em">
 					<TranslatedText textKey={sortOption.labelKey}  />
 					<Layout direction="row" justifyContent="center" alignItems="center">
 						<Button type="button" grow justifyContent="center" onClick={() => { props.onPicked(sortOption, false); props.onClosed(); }}><ArrowUpIcon size={16} /></Button>
@@ -126,13 +129,14 @@ const PickFilterModal: React.FC<{ filterOptions: ItemFilterType[]; onPicked: (op
 			items={props.filterOptions}
 			direction="row" wrap
 			px={16} py={16} gap={16} grow
+			maxWidth="400px"
 			forEachItem={(filterOption) => (
 				<Button
 					key={filterOption.labelKey}
 					type="button" onClick={() => { props.onClosed(); props.onPicked(filterOption); }}
 					direction="column"
 					justifyContent="space-between"
-					width={{ itemsPerRow: 3, gap: 16 }}
+					width={{ itemsPerRow: 2, gap: 16 }}
 					px={4} py={8}
 				>
 					<TranslatedText textKey={filterOption.labelKey} />
