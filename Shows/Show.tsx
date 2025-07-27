@@ -9,7 +9,7 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemService } from "Items/ItemsService";
 import { ListOf } from "Common/ListOf";
 import { ItemsRow } from "Items/ItemsRow";
-import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemPerson } from "@jellyfin/sdk/lib/generated-client/models";
 import { ItemImage } from "Items/ItemImage";
 import { Array, Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemTags } from "Items/ItemTags";
@@ -33,43 +33,7 @@ import { RefreshIcon } from "Common/RefreshIcon";
 import { AddToPlaylistIcon } from "Playlists/AddToPlaylistIcon";
 import { AddToCollectionIcon } from "Collections/AddToCollectionIcon";
 import { ItemOverview } from "Items/ItemOverview";
-
-const SeasonForShow: React.FC<{ season: BaseItemDto }> = (props) => {
-	const [seasonOpen, setSeasonOpen] = React.useState(props.season.IndexNumber === 1);
-
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(props.season.Id).LoadChildrenWithAbort(), [props.season]);
-
-	return (
-		<Layout direction="column" minWidth="100%">
-			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(props.season.Id).Children]}
-				whenNotStarted={<LoadingIcon size={48} />}
-				whenLoading={<LoadingIcon size={48} />}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(episodes) => (
-					<>
-						<Button type="button" onClick={() => setSeasonOpen(!seasonOpen)} direction="row" fontSize="22px" py={8} px={8} gap={8}>
-							<Layout direction="row">{props.season.Name}</Layout>
-							<Layout direction="row"><ProductionYearRangeForEpisodes episodes={episodes} /></Layout>
-						</Button>
-
-						<Collapsible open={seasonOpen}>
-							<ItemsRow items={episodes} itemName={(item) => `${item.IndexNumber}. ${item.Name}`} />
-						</Collapsible>
-					</>
-				)}
-			/>
-		</Layout>
-	);
-};
-
-const ProductionYearRangeForEpisodes: React.FC<{ episodes: BaseItemDto[] }> = (props) => {
-	const allYears = React.useMemo(() => props.episodes.filter((e) => Nullable.HasValue(e.ProductionYear)).map((e) => e.ProductionYear), [props.episodes]);
-	const earliest = React.useMemo(() => Array.Min(allYears, (e) => e), [allYears]);
-	const newest = React.useMemo(() => Array.Max(allYears, (e) => e), [allYears]);
-
-	return <>({earliest !== newest ? `${earliest} - ${newest}` : earliest})</>;
-};
+import { LinkToPerson } from "People/LinkToPerson";
 
 export const Show: React.FC = () => {
 	const background = useBackgroundStyles();
@@ -120,19 +84,17 @@ export const Show: React.FC = () => {
 						</Layout>
 
 						<Layout direction="column" grow gap={24}>
-							<Layout direction="row" fontSize="32px" justifyContent="space-between">
+							<Layout direction="row" fontSize="2em" justifyContent="space-between">
 								<Layout direction="row" className="show-name">{show.Name}</Layout>
 								<ItemActionsMenu actions={[
-									// Viewing / Downloading
-									[
+									[ // Viewing / Downloading
 										{
 											textKey: "DownloadAll",
 											icon: <DownloadIcon size={24} />,
 											action: () => { console.error("Mark Played Missing.") },
 										},
 									],
-									// User-based actions
-									[
+									[ // User-based actions
 										{
 											textKey: "AddToFavorites",
 											icon: <ItemFavoriteIcon size={24} />,
@@ -154,8 +116,7 @@ export const Show: React.FC = () => {
 											action: () => { console.error("Add to Playlist Missing.") },
 										},
 									],
-									// Server-based actions
-									[
+									[ // Server-based actions
 										{
 											textKey: "EditMetadata",
 											icon: <EditIcon size={24} />,
@@ -201,17 +162,89 @@ export const Show: React.FC = () => {
 							{/* TODO: Play */}
 							{/* TODO: Shuffle */}
 							{/* TODO: Next Up */}
+							<CastAndCrew item={show} />
+
 							<ListOf
 								items={seasons}
 								direction="column" gap={8}
 								forEachItem={(season, index) => <SeasonForShow key={season.Id ?? index.toString()} season={season} />}
 							/>
-							{/* TODO: Cast & Crew */}
-							{/* TODO: More like this */}
 						</Layout>
 					</Layout>
 				)}
 			/>
 		</PageWithNavigation>
+	);
+};
+
+const SeasonForShow: React.FC<{ season: BaseItemDto }> = (props) => {
+	const [seasonOpen, setSeasonOpen] = React.useState(props.season.IndexNumber === 1);
+
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(props.season.Id).LoadChildrenWithAbort(), [props.season]);
+
+	return (
+		<Layout direction="column" minWidth="100%">
+			<Loading
+				receivers={[ItemService.Instance.FindOrCreateItemData(props.season.Id).Children]}
+				whenNotStarted={<LoadingIcon size={48} />}
+				whenLoading={<LoadingIcon size={48} />}
+				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
+				whenReceived={(episodes) => (
+					<>
+						<Button type="button" onClick={() => setSeasonOpen(!seasonOpen)} direction="row" fontSize="1.5em" py={8} px={8} gap={8}>
+							<Layout direction="row">{props.season.Name}</Layout>
+							<Layout direction="row"><ProductionYearRangeForEpisodes episodes={episodes} /></Layout>
+						</Button>
+
+						<Collapsible open={seasonOpen}>
+							<ItemsRow items={episodes} itemName={(item) => `${item.IndexNumber}. ${item.Name}`} />
+						</Collapsible>
+					</>
+				)}
+			/>
+		</Layout>
+	);
+};
+
+const ProductionYearRangeForEpisodes: React.FC<{ episodes: BaseItemDto[] }> = (props) => {
+	const allYears = React.useMemo(() => props.episodes.filter((e) => Nullable.HasValue(e.ProductionYear)).map((e) => e.ProductionYear), [props.episodes]);
+	const earliest = React.useMemo(() => Array.Min(allYears, (e) => e), [allYears]);
+	const newest = React.useMemo(() => Array.Max(allYears, (e) => e), [allYears]);
+
+	return <>({earliest !== newest ? `${earliest} - ${newest}` : earliest})</>;
+};
+
+const CastAndCrew: React.FC<{ item: BaseItemDto }> = (props) => {
+	const [open, setOpen] = React.useState(false);
+	const background = useBackgroundStyles();
+
+	if (!Nullable.HasValue(props.item.People) || props.item.People.length === 0 ) {
+		return <></>;
+	}
+
+	return (
+		<Layout direction="column" minWidth="100%">
+			<Button type="button" onClick={() => setOpen(!open)} direction="row" fontSize="1.5em" py={8} px={8} gap={8}>
+				<Layout direction="row"><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
+			</Button>
+
+			<Collapsible open={open}>
+				<ListOf
+					className={background.panel}
+					direction="row" wrap gap={16} px={8} py={8}
+					items={props.item.People ?? []}
+					forEachItem={((person) => <CastAndCrewCredit person={person} />)}
+				/>
+			</Collapsible>
+		</Layout>
+	);
+};
+
+const CastAndCrewCredit: React.FC<{ person: BaseItemPerson }> = (props) => {
+	return (
+		<Layout direction="column" width={{ itemsPerRow: 6, gap: 16 }} gap={4}>
+			<Layout direction="row" fontSize="1em"><LinkToPerson direction="row" id={props.person.Id}>{props.person.Name}</LinkToPerson></Layout>
+			<Layout direction="row" fontSize=".8em">{props.person.Role}</Layout>
+		</Layout>
 	);
 };
