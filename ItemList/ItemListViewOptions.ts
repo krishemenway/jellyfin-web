@@ -1,18 +1,30 @@
-import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByObjectsFunc, SortByString, SortFuncs } from "Common/Sort";
 import { EditableItemFilter } from "ItemList/EditableItemFilter";
 import { ItemSortOption } from "ItemList/ItemSortOption";
-import { ItemFilterType } from "./ItemFilterType";
+import { BaseItemKindService } from "Items/BaseItemKindService";
 
 export class ItemListViewOptions {
-	constructor(label: string, availableFilters: ItemFilterType[], data?: ItemViewOptionsData) {
+	constructor(label: string, itemKindService: BaseItemKindService|null, data?: ItemViewOptionsData) {
 		this.Label = label;
 
 		this.NewFilter = new Observable(undefined);
-		this.Filters = new ObservableArray(Nullable.ValueOrDefault(data, [], (d) => d.Filters).map((d) => new EditableItemFilter(availableFilters.find((f) => f.type === d.FilterType), d.FilterValue)));
-		this.SortBy = new ObservableArray([]);
+		this.Filters = new ObservableArray(Nullable.ValueOrDefault(data, [], (d) => d.Filters).map((d) => {
+			const filterType = (itemKindService?.filterOptions ?? []).find((f) => f.type === d.FilterType);
+			return new EditableItemFilter(filterType, d.FilterValue);
+		}));
+
+		this.SortBy = new ObservableArray(Nullable.ValueOrDefault(data, [], (d) => d.Sorts).map((d) => {
+			const sort = (itemKindService?.sortOptions ?? []).find((s) => s.field === d.SortType);
+
+			if (sort === undefined) {
+				throw new Error("Missing sort type");
+			}
+
+			return { LabelKey: sort.labelKey, Sort: sort.sortFunc, Reversed: d.Reversed };
+		}));
 
 		this.DefaultSort = {
 			LabelKey: "LabelName",
@@ -67,7 +79,7 @@ export interface ItemViewOptionFilterData {
 }
 
 export interface ItemViewOptionSortData {
-	SortType: string;
+	SortType: ItemSortBy;
 	Reversed: boolean;
 }
 

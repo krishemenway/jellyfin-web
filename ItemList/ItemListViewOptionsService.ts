@@ -25,10 +25,10 @@ export class ItemListViewOptionsService {
 		const mostRecentOption = allViewOptions.find(x => x.Label === mostRecent);
 
 		if (!Nullable.HasValue(mostRecent) || !Nullable.HasValue(mostRecentOption)) {
-			return new ItemListViewOptions("New", this.ItemKindService?.filterOptions ?? []);
+			return new ItemListViewOptions("New", this.ItemKindService);
 		}
 
-		return new ItemListViewOptions(mostRecentOption.Label, this.ItemKindService?.filterOptions ?? [], mostRecentOption);
+		return new ItemListViewOptions(mostRecentOption.Label, this.ItemKindService, mostRecentOption);
 	}
 
 	public Id: string;
@@ -37,3 +37,20 @@ export class ItemListViewOptionsService {
 
 	private Settings: Settings|null;
 }
+
+export const RecentlyAddedViewOptions: ItemViewOptionsData = {
+	Label: "Recently Added",
+	Filters: [],
+	Sorts: [{ SortType: "DateLastContentAdded", Reversed: true, }],
+};
+
+export const ContinueWatchingViewOptions: ItemViewOptionsData = {
+	Label: "Continue Watching",
+	Filters: [{ FilterType: "FilterByContinueWatching", FilterValue: "true" }],
+	Sorts: [{ SortType: "DatePlayed", Reversed: true, }],
+};
+
+export const PresetViewOptions: ItemViewOptionsData[] = [
+	RecentlyAddedViewOptions,
+	ContinueWatchingViewOptions,
+];
