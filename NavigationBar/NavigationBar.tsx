@@ -70,32 +70,17 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 						<NavigationDivider />
 						<Layout direction="row" elementType="h3" py={16} px={16}><TranslatedText textKey="HeaderAdmin" /></Layout>
 
-						<HyperLink className={background.transparent} {...NavigationMenuLinkStyles} direction="row" to="/Dashboard">
-							<Layout direction="row" justifyContent="center"><DashboardIcon size={24} /></Layout>
-							<Layout direction="row" justifyContent="center"><TranslatedText textKey="TabDashboard" /></Layout>
-						</HyperLink>
-
-						<HyperLink className={background.transparent} {...NavigationMenuLinkStyles} direction="row" to="/Metadata">
-							<Layout direction="row" justifyContent="center"><EditIcon size={24} /></Layout>
-							<Layout direction="row" justifyContent="center"><TranslatedText textKey="MetadataManager" /></Layout>
-						</HyperLink>
+						<NavigationMenuItemHyperLink to="/Dashboard" icon={<DashboardIcon size="1em" />} text={<TranslatedText textKey="TabDashboard" />} />
+						<NavigationMenuItemHyperLink to="/Metadata" icon={<EditIcon size="1em" />} text={<TranslatedText textKey="MetadataManager" />} />
 					</Layout>
 
 					<Layout direction="column">
 						<NavigationDivider />
 						<Layout direction="row" elementType="h3" py={16} px={16}><TranslatedText textKey="UserMenu" /></Layout>
 
-						<HyperLink className={background.transparent} {...NavigationMenuLinkStyles} direction="row" to="/Settings">
-							<Layout direction="row" justifyContent="center"><SettingsIcon size={24} /></Layout>
-							<Layout direction="row" justifyContent="center"><TranslatedText textKey="Settings" /></Layout>
-						</HyperLink>
-
+						<NavigationMenuItemHyperLink to="/Settings" icon={<SettingsIcon size="1em" />} text={<TranslatedText textKey="Settings" />} />
 						<AuthorizeQuickConnectButton onOpened={closeNavigation} />
-
-						<Button className={background.transparent} {...NavigationMenuLinkStyles} direction="row" type="button" onClick={() => { closeNavigation(); LoginService.Instance.SignOut(); }}>
-							<Layout direction="row" justifyContent="center"><SignOutIcon size={24} /></Layout>
-							<Layout direction="row" justifyContent="center"><TranslatedText textKey="ButtonSignOut" /></Layout>
-						</Button>
+						<NavigationMenuItemButton icon={<SignOutIcon size="1em" />} text={<TranslatedText textKey="ButtonSignOut" />} onClick={() => { closeNavigation(); LoginService.Instance.SignOut(); }} />
 					</Layout>
 				</Layout>
 			</AnchoredModal>
@@ -104,20 +89,42 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 };
 
 const AuthorizeQuickConnectButton: React.FC<{ onOpened: () => void }> = (props) => {
-	const background = useBackgroundStyles();
 	const [authorizeQuickConnectOpen, setAuthorizeQuickConnectOpen] = React.useState(false);
 
 	return (
 		<>
-			<Button className={background.transparent} {...NavigationMenuLinkStyles} direction="row" type="button" onClick={() => { props.onOpened(); setAuthorizeQuickConnectOpen(true); }}>
-				<Layout direction="row" justifyContent="center"><EditIcon size={24} /></Layout>
-				<Layout direction="row" justifyContent="center"><TranslatedText textKey="QuickConnect" /></Layout>
-			</Button>
+			<NavigationMenuItemButton
+				icon={<EditIcon size="1em" />}
+				text={<TranslatedText textKey="QuickConnect" />}
+				onClick={() => { props.onOpened(); setAuthorizeQuickConnectOpen(true); }}
+			/>
 
 			<CenteredModal open={authorizeQuickConnectOpen} onClosed={() => { setAuthorizeQuickConnectOpen(false); }}>
 				<AuthorizeQuickConnect />
 			</CenteredModal>
 		</>
+	);
+};
+
+const NavigationMenuItemHyperLink: React.FC<{ text: React.ReactElement, icon: React.ReactElement, to: string; }> = (props) => {
+	const background = useBackgroundStyles();
+
+	return (
+		<HyperLink className={background.transparent} {...NavigationMenuLinkStyles} direction="row" to={props.to}>
+			<Layout direction="row" justifyContent="center">{props.icon}</Layout>
+			<Layout direction="row" justifyContent="center">{props.text}</Layout>
+		</HyperLink>
+	);
+};
+
+const NavigationMenuItemButton: React.FC<{ text: React.ReactElement, icon: React.ReactElement, onClick: () => void; }> = (props) => {
+	const background = useBackgroundStyles();
+
+	return (
+		<Button className={background.transparent} {...NavigationMenuLinkStyles} direction="row" type="button" onClick={props.onClick}>
+			<Layout direction="row" justifyContent="center">{props.icon}</Layout>
+			<Layout direction="row" justifyContent="center">{props.text}</Layout>
+		</Button>
 	);
 };
 
