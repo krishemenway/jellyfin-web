@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BaseItemKindService } from "Items/BaseItemKindService";
-import { TVIcon } from "Shows/TVIcon";
+import { ShowIcon } from "Shows/ShowIcon";
 import { FilterByName } from "ItemList/ItemFilterTypes/FilterByName";
 import { FilterByGenre } from "ItemList/ItemFilterTypes/FilterByGenre";
 import { FilterByHasPlayed } from "ItemList/ItemFilterTypes/FilterByHasPlayed";
@@ -19,7 +19,7 @@ import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRat
 import { SortByCriticRating } from "ItemList/ItemSortTypes/SortByCriticRating";
 
 export const ShowService: BaseItemKindService = {
-	findIcon: (props) => <TVIcon {...props} />,
+	findIcon: (props) => <ShowIcon {...props} />,
 	findUrl: (item) => `/Show/${item.Id}`,
 	sortOptions: [
 		SortByName,
