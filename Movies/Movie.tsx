@@ -16,6 +16,10 @@ import { useBackgroundStyles } from "Common/AppStyles";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { ItemOverview } from "Items/ItemOverview";
+import { BaseItemDto, BaseItemPerson } from "@jellyfin/sdk/lib/generated-client/models";
+import { TranslatedText } from "Common/TranslatedText";
+import { ListOf } from "Common/ListOf";
+import { LinkToPerson } from "People/LinkToPerson";
 
 export const Movie: React.FC = () => {
 	const routeParams = useParams<{ movieId: string }>();
@@ -71,10 +75,41 @@ export const Movie: React.FC = () => {
 								<ItemActionsMenu actions={[]} />
 							</Layout>
 							<ItemOverview item={movie} />
+							<CastAndCrew item={movie} />
 						</Layout>
 					</Layout>
 				)}
 			/>
 		</PageWithNavigation>
+	);
+};
+
+const CastAndCrew: React.FC<{ item: BaseItemDto }> = (props) => {
+	const background = useBackgroundStyles();
+
+	if (!Nullable.HasValue(props.item.People) || props.item.People.length === 0 ) {
+		return <></>;
+	}
+
+	return (
+		<Layout direction="column" minWidth="100%">
+			<Layout direction="row" fontSize="1.5em" py={8} px={8} className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
+
+			<ListOf
+				className={background.panel}
+				direction="row" wrap gap={16} px={8} py={16}
+				items={props.item.People ?? []}
+				forEachItem={((person) => <CastAndCrewCredit person={person} />)}
+			/>
+		</Layout>
+	);
+};
+
+const CastAndCrewCredit: React.FC<{ person: BaseItemPerson }> = (props) => {
+	return (
+		<Layout direction="column" width={{ itemsPerRow: 6, gap: 16 }} gap={4}>
+			<Layout direction="row" fontSize="1em"><LinkToPerson direction="row" id={props.person.Id}>{props.person.Name}</LinkToPerson></Layout>
+			<Layout direction="row" fontSize=".8em">{props.person.Role}</Layout>
+		</Layout>
 	);
 };
