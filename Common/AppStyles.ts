@@ -33,6 +33,8 @@ export const useGlobalStyles = createUseStyles({
 		},
 		"body": {
 			overflowY: "scroll",
+			width: "100%",
+			height: "100%",
 		},
 		"ol, ul": {
 			listStyle: "none",

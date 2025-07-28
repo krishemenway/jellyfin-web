@@ -18,6 +18,19 @@ export class LoginService {
 		this.QuickConnectResult = new Receiver("Failed to get quick connect token.");
 
 		this.QuickConnectPollingIntervalId = 0;
+
+		this.AuthenticationResponse.OnReceived.push((response) => {
+			if (!response.User?.Id) {
+				throw new Error("Missing User Id");
+			}
+
+			if (!response.AccessToken) {
+				throw new Error("Missing access token");
+			}
+
+			this.Dispose();
+			ServerService.Instance.SetAccessTokenForServer(response.AccessToken, response.User.Id);
+		});
 	}
 
 	public SubmitForgotPassword(): void {
@@ -50,6 +63,10 @@ export class LoginService {
 	}
 
 	public Dispose(): void {
+		this.AllFields.forEach((f) => f.Revert());
+		this.AuthenticationResponse.Reset();
+		this.QuickConnectResult.Reset();
+
 		this.StopQuickConnectPolling();
 	}
 
@@ -59,7 +76,11 @@ export class LoginService {
 				const result = (await getQuickConnectApi(ServerService.Instance.CurrentApi).getQuickConnectState({ secret: secret }, { signal: abort.signal })).data;
 
 				if (result.Authenticated === true) {
-					this.WhenAuthenticated(secret);
+					this.StopQuickConnectPolling();
+
+					this.AuthenticationResponse.Start(async (abort) => {
+						return (await getUserApi(ServerService.Instance.CurrentApi).authenticateWithQuickConnect({ quickConnectDto: { Secret: secret }}, { signal: abort.signal })).data;
+					});
 				}
 
 				return result;
@@ -73,22 +94,12 @@ export class LoginService {
 		}
 	}
 
-	private WhenAuthenticated(secret: string): void {
-		this.StopQuickConnectPolling();
-		this.AuthenticationResponse.Start(async (abort) => {
-			const response = (await getUserApi(ServerService.Instance.CurrentApi).authenticateWithQuickConnect({ quickConnectDto: { Secret: secret }}, { signal: abort.signal })).data;
-
-			if (!response.User?.Id) {
-				throw new Error("Missing User Id");
-			}
-
-			if (!response.AccessToken) {
-				throw new Error("Missing access token");
-			}
-
-			ServerService.Instance.SetAccessTokenForServer(response.AccessToken, response.User.Id);
-			return response;
-		});
+	private get AllFields(): EditableField[] {
+		return [
+			this.UserName,
+			this.Password,
+			this.RememberMe,
+		];
 	}
 
 	public UserName: EditableField;

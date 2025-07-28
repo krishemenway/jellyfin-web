@@ -24,7 +24,12 @@ interface ModalProps {
 }
 
 export const ResetModalOnLocationChange: React.FC = () => {
-	React.useEffect(() => { ResetAllModals(); }, [useLocation()]);
+	const [modalClasses] = [useStyles()];
+
+	React.useEffect(() => { 
+		ResetAllModals();
+		modalRoot.classList.add(modalClasses.modalOverlay);
+	}, [useLocation()]);
 	return <></>;
 };
 
@@ -52,6 +57,17 @@ function ResetAllModals(): void {
 export const CenteredModal: React.FC<ModalProps> = (props) => {
 	const [modalClasses, background] = [useStyles(), useBackgroundStyles()];
 	const [element] = React.useState(document.createElement("div"));
+	const tryCleanupModal = () => {
+		if (modalRoot.contains(element)) {
+			modalRoot.removeChild(element);
+		}
+
+		if (!modalRoot.hasChildNodes()) {
+			body.classList.remove(modalClasses.isOpen);
+		}
+
+		modalRoot.classList.remove(modalClasses.fadeBackground);
+	};
 
 	function outsideModalClickHandler(evt: MouseEvent) { { if (evt.target == modalRoot) { props.onClosed(); } } }
 	function escapeModalKeyHandler(evt: KeyboardEvent) { { if (evt.key == "Escape") { props.onClosed(); } } }
@@ -66,6 +82,8 @@ export const CenteredModal: React.FC<ModalProps> = (props) => {
 			outsideModalClickHandlerEvents.push(outsideModalClickHandler);
 			escapeModalKeyHandlerEvents.push(escapeModalKeyHandler);
 			closedFuncs.push(props.onClosed);
+			body.classList.add(modalClasses.isOpen);
+			modalRoot.classList.add(modalClasses.fadeBackground);
 		} else {
 			if (modalRoot.contains(element))
 			{
@@ -81,13 +99,13 @@ export const CenteredModal: React.FC<ModalProps> = (props) => {
 			outsideModalClickHandlerEvents.remove(outsideModalClickHandler);
 			escapeModalKeyHandlerEvents.remove(escapeModalKeyHandler);
 			closedFuncs.remove(props.onClosed);
+			modalRoot.classList.remove(modalClasses.fadeBackground);
 		}
 
-		modalRoot.className = modalClasses.anchoredModalOverlay;
 		element.className = `${modalClasses.centeredModal} ${props.alternatePanel ? background.alternatePanel : background.panel} ${props.className ?? ""}`;
 		element.style.maxWidth = props.maxWidth ?? "";
 
-		body.className = modalRoot.hasChildNodes() ? `${modalClasses.isOpen} ${modalClasses.darken}` : "";
+		return tryCleanupModal;
 	}, [ props.open ]);
 	return portal;
 }
@@ -100,6 +118,15 @@ export interface AnchoredModalProps extends ModalProps {
 export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
 	const [modalClasses, background] = [useStyles(), useBackgroundStyles()];
 	const [element] = React.useState(document.createElement("div"));
+	const tryCleanupModal = () => {
+		if (modalRoot.contains(element)) {
+			modalRoot.removeChild(element);
+		}
+
+		if (!modalRoot.hasChildNodes()) {
+			body.classList.remove(modalClasses.isOpen);
+		}
+	};
 
 	function outsideModalClickHandler(evt: MouseEvent) { { if (evt.target == modalRoot) { props.onClosed(); } } }
 	function escapeModalKeyHandler(evt: KeyboardEvent) { { if (evt.key == "Escape") { props.onClosed(); } } }
@@ -114,11 +141,9 @@ export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
 			outsideModalClickHandlerEvents.push(outsideModalClickHandler);
 			escapeModalKeyHandlerEvents.push(escapeModalKeyHandler);
 			closedFuncs.push(props.onClosed);
+			body.classList.add(modalClasses.isOpen);
 		} else {
-			if (modalRoot.contains(element))
-			{
-				modalRoot.removeChild(element);
-			}
+			tryCleanupModal();
 
 			if (modalRoot.children.length === 0) {
 				lastZIndex = 10;
@@ -131,7 +156,6 @@ export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
 			closedFuncs.remove(props.onClosed);
 		}
 
-		modalRoot.className = modalClasses.anchoredModalOverlay;
 		element.className = `${modalClasses.anchoredModal} ${props.alternatePanel ? background.alternatePanel : background.panel} ${props.className ?? ""}`;
 		element.style.zIndex = (++lastZIndex).toString();
 
@@ -147,13 +171,13 @@ export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
 			}
 		}
 
-		body.className = modalRoot.hasChildNodes() ? modalClasses.isOpen : "";
+		return tryCleanupModal;
 	}, [ props.open ]);
 	return portal;
 };
 
 const useStyles = createUseStyles({
-	anchoredModalOverlay: {
+	modalOverlay: {
 		position: "fixed",
 		top: 0,
 		bottom: 0,
@@ -165,6 +189,9 @@ const useStyles = createUseStyles({
 		"$isOpen &": {
 			display: "block",
 		},
+	},
+	fadeBackground: {
+		background: "rgba(0,0,0,.80)",
 	},
 	anchoredModal: {
 		position: "absolute",
@@ -184,9 +211,6 @@ const useStyles = createUseStyles({
 		"$isOpen &": {
 			display: "block",
 		},
-	},
-	darken: {
-		background: "rgba(0,0,0,.75)",
 	},
 	isOpen: {
 		overflow: "hidden",

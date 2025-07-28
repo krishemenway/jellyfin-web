@@ -23,6 +23,7 @@ export class Receiver<TReceivedData> {
 		this.WritableData = new Observable(Receiver.NotStarted);
 		this.IsBusy = new Computed(() => this.WritableData.Value.State === LoadState.Loading);
 		this.HasData = new Computed(() => this.WritableData.Value.State === LoadState.Received);
+		this.OnReceived = [];
 	}
 
 	/**
@@ -57,6 +58,7 @@ export class Receiver<TReceivedData> {
 	 */
 	public Received(data: TReceivedData): void {
 		this.SetWritableData({ ReceivedData: data, State: LoadState.Received, ErrorMessage: "" });
+		this.OnReceived.forEach((f) => f(data));
 	}
 
 	/**
@@ -106,6 +108,7 @@ export class Receiver<TReceivedData> {
 	public IsBusy: Computed<boolean>;
 	public HasData: Computed<boolean>;
 	public DefaultErrorTextKey: string;
+	public OnReceived: ((data: TReceivedData) => void)[];
 
 	private static NotStarted = { ReceivedData: null, State: LoadState.NotStarted, ErrorMessage: "" };
 	private static Loading = { ReceivedData: null, State: LoadState.Loading, ErrorMessage: "" };

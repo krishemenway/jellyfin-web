@@ -33,6 +33,10 @@ export class EditableField {
 		this.Current.Value = value;
 	}
 
+	public Revert(): void {
+		this.Current.Value = this.Saved.Value;
+	}
+
 	public FieldId: string;
 	public BeforeChange: (newValue: string) => string;
 

@@ -15,6 +15,7 @@ import { useObservable } from "@residualeffect/rereactor";
 import { FieldLabel } from "Common/FieldLabel";
 import { Form } from "Common/Form";
 import { Nullable } from "Common/MissingJavascriptFunctions";
+import { ServerService } from "Servers/ServerService";
 
 const SignInWithQuickConnect: React.FC = () => {
 	React.useEffect(() => { return () => LoginService.Instance.Dispose(); }, []);
@@ -78,7 +79,7 @@ const SignInWithCredentials: React.FC = () => {
 
 				<Layout direction="column" gap={8}>
 					<FieldLabel field={LoginService.Instance.Password} />
-					<TextField field={LoginService.Instance.Password} />
+					<TextField password field={LoginService.Instance.Password} />
 				</Layout>
 
 				<Layout direction="row" gap={8} alignItems="center">
@@ -115,6 +116,7 @@ export const Login: React.FC = () => {
 	return (
 		<Layout direction="column" gap={16} alignItems="center" my={32}>
 			<JellyfinIcon size="100" />
+			<Layout direction="column" fontSize="1.5em">{ServerService.Instance.CurrentServer.Name}</Layout>
 			<Layout direction="column" className={background.panel}><SignInWithCredentials /></Layout>
 			<Layout direction="column" className={background.panel}><SignInWithQuickConnect /></Layout>
 		</Layout>

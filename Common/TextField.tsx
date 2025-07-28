@@ -9,6 +9,7 @@ interface TextFieldProps {
 
 	field: EditableField;
 	disabled?: boolean;
+	password?: boolean;
 
 	px?: number;
 	py?: number;
@@ -22,7 +23,7 @@ const ForwardedTextField: React.ForwardRefRenderFunction<HTMLInputElement, TextF
 
 	return (
 		<input
-			type="text"
+			type={props.password === true ? "password" : "text"}
 			ref={ref}
 			id={props.field.FieldId}
 			className={props.className ?? background.field}
