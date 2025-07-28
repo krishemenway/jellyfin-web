@@ -23,7 +23,7 @@ import { UserViewStore } from "Users/UserViewStore";
 import { LinkToItem } from "Items/LinkToItem";
 
 const NavigationButton: React.FC<{ onClick?: (element: HTMLButtonElement) => void; }> = (props) => {
-	return <Button direction="row" type="button" disabled={props.onClick === undefined} onClick={props.onClick ?? (() => { })} py={4} px={4}><MenuIcon size="22" /></Button>;
+	return <Button direction="row" type="button" disabled={props.onClick === undefined} onClick={props.onClick ?? (() => { })} py={4} px={4}><MenuIcon size="1.5em" /></Button>;
 }
 
 const NavigationMenuLinkStyles: Partial<StyleLayoutProps> = { width: "100%", px: 16, py: 8, gap: 8 };
@@ -111,7 +111,7 @@ const NavigationMenuItemHyperLink: React.FC<{ text: React.ReactElement, icon: Re
 
 	return (
 		<HyperLink className={background.transparent} {...NavigationMenuLinkStyles} direction="row" to={props.to}>
-			<Layout direction="row" justifyContent="center">{props.icon}</Layout>
+			<Layout direction="row" justifyContent="center" position="relative" top={1}>{props.icon}</Layout>
 			<Layout direction="row" justifyContent="center">{props.text}</Layout>
 		</HyperLink>
 	);
@@ -122,7 +122,7 @@ const NavigationMenuItemButton: React.FC<{ text: React.ReactElement, icon: React
 
 	return (
 		<Button className={background.transparent} {...NavigationMenuLinkStyles} direction="row" type="button" onClick={props.onClick}>
-			<Layout direction="row" justifyContent="center">{props.icon}</Layout>
+			<Layout direction="row" justifyContent="center" position="relative" top={1}>{props.icon}</Layout>
 			<Layout direction="row" justifyContent="center">{props.text}</Layout>
 		</Button>
 	);
