@@ -16,12 +16,14 @@ import { EditableItemFilter } from "ItemList/EditableItemFilter";
 import { ItemListViewOptionsService } from "./ItemListViewOptionsService";
 import { ItemListViewOptions } from "./ItemListViewOptions";
 import { SortFuncs } from "Common/Sort";
-import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { SelectFieldEditor } from "Common/SelectFieldEditor";
 import { Form } from "Common/Form";
+import { ItemActionsMenu } from "Items/ItemActionsMenu";
 
 export interface ItemListFiltersProps {
 	service: ItemListViewOptionsService;
+	user: UserDto;
 }
 
 export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
@@ -61,17 +63,23 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 						/>
 					</Layout>
 				)}
+
+				<Layout direction="column" grow></Layout>
+
+				{(props.service.ItemKindService?.listActions ?? []).length > 0 && (
+					<ItemActionsMenu user={props.user} fontSize="1.5em" alignSelf="end" actions={props.service.ItemKindService?.listActions ?? []} />
+				)}
 			</Layout>
 
-			<AnchoredModal anchorElement={filterButtonRef} open={addFilterOpen} opensInDirection="right" onClosed={() => setAddFilterOpen(false)}>
+			<AnchoredModal anchorElement={filterButtonRef} open={addFilterOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => setAddFilterOpen(false)}>
 				<PickFilterModal filterOptions={props.service.ItemKindService?.filterOptions ?? []} onPicked={(option) => props.service.CreateNewFilter(option)} onClosed={() => setAddFilterOpen(false)} />
 			</AnchoredModal>
 
-			<AnchoredModal anchorElement={filterButtonRef} open={newFilter !== undefined} opensInDirection="right" onClosed={stopEditingNewFilter}>
+			<AnchoredModal anchorElement={filterButtonRef} open={newFilter !== undefined} anchorAlignment="center" opensInDirection="right" onClosed={stopEditingNewFilter}>
 				{newFilter && <ConfigureFilterModal listOptions={listOptions} newFilter={newFilter} onClosed={stopEditingNewFilter} />}
 			</AnchoredModal>
 
-			<AnchoredModal anchorElement={sortButtonRef} open={addSortOpen} opensInDirection="right" onClosed={() => setAddSortOpen(false)} maxWidth="20%">
+			<AnchoredModal anchorElement={sortButtonRef} open={addSortOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => setAddSortOpen(false)} maxWidth="20%">
 				<PickSortOptionModal sortOptions={props.service.ItemKindService?.sortOptions ?? []} onPicked={(option, reversed) => listOptions.AddSort(option, reversed)} onClosed={() => setAddSortOpen(false)} />
 			</AnchoredModal>
 		</>

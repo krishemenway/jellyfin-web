@@ -20,11 +20,21 @@ import { SortByDatePlayed } from "ItemList/ItemSortTypes/SortByDatePlayed";
 import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { ImageShape } from "Items/ItemImage";
+import { RefreshItemAction } from "MenuActions/RefreshItemAction";
+import { RenameLibraryAction } from "MenuActions/RenameLibraryAction";
+import { EditItemAction } from "MenuActions/EditItemAction";
 
 export const MovieService: BaseItemKindService = {
 	primaryShape: ImageShape.Portrait,
 	searchResultName: (item) => `${item.Name} (${item.ProductionYear})`,
 	findIcon: (props) => <MovieIcon {...props} />,
+	listActions: [
+		[
+			EditItemAction,
+			RefreshItemAction,
+			RenameLibraryAction,
+		],
+	],
 	filterOptions: [
 		FilterByName,
 		FilterByHasPlayed,

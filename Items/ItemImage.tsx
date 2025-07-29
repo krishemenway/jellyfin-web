@@ -11,7 +11,7 @@ export enum ImageShape {
 }
 
 export const ItemImage: React.FC<{ className?: string, item: BaseItemDto, type: ImageType, maxWidth?: string|number, fillWidth?: number, fillHeight?: number }> = (props) => {
-	const imageUrl = useComputed(() => getImageApi(ServerService.Instance.CurrentApi).getItemImageUrl(props.item, props.type, { fillWidth: props.fillWidth, fillHeight: props.fillHeight}));
+	const imageUrl = React.useMemo(() => getImageApi(ServerService.Instance.CurrentApi).getItemImageUrl(props.item, props.type, { fillWidth: props.fillWidth, fillHeight: props.fillHeight}), [props.item, props.type, props.fillWidth, props.fillHeight]);
 
 	return (
 		<img

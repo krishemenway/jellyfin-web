@@ -17,10 +17,20 @@ import { SortByDatePlayed } from "ItemList/ItemSortTypes/SortByDatePlayed";
 import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
 import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
 import { SortByCriticRating } from "ItemList/ItemSortTypes/SortByCriticRating";
+import { RefreshItemAction } from "MenuActions/RefreshItemAction";
+import { RenameLibraryAction } from "MenuActions/RenameLibraryAction";
+import { EditItemAction } from "MenuActions/EditItemAction";
 
 export const ShowService: BaseItemKindService = {
 	findIcon: (props) => <ShowIcon {...props} />,
 	findUrl: (item) => `/Show/${item.Id}`,
+	listActions: [
+		[
+			EditItemAction,
+			RefreshItemAction,
+			RenameLibraryAction,
+		],
+	],
 	sortOptions: [
 		SortByName,
 		SortByDatePlayed,

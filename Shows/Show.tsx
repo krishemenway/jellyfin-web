@@ -16,24 +16,23 @@ import { ItemTags } from "Items/ItemTags";
 import { ItemRating } from "Items/ItemRating";
 import { useBackgroundStyles } from "Common/AppStyles";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
-import { ItemFavoriteIcon } from "Items/ItemFavoriteIcon";
 import { Collapsible } from "Common/Collapsible";
 import { Button } from "Common/Button";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { ItemGenres } from "Items/ItemGenres";
 import { ItemStudios } from "Items/ItemStudios";
 import { TranslatedText } from "Common/TranslatedText";
-import { ItemPlayedIcon } from "Items/ItemPlayedIcon";
 import { DownloadIcon } from "Common/DownloadIcon";
 import { EditIcon } from "Common/EditIcon";
-import { DeleteIcon } from "Common/DeleteIcon";
 import { IdentifyIcon } from "Items/IdentifyIcon";
-import { EditImagesIcon } from "Items/EditImagesIcon";
 import { RefreshIcon } from "Common/RefreshIcon";
-import { AddToPlaylistIcon } from "Playlists/AddToPlaylistIcon";
-import { AddToCollectionIcon } from "Collections/AddToCollectionIcon";
 import { ItemOverview } from "Items/ItemOverview";
 import { LinkToPerson } from "People/LinkToPerson";
+import { LoginService } from "Users/LoginService";
+import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
+import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
+import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
+import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 
 export const Show: React.FC = () => {
 	const background = useBackgroundStyles();
@@ -49,11 +48,11 @@ export const Show: React.FC = () => {
 	return (
 		<PageWithNavigation itemKind="Series">
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.showId).Item, ItemService.Instance.FindOrCreateItemData(routeParams.showId).Children]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.showId).Item, ItemService.Instance.FindOrCreateItemData(routeParams.showId).Children, LoginService.Instance.User]}
 				whenNotStarted={<LoadingIcon size={48} />}
 				whenLoading={<LoadingIcon size={48} />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(show, seasons) => (
+				whenReceived={(show, seasons, user) => (
 					<Layout direction="row" gap={16} py={16}>
 						<Layout direction="column" maxWidth="20%" gap={8}>
 							<Layout direction="column" position="relative">
@@ -86,61 +85,38 @@ export const Show: React.FC = () => {
 						<Layout direction="column" grow gap={24}>
 							<Layout direction="row" fontSize="2em" justifyContent="space-between">
 								<Layout direction="row" className="show-name">{show.Name}</Layout>
-								<ItemActionsMenu actions={[
+								<ItemActionsMenu user={user} actions={[
 									[ // Viewing / Downloading
 										{
 											textKey: "DownloadAll",
-											icon: <DownloadIcon size={24} />,
+											icon: (p) => <DownloadIcon {...p} />,
 											action: () => { console.error("Mark Played Missing.") },
 										},
 									],
 									[ // User-based actions
-										{
-											textKey: "AddToFavorites",
-											icon: <ItemFavoriteIcon size={24} />,
-											action: () => {  },
-										},
-										{
-											textKey: "MarkPlayed",
-											icon: <ItemPlayedIcon size={24} />,
-											action: () => { console.error("Mark Played Missing.") },
-										},
-										{
-											textKey: "AddToCollection",
-											icon: <AddToCollectionIcon size={24} />,
-											action: () => { console.error("Add to collection Missing.") },
-										},
-										{
-											textKey: "AddToPlaylist",
-											icon: <AddToPlaylistIcon size={24} />,
-											action: () => { console.error("Add to Playlist Missing.") },
-										},
+										AddToFavoritesAction,
+										MarkPlayedAction,
+										AddToCollectionAction,
+										AddToPlaylistAction,
 									],
 									[ // Server-based actions
 										{
-											textKey: "EditMetadata",
-											icon: <EditIcon size={24} />,
+											textKey: "Edit",
+											icon: (p) => <EditIcon {...p} />,
+											visible: (u) => u.Policy?.IsAdministrator ?? false,
 											action: () => { console.error("Edit Metadata Missing.") },
 										},
 										{
-											textKey: "EditImages",
-											icon: <EditImagesIcon size={24} />,
-											action: () => { console.error("Edit Images Missing.") },
-										},
-										{
 											textKey: "Identify",
-											icon: <IdentifyIcon size={24} />,
+											icon: (p) => <IdentifyIcon {...p} />,
+											visible: (u) => u.Policy?.IsAdministrator ?? false,
 											action: () => { console.error("Identify Missing.") },
 										},
 										{
-											textKey: "RefreshMetadata",
-											icon: <RefreshIcon size={24} />,
+											textKey: "Refresh",
+											icon: (p) => <RefreshIcon {...p} />,
+											visible: (u) => u.Policy?.IsAdministrator ?? false,
 											action: () => { console.error("Refresh Metadata Missing.") },
-										},
-										{
-											textKey: "DeleteSeries",
-											icon: <DeleteIcon size={24} />,
-											action: () => { console.error("Delete Series Missing.") },
 										},
 									]
 								]} />

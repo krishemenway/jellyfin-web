@@ -15,12 +15,13 @@ import { ItemImage } from "Items/ItemImage";
 import { ItemService } from "Items/ItemsService";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
-import { ItemFavoriteIcon } from "Items/ItemFavoriteIcon";
 import { useBackgroundStyles } from "Common/AppStyles";
 import { LinkToItem } from "Items/LinkToItem";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { ItemOverview } from "Items/ItemOverview";
+import { LoginService } from "Users/LoginService";
+import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
 
 class PersonData {
 	constructor(id: string) {
@@ -86,11 +87,11 @@ export const Person: React.FC = () => {
 	return (
 		<PageWithNavigation itemKind="Person">
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.personId).Item, personData.CreditedItems]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.personId).Item, personData.CreditedItems, LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon size={48} />}
 				whenNotStarted={<LoadingIcon size={48} />}
-				whenReceived={(person, creditedItems) => (
+				whenReceived={(person, creditedItems, user) => (
 					<Layout direction="row" gap={16} py={16}>
 						<Layout direction="column" maxWidth="20%" gap={8}>
 							<ItemImage item={person} type="Primary" />
@@ -106,12 +107,8 @@ export const Person: React.FC = () => {
 						<Layout direction="column" grow gap={32}>
 							<Layout direction="row" justifyContent="space-between">
 								<Layout direction="row" fontSize="2em" className="person-name">{person.Name}</Layout>
-								<ItemActionsMenu actions={[[
-									{
-										textKey: "AddToFavorites",
-										action: () => { console.error("Add To Favorites Missing.") },
-										icon: <ItemFavoriteIcon size={24} />,
-									},
+								<ItemActionsMenu user={user} actions={[[
+									AddToFavoritesAction,
 								]]} />
 							</Layout>
 

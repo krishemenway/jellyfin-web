@@ -20,6 +20,7 @@ import { BaseItemDto, BaseItemPerson } from "@jellyfin/sdk/lib/generated-client/
 import { TranslatedText } from "Common/TranslatedText";
 import { ListOf } from "Common/ListOf";
 import { LinkToPerson } from "People/LinkToPerson";
+import { LoginService } from "Users/LoginService";
 
 export const Movie: React.FC = () => {
 	const routeParams = useParams<{ movieId: string }>();
@@ -34,11 +35,11 @@ export const Movie: React.FC = () => {
 	return (
 		<PageWithNavigation itemKind="Movie">
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.movieId).Item]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.movieId).Item, LoginService.Instance.User]}
 				whenNotStarted={<LoadingIcon size={48} />}
 				whenLoading={<LoadingIcon size={48} />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(movie) => (
+				whenReceived={(movie, user) => (
 					<Layout direction="row" gap={16} py={16}>
 						<Layout direction="column" maxWidth="20%" gap={8}>
 							<Layout direction="column" gap={8}>
@@ -72,7 +73,7 @@ export const Movie: React.FC = () => {
 						<Layout direction="column" grow gap={32}>
 							<Layout direction="row" fontSize="2em" justifyContent="space-between">
 								<Layout direction="row" className="show-name">{movie.Name}</Layout>
-								<ItemActionsMenu actions={[]} />
+								<ItemActionsMenu actions={[]} user={user} />
 							</Layout>
 							<ItemOverview item={movie} />
 							<CastAndCrew item={movie} />

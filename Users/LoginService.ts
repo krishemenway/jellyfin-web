@@ -1,5 +1,5 @@
 import { getQuickConnectApi, getUserApi } from "@jellyfin/sdk/lib/utils/api";
-import { AuthenticationResult, QuickConnectResult } from "@jellyfin/sdk/lib/generated-client/models";
+import { AuthenticationResult, QuickConnectResult, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { EditableField } from "Common/EditableField";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
@@ -14,8 +14,9 @@ export class LoginService {
 
 		this.ShowForgotPassword = new Observable(false);
 
-		this.AuthenticationResponse = new Receiver("Failed");
-		this.QuickConnectResult = new Receiver("Failed to get quick connect token.");
+		this.User = new Receiver("UnknownError");
+		this.AuthenticationResponse = new Receiver("UnknownError");
+		this.QuickConnectResult = new Receiver("UnknownError");
 
 		this.QuickConnectPollingIntervalId = 0;
 
@@ -31,6 +32,19 @@ export class LoginService {
 			this.Dispose();
 			ServerService.Instance.SetAccessTokenForServer(response.AccessToken, response.User.Id);
 		});
+	}
+
+	public LoadUser(): () => void {
+		if (ServerService.Instance.Servers.length === 0 || ServerService.Instance.CurrentUserId.length === 0) {
+			return () => { };
+		}
+
+		this.User.Start(async (a) => {
+			const result = await getUserApi(ServerService.Instance.CurrentApi).getCurrentUser({ signal: a.signal })
+			return result.data;
+		});
+
+		return () => this.User.ResetIfLoading();
 	}
 
 	public SubmitForgotPassword(): void {
@@ -110,6 +124,8 @@ export class LoginService {
 
 	public QuickConnectResult: Receiver<QuickConnectResult>;
 	public AuthenticationResponse: Receiver<AuthenticationResult>;
+
+	public User: Receiver<UserDto>;
 
 	private QuickConnectPollingIntervalId: number;
 

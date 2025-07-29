@@ -113,6 +113,7 @@ export const CenteredModal: React.FC<ModalProps> = (props) => {
 export interface AnchoredModalProps extends ModalProps {
 	anchorElement: HTMLElement|null;
 	opensInDirection: "left"|"right";
+	anchorAlignment?: "left"|"center"|"right";
 }
 
 export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
@@ -161,13 +162,25 @@ export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
 
 		if (props.anchorElement !== null) {
 			const anchorRect = props.anchorElement.getBoundingClientRect();
-
+			const anchorAlignment = props.anchorAlignment ?? "left";
 			element.style.top = `${anchorRect.bottom + 2}px`;
 
 			if (props.opensInDirection === "right") {
-				element.style.left = `${anchorRect.left + anchorRect.width / 2}px`;
+				if (anchorAlignment === "left") {
+					element.style.left = `${anchorRect.left}px`;
+				} else if (anchorAlignment === "center") {
+					element.style.left = `${anchorRect.left + anchorRect.width / 2}px`;
+				} else {
+					element.style.left = `${anchorRect.left + anchorRect.width}px`;
+				}
 			} else {
-				element.style.right = `${body.clientWidth - anchorRect.left}px`;
+				if (anchorAlignment === "left") {
+					element.style.right = `${body.clientWidth - anchorRect.left}px`;
+				} else if (anchorAlignment === "center") {
+					element.style.right = `${body.clientWidth - anchorRect.left - anchorRect.width / 2}px`;
+				} else {
+					element.style.right = `${body.clientWidth - anchorRect.left - anchorRect.width}px`;
+				}
 			}
 		}
 
