@@ -3,7 +3,7 @@ import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 
 export const Studios: React.FC = () => {
 	return (
-		<PageWithNavigation itemKind="Studio">
+		<PageWithNavigation icon="Studio">
 			All Studios
 		</PageWithNavigation>
 	);

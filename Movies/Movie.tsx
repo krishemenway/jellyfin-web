@@ -27,13 +27,13 @@ export const Movie: React.FC = () => {
 	const background = useBackgroundStyles();
 
 	if (!Nullable.HasValue(routeParams.movieId)) {
-		return <PageWithNavigation itemKind="Movie"><NotFound /></PageWithNavigation>;
+		return <PageWithNavigation icon="Movie"><NotFound /></PageWithNavigation>;
 	}
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.movieId).LoadItemWithAbort(), [routeParams.movieId]);
 
 	return (
-		<PageWithNavigation itemKind="Movie">
+		<PageWithNavigation icon="Movie">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.movieId).Item, LoginService.Instance.User]}
 				whenNotStarted={<LoadingIcon size={48} />}

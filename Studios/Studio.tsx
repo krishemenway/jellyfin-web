@@ -6,7 +6,7 @@ export const Studio: React.FC = () => {
 	const routeParams = useParams<{ studioId: string }>();
 
 	return (
-		<PageWithNavigation itemKind="Studio">
+		<PageWithNavigation icon="Studio">
 			Studio {routeParams.studioId}
 		</PageWithNavigation>
 	)

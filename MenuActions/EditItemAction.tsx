@@ -1,6 +1,6 @@
 import * as React from "react";
 import { MenuAction } from "Common/MenuAction";
-import { EditIcon } from "Common/EditIcon";
+import { EditIcon } from "CommonIcons/EditIcon";
 
 export const EditItemAction: MenuAction = {
 	icon: (p) => <EditIcon {...p} />,

@@ -29,11 +29,11 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 	React.useEffect(() => SettingsStore.Instance.LoadSettings(libraryId), [libraryId]);
 
 	if (!Nullable.HasValue(libraryId)) {
-		return <PageWithNavigation itemKind={props.itemKind}><NotFound /></PageWithNavigation>;
+		return <PageWithNavigation icon={props.itemKind}><NotFound /></PageWithNavigation>;
 	}
 
 	return (
-		<PageWithNavigation itemKind={props.itemKind}>
+		<PageWithNavigation icon={props.itemKind}>
 			<Loading
 				receivers={[itemList.List, SettingsStore.Instance.Settings, LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}

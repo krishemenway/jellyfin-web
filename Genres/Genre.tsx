@@ -7,7 +7,7 @@ export const Genre: React.FC = () => {
 	// This should include content from all libraries available on server to user.
 
 	return (
-		<PageWithNavigation itemKind="Genre">
+		<PageWithNavigation icon="Genre">
 			Genre {routeParams.genre}
 		</PageWithNavigation>
 	)

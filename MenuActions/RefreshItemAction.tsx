@@ -1,6 +1,6 @@
 import * as React from "react";
 import { MenuAction } from "Common/MenuAction";
-import { RefreshIcon } from "Common/RefreshIcon";
+import { RefreshIcon } from "CommonIcons/RefreshIcon";
 
 export const RefreshItemAction: MenuAction = {
 	icon: (p) => <RefreshIcon {...p} />,

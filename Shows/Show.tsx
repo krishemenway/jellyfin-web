@@ -22,10 +22,10 @@ import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { ItemGenres } from "Items/ItemGenres";
 import { ItemStudios } from "Items/ItemStudios";
 import { TranslatedText } from "Common/TranslatedText";
-import { DownloadIcon } from "Common/DownloadIcon";
-import { EditIcon } from "Common/EditIcon";
+import { DownloadIcon } from "CommonIcons/DownloadIcon";
+import { EditIcon } from "CommonIcons/EditIcon";
 import { IdentifyIcon } from "Items/IdentifyIcon";
-import { RefreshIcon } from "Common/RefreshIcon";
+import { RefreshIcon } from "CommonIcons/RefreshIcon";
 import { ItemOverview } from "Items/ItemOverview";
 import { LinkToPerson } from "People/LinkToPerson";
 import { LoginService } from "Users/LoginService";
@@ -39,14 +39,14 @@ export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
 
 	if (!Nullable.HasValue(routeParams.showId)) {
-		return <PageWithNavigation itemKind="Series"><NotFound /></PageWithNavigation>;
+		return <PageWithNavigation icon="Series"><NotFound /></PageWithNavigation>;
 	}
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.showId).LoadItemWithAbort(), [routeParams.showId]);
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.showId).LoadChildrenWithAbort(), [routeParams.showId]);
 
 	return (
-		<PageWithNavigation itemKind="Series">
+		<PageWithNavigation icon="Series">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.showId).Item, ItemService.Instance.FindOrCreateItemData(routeParams.showId).Children, LoginService.Instance.User]}
 				whenNotStarted={<LoadingIcon size={48} />}

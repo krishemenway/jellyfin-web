@@ -12,14 +12,14 @@ export const MusicArtist: React.FC = () => {
 	const routeParams = useParams<{ artistId: string }>();
 
 	if (routeParams.artistId === undefined) {
-		return <PageWithNavigation itemKind="MusicArtist"><NotFound /></PageWithNavigation>;
+		return <PageWithNavigation icon="MusicArtist"><NotFound /></PageWithNavigation>;
 	}
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.artistId).LoadItemWithAbort(), [routeParams.artistId]);
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.artistId).LoadChildrenWithAbort(), [routeParams.artistId]);
 
 	return (
-		<PageWithNavigation itemKind="MusicArtist">
+		<PageWithNavigation icon="MusicArtist">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.artistId).Item, ItemService.Instance.FindOrCreateItemData(routeParams.artistId).Children]}
 				whenNotStarted={<LoadingIcon size={48} />}

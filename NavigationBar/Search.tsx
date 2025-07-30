@@ -7,7 +7,7 @@ import { SearchIcon } from "NavigationBar/SearchIcon";
 import { SearchResults, SearchService } from "NavigationBar/SearchService";
 import { Layout } from "Common/Layout";
 import { Button } from "Common/Button";
-import { CloseIcon } from "Common/CloseIcon";
+import { CloseIcon } from "CommonIcons/CloseIcon";
 import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { IconForItemKind } from "Items/IconForItemKind";

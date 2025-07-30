@@ -12,14 +12,14 @@ export const PhotoAlbum: React.FC = () => {
 	const routeParams = useParams<{ albumId: string }>();
 
 	if (routeParams.albumId === undefined) {
-		return <PageWithNavigation itemKind="PhotoAlbum"><NotFound /></PageWithNavigation>;
+		return <PageWithNavigation icon="PhotoAlbum"><NotFound /></PageWithNavigation>;
 	}
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.albumId).LoadItemWithAbort(), [routeParams.albumId]);
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.albumId).LoadChildrenWithAbort(), [routeParams.albumId]);
 
 	return (
-		<PageWithNavigation itemKind="PhotoAlbum">
+		<PageWithNavigation icon="PhotoAlbum">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.albumId).Item, ItemService.Instance.FindOrCreateItemData(routeParams.albumId).Children]}
 				whenNotStarted={<LoadingIcon size={48} />}

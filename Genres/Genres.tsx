@@ -5,7 +5,7 @@ export const Genres: React.FC = () => {
 	// This should include all the genres available on all servers to the user.
 
 	return (
-		<PageWithNavigation itemKind="Genre">
+		<PageWithNavigation icon="Genre">
 			All Genres
 		</PageWithNavigation>
 	)

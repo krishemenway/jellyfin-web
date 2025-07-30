@@ -78,14 +78,14 @@ export const Person: React.FC = () => {
 	const background = useBackgroundStyles();
 
 	if (!routeParams.personId) {
-		return <PageWithNavigation itemKind="Person"><NotFound /></PageWithNavigation>;
+		return <PageWithNavigation icon="Person"><NotFound /></PageWithNavigation>;
 	}
 
 	const personData = PersonService.Instance.FindOrCreatePersonData(routeParams.personId);
 	React.useEffect(() => personData.Load(), [routeParams.personId])
 
 	return (
-		<PageWithNavigation itemKind="Person">
+		<PageWithNavigation icon="Person">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.personId).Item, personData.CreditedItems, LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}

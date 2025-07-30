@@ -9,7 +9,7 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Layout } from "Common/Layout";
 import { LoginService } from "Users/LoginService";
-import { JellyfinIcon } from "Common/JellyfinIcon";
+import { JellyfinIcon } from "CommonIcons/JellyfinIcon";
 import { CenteredModal } from "Common/Modal";
 import { useObservable } from "@residualeffect/rereactor";
 import { FieldLabel } from "Common/FieldLabel";
