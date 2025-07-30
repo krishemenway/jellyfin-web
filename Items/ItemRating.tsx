@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Layout, StyleLayoutProps } from "Common/Layout";
-import { useBackgroundStyles } from "Common/AppStyles";
+import { useBackgroundStyles } from "AppStyles";
 
 export const ItemRating: React.FC<{ item: BaseItemDto }&StyleLayoutProps> = (props) => {
 	const background = useBackgroundStyles();

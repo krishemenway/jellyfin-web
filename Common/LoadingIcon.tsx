@@ -1,5 +1,5 @@
 import * as React from "react";
-import { createStyles } from "Common/AppStyles";
+import { createStyles } from "AppStyles";
 import { IconProps, ApplyIconPropsToSvg } from "Common/IconProps";
 
 const useLoadingStyles = createStyles({

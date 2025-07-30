@@ -3,7 +3,7 @@ import { Button } from "Common/Button";
 import { Checkbox } from "Common/Checkbox";
 import { TranslatedText } from "Common/TranslatedText";
 import { TextField } from "Common/TextField";
-import { useBackgroundStyles } from "Common/AppStyles";
+import { useBackgroundStyles } from "AppStyles";
 import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";

@@ -12,7 +12,7 @@ import { ItemRating } from "Items/ItemRating";
 import { ItemStudios } from "Items/ItemStudios";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { ItemGenres } from "Items/ItemGenres";
-import { useBackgroundStyles } from "Common/AppStyles";
+import { useBackgroundStyles } from "AppStyles";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { ItemOverview } from "Items/ItemOverview";

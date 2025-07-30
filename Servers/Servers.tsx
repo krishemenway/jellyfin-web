@@ -4,7 +4,7 @@ import { ListOf } from "Common/ListOf";
 import { Button } from "Common/Button";
 import { useObservable } from "@residualeffect/rereactor";
 import { ServerConnection, ServerService } from "Servers/ServerService";
-import { useBackgroundStyles } from "Common/AppStyles";
+import { useBackgroundStyles } from "AppStyles";
 import { ConnectToServer } from "Servers/ConnectToServer";
 
 const SelectServerButton: React.FC<{ server: ServerConnection }> = (props) => {

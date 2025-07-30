@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useObservable } from "@residualeffect/rereactor";
-import { useBackgroundStyles } from "Common/AppStyles";
+import { useBackgroundStyles } from "AppStyles";
 import { EditableField } from "Common/EditableField";
 import { ApplyLayoutStyleProps } from "Common/Layout";
 

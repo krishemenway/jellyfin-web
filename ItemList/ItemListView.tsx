@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseItemDto, BaseItemKind, ImageType, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { useComputed } from "@residualeffect/rereactor";
-import { createStyles, useBackgroundStyles } from "Common/AppStyles";
+import { createStyles, useBackgroundStyles, ResponsiveBreakpoint, useBreakpoint } from "AppStyles";
 import { Layout } from "Common/Layout";
 import { ListOf } from "Common/ListOf";
 import { Loading } from "Common/Loading";
@@ -18,7 +18,6 @@ import { useParams } from "react-router-dom";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { ItemListViewOptionsService } from "ItemList/ItemListViewOptionsService";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
-import { ResponsiveBreakpoint, useBreakpoint } from "Common/ResponsiveBreakpointContext";
 import { LoginService } from "Users/LoginService";
 
 export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = (props) => {

@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 import { useLocation } from "react-router-dom";
 import { createUseStyles } from "react-jss";
 import { ObservableArray } from "@residualeffect/reactor";
-import { useBackgroundStyles } from "./AppStyles";
+import { useBackgroundStyles } from "../AppStyles";
 
 const body = document.getElementsByTagName("body")[0];
 const modalRoot = document.createElement('div');

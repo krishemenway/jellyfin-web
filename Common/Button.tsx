@@ -1,6 +1,6 @@
 import * as React from "react";
 import { TranslatedText, useTranslatedText } from "Common/TranslatedText";
-import { useBackgroundStyles } from "Common/AppStyles";
+import { useBackgroundStyles } from "AppStyles";
 import { ApplyLayoutStyleProps, StyleLayoutProps } from "Common/Layout";
 
 interface BaseButtonProps extends StyleLayoutProps {

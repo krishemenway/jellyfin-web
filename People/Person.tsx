@@ -15,7 +15,7 @@ import { ItemImage } from "Items/ItemImage";
 import { ItemService } from "Items/ItemsService";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
-import { useBackgroundStyles } from "Common/AppStyles";
+import { useBackgroundStyles } from "AppStyles";
 import { LinkToItem } from "Items/LinkToItem";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";

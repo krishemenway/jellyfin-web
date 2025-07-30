@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useObservable } from "@residualeffect/rereactor";
 import { TextField } from "Common/TextField";
-import { createStyles, useBackgroundStyles } from "Common/AppStyles";
+import { createStyles, useBackgroundStyles } from "AppStyles";
 import { AnchoredModal } from "Common/Modal";
 import { SearchIcon } from "NavigationBar/SearchIcon";
 import { SearchResults, SearchService } from "NavigationBar/SearchService";

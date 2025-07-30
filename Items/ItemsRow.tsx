@@ -2,7 +2,7 @@ import * as React from "react";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { LinkToItem } from "Items/LinkToItem";
 import { ItemImage } from "Items/ItemImage";
-import { createStyles, useBackgroundStyles } from "Common/AppStyles";
+import { createStyles, useBackgroundStyles } from "AppStyles";
 import { Layout } from "Common/Layout";
 
 interface ItemsRowProps {

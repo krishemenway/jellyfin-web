@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { useBackgroundStyles } from "Common/AppStyles";
+import { useBackgroundStyles } from "AppStyles";
 import { Button } from "Common/Button";
 import { EditIcon } from "Common/EditIcon";
 import { HyperLink } from "Common/HyperLink";

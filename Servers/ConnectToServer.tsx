@@ -6,7 +6,7 @@ import { Button } from "Common/Button";
 import { Form } from "Common/Form";
 import { ServerService } from "Servers/ServerService";
 import { FieldLabel } from "Common/FieldLabel";
-import { useBackgroundStyles } from "Common/AppStyles";
+import { useBackgroundStyles } from "AppStyles";
 
 export const ConnectToServer: React.FC = () => {
 	const background = useBackgroundStyles();

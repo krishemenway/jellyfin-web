@@ -14,7 +14,7 @@ import { ItemImage } from "Items/ItemImage";
 import { Array, Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemTags } from "Items/ItemTags";
 import { ItemRating } from "Items/ItemRating";
-import { useBackgroundStyles } from "Common/AppStyles";
+import { useBackgroundStyles } from "AppStyles";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { Collapsible } from "Common/Collapsible";
 import { Button } from "Common/Button";

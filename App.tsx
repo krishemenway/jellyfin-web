@@ -1,11 +1,10 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, Outlet, createBrowserRouter } from "react-router-dom";
-import { useGlobalStyles } from "Common/AppStyles";
+import { useGlobalStyles, useCalculatedBreakpoint } from "AppStyles";
 import { ResetModalOnLocationChange } from "Common/Modal";
 import { useObservable } from "@residualeffect/rereactor";
 import { ThemeService } from "Users/ThemeService";
-import { useCalculatedBreakpoint } from "Common/ResponsiveBreakpointContext";
 
 import { NotFound } from "Common/NotFound";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
