@@ -5,11 +5,14 @@ import { SortByObjectsFunc, SortByString, SortFuncs } from "Common/Sort";
 import { EditableItemFilter } from "ItemList/EditableItemFilter";
 import { ItemSortOption } from "ItemList/ItemSortOption";
 import { BaseItemKindService } from "Items/BaseItemKindService";
+import { ItemFilterType } from "ItemList/ItemFilterType";
+import { EditableField } from "Common/EditableField";
 
 export class ItemListViewOptions {
-	constructor(label: string, itemKindService: BaseItemKindService|null, data?: ItemViewOptionsData) {
-		this.Label = label;
+	constructor(itemKindService: BaseItemKindService|null, data?: ItemViewOptionsData) {
+		this.Label = new EditableField("Filter", Nullable.ValueOrDefault(data, "New", (d) => d.Label));
 
+		this.ItemKindService = itemKindService;
 		this.NewFilter = new Observable(undefined);
 		this.Filters = new ObservableArray(Nullable.ValueOrDefault(data, [], (d) => d.Filters).map((d) => {
 			const filterType = (itemKindService?.filterOptions ?? []).find((f) => f.type === d.FilterType);
@@ -36,6 +39,14 @@ export class ItemListViewOptions {
 		this.SortByFunc = new Computed(() => this.CreateSortByFunc());
 	}
 
+	public CreateNewFilter(filterOption: ItemFilterType): void {
+		this.NewFilter.Value = new EditableItemFilter(filterOption);
+	}
+
+	public ClearNewFilter(): void {
+		this.NewFilter.Value = undefined;
+	}
+
 	public AddSort(sortFunc: ItemSortOption, reversed: boolean): void {
 		this.SortBy.unshift({
 			LabelKey: sortFunc.labelKey,
@@ -50,7 +61,7 @@ export class ItemListViewOptions {
 		}
 
 		this.Filters.push(this.NewFilter.Value);
-		this.NewFilter.Value = undefined;
+		this.ClearNewFilter();
 	}
 
 	private CreateFilterFunc(): (item: BaseItemDto) => boolean {
@@ -61,7 +72,8 @@ export class ItemListViewOptions {
 		return SortByObjectsFunc(this.SortBy.Value.concat([this.DefaultSort]));
 	}
 
-	public Label: string;
+	public Label: EditableField;
+	public ItemKindService: BaseItemKindService|null;
 
 	public NewFilter: Observable<EditableItemFilter|undefined>;
 

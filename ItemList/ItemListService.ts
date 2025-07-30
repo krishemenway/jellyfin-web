@@ -2,11 +2,16 @@ import { BaseItemDto, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/mode
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
+import { ItemListViewOptions, ItemViewOptionsData } from "ItemList/ItemListViewOptions";
+import { Observable } from "@residualeffect/reactor";
+import { Settings } from "Users/SettingsStore";
+import { BaseItemKindService } from "Items/BaseItemKindService";
 
 export class ItemListService {
 	constructor(id: string) {
 		this.Id = id;
 		this.List = new Receiver("UnknownError");
+		this.ListOptions = new Observable(null);
 	}
 
 	public LoadWithAbort(): () => void {
@@ -18,6 +23,34 @@ export class ItemListService {
 		return () => this.List.ResetIfLoading();
 	}
 
+	public LoadItemListViewOptionsOrNew(settings: Settings, itemKind: BaseItemKindService|null): void {
+		const mostRecent = settings.Read(`MostRecentOption-${this.Id}`) ?? "Default";
+		const allViewOptions = settings.ReadAsJson<ItemViewOptionsData[]>(`AllViewOptions-${this.Id}`, []) ?? [];
+		const mostRecentOption = allViewOptions.find(x => x.Label === mostRecent);
+
+		if (this.ListOptions.Value === null) {
+			this.ListOptions.Value = new ItemListViewOptions(itemKind, mostRecentOption);
+		}
+	}
+
 	public Id: string;
 	public List: Receiver<BaseItemDto[]>;
+	public ListOptions: Observable<ItemListViewOptions|null>;
 }
+
+export const RecentlyAddedViewOptions: ItemViewOptionsData = {
+	Label: "Recently Added",
+	Filters: [],
+	Sorts: [{ SortType: "DateLastContentAdded", Reversed: true, }],
+};
+
+export const ContinueWatchingViewOptions: ItemViewOptionsData = {
+	Label: "Continue Watching",
+	Filters: [{ FilterType: "FilterByContinueWatching", FilterValue: "true" }],
+	Sorts: [{ SortType: "DatePlayed", Reversed: true, }],
+};
+
+export const PresetViewOptions: ItemViewOptionsData[] = [
+	RecentlyAddedViewOptions,
+	ContinueWatchingViewOptions,
+];

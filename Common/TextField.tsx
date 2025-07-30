@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Property } from "csstype";
 import { useObservable } from "@residualeffect/rereactor";
 import { useBackgroundStyles } from "AppStyles";
 import { EditableField } from "Common/EditableField";
@@ -11,8 +12,8 @@ interface TextFieldProps {
 	disabled?: boolean;
 	password?: boolean;
 
-	px?: number;
-	py?: number;
+	px?: Property.PaddingLeft|number;
+	py?: Property.PaddingTop|number;
 
 	onBlur?: () => void;
 }
