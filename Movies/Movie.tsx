@@ -21,6 +21,7 @@ import { TranslatedText } from "Common/TranslatedText";
 import { ListOf } from "Common/ListOf";
 import { LinkToPerson } from "People/LinkToPerson";
 import { LoginService } from "Users/LoginService";
+import { ItemTags } from "Items/ItemTags";
 
 export const Movie: React.FC = () => {
 	const routeParams = useParams<{ movieId: string }>();
@@ -76,6 +77,15 @@ export const Movie: React.FC = () => {
 								<ItemActionsMenu actions={[]} user={user} />
 							</Layout>
 							<ItemOverview item={movie} />
+							<Layout direction="row" gap={8}>
+								<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: 4, py: 4 }} />
+								<ItemTags
+									item={movie}
+									direction="row" gap={8} wrap
+									linkClassName={background.button}
+									linkLayout={{ px: 4, py: 4 }}
+								/>
+							</Layout>
 							<CastAndCrew item={movie} />
 						</Layout>
 					</Layout>
