@@ -13,27 +13,25 @@ import { FilterByHasSubtitles } from "ItemList/ItemFilterTypes/FilterByHasSubtit
 import { FilterByOfficialRating } from "ItemList/ItemFilterTypes/FilterByOfficialRating";
 import { FilterBySeriesStatus } from "ItemList/ItemFilterTypes/FilterBySeriesStatus";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
-import { SortByDatePlayed } from "ItemList/ItemSortTypes/SortByDatePlayed";
 import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
 import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
 import { SortByCriticRating } from "ItemList/ItemSortTypes/SortByCriticRating";
 import { RefreshItemAction } from "MenuActions/RefreshItemAction";
 import { RenameLibraryAction } from "MenuActions/RenameLibraryAction";
-import { EditItemAction } from "MenuActions/EditItemAction";
+import { ManageLibraryAction } from "MenuActions/ManageLIbraryAction";
 
 export const ShowService: BaseItemKindService = {
 	findIcon: (props) => <ShowIcon {...props} />,
 	findUrl: (item) => `/Show/${item.Id}`,
 	listActions: [
 		[
-			EditItemAction,
+			ManageLibraryAction,
 			RefreshItemAction,
 			RenameLibraryAction,
 		],
 	],
 	sortOptions: [
 		SortByName,
-		SortByDatePlayed,
 		SortByDateCreated,
 		SortByCommunityRating,
 		SortByCriticRating,

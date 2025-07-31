@@ -22,7 +22,7 @@ import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { ImageShape } from "Items/ItemImage";
 import { RefreshItemAction } from "MenuActions/RefreshItemAction";
 import { RenameLibraryAction } from "MenuActions/RenameLibraryAction";
-import { EditItemAction } from "MenuActions/EditItemAction";
+import { ManageLibraryAction } from "MenuActions/ManageLIbraryAction";
 
 export const MovieService: BaseItemKindService = {
 	primaryShape: ImageShape.Portrait,
@@ -30,7 +30,7 @@ export const MovieService: BaseItemKindService = {
 	findIcon: (props) => <MovieIcon {...props} />,
 	listActions: [
 		[
-			EditItemAction,
+			ManageLibraryAction,
 			RefreshItemAction,
 			RenameLibraryAction,
 		],
@@ -47,7 +47,6 @@ export const MovieService: BaseItemKindService = {
 	],
 	sortOptions: [
 		SortByName,
-		SortByRandom,
 		SortByCommunityRating,
 		SortByOfficialRating,
 		SortByCriticRating,
@@ -56,5 +55,6 @@ export const MovieService: BaseItemKindService = {
 		SortByPlayCount,
 		SortByPremiereDate,
 		SortByRuntime,
+		SortByRandom,
 	],
 };

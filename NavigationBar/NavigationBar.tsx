@@ -26,7 +26,7 @@ const NavigationButton: React.FC<{ onClick?: (element: HTMLButtonElement) => voi
 	return <Button direction="row" type="button" disabled={props.onClick === undefined} onClick={props.onClick ?? (() => { })} py={4} px={4}><MenuIcon size="1.5em" /></Button>;
 }
 
-const NavigationMenuLinkStyles: Partial<StyleLayoutProps> = { width: "100%", px: 16, py: 8, gap: 8 };
+const NavigationMenuLinkStyles: Partial<StyleLayoutProps> = { width: "100%", px: "1em", py: "1em", gap: ".5em" };
 const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => {
 	const background = useBackgroundStyles();
 	const [anchor, setOpenAnchor] = React.useState<HTMLElement|null>(null);
@@ -90,6 +90,8 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 
 const AuthorizeQuickConnectButton: React.FC<{ onOpened: () => void }> = (props) => {
 	const [authorizeQuickConnectOpen, setAuthorizeQuickConnectOpen] = React.useState(false);
+
+	// TODO check if the server supports quick connect and bail early if it doesn't
 
 	return (
 		<>
