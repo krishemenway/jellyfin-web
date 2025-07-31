@@ -15,8 +15,8 @@ export function useBreakpoint(): ResponsiveBreakpoint {
 }
 
 export function useCalculatedBreakpoint(): [ResponsiveBreakpoint, React.Provider<ResponsiveBreakpoint>] {
-	const isTablet = useMediaQuery("(min-width: 600px) and (max-width: 979px)");
-	const isDesktop = useMediaQuery("(min-width: 980px)", true);
+	const isTablet = useMediaQuery("(min-width: 40em) and (max-width: 69.9999999em)");
+	const isDesktop = useMediaQuery("(min-width: 70em)", true);
 
 	if (isDesktop) {
 		return [ResponsiveBreakpoint.Desktop, Context.Provider];
