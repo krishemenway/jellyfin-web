@@ -7,6 +7,8 @@ import { Observable } from "@residualeffect/reactor";
 import { Settings } from "Users/SettingsStore";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 
+export type LoadListByPromiseFunc = (abort: AbortController, id: string) => Promise<BaseItemDto[]>;
+
 export class ItemListService {
 	constructor(id: string) {
 		this.Id = id;
@@ -14,12 +16,17 @@ export class ItemListService {
 		this.ListOptions = new Observable(null);
 	}
 
-	public LoadWithAbort(): () => void {
+	public LoadWithAbort(loadFunc?: LoadListByPromiseFunc): () => void {
 		if (this.List.HasData.Value) {
 			return () => { };
 		}
 
-		this.List.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: this.Id, fields: ["DateCreated", "Genres", "Tags"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((response) => response.data.Items ?? []));
+		if (loadFunc !== undefined) {
+			this.List.Start((a) => loadFunc(a, this.Id));
+		} else {
+			this.List.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: this.Id, fields: ["DateCreated", "Genres", "Tags", "SortName"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((response) => response.data.Items ?? []));
+		}
+
 		return () => this.List.ResetIfLoading();
 	}
 

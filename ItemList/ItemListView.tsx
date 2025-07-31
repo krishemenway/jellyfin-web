@@ -18,14 +18,14 @@ import { useParams } from "react-router-dom";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { LoginService } from "Users/LoginService";
-import { ItemListService } from "./ItemListService";
+import { ItemListService, LoadListByPromiseFunc } from "ItemList/ItemListService";
 
-export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = (props) => {
+export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind; loadFunc?: LoadListByPromiseFunc }> = (props) => {
 	const routeParams = useParams();
 	const libraryId = routeParams[props.paramName];
 	const itemList = ItemService.Instance.FindOrCreateItemList(libraryId);
 
-	React.useEffect(() => itemList.LoadWithAbort(), [libraryId]);
+	React.useEffect(() => itemList.LoadWithAbort(props.loadFunc), [itemList, props.loadFunc]);
 	React.useEffect(() => SettingsStore.Instance.LoadSettings(libraryId), [libraryId]);
 
 	if (!Nullable.HasValue(libraryId)) {
