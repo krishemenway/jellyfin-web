@@ -1,12 +1,13 @@
 import { BaseItemDto, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { SortByObjectsFunc, SortByString, SortFuncs } from "Common/Sort";
+import { SortByObjectsFunc, SortFuncs } from "Common/Sort";
 import { EditableItemFilter } from "ItemList/EditableItemFilter";
 import { ItemSortOption } from "ItemList/ItemSortOption";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { EditableField } from "Common/EditableField";
+import { SortByName } from "./ItemSortTypes/SortByName";
 
 export class ItemListViewOptions {
 	constructor(itemKindService: BaseItemKindService|null, data?: ItemViewOptionsData) {
@@ -26,17 +27,11 @@ export class ItemListViewOptions {
 				throw new Error("Missing sort type");
 			}
 
-			return { LabelKey: sort.labelKey, Sort: sort.sortFunc, Reversed: d.Reversed };
+			return this.CreateSortFunc(sort, d.Reversed);
 		}));
 
-		this.DefaultSort = {
-			LabelKey: "LabelName",
-			Sort: SortByString((i) => i.Name),
-			Reversed: false,
-		};
-
-		this.FilterFunc = new Computed(() => this.CreateFilterFunc())
-		this.SortByFunc = new Computed(() => this.CreateSortByFunc());
+		this.FilterFunc = new Computed(() => (item) => this.Filters.Value.every((f) => f.ShowItem(item)))
+		this.SortByFunc = new Computed(() => SortByObjectsFunc(this.SortBy.Value.concat([this.CreateSortFunc(SortByName, false)])));
 	}
 
 	public CreateNewFilter(filterOption: ItemFilterType): void {
@@ -64,12 +59,8 @@ export class ItemListViewOptions {
 		this.ClearNewFilter();
 	}
 
-	private CreateFilterFunc(): (item: BaseItemDto) => boolean {
-		return (item) => this.Filters.Value.every((f) => f.ShowItem(item));
-	}
-
-	private CreateSortByFunc(): (a: BaseItemDto, b: BaseItemDto) => number {
-		return SortByObjectsFunc(this.SortBy.Value.concat([this.DefaultSort]));
+	private CreateSortFunc(sortOption: ItemSortOption, reversed: boolean): SortFuncs<BaseItemDto> {
+		return { LabelKey: sortOption.labelKey, Sort: sortOption.sortFunc, Reversed: reversed };
 	}
 
 	public Label: EditableField;
@@ -79,7 +70,6 @@ export class ItemListViewOptions {
 
 	public Filters: ObservableArray<EditableItemFilter>;
 	public SortBy: ObservableArray<SortFuncs<BaseItemDto>>;
-	public DefaultSort: SortFuncs<BaseItemDto>;
 
 	public FilterFunc: Computed<(item: BaseItemDto) => boolean>;
 	public SortByFunc: Computed<(a: BaseItemDto, b: BaseItemDto) => number>;
