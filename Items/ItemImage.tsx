@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useComputed } from "@residualeffect/rereactor";
 import { BaseItemDto, ImageType } from "@jellyfin/sdk/lib/generated-client/models";
 import { getImageApi } from "@jellyfin/sdk/lib/utils/api";
 import { ServerService } from "Servers/ServerService";
@@ -10,7 +9,7 @@ export enum ImageShape {
 	Square,
 }
 
-export const ItemImage: React.FC<{ className?: string, item: BaseItemDto, type: ImageType, maxWidth?: string|number, fillWidth?: number, fillHeight?: number }> = (props) => {
+export const ItemImage: React.FC<{ className?: string, item: BaseItemDto, type: ImageType, maxWidth?: string|number, fillWidth?: number, fillHeight?: number; lazy?: boolean }> = (props) => {
 	const imageUrl = React.useMemo(() => getImageApi(ServerService.Instance.CurrentApi).getItemImageUrl(props.item, props.type, { fillWidth: props.fillWidth, fillHeight: props.fillHeight}), [props.item, props.type, props.fillWidth, props.fillHeight]);
 
 	return (
@@ -19,6 +18,7 @@ export const ItemImage: React.FC<{ className?: string, item: BaseItemDto, type: 
 			src={imageUrl}
 			alt={props.item.Name ?? undefined}
 			style={{ maxWidth: props.maxWidth }}
+			loading={props.lazy === true ? "lazy" : "eager"}
 		/>
 	);
 };

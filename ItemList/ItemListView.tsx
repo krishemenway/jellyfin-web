@@ -93,8 +93,8 @@ const ItemsGridItem: React.FC<{ item: BaseItemDto; imageType?: ImageType; shape:
 	const shapeClass = props.shape === ImageShape.Landscape ? classes.landscape : props.shape == ImageShape.Portrait ? classes.portrait : classes.square;
 
 	return (
-		<LinkToItem item={props.item} className={`${background.transparent} ${shapeClass}`} direction="column" justifyContent="center" alignItems="center" py={8} px={8} gap={16} width={{ itemsPerRow: props.itemsPerRow, gap: 10 }}>
-			<ItemImage item={props.item} className={classes.itemImage} type={props.imageType ?? ImageType.Primary} fillWidth={width} fillHeight={height} />
+		<LinkToItem item={props.item} className={`${background.button} ${shapeClass}`} direction="column" justifyContent="center" alignItems="center" py={8} px={8} gap={16} width={{ itemsPerRow: props.itemsPerRow, gap: 10 }}>
+			<ItemImage item={props.item} className={classes.itemImage} type={props.imageType ?? ImageType.Primary} fillWidth={width} fillHeight={height} lazy />
 			<Layout direction="column" py={4} textAlign="center">{props.item.Name}</Layout>
 		</LinkToItem>
 	);
