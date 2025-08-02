@@ -19,6 +19,7 @@ import { SortByCriticRating } from "ItemList/ItemSortTypes/SortByCriticRating";
 import { RefreshItemAction } from "MenuActions/RefreshItemAction";
 import { RenameLibraryAction } from "MenuActions/RenameLibraryAction";
 import { ManageLibraryAction } from "MenuActions/ManageLIbraryAction";
+import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 
 export const ShowService: BaseItemKindService = {
 	findIcon: (props) => <ShowIcon {...props} />,
@@ -29,12 +30,6 @@ export const ShowService: BaseItemKindService = {
 			RefreshItemAction,
 			RenameLibraryAction,
 		],
-	],
-	sortOptions: [
-		SortByName,
-		SortByDateCreated,
-		SortByCommunityRating,
-		SortByCriticRating,
 	],
 	filterOptions: [
 		FilterByName,
@@ -48,5 +43,12 @@ export const ShowService: BaseItemKindService = {
 		FilterBySeriesStatus,
 		FilterByHasSubtitles,
 		FilterByOfficialRating,
-	]
+	],
+	sortOptions: [
+		SortByName,
+		SortByDateCreated,
+		SortByCommunityRating,
+		SortByCriticRating,
+		SortByRandom,
+	],
 };
