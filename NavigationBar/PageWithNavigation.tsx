@@ -8,9 +8,9 @@ export const PageWithNavigation: React.FC<{ icon: React.ReactElement|BaseItemKin
 	const icon = typeof props.icon === "string" ? <IconForItemKind itemKind={props.icon} size={22} /> : props.icon;
 
 	return (
-		<Layout direction="column" px="2em" py="1em">
+		<Layout direction="column" px="2em" py="1em" height="100%">
 			<NavigationBar icon={icon} />
-			<Layout direction="column" gap={16} className="page-content" children={props.children} />
+			<Layout direction="column" gap={16} className="page-content" children={props.children} grow />
 		</Layout>
 	);
 };

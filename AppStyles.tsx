@@ -83,6 +83,9 @@ export const useGlobalStyles = createUseStyles({
 			borderCollapse: "collapse",
 			borderSpacing: 0,
 		},
+		"tbody tr:nth-child(odd)": {
+			background: "var(--TableOddRowBackgroundColor)",
+		},
 	},
 });
 

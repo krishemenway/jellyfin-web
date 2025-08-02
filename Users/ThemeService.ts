@@ -31,6 +31,8 @@ export interface Theme {
 	PrimaryTextColor: string;
 	SecondaryTextColor: string;
 
+	TableOddRowBackgroundColor: string;
+
 	FontFamily: string;
 }
 
@@ -60,6 +62,8 @@ export class ThemeService {
 
 		root.style.setProperty("--PrimaryTextColor", theme.PrimaryTextColor);
 		root.style.setProperty("--SecondaryTextColor", theme.SecondaryTextColor);
+
+		root.style.setProperty("--TableOddRowBackgroundColor", theme.TableOddRowBackgroundColor);
 
 		this.ApplyButtonStatesCssVariables(root, "Button", theme.Button);
 		this.ApplyButtonStatesCssVariables(root, "ButtonSelected", theme.ButtonSelected);
@@ -94,6 +98,8 @@ export class ThemeService {
 
 			PrimaryTextColor: "rgba(255, 255, 255, 0.8)",
 			SecondaryTextColor: "rgba(200, 200, 200, 0.8)",
+
+			TableOddRowBackgroundColor: "rgba(255, 255, 255, 0.05)",
 
 			Button: {
 				Idle: {     BackgroundColor: "rgba(255, 255, 255, 0.09)", TextColor: "rgba(255, 255, 255, 0.8)", BorderColor: "rgba(255, 255, 255, 0.05)" },
