@@ -24,19 +24,19 @@ import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
 
 export const Movie: React.FC = () => {
-	const routeParams = useParams<{ movieId: string }>();
+	const movieId = useParams<{ movieId: string }>().movieId;
 	const background = useBackgroundStyles();
 
-	if (!Nullable.HasValue(routeParams.movieId)) {
+	if (!Nullable.HasValue(movieId)) {
 		return <PageWithNavigation icon="Movie"><NotFound /></PageWithNavigation>;
 	}
 
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.movieId).LoadItemWithAbort(), [routeParams.movieId]);
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(movieId).LoadItemWithAbort(), [movieId]);
 
 	return (
 		<PageWithNavigation icon="Movie">
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.movieId).Item, LoginService.Instance.User]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(movieId).Item, LoginService.Instance.User]}
 				whenNotStarted={<LoadingIcon size={48} />}
 				whenLoading={<LoadingIcon size={48} />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}

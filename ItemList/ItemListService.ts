@@ -1,4 +1,4 @@
-import { BaseItemDto, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemKind, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
@@ -6,33 +6,29 @@ import { ItemListViewOptions, ItemViewOptionsData } from "ItemList/ItemListViewO
 import { Observable } from "@residualeffect/reactor";
 import { Settings } from "Users/SettingsStore";
 import { BaseItemKindService } from "Items/BaseItemKindService";
-
-export type LoadListByPromiseFunc = (abort: AbortController, id: string) => Promise<BaseItemDto[]>;
+import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 export class ItemListService {
-	constructor(id: string) {
-		this.Id = id;
+	constructor(libraryId: string, itemKind: BaseItemKind) {
+		this.LibraryId = libraryId;
+		this.ItemKind = itemKind;
 		this.List = new Receiver("UnknownError");
 		this.ListOptions = new Observable(null);
+		this.DefaultLoadItems = (a, id) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: id, fields: ["DateCreated", "Genres", "Tags", "SortName"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((response) => response.data.Items ?? []);
 	}
 
-	public LoadWithAbort(loadFunc?: LoadListByPromiseFunc): () => void {
+	public LoadWithAbort(): () => void {
 		if (this.List.HasData.Value) {
 			return () => { };
 		}
 
-		if (loadFunc !== undefined) {
-			this.List.Start((a) => loadFunc(a, this.Id));
-		} else {
-			this.List.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: this.Id, fields: ["DateCreated", "Genres", "Tags", "SortName"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((response) => response.data.Items ?? []));
-		}
-
+		this.List.Start((a) => (BaseItemKindServiceFactory.FindOrNull(this.ItemKind)?.loadList ?? this.DefaultLoadItems)(a, this.LibraryId));
 		return () => this.List.ResetIfLoading();
 	}
 
 	public LoadItemListViewOptionsOrNew(settings: Settings, itemKind: BaseItemKindService|null): void {
-		const mostRecent = settings.Read(`MostRecentOption-${this.Id}`) ?? "Default";
-		const allViewOptions = settings.ReadAsJson<ItemViewOptionsData[]>(`AllViewOptions-${this.Id}`, []) ?? [];
+		const mostRecent = settings.Read(`MostRecentOption-${this.LibraryId}`) ?? "Default";
+		const allViewOptions = settings.ReadAsJson<ItemViewOptionsData[]>(`AllViewOptions-${this.LibraryId}`, []) ?? [];
 		const mostRecentOption = allViewOptions.find(x => x.Label === mostRecent);
 
 		if (this.ListOptions.Value === null) {
@@ -40,9 +36,11 @@ export class ItemListService {
 		}
 	}
 
-	public Id: string;
+	public LibraryId: string;
+	public ItemKind: BaseItemKind;
 	public List: Receiver<BaseItemDto[]>;
 	public ListOptions: Observable<ItemListViewOptions|null>;
+	private DefaultLoadItems: (a: AbortController, id: string) => Promise<BaseItemDto[]>;
 }
 
 export const RecentlyAddedViewOptions: ItemViewOptionsData = {

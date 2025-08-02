@@ -18,19 +18,22 @@ import { useParams } from "react-router-dom";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { LoginService } from "Users/LoginService";
-import { ItemListService, LoadListByPromiseFunc } from "ItemList/ItemListService";
+import { ItemListService } from "ItemList/ItemListService";
 
-export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind; loadFunc?: LoadListByPromiseFunc }> = (props) => {
+// TODO Item Selecting with ability to execute Bulk Actions on them
+
+export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = (props) => {
 	const routeParams = useParams();
 	const libraryId = routeParams[props.paramName];
-	const itemList = ItemService.Instance.FindOrCreateItemList(libraryId);
-
-	React.useEffect(() => itemList.LoadWithAbort(props.loadFunc), [itemList, props.loadFunc]);
-	React.useEffect(() => SettingsStore.Instance.LoadSettings(libraryId), [libraryId]);
-
+	
 	if (!Nullable.HasValue(libraryId)) {
 		return <PageWithNavigation icon={props.itemKind}><NotFound /></PageWithNavigation>;
 	}
+
+	const itemList = ItemService.Instance.FindOrCreateItemList(libraryId, props.itemKind);
+
+	React.useEffect(() => itemList.LoadWithAbort(), [itemList]);
+	React.useEffect(() => SettingsStore.Instance.LoadSettings(libraryId), [libraryId]);
 
 	return (
 		<PageWithNavigation icon={props.itemKind}>

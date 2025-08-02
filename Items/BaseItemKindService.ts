@@ -9,9 +9,12 @@ export interface BaseItemKindService {
 	primaryShape?: ImageShape;
 	findIcon?: (iconProps: IconProps, collectionType?: CollectionType) => JSX.Element;
 	findUrl?: (item: BaseItemDto) => string;
+
 	filterOptions?: ItemFilterType[];
 	sortOptions?: ItemSortOption[];
 	listActions?: MenuAction[][];
+	loadList?: (a: AbortController, libraryId: string) => Promise<BaseItemDto[]>;
+
 	personCreditName?: (item: BaseItemDto) => string;
 	searchResultName?: (item: BaseItemDto) => string;
 }

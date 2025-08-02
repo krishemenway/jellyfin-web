@@ -1,5 +1,6 @@
 import { ItemDataService } from "Items/ItemDataService";
 import { ItemListService } from "ItemList/ItemListService";
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
 
 export class ItemService {
 	constructor() {
@@ -7,20 +8,12 @@ export class ItemService {
 		this._itemListByItemId = {};
 	}
 
-	public FindOrCreateItemData(id?: string): ItemDataService {
-		if (id === undefined) {
-			throw new Error("Missing id for loading");
-		}
-
+	public FindOrCreateItemData(id: string): ItemDataService {
 		return this._itemDataByItemId[id] ?? (this._itemDataByItemId[id] = new ItemDataService(id));
 	}
 
-	public FindOrCreateItemList(id: string|undefined): ItemListService {
-		if (id === undefined) {
-			throw new Error("Missing id for loading");
-		}
-
-		return this._itemListByItemId[id] ?? (this._itemListByItemId[id] = new ItemListService(id));
+	public FindOrCreateItemList(libraryId: string, kind: BaseItemKind): ItemListService {
+		return this._itemListByItemId[libraryId+kind] ?? (this._itemListByItemId[libraryId+kind] = new ItemListService(libraryId, kind));
 	}
 
 	private _itemDataByItemId: Record<string, ItemDataService>;

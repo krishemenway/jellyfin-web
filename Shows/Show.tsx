@@ -37,18 +37,19 @@ import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 export const Show: React.FC = () => {
 	const background = useBackgroundStyles();
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
+	const showId = routeParams.showId;
 
-	if (!Nullable.HasValue(routeParams.showId)) {
+	if (!Nullable.HasValue(showId)) {
 		return <PageWithNavigation icon="Series"><NotFound /></PageWithNavigation>;
 	}
 
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.showId).LoadItemWithAbort(), [routeParams.showId]);
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.showId).LoadChildrenWithAbort(), [routeParams.showId]);
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(showId).LoadItemWithAbort(), [showId]);
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(showId).LoadChildrenWithAbort(), [showId]);
 
 	return (
 		<PageWithNavigation icon="Series">
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.showId).Item, ItemService.Instance.FindOrCreateItemData(routeParams.showId).Children, LoginService.Instance.User]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(showId).Item, ItemService.Instance.FindOrCreateItemData(showId).Children, LoginService.Instance.User]}
 				whenNotStarted={<LoadingIcon size={48} />}
 				whenLoading={<LoadingIcon size={48} />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
@@ -155,13 +156,18 @@ export const Show: React.FC = () => {
 
 const SeasonForShow: React.FC<{ season: BaseItemDto }> = (props) => {
 	const [seasonOpen, setSeasonOpen] = React.useState(props.season.IndexNumber === 1);
+	const seasonId = props.season.Id;
 
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(props.season.Id).LoadChildrenWithAbort(), [props.season]);
+	if (!Nullable.HasValue(seasonId)) {
+		return <></>;
+	}
+
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(seasonId).LoadChildrenWithAbort(), [props.season]);
 
 	return (
 		<Layout direction="column" minWidth="100%">
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(props.season.Id).Children]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(seasonId).Children]}
 				whenNotStarted={<LoadingIcon size={48} />}
 				whenLoading={<LoadingIcon size={48} />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}

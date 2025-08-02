@@ -7,21 +7,22 @@ import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { NotFound } from "Common/NotFound";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export const MusicArtist: React.FC = () => {
-	const routeParams = useParams<{ artistId: string }>();
+	const artistId = useParams().artistId;
 
-	if (routeParams.artistId === undefined) {
+	if (!Nullable.HasValue(artistId)) {
 		return <PageWithNavigation icon="MusicArtist"><NotFound /></PageWithNavigation>;
 	}
 
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.artistId).LoadItemWithAbort(), [routeParams.artistId]);
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(routeParams.artistId).LoadChildrenWithAbort(), [routeParams.artistId]);
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(artistId).LoadItemWithAbort(), [artistId]);
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(artistId).LoadChildrenWithAbort(), [artistId]);
 
 	return (
 		<PageWithNavigation icon="MusicArtist">
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.artistId).Item, ItemService.Instance.FindOrCreateItemData(routeParams.artistId).Children]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(artistId).Item, ItemService.Instance.FindOrCreateItemData(artistId).Children]}
 				whenNotStarted={<LoadingIcon size={48} />}
 				whenLoading={<LoadingIcon size={48} />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
