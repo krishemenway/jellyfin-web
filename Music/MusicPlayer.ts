@@ -41,39 +41,43 @@ export class MusicPlayer {
 
 	public GoNext(): void {
 		const current = this.Current.Value;
-		const nextIndexToPlay = current !== undefined
+		const nextIndexToPlay = Nullable.HasValue(current)
 			? this.Playlist.AsArray().indexOf(current.Item) + 1
 			: 0;
 
-		const itemToPlay = this.Playlist.AsArray()[nextIndexToPlay];
-		if (itemToPlay !== undefined && Nullable.HasValue(itemToPlay.Id)) {
-			this.Load(itemToPlay);
-		}
+		Nullable.TryExecute(this.Playlist.AsArray()[nextIndexToPlay], (item) => {
+			this.Load(item);
+		});
 	}
 
 	public GoBack(): void {
 		const current = this.Current.Value;
-		const nextIndexToPlay = current !== undefined
+		const nextIndexToPlay = Nullable.HasValue(current)
 			? Math.max(this.Playlist.AsArray().indexOf(current.Item) - 1, 0)
 			: 0;
 
-		const itemToPlay = this.Playlist.AsArray()[nextIndexToPlay];
-		if (itemToPlay !== undefined && Nullable.HasValue(itemToPlay.Id)) {
-			this.Load(itemToPlay);
-		}
+		Nullable.TryExecute(this.Playlist.AsArray()[nextIndexToPlay], (item) => {
+			this.Load(item);
+		});
 	}
 
 	public Load(audio: BaseItemDto): void {
-		const shouldStartPlaying = Nullable.HasValue(this.Current.Value) ? !this.Current.Value.Audio.paused : false;
+		const onTimeUpdate = (evt: Event) => this.OnTimeUpdate(evt);
+		const onLoaded = () => { audioElement.play(); };
+		const onEnded = () => this.GoNext();
 
-		this.Unload();
+		this.Stop();
+		
+		Nullable.TryExecute(this.Current.Value, (current) => {
+			current.Audio.removeEventListener("timeupdate", onTimeUpdate);
+			current.Audio.removeEventListener("loadeddata", onLoaded);
+			current.Audio.removeEventListener("ended", onEnded);
+		});
 
 		const audioElement = new Audio(this.CreateAudioUrl(audio));
-		audioElement.addEventListener("timeupdate", (evt) => this.OnTimeUpdate(evt));
-
-		if (shouldStartPlaying) {
-			audioElement.addEventListener("loadeddata", () => { audioElement.play(); })
-		}
+		audioElement.addEventListener("timeupdate", onTimeUpdate);
+		audioElement.addEventListener("loadeddata", onLoaded);
+		audioElement.addEventListener("ended", onEnded);
 
 		this.CurrentProgress.Value = 0;
 		this.Current.Value = {
@@ -103,10 +107,6 @@ export class MusicPlayer {
 
 	public Unload(): void {
 		this.Stop();
-
-		if (Nullable.HasValue(this.Current.Value)) {
-			this.Current.Value.Audio.removeEventListener("timeupdate", (evt) => this.OnTimeUpdate(evt));
-		}
 	}
 
 	private OnTimeUpdate(evt: Event): void {
