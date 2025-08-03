@@ -44,7 +44,7 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-				whenReceived={(items, settings, user, libraries) => <ItemsGrid libraryId={libraryId} itemList={itemList} items={items} settings={settings} itemKind={props.itemKind} user={user} libraries={libraries} />}
+				whenReceived={(items, settings, user, libraries) => <ItemsGrid libraryId={libraryId} itemList={itemList} items={items.List} settings={settings} itemKind={props.itemKind} user={user} libraries={libraries} />}
 			/>
 		</PageWithNavigation>
 	);

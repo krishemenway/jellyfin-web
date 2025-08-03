@@ -25,6 +25,12 @@ export class MusicPlayer {
 		}
 	}
 
+	public ChangeProgress(newProgress: number): void {
+		Nullable.TryExecute(this.Current.Value, (current) => {
+			current.Audio.fastSeek(newProgress);
+		});
+	}
+
 	public ToggleShuffle(): void {
 		this.Shuffle.Value = !this.Shuffle.Value;
 	}
@@ -42,31 +48,6 @@ export class MusicPlayer {
 		const itemToPlay = this.Playlist.AsArray()[nextIndexToPlay];
 		if (itemToPlay !== undefined && Nullable.HasValue(itemToPlay.Id)) {
 			this.Load(itemToPlay);
-		}
-	}
-
-	public Stop(): void {
-		const current = this.Current.Value;
-
-		if (Nullable.HasValue(current)) {
-			current.Audio.pause();
-			current.Audio.fastSeek(0);
-		}
-	}
-
-	public Pause(): void {
-		const current = this.Current.Value;
-
-		if (Nullable.HasValue(current)) {
-			current.Audio.pause();
-		}
-	}
-
-	public Play(): void {
-		const current = this.Current.Value;
-
-		if (Nullable.HasValue(current)) {
-			current.Audio.play();
 		}
 	}
 
@@ -99,6 +80,25 @@ export class MusicPlayer {
 			Item: audio,
 			Audio: audioElement,
 		};
+	}
+
+	public Stop(): void {
+		Nullable.TryExecute(this.Current.Value, (current) => {
+			current.Audio.pause();
+			current.Audio.fastSeek(0);
+		});
+	}
+
+	public Pause(): void {
+		Nullable.TryExecute(this.Current.Value, (current) => {
+			current.Audio.pause();
+		});
+	}
+
+	public Play(): void {
+		Nullable.TryExecute(this.Current.Value, (current) => {
+			current.Audio.play();
+		});
 	}
 
 	public Unload(): void {
