@@ -83,7 +83,7 @@ export class DateTime {
 		return parts.join(':');
 	}
 
-	private static TicksPerHour = 36000000000;
-	private static TicksPerMinute = 600000000;
-	private static TicksPerSecond = 10000000;
+	public static TicksPerSecond = 10000000;
+	public static TicksPerMinute = DateTime.TicksPerSecond * 60;
+	public static TicksPerHour = DateTime.TicksPerMinute * 60;
 }

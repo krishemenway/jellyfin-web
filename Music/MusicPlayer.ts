@@ -17,6 +17,14 @@ export class MusicPlayer {
 		this.Shuffle = new Observable(false);
 	}
 
+	public Add(item: BaseItemDto): void {
+		this.Playlist.push(item);
+
+		if (this.Playlist.length === 1) {
+			this.Load(item);
+		}
+	}
+
 	public ToggleShuffle(): void {
 		this.Shuffle.Value = !this.Shuffle.Value;
 	}
@@ -57,9 +65,7 @@ export class MusicPlayer {
 	public Play(): void {
 		const current = this.Current.Value;
 
-		if (!Nullable.HasValue(current)) {
-			this.GoNext();
-		} else {
+		if (Nullable.HasValue(current)) {
 			current.Audio.play();
 		}
 	}
@@ -77,10 +83,34 @@ export class MusicPlayer {
 	}
 
 	public Load(audio: BaseItemDto): void {
+		const shouldStartPlaying = Nullable.HasValue(this.Current.Value) ? !this.Current.Value.Audio.paused : false;
+
+		this.Unload();
+
+		const audioElement = new Audio(this.CreateAudioUrl(audio));
+		audioElement.addEventListener("timeupdate", (evt) => this.OnTimeUpdate(evt));
+
+		if (shouldStartPlaying) {
+			audioElement.addEventListener("loadeddata", () => { audioElement.play(); })
+		}
+
+		this.CurrentProgress.Value = 0;
 		this.Current.Value = {
 			Item: audio,
-			Audio: new Audio(this.CreateAudioUrl(audio)),
+			Audio: audioElement,
 		};
+	}
+
+	public Unload(): void {
+		this.Stop();
+
+		if (Nullable.HasValue(this.Current.Value)) {
+			this.Current.Value.Audio.removeEventListener("timeupdate", (evt) => this.OnTimeUpdate(evt));
+		}
+	}
+
+	private OnTimeUpdate(evt: Event): void {
+		this.CurrentProgress.Value = (evt.currentTarget as HTMLAudioElement).currentTime;
 	}
 
 	private CreateAudioUrl(item: BaseItemDto): string {

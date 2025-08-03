@@ -84,7 +84,7 @@ const albumColumns: Column[] = [
 function useSongColumns(): Column[] {
 	const background = useBackgroundStyles();
 	const columns: Column[] = [
-		{ Name: "Title", GetValue: (i) => <Button type="button" className={background.transparent} onClick={() => { MusicPlayer.Instance.Playlist.push(i); }}>{i.Name}</Button>, Width: "30%" },
+		{ Name: "Title", GetValue: (i) => <Button type="button" className={background.transparent} onClick={() => { MusicPlayer.Instance.Add(i); }}>{i.Name}</Button>, Width: "30%" },
 		{ Name: "Album", GetValue: (i) => i.Album, Width: "30%" },
 		{ Name: "Artist", GetValue: (i) => i.AlbumArtist, Width: "25%" },
 		{ Name: "LabelDuration", GetValue: (i) => DateTime.ConvertTicksToDurationString(i.RunTimeTicks), Width: "5%", Align: "center" },
@@ -160,7 +160,7 @@ const MusicPlayerStatus: React.FC<{ className: string }> = (props) => {
 
 			<Layout direction="row" gap="1em">
 				<Slider min={0} max={1000} current={currentProgress} grow onChange={(newValue) => { MusicPlayer.Instance.CurrentProgress.Value = newValue; }} />
-				<Layout direction="row">00:00 / 00:00</Layout>
+				<Layout direction="row"><Duration ticks={currentProgress * DateTime.TicksPerSecond} /> / <Duration ticks={current?.Item.RunTimeTicks} /></Layout>
 			</Layout>
 
 			<Layout direction="row" fontSize="1.5em" justifyContent="space-between">
@@ -179,6 +179,11 @@ const MusicPlayerStatus: React.FC<{ className: string }> = (props) => {
 			</Layout>
 		</Layout>
 	);
+};
+
+const Duration: React.FC<{ ticks: number|undefined|null }> = (props) => {
+	const totalProgress = React.useMemo(() => !Nullable.HasValue(props.ticks) ? "00:00" : DateTime.ConvertTicksToDurationString(props.ticks), [props.ticks])
+	return <>{totalProgress}</>;
 };
 
 const CurrentPlaylist: React.FC<{ user: UserDto, className: string }> = (props) => {
