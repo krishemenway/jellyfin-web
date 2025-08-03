@@ -1,19 +1,15 @@
 import * as React from "react";
-import { Property } from "csstype";
 import { useObservable } from "@residualeffect/rereactor";
 import { useBackgroundStyles } from "AppStyles";
 import { EditableField } from "Common/EditableField";
-import { ApplyLayoutStyleProps } from "Common/Layout";
+import { ApplyLayoutStyleProps, LayoutWithoutChildrenProps } from "Common/Layout";
 
-interface TextFieldProps {
+interface TextFieldProps extends LayoutWithoutChildrenProps {
 	className?: string;
 
 	field: EditableField;
 	disabled?: boolean;
 	password?: boolean;
-
-	px?: Property.PaddingLeft|number;
-	py?: Property.PaddingTop|number;
 
 	onBlur?: () => void;
 }

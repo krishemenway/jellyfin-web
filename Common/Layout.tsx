@@ -10,16 +10,11 @@ export interface PercentWidthWithGap {
 	gap: number;
 }
 
-export interface StyleLayoutProps {
-	direction?: Property.FlexDirection;
-	gap?: Property.Gap|number;
+export interface LayoutWithoutChildrenProps {
 	grow?: Property.FlexGrow|true;
 	basis?: Property.FlexBasis;
-
-	alignItems?: Property.AlignItems;
 	alignSelf?: Property.AlignSelf;
-	justifyContent?: Property.JustifyContent;
-	wrap?: boolean;
+	justifySelf?: Property.JustifySelf;
 
 	position?: Property.Position;
 	top?: number,
@@ -54,6 +49,14 @@ export interface StyleLayoutProps {
 	minHeight?: number|string;
 	maxHeight?: number|string;
 	height?: number|string;
+}
+
+export interface StyleLayoutProps extends LayoutWithoutChildrenProps {
+	direction?: Property.FlexDirection;
+	gap?: Property.Gap|number;
+	alignItems?: Property.AlignItems;
+	justifyContent?: Property.JustifyContent;
+	wrap?: boolean;
 }
 
 interface LayoutParams extends StyleLayoutPropsWithRequiredDirection {

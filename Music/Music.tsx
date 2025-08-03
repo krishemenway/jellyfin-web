@@ -30,6 +30,7 @@ import { MusicPlayer } from "./MusicPlayer";
 import { useObservable } from "@residualeffect/rereactor";
 import { PageTitle } from "Common/PageTitle";
 import { UserViewStore } from "Users/UserViewStore";
+import { Slider } from "Common/Slider";
 
 export const Music: React.FC = () => {
 	const libraryId = useParams().libraryId;
@@ -147,29 +148,33 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 };
 
 const MusicPlayerStatus: React.FC<{ className: string }> = (props) => {
+	const current = useObservable(MusicPlayer.Instance.Current);
+	const currentProgress = useObservable(MusicPlayer.Instance.CurrentProgress);
+
 	return (
 		<Layout direction="column" className={props.className} py="1em" px="1em" gap="1em">
 			<Layout direction="row" fontSize="1.5em" gap=".5em">
-				<PauseIcon size="1em" />
-				<TranslatedText textKey="PriorityIdle" elementType="div" />
+				{current === undefined && <><StopIcon size="1em" /><TranslatedText textKey="PriorityIdle" elementType="div" /></>}
+				{current !== undefined && <><PlayIcon size="1em" />{current.Item.Name}</>}
 			</Layout>
 
-			<Layout direction="row">
-				<progress style={{ width: "100%" }} value={33.33} max={100} />
+			<Layout direction="row" gap="1em">
+				<Slider min={0} max={1000} current={currentProgress} grow onChange={(newValue) => { MusicPlayer.Instance.CurrentProgress.Value = newValue; }} />
+				<Layout direction="row">00:00 / 00:00</Layout>
 			</Layout>
 
 			<Layout direction="row" fontSize="1.5em" justifyContent="space-between">
 				<Layout direction="row" gap=".25em">
-					<Button type="button" px=".25em" py=".25em" onClick={() => { console.error("Missing Implementation"); }}><BackwardIcon size="1em" /></Button>
-					<Button type="button" px=".25em" py=".25em" onClick={() => { console.error("Missing Implementation"); }}><PlayIcon size="1em" /></Button>
-					<Button type="button" px=".25em" py=".25em" onClick={() => { console.error("Missing Implementation"); }}><PauseIcon size="1em" /></Button>
-					<Button type="button" px=".25em" py=".25em" onClick={() => { console.error("Missing Implementation"); }}><StopIcon size="1em" /></Button>
-					<Button type="button" px=".25em" py=".25em" onClick={() => { console.error("Missing Implementation"); }}><ForwardIcon size="1em" /></Button>
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.GoBack(); }}><BackwardIcon size="1em" /></Button>
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Play(); }}><PlayIcon size="1em" /></Button>
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Pause(); }}><PauseIcon size="1em" /></Button>
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Stop(); }}><StopIcon size="1em" /></Button>
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.GoNext(); }}><ForwardIcon size="1em" /></Button>
 				</Layout>
 
 				<Layout direction="row" gap=".25em">
-					<Button type="button" px=".25em" py=".25em" onClick={() => { console.error("Missing Implementation"); }}><RepeatIcon size="1em" /></Button>
-					<Button type="button" px=".25em" py=".25em" onClick={() => { console.error("Missing Implementation"); }}><ShuffleIcon size="1em" /></Button>
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.ToggleRepeat(); }}><RepeatIcon size="1em" /></Button>
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.ToggleShuffle(); }}><ShuffleIcon size="1em" /></Button>
 				</Layout>
 			</Layout>
 		</Layout>
