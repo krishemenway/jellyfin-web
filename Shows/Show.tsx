@@ -11,7 +11,7 @@ import { ListOf } from "Common/ListOf";
 import { ItemsRow } from "Items/ItemsRow";
 import { BaseItemDto, BaseItemPerson } from "@jellyfin/sdk/lib/generated-client/models";
 import { ItemImage } from "Items/ItemImage";
-import { Array, Nullable } from "Common/MissingJavascriptFunctions";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemTags } from "Items/ItemTags";
 import { ItemRating } from "Items/ItemRating";
 import { useBackgroundStyles } from "AppStyles";
@@ -33,6 +33,7 @@ import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
+import { PageTitle } from "Common/PageTitle";
 
 export const Show: React.FC = () => {
 	const background = useBackgroundStyles();
@@ -55,6 +56,7 @@ export const Show: React.FC = () => {
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(show, seasons, user) => (
 					<Layout direction="row" gap={16} py={16}>
+						<PageTitle text={show.Name} />
 						<Layout direction="column" maxWidth="20%" gap={8}>
 							<Layout direction="column" position="relative">
 								<ItemImage item={show} type="Primary" />
@@ -190,8 +192,8 @@ const SeasonForShow: React.FC<{ season: BaseItemDto }> = (props) => {
 
 const ProductionYearRangeForEpisodes: React.FC<{ episodes: BaseItemDto[] }> = (props) => {
 	const allYears = React.useMemo(() => props.episodes.filter((e) => Nullable.HasValue(e.ProductionYear)).map((e) => e.ProductionYear), [props.episodes]);
-	const earliest = React.useMemo(() => Array.Min(allYears, (e) => e), [allYears]);
-	const newest = React.useMemo(() => Array.Max(allYears, (e) => e), [allYears]);
+	const earliest = React.useMemo(() => Linq.Min(allYears, (e) => e), [allYears]);
+	const newest = React.useMemo(() => Linq.Max(allYears, (e) => e), [allYears]);
 
 	return <>({earliest !== newest ? `${earliest} - ${newest}` : earliest})</>;
 };

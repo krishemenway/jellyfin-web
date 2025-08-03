@@ -1,5 +1,5 @@
 import { Computed, Observable } from "@residualeffect/reactor";
-import { Array, Nullable } from "Common/MissingJavascriptFunctions";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 
 export class EditableField {
 	constructor(fieldId: string, defaultValue?: string, canMakeRequestFunc?: () => string, beforeChange?: (newValue: string) => string) {
@@ -13,7 +13,7 @@ export class EditableField {
 		this.HasChanged = new Computed(() => this.Current.Value !== this.Saved.Value);
 		this.ServerErrorMessage = new Observable<string>("");
 
-		this.ErrorMessage = new Computed<string>(() => Array.Coalesce([this.CanMakeRequestFunc()], this.ServerErrorMessage.Value));
+		this.ErrorMessage = new Computed<string>(() => Linq.Coalesce([this.CanMakeRequestFunc()], this.ServerErrorMessage.Value));
 	}
 
 	public CanMakeRequest(): boolean {

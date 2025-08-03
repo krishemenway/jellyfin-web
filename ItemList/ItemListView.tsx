@@ -7,7 +7,7 @@ import { ListOf } from "Common/ListOf";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
-import { Nullable } from "Common/MissingJavascriptFunctions";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
 import { ItemListFilters } from "ItemList/ItemListFilters";
 import { ImageShape, ItemImage } from "Items/ItemImage";
@@ -19,6 +19,8 @@ import { Settings, SettingsStore } from "Users/SettingsStore";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { LoginService } from "Users/LoginService";
 import { ItemListService } from "ItemList/ItemListService";
+import { UserViewStore } from "Users/UserViewStore";
+import { PageTitle } from "Common/PageTitle";
 
 // TODO Item Selecting with ability to execute Bulk Actions on them
 
@@ -38,20 +40,21 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 	return (
 		<PageWithNavigation icon={props.itemKind}>
 			<Loading
-				receivers={[itemList.List, SettingsStore.Instance.Settings, LoginService.Instance.User]}
+				receivers={[itemList.List, SettingsStore.Instance.Settings, LoginService.Instance.User, UserViewStore.Instance.UserViews]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-				whenReceived={(items, settings, user) => <ItemsGrid id={libraryId} itemList={itemList} items={items} settings={settings} itemKind={props.itemKind} user={user} />}
+				whenReceived={(items, settings, user, libraries) => <ItemsGrid libraryId={libraryId} itemList={itemList} items={items} settings={settings} itemKind={props.itemKind} user={user} libraries={libraries} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const ItemsGrid: React.FC<{ id: string, items: BaseItemDto[]; itemList: ItemListService; itemKind: BaseItemKind; settings: Settings; user: UserDto }> = (props) => {
+const ItemsGrid: React.FC<{ libraryId: string, items: BaseItemDto[]; itemList: ItemListService; itemKind: BaseItemKind; settings: Settings; user: UserDto; libraries: BaseItemDto[] }> = (props) => {
 	const breakpoint = useBreakpoint();
 	const itemKindService = BaseItemKindServiceFactory.FindOrNull(props.itemKind);
 	const listOptions = useObservable(props.itemList.ListOptions);
+	const library = Linq.Single(props.libraries, (l) => l.Id === props.libraryId);
 
 	const filteredAndSortedItems = useComputed(() => {
 		const options = props.itemList.ListOptions.Value;
@@ -70,6 +73,7 @@ const ItemsGrid: React.FC<{ id: string, items: BaseItemDto[]; itemList: ItemList
 
 	return (
 		<Layout direction="column" gap={16} py={16}>
+			<PageTitle text={library?.Name} />
 			{listOptions && <ItemListFilters user={props.user} listOptions={listOptions} />}
 
 			<ListOf

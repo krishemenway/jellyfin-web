@@ -8,6 +8,7 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { NotFound } from "Common/NotFound";
 import { Nullable } from "Common/MissingJavascriptFunctions";
+import { PageTitle } from "Common/PageTitle";
 
 export const MusicAlbum: React.FC = () => {
 	const routeParams = useParams<{ albumId: string; songId?: string; }>();
@@ -29,6 +30,7 @@ export const MusicAlbum: React.FC = () => {
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(album, children) => (
 					<Layout direction="column">
+						<PageTitle text={album.Name} />
 						{album.Name} {children.length}
 					</Layout>
 				)}

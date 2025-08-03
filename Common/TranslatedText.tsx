@@ -5,6 +5,11 @@ import { Receiver } from "Common/Receiver";
 import * as defaultLanguage from "strings/en-us.json";
 import { ApplyLayoutStyleProps, StyleLayoutProps } from "Common/Layout";
 
+export interface TranslationRequest {
+	Key: string;
+	KeyProps?: string[];
+}
+
 class TranslationService {
 	constructor() {
 		this.CurrentCulture = new Observable<string>(this.DefaultLanguage());

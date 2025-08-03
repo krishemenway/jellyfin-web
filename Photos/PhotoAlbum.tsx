@@ -8,6 +8,7 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { NotFound } from "Common/NotFound";
 import { Nullable } from "Common/MissingJavascriptFunctions";
+import { PageTitle } from "Common/PageTitle";
 
 export const PhotoAlbum: React.FC = () => {
 	const albumId = useParams().albumId;
@@ -28,6 +29,7 @@ export const PhotoAlbum: React.FC = () => {
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(album, children) => (
 					<Layout direction="column">
+						<PageTitle text={album.Name} />
 						{album.Name} {children.length}
 					</Layout>
 				)}

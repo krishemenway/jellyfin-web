@@ -8,6 +8,7 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { NotFound } from "Common/NotFound";
 import { Nullable } from "Common/MissingJavascriptFunctions";
+import { PageTitle } from "Common/PageTitle";
 
 export const MusicArtist: React.FC = () => {
 	const artistId = useParams().artistId;
@@ -26,9 +27,10 @@ export const MusicArtist: React.FC = () => {
 				whenNotStarted={<LoadingIcon size={48} />}
 				whenLoading={<LoadingIcon size={48} />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(album, children) => (
+				whenReceived={(artist, children) => (
 					<Layout direction="column">
-						{album.Name} {children.length}
+						<PageTitle text={artist.Name} />
+						{artist.Name} {children.length}
 					</Layout>
 				)}
 			/>

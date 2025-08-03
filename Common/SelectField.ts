@@ -1,5 +1,5 @@
 import { Computed, Observable } from "@residualeffect/reactor";
-import { Array, Nullable } from "Common/MissingJavascriptFunctions";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 
 export class SelectField<TOptionType> {
 	constructor(fieldId: string, allOptions: TOptionType[], defaultValue?: TOptionType, canMakeRequestFunc?: () => string, beforeChange?: (newValue: TOptionType) => TOptionType) {
@@ -15,7 +15,7 @@ export class SelectField<TOptionType> {
 		this.HasChanged = new Computed(() => this.Current.Value !== this.Saved.Value);
 		this.ServerErrorMessage = new Observable("");
 
-		this.ErrorMessage = new Computed(() => Array.Coalesce([this.CanMakeRequestFunc()], this.ServerErrorMessage.Value));
+		this.ErrorMessage = new Computed(() => Linq.Coalesce([this.CanMakeRequestFunc()], this.ServerErrorMessage.Value));
 	}
 
 	public CanMakeRequest(): boolean {

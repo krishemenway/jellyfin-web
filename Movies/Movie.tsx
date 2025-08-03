@@ -22,6 +22,7 @@ import { ListOf } from "Common/ListOf";
 import { LinkToPerson } from "People/LinkToPerson";
 import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
+import { PageTitle } from "Common/PageTitle";
 
 export const Movie: React.FC = () => {
 	const movieId = useParams<{ movieId: string }>().movieId;
@@ -42,6 +43,7 @@ export const Movie: React.FC = () => {
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(movie, user) => (
 					<Layout direction="row" gap={16} py={16}>
+						<PageTitle text={movie.Name} />
 						<Layout direction="column" maxWidth="20%" gap={8}>
 							<Layout direction="column" gap={8}>
 								<Layout direction="column" position="relative">

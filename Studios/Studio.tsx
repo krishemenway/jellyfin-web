@@ -1,13 +1,38 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { ItemService } from "Items/ItemsService";
+import { NotFound } from "Common/NotFound";
+import { Nullable } from "Common/MissingJavascriptFunctions";
+import { Layout } from "Common/Layout";
+import { Loading } from "Common/Loading";
+import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
+import { PageTitle } from "Common/PageTitle";
 
 export const Studio: React.FC = () => {
-	const routeParams = useParams<{ studioId: string }>();
+	const studioId = useParams().studioId;
+
+	if (!Nullable.HasValue(studioId)) {
+		return <PageWithNavigation icon="Studio"><NotFound /></PageWithNavigation>;
+	}
+
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(studioId).LoadItemWithAbort(), [studioId]);
 
 	return (
 		<PageWithNavigation icon="Studio">
-			Studio {routeParams.studioId}
+			<Loading
+				receivers={[ItemService.Instance.FindOrCreateItemData(studioId).Item]}
+				whenNotStarted={<LoadingIcon size={48} />}
+				whenLoading={<LoadingIcon size={48} />}
+				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
+				whenReceived={(studio) => (
+					<Layout direction="row" gap={16} py={16}>
+						<PageTitle text={studio.Name} />
+						<Layout elementType="h1" direction="row" fontSize="1.5em">{studio.Name}</Layout>
+					</Layout>
+				)}
+			/>
 		</PageWithNavigation>
 	)
 };

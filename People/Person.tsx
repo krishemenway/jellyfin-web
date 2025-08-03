@@ -22,6 +22,7 @@ import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { ItemOverview } from "Items/ItemOverview";
 import { LoginService } from "Users/LoginService";
 import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
+import { PageTitle } from "Common/PageTitle";
 
 class PersonData {
 	constructor(id: string) {
@@ -93,6 +94,7 @@ export const Person: React.FC = () => {
 				whenNotStarted={<LoadingIcon size={48} />}
 				whenReceived={(person, creditedItems, user) => (
 					<Layout direction="row" gap={16} py={16}>
+						<PageTitle text={person.Name} />
 						<Layout direction="column" maxWidth="20%" gap={8}>
 							<ItemImage item={person} type="Primary" />
 

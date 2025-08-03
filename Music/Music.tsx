@@ -6,7 +6,7 @@ import { Loading } from "Common/Loading";
 import { ItemService } from "Items/ItemsService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
-import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
+import { DateTime, Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { LoginService } from "Users/LoginService";
 import { Layout } from "Common/Layout";
@@ -28,6 +28,8 @@ import { SaveIcon } from "CommonIcons/SaveIcon";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { MusicPlayer } from "./MusicPlayer";
 import { useObservable } from "@residualeffect/rereactor";
+import { PageTitle } from "Common/PageTitle";
+import { UserViewStore } from "Users/UserViewStore";
 
 export const Music: React.FC = () => {
 	const libraryId = useParams().libraryId;
@@ -48,11 +50,11 @@ export const Music: React.FC = () => {
 	return (
 		<PageWithNavigation icon="Audio">
 			<Loading
-				receivers={[SettingsStore.Instance.Settings, LoginService.Instance.User]}
+				receivers={[SettingsStore.Instance.Settings, LoginService.Instance.User, UserViewStore.Instance.UserViews]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-				whenReceived={(settings, user) => <LoadedMusicLibrary libraryId={libraryId} settings={settings} user={user} />}
+				whenReceived={(settings, user, libraries) => <LoadedMusicLibrary libraryId={libraryId} settings={settings} user={user} libraries={libraries} />}
 			/>
 		</PageWithNavigation>
 	);
@@ -92,15 +94,17 @@ function useSongColumns(): Column[] {
 	return columns;
 }
 
-const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user: UserDto }> = (props) => {
+const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user: UserDto; libraries: BaseItemDto[] }> = (props) => {
 	const background = useBackgroundStyles();
 	const [songColumns] = [useSongColumns()];
 	const albumList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "MusicAlbum");
 	const artistList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "MusicArtist");
 	const songList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "Audio");
+	const library = Linq.Single(props.libraries, (l) => l.Id === props.libraryId);
 
 	return (
 		<Layout direction="row" height="100%" py="1em" gap="1em">
+			<PageTitle text={library.Name!} />
 			<Layout direction="column" width="25%" gap="1em">
 				<MusicPlayerStatus className={background.panel} />
 				<CurrentPlaylist className={background.panel} user={props.user} />

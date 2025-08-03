@@ -1,4 +1,14 @@
-export class Array {
+export class Linq {
+	public static Single<T>(array: T[], matchFunc: (t: T) => boolean): T {
+		const result = array.filter(matchFunc);
+
+		if (result.length !== 1) {
+			throw new Error(`Tried to search array expecting exactly one item and found ${result.length} items`)
+		}
+
+		return result[0];
+	}
+
 	public static Min<T>(array: T[], valueSelector: (t: T) => string|number|null|undefined): T|null {
 		if (array.length === 0) {
 			return null;
