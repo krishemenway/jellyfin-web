@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TableProps, TableVirtuoso } from "react-virtuoso";
+import { TableProps, TableVirtuoso, Virtuoso } from "react-virtuoso";
 import { useParams } from "react-router-dom";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { Loading } from "Common/Loading";
@@ -157,8 +157,12 @@ const MusicPlayerStatus: React.FC<{ className: string }> = (props) => {
 
 	return (
 		<Layout direction="column" className={props.className} py="1em" px="1em" gap="1em">
-			<Layout direction="row" fontSize="1.5em" gap=".5em">
-				{Nullable.ValueOrDefault(current, <><StopIcon size="1em" /><TranslatedText textKey="PriorityIdle" elementType="div" /></>, (current) => (<><PlayIcon size="1em" />{current.PlaylistItem.Item.Name}</>))}
+			<Layout direction="row" fontSize="1.5em" gap=".5em" height="1.3em">
+				{Nullable.ValueOrDefault(current, <StopIcon size="1em" />, () => <PlayIcon size="1em" />)}
+
+				<Layout direction="row" overflowX="hidden" width="100%" textOverflow="ellipsis" whiteSpace="nowrap" display="block" grow>
+					{Nullable.ValueOrDefault(current, <TranslatedText textKey="PriorityIdle" />, (c) => <>{c.PlaylistItem.Item.Name}</>)}
+				</Layout>
 			</Layout>
 
 			<Layout direction="row" gap="1em">
@@ -220,17 +224,29 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string }> = (props) 
 			</Layout>
 
 			<Layout direction="column" grow>
-				<TableVirtuoso
+				<Virtuoso
 					data={itemsInPlaylist}
 					totalCount={itemsInPlaylist.length}
 					style={{ height: "100%", width: "100%" }}
-					components={{ Table: ({ style, ...props }: TableProps) => <table {...props} style={{ ...style, width: "100%" }} /> }}
 					itemContent={(index, data) => (
-						<>
-							<td style={{ padding: ".5em", width:  "5%", textAlign: "center" }}>{Nullable.ValueOrDefault(current, <DragIcon size="1em" />, (c) => c.PlaylistItem === data ? <PlayIcon size="1em" /> : <DragIcon size="1em" />)}</td>
-							<td style={{ padding: ".5em", width: "80%", }}><Button type="button" className={background.transparent} onClick={() => { MusicPlayer.Instance.GoIndex(index)}}>{data.Item.Name}</Button></td>
-							<td style={{ padding: ".5em", width: "15%", textAlign: "right" }}>{DateTime.ConvertTicksToDurationString(data.Item.RunTimeTicks)}</td>
-						</>
+						<Layout direction="row" position="relative">
+							<Layout direction="column" alignItems="center" justifyContent="center" position="absolute" top={0} bottom={0} left={0} width="5%">
+								{Nullable.ValueOrDefault(current, <DragIcon size="1em" />, (c) => c.PlaylistItem === data ? <PlayIcon size="1em" /> : <DragIcon size="1em" />)}
+							</Layout>
+
+							<Button width="100%" px="5%" type="button" textAlign="start" className={background.transparent} onClick={() => { MusicPlayer.Instance.GoIndex(index)}}>
+								<Layout direction="column" px=".5em" py=".5em" width="80%">{data.Item.Name}</Layout>
+								<Layout direction="column" px=".5em" py=".5em" alignItems="end" width="20%">{DateTime.ConvertTicksToDurationString(data.Item.RunTimeTicks)}</Layout>
+							</Button>
+
+							<Button
+								className={background.transparent}
+								type="button" onClick={() => { MusicPlayer.Instance.Remove(data); }}
+								direction="column" alignItems="center" justifyContent="center"
+								position="absolute" top={0} bottom={0} right={0} width="5%">
+								<DeleteIcon size="1em" />
+							</Button>
+						</Layout>
 					)}
 				/>
 			</Layout>

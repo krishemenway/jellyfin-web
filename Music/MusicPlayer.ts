@@ -33,6 +33,10 @@ export class MusicPlayer {
 		}
 	}
 
+	public Remove(item: PlaylistItem): void {
+		this.Playlist.remove(item);
+	}
+
 	public ToggleShuffle(): void {
 		this.Shuffle.Value = !this.Shuffle.Value;
 	}

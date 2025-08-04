@@ -28,6 +28,8 @@ export interface LayoutWithoutChildrenProps {
 
 	fontSize?: Property.FontSize;
 	textAlign?: Property.TextAlign;
+	textOverflow?: Property.TextOverflow;
+	whiteSpace?: Property.WhiteSpace;
 
 	mx?: number,
 	my?: number;
@@ -94,8 +96,15 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		bottom: props?.bottom,
 		left: props?.left,
 		right: props?.right,
-		overflowY: props?.overflowY,
+
 		overflowX: props?.overflowX,
+		overflowY: props?.overflowY,
+
+		fontSize: props?.fontSize,
+		textAlign: props?.textAlign,
+		textOverflow: props?.textOverflow,
+		whiteSpace: props?.whiteSpace,
+
 		marginTop: props?.my,
 		marginBottom: props?.my,
 		marginLeft: props?.mx,
@@ -115,8 +124,6 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		minHeight: props?.minHeight,
 		maxHeight: props?.maxHeight,
 		height: props?.height,
-		fontSize: props?.fontSize,
-		textAlign: props?.textAlign,
 	};
 }
 
