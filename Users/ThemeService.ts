@@ -85,7 +85,7 @@ export class ThemeService {
 		{
 			Name: "Default",
 			FontFamily: "Segoe UI",
-			PageBackgroundColor: "#101010",
+			PageBackgroundColor: "#050505",
 
 			PanelBackgroundColor: "#202020",
 			PanelBorderColor: "rgba(255, 255, 255, 0.12)",
