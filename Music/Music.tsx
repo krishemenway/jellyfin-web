@@ -46,7 +46,7 @@ export const Music: React.FC = () => {
 
 	React.useEffect(() => artistList.LoadWithAbort(), [artistList]);
 	React.useEffect(() => albumList.LoadWithAbort([{ Key: "AlbumCountByArtistId", GetKeysForItem: (i) => i.AlbumArtists?.map((a) => a.Id) ?? [] }]), [albumList]);
-	React.useEffect(() => songList.LoadWithAbort([{ Key: "SongCountByArtistId", GetKeysForItem: (i) => i.AlbumArtists?.map((a) => a.Id) ?? [] }, { Key: "SongCountByAlbumId", GetKeysForItem: (i) => [i.AlbumId] }]), [songList]);
+	React.useEffect(() => songList.LoadWithAbort([{ Key: "SongCountByArtistId", GetKeysForItem: (i) => i.Artists?.map((a) => a) ?? [] }, { Key: "SongCountByAlbumId", GetKeysForItem: (i) => [i.AlbumId] }]), [songList]);
 	React.useEffect(() => SettingsStore.Instance.LoadSettings(libraryId), [libraryId]);
 
 	return (
@@ -97,7 +97,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 									columns={[
 										{ name: "Artist", getValue: (i) => i.Name, width: "80%", textAlign: "start" },
 										{ name: "Albums", getValue: (i, stats) => Nullable.ValueOrDefault(stats[0][i.Id ?? ""], "0", (n) => n.toLocaleString()), width: "10%", textAlign: "center" },
-										{ name: "Songs", getValue: (artist, stats) => Nullable.ValueOrDefault(stats[1][artist.Id ?? ""], "0", (n) => n.toLocaleString()), width: "10%", textAlign: "center" },
+										{ name: "Songs", getValue: (artist, stats) => Nullable.ValueOrDefault(stats[1][artist.Name ?? ""], "0", (n) => n.toLocaleString()), width: "10%", textAlign: "center" },
 									]}
 								/>
 							)}
@@ -137,7 +137,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 								columns={[
 									{ name: "Title", getValue: (i) => <Button type="button" textAlign="start" className={background.transparent} onClick={() => { MusicPlayer.Instance.Add(i); }}>{i.Name}</Button>, width: "30%", textAlign: "start" },
 									{ name: "Album", getValue: (i) => i.Album, width: "30%", textAlign: "start" },
-									{ name: "Artist", getValue: (i) => i.AlbumArtist, width: "25%", textAlign: "start" },
+									{ name: "Artist", getValue: (i) => Nullable.ValueOrDefault(i.Artists, [], a => a).join(", "), width: "25%", textAlign: "start" },
 									{ name: "LabelDuration", getValue: (i) => DateTime.ConvertTicksToDurationString(i.RunTimeTicks), width: "5%", textAlign: "center" },
 									{ name: "Track", getValue: (i) => i.IndexNumber?.toString(), width: "5%", textAlign: "center" },
 									{ name: "LabelYear", getValue: (i) => i.ProductionYear?.toString(), width: "5%", textAlign: "center" },
