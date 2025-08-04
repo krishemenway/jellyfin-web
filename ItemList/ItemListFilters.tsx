@@ -80,8 +80,8 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 				<PickFilterModal filterOptions={props.listOptions.ItemKindService?.filterOptions ?? []} onPicked={(option) => props.listOptions.CreateNewFilter(option)} onClosed={() => setAddFilterOpen(false)} />
 			</AnchoredModal>
 
-			<AnchoredModal anchorElement={filterButtonRef} open={newFilter !== undefined} anchorAlignment="center" opensInDirection="right" onClosed={props.listOptions.ClearNewFilter}>
-				{newFilter && <ConfigureFilterModal listOptions={props.listOptions} newFilter={newFilter} onClosed={props.listOptions.ClearNewFilter} />}
+			<AnchoredModal anchorElement={filterButtonRef} open={newFilter !== undefined} anchorAlignment="center" opensInDirection="right" onClosed={() => props.listOptions.ClearNewFilter()}>
+				{newFilter && <ConfigureFilterModal listOptions={props.listOptions} newFilter={newFilter} onClosed={() => props.listOptions.ClearNewFilter()} />}
 			</AnchoredModal>
 
 			<AnchoredModal anchorElement={sortButtonRef} open={addSortOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => setAddSortOpen(false)} maxWidth="20%">
