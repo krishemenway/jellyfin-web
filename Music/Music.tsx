@@ -154,6 +154,8 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 const MusicPlayerStatus: React.FC<{ className: string }> = (props) => {
 	const current = useObservable(MusicPlayer.Instance.Current);
 	const currentProgress = useObservable(MusicPlayer.Instance.CurrentProgress);
+	const isRepeating = useObservable(MusicPlayer.Instance.Repeat);
+	const isShuffling = useObservable(MusicPlayer.Instance.Shuffle);
 
 	return (
 		<Layout direction="column" className={props.className} py="1em" px="1em" gap="1em">
@@ -180,8 +182,8 @@ const MusicPlayerStatus: React.FC<{ className: string }> = (props) => {
 				</Layout>
 
 				<Layout direction="row" gap=".25em">
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.ToggleRepeat(); }}><RepeatIcon size="1em" /></Button>
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.ToggleShuffle(); }}><ShuffleIcon size="1em" /></Button>
+					<Button type="button" px=".25em" py=".25em" selected={isRepeating} onClick={() => { MusicPlayer.Instance.ToggleRepeat(); }}><RepeatIcon size="1em" /></Button>
+					<Button type="button" px=".25em" py=".25em" selected={isShuffling} onClick={() => { MusicPlayer.Instance.ToggleShuffle(); }}><ShuffleIcon size="1em" /></Button>
 				</Layout>
 			</Layout>
 		</Layout>

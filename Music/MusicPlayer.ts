@@ -1,6 +1,6 @@
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Observable, ObservableArray } from "@residualeffect/reactor";
-import { Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable, NumberLimits } from "Common/MissingJavascriptFunctions";
 import { ServerService } from "Servers/ServerService";
 
 interface PlayItem {
@@ -46,11 +46,35 @@ export class MusicPlayer {
 	}
 
 	public GoNext(): void {
-		this.GoIndex(Nullable.ValueOrDefault(this.Current.Value, 0, (current) => this.Playlist.AsArray().indexOf(current.PlaylistItem) + 1));
+		if (this.Shuffle.Value) {
+			this.GoShuffle();
+		} else if (this.Repeat.Value) {
+			this.GoIndex(NumberLimits.NoGreaterThan(this.CurrentIndex() + 1, this.Playlist.length - 1, 0));
+		} else {
+			const nextIndex = this.CurrentIndex() + 1;
+
+			if (nextIndex < this.Playlist.length) {
+				this.GoIndex(nextIndex);
+			}
+		}
 	}
 
 	public GoBack(): void {
-		this.GoIndex(Nullable.ValueOrDefault(this.Current.Value, 0, (current) => Math.max(this.Playlist.AsArray().indexOf(current.PlaylistItem) - 1, 0)));
+		if (this.Shuffle.Value) {
+			this.GoShuffle();
+		} else if (this.Repeat.Value) {
+			this.GoIndex(NumberLimits.NoLessThan(this.CurrentIndex() - 1, 0, this.Playlist.length - 1));
+		} else {
+			const nextIndex = this.CurrentIndex() - 1;
+
+			if (nextIndex > -1) {
+				this.GoIndex(nextIndex);
+			}
+		}
+	}
+
+	public GoShuffle(): void {
+		this.GoIndex(Math.round(Math.random() * this.Playlist.AsArray().length));
 	}
 
 	public GoIndex(index: number): void {
@@ -106,6 +130,10 @@ export class MusicPlayer {
 
 	private OnTimeUpdate(evt: Event): void {
 		this.CurrentProgress.Value = (evt.currentTarget as HTMLAudioElement).currentTime;
+	}
+
+	private CurrentIndex(): number {
+		return Nullable.ValueOrDefault(this.Current.Value, -1, (c) => this.Playlist.AsArray().indexOf(c.PlaylistItem));
 	}
 
 	private CreateAudioUrl(item: BaseItemDto): string {

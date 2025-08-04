@@ -52,6 +52,24 @@ export class Nullable {
 	}
 }
 
+export class NumberLimits {
+	public static NoLessThan(value: number, noLessThanValue: number, valueWhenLessThan?: number) {
+		if (value < noLessThanValue) {
+			return valueWhenLessThan ?? noLessThanValue;
+		}
+
+		return value;
+	}
+
+	public static NoGreaterThan(value: number, noGreaterThanValue: number, valueWhenGreaterThan?: number) {
+		if (value > noGreaterThanValue) {
+			return valueWhenGreaterThan ?? noGreaterThanValue;
+		}
+
+		return value;
+	}
+}
+
 export class DateTime {
 	public static ConvertTicksToDurationString(ticks: number|null|undefined): string {
 		const parts = [];
