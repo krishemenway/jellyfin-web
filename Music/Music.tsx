@@ -9,7 +9,7 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { DateTime, Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { LoginService } from "Users/LoginService";
-import { Layout } from "Common/Layout";
+import { ApplyLayoutStyleProps, Layout, LayoutWithoutChildrenProps } from "Common/Layout";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { NotFound } from "Common/NotFound";
 import { useBackgroundStyles } from "AppStyles";
@@ -31,6 +31,7 @@ import { useObservable } from "@residualeffect/rereactor";
 import { PageTitle } from "Common/PageTitle";
 import { UserViewStore } from "Users/UserViewStore";
 import { Slider } from "Common/Slider";
+import { DragIcon } from "CommonIcons/DragIcon";
 
 export const Music: React.FC = () => {
 	const libraryId = useParams().libraryId;
@@ -61,11 +62,9 @@ export const Music: React.FC = () => {
 	);
 };
 
-interface Column {
-	Name: string;
-	GetValue: (item: BaseItemDto, stats: Record<string, number>[]) => JSX.Element|string|undefined|null;
-	Width?: string;
-	Align?: "center"|"start"|"end";
+interface Column extends LayoutWithoutChildrenProps {
+	name: string;
+	getValue: (item: BaseItemDto, stats: Record<string, number>[]) => JSX.Element|string|undefined|null;
 }
 
 const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user: UserDto; libraries: BaseItemDto[] }> = (props) => {
@@ -96,9 +95,9 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 									items={artists.List}
 									stats={[albums.Stats["AlbumCountByArtistId"], songs.Stats["SongCountByArtistId"]]}
 									columns={[
-										{ Name: "Artist", GetValue: (i) => i.Name, Width: "80%", Align: "start" },
-										{ Name: "Albums", GetValue: (i, stats) => stats[0][i.Id!].toString(), Width: "10%", Align: "center" },
-										{ Name: "Songs", GetValue: (i, stats) => stats[1][i.Id!].toString(), Width: "10%", Align: "center" },
+										{ name: "Artist", getValue: (i) => i.Name, width: "80%", textAlign: "start" },
+										{ name: "Albums", getValue: (i, stats) => Nullable.ValueOrDefault(stats[0][i.Id ?? ""], "0", (n) => n.toLocaleString()), width: "10%", textAlign: "center" },
+										{ name: "Songs", getValue: (artist, stats) => Nullable.ValueOrDefault(stats[1][artist.Id ?? ""], "0", (n) => n.toLocaleString()), width: "10%", textAlign: "center" },
 									]}
 								/>
 							)}
@@ -115,10 +114,10 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 									items={albums.List}
 									stats={[songs.Stats["SongCountByAlbumId"]]}
 									columns={[
-										{ Name: "Album", GetValue: (i) => i.Name, Width: "40%", Align: "start" },
-										{ Name: "Artist", GetValue: (i) => i.AlbumArtist, Width: "40%", Align: "start" },
-										{ Name: "LabelYear", GetValue: (i) => i.ProductionYear?.toString(), Width: "10%", Align: "center" },
-										{ Name: "Songs", GetValue: (i, stats) => stats[0][i.Id!].toString(), Width: "10%", Align: "center" },
+										{ name: "Album", getValue: (i) => i.Name, width: "40%", textAlign: "start" },
+										{ name: "Artist", getValue: (i) => i.AlbumArtist, width: "40%", textAlign: "start" },
+										{ name: "LabelYear", getValue: (i) => i.ProductionYear?.toString(), width: "10%", textAlign: "center" },
+										{ name: "Songs", getValue: (album, stats) => Nullable.ValueOrDefault(stats[0][album.Id ?? ""], "0", (n) => n.toLocaleString()), width: "10%", textAlign: "center" },
 									]}
 								/>
 							)}
@@ -136,12 +135,12 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 							<LoadedItems
 								items={songs.List}
 								columns={[
-									{ Name: "Title", GetValue: (i) => <Button type="button" textAlign="start" className={background.transparent} onClick={() => { MusicPlayer.Instance.Add(i); }}>{i.Name}</Button>, Width: "30%", Align: "start" },
-									{ Name: "Album", GetValue: (i) => i.Album, Width: "30%", Align: "start" },
-									{ Name: "Artist", GetValue: (i) => i.AlbumArtist, Width: "25%", Align: "start" },
-									{ Name: "LabelDuration", GetValue: (i) => DateTime.ConvertTicksToDurationString(i.RunTimeTicks), Width: "5%", Align: "center" },
-									{ Name: "Track", GetValue: (i) => i.IndexNumber?.toString(), Width: "5%", Align: "center" },
-									{ Name: "LabelYear", GetValue: (i) => i.ProductionYear?.toString(), Width: "5%", Align: "center" },
+									{ name: "Title", getValue: (i) => <Button type="button" textAlign="start" className={background.transparent} onClick={() => { MusicPlayer.Instance.Add(i); }}>{i.Name}</Button>, width: "30%", textAlign: "start" },
+									{ name: "Album", getValue: (i) => i.Album, width: "30%", textAlign: "start" },
+									{ name: "Artist", getValue: (i) => i.AlbumArtist, width: "25%", textAlign: "start" },
+									{ name: "LabelDuration", getValue: (i) => DateTime.ConvertTicksToDurationString(i.RunTimeTicks), width: "5%", textAlign: "center" },
+									{ name: "Track", getValue: (i) => i.IndexNumber?.toString(), width: "5%", textAlign: "center" },
+									{ name: "LabelYear", getValue: (i) => i.ProductionYear?.toString(), width: "5%", textAlign: "center" },
 								]}
 							/>
 						)}
@@ -159,13 +158,12 @@ const MusicPlayerStatus: React.FC<{ className: string }> = (props) => {
 	return (
 		<Layout direction="column" className={props.className} py="1em" px="1em" gap="1em">
 			<Layout direction="row" fontSize="1.5em" gap=".5em">
-				{current === undefined && <><StopIcon size="1em" /><TranslatedText textKey="PriorityIdle" elementType="div" /></>}
-				{current !== undefined && <><PlayIcon size="1em" />{current.Item.Name}</>}
+				{Nullable.ValueOrDefault(current, <><StopIcon size="1em" /><TranslatedText textKey="PriorityIdle" elementType="div" /></>, (current) => (<><PlayIcon size="1em" />{current.PlaylistItem.Item.Name}</>))}
 			</Layout>
 
 			<Layout direction="row" gap="1em">
-				<Slider min={0} max={(current?.Item.RunTimeTicks ?? 0) / DateTime.TicksPerSecond} current={currentProgress} grow onChange={(newValue) => { MusicPlayer.Instance.ChangeProgress(newValue); }} />
-				<Layout direction="row"><Duration ticks={currentProgress * DateTime.TicksPerSecond} /> / <Duration ticks={current?.Item.RunTimeTicks} /></Layout>
+				<Slider min={0} max={(current?.PlaylistItem.Item.RunTimeTicks ?? 0) / DateTime.TicksPerSecond} current={currentProgress} grow onChange={(newValue) => { MusicPlayer.Instance.ChangeProgress(newValue); }} />
+				<Layout direction="row"><Duration ticks={currentProgress * DateTime.TicksPerSecond} /> / <Duration ticks={current?.PlaylistItem.Item.RunTimeTicks} /></Layout>
 			</Layout>
 
 			<Layout direction="row" fontSize="1.5em" justifyContent="space-between">
@@ -192,7 +190,9 @@ const Duration: React.FC<{ ticks: number|undefined|null }> = (props) => {
 };
 
 const CurrentPlaylist: React.FC<{ user: UserDto, className: string }> = (props) => {
+	const background = useBackgroundStyles();
 	const itemsInPlaylist = useObservable(MusicPlayer.Instance.Playlist);
+	const current = useObservable(MusicPlayer.Instance.Current);
 
 	return (
 		<Layout direction="column" className={props.className} grow py="1em" px="1em" gap="1em">
@@ -225,10 +225,11 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string }> = (props) 
 					totalCount={itemsInPlaylist.length}
 					style={{ height: "100%", width: "100%" }}
 					components={{ Table: ({ style, ...props }: TableProps) => <table {...props} style={{ ...style, width: "100%" }} /> }}
-					itemContent={(_, data) => (
+					itemContent={(index, data) => (
 						<>
-							<td style={{ padding: ".5em", width: "80%", }}>{data.Name}</td>
-							<td style={{ padding: ".5em", width: "20%", textAlign: "right" }}>{DateTime.ConvertTicksToDurationString(data.RunTimeTicks)}</td>
+							<td style={{ padding: ".5em", width:  "5%", textAlign: "center" }}>{Nullable.ValueOrDefault(current, <DragIcon size="1em" />, (c) => c.PlaylistItem === data ? <PlayIcon size="1em" /> : <DragIcon size="1em" />)}</td>
+							<td style={{ padding: ".5em", width: "80%", }}><Button type="button" className={background.transparent} onClick={() => { MusicPlayer.Instance.GoIndex(index)}}>{data.Item.Name}</Button></td>
+							<td style={{ padding: ".5em", width: "15%", textAlign: "right" }}>{DateTime.ConvertTicksToDurationString(data.Item.RunTimeTicks)}</td>
 						</>
 					)}
 				/>
@@ -245,12 +246,8 @@ const LoadedItems: React.FC<{ items: BaseItemDto[]; columns: Column[]; stats?: R
 			totalCount={props.items.length}
 			style={{ height: "100%", width: "100%" }}
 			components={{ Table: ({ style, ...props }: TableProps) => <table {...props} style={{ ...style, width: "100%" }} /> }}
-			itemContent={(_, data) => <>{props.columns.map((c) => <td key={c.Name} style={{ width: c.Width, textAlign: c.Align, padding: ".25em 0" }}>{c.GetValue(data, props.stats ?? [])}</td>)}</>}
-			fixedHeaderContent={() => (
-				<tr>
-					{props.columns.map((c) => <th key={c.Name} className={background.alternatePanel} style={{ width: c.Width, textAlign: c.Align, padding: ".5em 0" }}><TranslatedText textKey={c.Name} /></th>)}
-				</tr>
-			)}
+			itemContent={(_, data) => <>{props.columns.map((c) => <td key={c.name} style={ApplyLayoutStyleProps({...c, ...{ display: "table-cell", py: ".25em" }})}>{c.getValue(data, props.stats ?? [])}</td>)}</>}
+			fixedHeaderContent={() => (<tr>{props.columns.map((c) => <th key={c.name} className={background.alternatePanel} style={ApplyLayoutStyleProps({...c, ...{ display: "table-cell", py: ".5em" }})}><TranslatedText textKey={c.name} /></th>)}</tr>)}
 		/>
 	);
 };

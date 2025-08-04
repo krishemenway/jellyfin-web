@@ -4,8 +4,12 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ServerService } from "Servers/ServerService";
 
 interface PlayItem {
-	Item: BaseItemDto;
+	PlaylistItem: PlaylistItem;
 	Audio: HTMLAudioElement;
+}
+
+interface PlaylistItem {
+	Item: BaseItemDto;
 }
 
 export class MusicPlayer {
@@ -18,17 +22,15 @@ export class MusicPlayer {
 	}
 
 	public Add(item: BaseItemDto): void {
-		this.Playlist.push(item);
+		const newPlaylistItem: PlaylistItem = {
+			Item: item,
+		};
+
+		this.Playlist.push(newPlaylistItem);
 
 		if (this.Playlist.length === 1) {
-			this.Load(item);
+			this.Load(newPlaylistItem);
 		}
-	}
-
-	public ChangeProgress(newProgress: number): void {
-		Nullable.TryExecute(this.Current.Value, (current) => {
-			current.Audio.fastSeek(newProgress);
-		});
 	}
 
 	public ToggleShuffle(): void {
@@ -40,28 +42,20 @@ export class MusicPlayer {
 	}
 
 	public GoNext(): void {
-		const current = this.Current.Value;
-		const nextIndexToPlay = Nullable.HasValue(current)
-			? this.Playlist.AsArray().indexOf(current.Item) + 1
-			: 0;
-
-		Nullable.TryExecute(this.Playlist.AsArray()[nextIndexToPlay], (item) => {
-			this.Load(item);
-		});
+		this.GoIndex(Nullable.ValueOrDefault(this.Current.Value, 0, (current) => this.Playlist.AsArray().indexOf(current.PlaylistItem) + 1));
 	}
 
 	public GoBack(): void {
-		const current = this.Current.Value;
-		const nextIndexToPlay = Nullable.HasValue(current)
-			? Math.max(this.Playlist.AsArray().indexOf(current.Item) - 1, 0)
-			: 0;
+		this.GoIndex(Nullable.ValueOrDefault(this.Current.Value, 0, (current) => Math.max(this.Playlist.AsArray().indexOf(current.PlaylistItem) - 1, 0)));
+	}
 
-		Nullable.TryExecute(this.Playlist.AsArray()[nextIndexToPlay], (item) => {
+	public GoIndex(index: number): void {
+		Nullable.TryExecute(this.Playlist.AsArray()[index], (item) => {
 			this.Load(item);
 		});
 	}
 
-	public Load(audio: BaseItemDto): void {
+	public Load(playlistItem: PlaylistItem): void {
 		const onTimeUpdate = (evt: Event) => this.OnTimeUpdate(evt);
 		const onLoaded = () => { audioElement.play(); };
 		const onEnded = () => this.GoNext();
@@ -74,35 +68,32 @@ export class MusicPlayer {
 			current.Audio.removeEventListener("ended", onEnded);
 		});
 
-		const audioElement = new Audio(this.CreateAudioUrl(audio));
+		const audioElement = new Audio(this.CreateAudioUrl(playlistItem.Item));
 		audioElement.addEventListener("timeupdate", onTimeUpdate);
 		audioElement.addEventListener("loadeddata", onLoaded);
 		audioElement.addEventListener("ended", onEnded);
 
 		this.CurrentProgress.Value = 0;
 		this.Current.Value = {
-			Item: audio,
+			PlaylistItem: playlistItem,
 			Audio: audioElement,
 		};
 	}
 
 	public Stop(): void {
-		Nullable.TryExecute(this.Current.Value, (current) => {
-			current.Audio.pause();
-			current.Audio.fastSeek(0);
-		});
+		Nullable.TryExecute(this.Current.Value, (current) => { current.Audio.pause(); current.Audio.fastSeek(0); });
 	}
 
 	public Pause(): void {
-		Nullable.TryExecute(this.Current.Value, (current) => {
-			current.Audio.pause();
-		});
+		Nullable.TryExecute(this.Current.Value, (current) => { current.Audio.pause(); });
 	}
 
 	public Play(): void {
-		Nullable.TryExecute(this.Current.Value, (current) => {
-			current.Audio.play();
-		});
+		Nullable.TryExecute(this.Current.Value, (current) => { current.Audio.play(); });
+	}
+
+	public ChangeProgress(newProgress: number): void {
+		Nullable.TryExecute(this.Current.Value, (current) => { current.Audio.fastSeek(newProgress); });
 	}
 
 	public Unload(): void {
@@ -137,7 +128,7 @@ export class MusicPlayer {
 
 	public Current: Observable<PlayItem|undefined>;
 	public CurrentProgress: Observable<number>;
-	public Playlist: ObservableArray<BaseItemDto>;
+	public Playlist: ObservableArray<PlaylistItem>;
 	public Repeat: Observable<boolean>;
 	public Shuffle: Observable<boolean>;
 

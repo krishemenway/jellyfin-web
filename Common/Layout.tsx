@@ -11,6 +11,7 @@ export interface PercentWidthWithGap {
 }
 
 export interface LayoutWithoutChildrenProps {
+	display?: Property.Display;
 	grow?: Property.FlexGrow|true;
 	basis?: Property.FlexBasis;
 	alignSelf?: Property.AlignSelf;
@@ -79,7 +80,7 @@ function CalculateItemsPerRowPercentage(width?: number|string|PercentWidthWithGa
 
 export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequiredDirection>): React.CSSProperties {
 	return {
-		display: "flex",
+		display: props?.display ?? "flex",
 		flexDirection: props?.direction,
 		gap: props?.gap,
 		flexGrow: props?.grow === true ? 1 : props?.grow,
