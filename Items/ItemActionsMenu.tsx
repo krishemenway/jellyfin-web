@@ -3,14 +3,14 @@ import { ListOf } from "Common/ListOf";
 import { AnchoredModal } from "Common/Modal";
 import { Button } from "Common/Button";
 import { ItemActionsIcon } from "Items/ItemActionsIcon";
-import { MenuAction } from "Common/MenuAction";
+import { ItemMenuAction } from "Items/ItemMenuAction";
 import { StyleLayoutProps } from "Common/Layout";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export interface ItemActionProps extends StyleLayoutProps {
 	className?: string;
-	actions: MenuAction[][];
+	actions: ItemMenuAction[][];
 	user: UserDto;
 	items: BaseItemDto[];
 }
@@ -36,6 +36,8 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 				icon={<ItemActionsIcon size="1em" />}
 				alignItems="center" px=".5em" py=".5em" {...props}
 			/>
+
+			{filteredActions.flat().map((action) => Nullable.ValueOrDefault(action.modal, undefined, (m) => m(props.items)))}
 
 			<AnchoredModal alternatePanel anchorAlignment="center" opensInDirection="left" anchorElement={anchor} open={anchor !== null} onClosed={closeNavigation}>
 				<ListOf
