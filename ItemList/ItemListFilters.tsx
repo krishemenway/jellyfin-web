@@ -26,6 +26,7 @@ import { FieldLabel } from "Common/FieldLabel";
 export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
 	user: UserDto;
+	library: BaseItemDto;
 }
 
 export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
@@ -41,7 +42,7 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 	return (
 		<>
 			<Layout direction="row" gap="1em">
-				<Button type="button" px=".25em" py=".25em" onClick={(button) => { setSaveButtonRef(button)}} icon={<SaveIcon size="1em" />} />
+				<Button type="button" px=".5em" py=".25em" justifyContent="center" alignItems="center" onClick={(button) => { setSaveButtonRef(button)}} icon={<SaveIcon size="1em" />} />
 
 				{(props.listOptions.ItemKindService?.filterOptions ?? []).length > 0 && (
 					<Layout direction="row" gap={8} alignItems="center">
@@ -70,7 +71,7 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 				<Layout direction="column" grow></Layout>
 
 				{(props.listOptions.ItemKindService?.listActions ?? []).length > 0 && (
-					<ItemActionsMenu user={props.user} fontSize="1.5em" alignSelf="end" actions={props.listOptions.ItemKindService?.listActions ?? []} />
+					<ItemActionsMenu items={[props.library]} user={props.user} alignSelf="end" actions={props.listOptions.ItemKindService?.listActions ?? []} />
 				)}
 			</Layout>
 

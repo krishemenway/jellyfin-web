@@ -22,10 +22,6 @@ import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { ItemGenres } from "Items/ItemGenres";
 import { ItemStudios } from "Items/ItemStudios";
 import { TranslatedText } from "Common/TranslatedText";
-import { DownloadIcon } from "CommonIcons/DownloadIcon";
-import { EditIcon } from "CommonIcons/EditIcon";
-import { IdentifyIcon } from "Items/IdentifyIcon";
-import { RefreshIcon } from "CommonIcons/RefreshIcon";
 import { ItemOverview } from "Items/ItemOverview";
 import { LinkToPerson } from "People/LinkToPerson";
 import { LoginService } from "Users/LoginService";
@@ -34,6 +30,8 @@ import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { PageTitle } from "Common/PageTitle";
+import { EditItemAction } from "MenuActions/EditItemAction";
+import { RefreshItemAction } from "MenuActions/RefreshItemAction";
 
 export const Show: React.FC = () => {
 	const background = useBackgroundStyles();
@@ -86,16 +84,9 @@ export const Show: React.FC = () => {
 						</Layout>
 
 						<Layout direction="column" grow gap={24}>
-							<Layout direction="row" fontSize="2em" justifyContent="space-between">
-								<Layout direction="row" className="show-name">{show.Name}</Layout>
-								<ItemActionsMenu user={user} actions={[
-									[ // Viewing / Downloading
-										{
-											textKey: "DownloadAll",
-											icon: (p) => <DownloadIcon {...p} />,
-											action: () => { console.error("Mark Played Missing.") },
-										},
-									],
+							<Layout direction="row" justifyContent="space-between">
+								<Layout direction="row" fontSize="2em" className="show-name">{show.Name}</Layout>
+								<ItemActionsMenu items={[show]} user={user} actions={[
 									[ // User-based actions
 										AddToFavoritesAction,
 										MarkPlayedAction,
@@ -103,24 +94,8 @@ export const Show: React.FC = () => {
 										AddToPlaylistAction,
 									],
 									[ // Server-based actions
-										{
-											textKey: "Edit",
-											icon: (p) => <EditIcon {...p} />,
-											visible: (u) => u.Policy?.IsAdministrator ?? false,
-											action: () => { console.error("Edit Metadata Missing.") },
-										},
-										{
-											textKey: "Identify",
-											icon: (p) => <IdentifyIcon {...p} />,
-											visible: (u) => u.Policy?.IsAdministrator ?? false,
-											action: () => { console.error("Identify Missing.") },
-										},
-										{
-											textKey: "Refresh",
-											icon: (p) => <RefreshIcon {...p} />,
-											visible: (u) => u.Policy?.IsAdministrator ?? false,
-											action: () => { console.error("Refresh Metadata Missing.") },
-										},
+										EditItemAction,
+										RefreshItemAction,
 									]
 								]} />
 							</Layout>

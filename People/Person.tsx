@@ -24,6 +24,9 @@ import { LoginService } from "Users/LoginService";
 import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { PageTitle } from "Common/PageTitle";
 import { Virtuoso } from "react-virtuoso";
+import { Nullable } from "Common/MissingJavascriptFunctions";
+import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
+import { EditItemAction } from "MenuActions/EditItemAction";
 
 class PersonData {
 	constructor(id: string) {
@@ -34,7 +37,7 @@ class PersonData {
 
 	public Load(): () => void {
 		ItemService.Instance.FindOrCreateItemData(this.Id).LoadItemWithAbort();
-		this.CreditedItems.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ limit: 100, enableUserData: true, imageTypeLimit: 1, enableTotalRecordCount: true, fields: ["MediaSourceCount"], personIds: [this.Id], recursive: true, userId: ServerService.Instance.CurrentUserId, includeItemTypes: [ "Audio", "Movie", "Episode", "AudioBook", "Photo", "Video"] }, { signal: a.signal }).then((response) => {
+		this.CreditedItems.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ enableUserData: true, imageTypeLimit: 1, enableTotalRecordCount: true, fields: ["MediaSourceCount"], personIds: [this.Id], recursive: true, userId: ServerService.Instance.CurrentUserId, includeItemTypes: [ "Audio", "Movie", "Episode", "AudioBook", "Photo", "Video"] }, { signal: a.signal }).then((response) => {
 			return response.data.Items?.sort((a, b) => (b.ProductionYear ?? 10000) - (a.ProductionYear ?? 10000)) ?? [];
 		}));
 
@@ -76,20 +79,20 @@ class PersonService {
 }
 
 export const Person: React.FC = () => {
-	const routeParams = useParams<{ personId: string }>();
+	const personId = useParams().personId;
 	const background = useBackgroundStyles();
 
-	if (!routeParams.personId) {
+	if (!Nullable.HasValue(personId)) {
 		return <PageWithNavigation icon="Person"><NotFound /></PageWithNavigation>;
 	}
 
-	const personData = PersonService.Instance.FindOrCreatePersonData(routeParams.personId);
-	React.useEffect(() => personData.Load(), [routeParams.personId])
+	const personData = PersonService.Instance.FindOrCreatePersonData(personId);
+	React.useEffect(() => personData.Load(), [personId])
 
 	return (
-		<PageWithNavigation icon="Person">
+		<PageWithNavigation icon="Person" key={personId}>
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(routeParams.personId).Item, personData.CreditedItems, LoginService.Instance.User]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(personId).Item, personData.CreditedItems, LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon size={48} />}
 				whenNotStarted={<LoadingIcon size={48} />}
@@ -107,16 +110,20 @@ export const Person: React.FC = () => {
 							/>
 						</Layout>
 
-						<Layout direction="column" grow gap="2em">
+						<Layout direction="column" grow gap="1.5em">
 							<Layout direction="row" justifyContent="space-between">
 								<Layout direction="row" fontSize="2em" className="person-name">{person.Name}</Layout>
-								<ItemActionsMenu user={user} actions={[[
+								<ItemActionsMenu items={[person]} user={user} actions={[[
 									AddToFavoritesAction,
+									AddToCollectionAction,
+									EditItemAction,
 								]]} />
 							</Layout>
 
-							<ItemOverview item={person} />
-							<PersonAgeBirthAndDeath person={person} />
+							<Layout direction="column" gap="1em">
+								<PersonAgeBirthAndDeath person={person} />
+								<ItemOverview item={person} />
+							</Layout>
 
 							<Virtuoso
 								data={creditedItems}

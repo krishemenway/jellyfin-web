@@ -5,13 +5,14 @@ import { Button } from "Common/Button";
 import { ItemActionsIcon } from "Items/ItemActionsIcon";
 import { MenuAction } from "Common/MenuAction";
 import { StyleLayoutProps } from "Common/Layout";
-import { UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export interface ItemActionProps extends StyleLayoutProps {
 	className?: string;
 	actions: MenuAction[][];
 	user: UserDto;
+	items: BaseItemDto[];
 }
 
 export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
@@ -33,7 +34,7 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 			<Button
 				type="button" onClick={(element) => setOpenAnchor(element)}
 				icon={<ItemActionsIcon size="1em" />}
-				alignItems="center" {...props}
+				alignItems="center" px=".5em" py=".5em" {...props}
 			/>
 
 			<AnchoredModal alternatePanel anchorAlignment="center" opensInDirection="left" anchorElement={anchor} open={anchor !== null} onClosed={closeNavigation}>
@@ -48,8 +49,8 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 							forEachItem={(action) => (
 								<Button
 									key={action.textKey}
-									type="button" onClick={() => { closeNavigation(); action.action(); }} px={8} py={4} gap={8} alignItems="center"
-									direction="row"
+									type="button" onClick={() => { closeNavigation(); action.action(props.items); }}
+									direction="row" px=".5em" py=".5em" gap=".5em" alignItems="center"
 									icon={action.icon({ size: "1em" })}
 									label={action.textKey}
 								/>

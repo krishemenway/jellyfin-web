@@ -23,6 +23,12 @@ import { LinkToPerson } from "People/LinkToPerson";
 import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
 import { PageTitle } from "Common/PageTitle";
+import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
+import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
+import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
+import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
+import { EditItemAction } from "MenuActions/EditItemAction";
+import { RefreshItemAction } from "MenuActions/RefreshItemAction";
 
 export const Movie: React.FC = () => {
 	const movieId = useParams<{ movieId: string }>().movieId;
@@ -74,9 +80,20 @@ export const Movie: React.FC = () => {
 							</Layout>
 						</Layout>
 						<Layout direction="column" grow gap={32}>
-							<Layout direction="row" fontSize="2em" justifyContent="space-between">
-								<Layout direction="row" className="show-name">{movie.Name}</Layout>
-								<ItemActionsMenu actions={[]} user={user} />
+							<Layout direction="row" justifyContent="space-between">
+								<Layout direction="row" fontSize="2em" className="show-name">{movie.Name}</Layout>
+								<ItemActionsMenu items={[movie]} actions={[
+									[ // User-based actions
+										AddToFavoritesAction,
+										MarkPlayedAction,
+										AddToCollectionAction,
+										AddToPlaylistAction,
+									],
+									[ // Server-based actions
+										EditItemAction,
+										RefreshItemAction,
+									]
+								]} user={user} />
 							</Layout>
 							<ItemOverview item={movie} />
 							<Layout direction="row" gap={8}>

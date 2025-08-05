@@ -22,8 +22,6 @@ import { ItemListService } from "ItemList/ItemListService";
 import { UserViewStore } from "Users/UserViewStore";
 import { PageTitle } from "Common/PageTitle";
 
-// TODO Item Selecting with ability to execute Bulk Actions on them
-
 export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = (props) => {
 	const routeParams = useParams();
 	const libraryId = routeParams[props.paramName];
@@ -74,7 +72,7 @@ const ItemsGrid: React.FC<{ libraryId: string, items: BaseItemDto[]; itemList: I
 	return (
 		<Layout direction="column" gap={16} py={16}>
 			<PageTitle text={library?.Name} />
-			{listOptions && <ItemListFilters user={props.user} listOptions={listOptions} />}
+			{listOptions && <ItemListFilters library={library} user={props.user} listOptions={listOptions} />}
 
 			<ListOf
 				items={filteredAndSortedItems}

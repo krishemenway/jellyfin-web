@@ -17,7 +17,7 @@ export class ItemDataService {
 			return () => { };
 		}
 
-		this.Item.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ids: [this.Id], fields: ["Overview", "Tags", "ExternalUrls", "Genres", "Studios", "People"] }, { signal: a.signal }).then((response) => (response.data.Items ?? [])[0] ));
+		this.Item.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ids: [this.Id], fields: ["Overview", "Tags", "ExternalUrls", "Genres", "Studios", "People", "ProductionLocations"] }, { signal: a.signal }).then((response) => (response.data.Items ?? [])[0] ));
 		return () => this.Item.ResetIfLoading();
 	}
 

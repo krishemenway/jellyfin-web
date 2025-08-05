@@ -226,6 +226,7 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string }> = (props) 
 
 				<Layout direction="row">
 					<ItemActionsMenu
+						items={itemsInPlaylist.map((p) => p.Item)}
 						user={props.user}
 						actions={[[
 							{
