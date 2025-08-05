@@ -23,6 +23,7 @@ import { ItemOverview } from "Items/ItemOverview";
 import { LoginService } from "Users/LoginService";
 import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { PageTitle } from "Common/PageTitle";
+import { Virtuoso } from "react-virtuoso";
 
 class PersonData {
 	constructor(id: string) {
@@ -93,7 +94,7 @@ export const Person: React.FC = () => {
 				whenLoading={<LoadingIcon size={48} />}
 				whenNotStarted={<LoadingIcon size={48} />}
 				whenReceived={(person, creditedItems, user) => (
-					<Layout direction="row" gap={16} py={16}>
+					<Layout direction="row" gap="1em" py="1em" height="100%">
 						<PageTitle text={person.Name} />
 						<Layout direction="column" maxWidth="20%" gap={8}>
 							<ItemImage item={person} type="Primary" />
@@ -106,7 +107,7 @@ export const Person: React.FC = () => {
 							/>
 						</Layout>
 
-						<Layout direction="column" grow gap={32}>
+						<Layout direction="column" grow gap="2em">
 							<Layout direction="row" justifyContent="space-between">
 								<Layout direction="row" fontSize="2em" className="person-name">{person.Name}</Layout>
 								<ItemActionsMenu user={user} actions={[[
@@ -117,10 +118,12 @@ export const Person: React.FC = () => {
 							<ItemOverview item={person} />
 							<PersonAgeBirthAndDeath person={person} />
 
-							<table style={{ width: "75%" }}>
-								<thead><tr><th style={{ width: "15%" }}></th><th></th><th style={{ width: "15%" }}></th></tr></thead>
-								<tbody>{creditedItems.map((item, index) => <CreditedItem key={item.Id ?? index.toString()} creditedItem={item} />)}</tbody>
-							</table>
+							<Virtuoso
+								data={creditedItems}
+								totalCount={creditedItems.length}
+								itemContent={(_, item) => <CreditedItem creditedItem={item} />}
+								style={{ height: "100%", width: "100%" }}
+							/>
 						</Layout>
 					</Layout>
 				)}
@@ -133,18 +136,16 @@ const CreditedItem: React.FC<{ creditedItem: BaseItemDto }> = ({ creditedItem })
 	const creditedNameFuncForType = BaseItemKindServiceFactory.FindOrNull(creditedItem.Type)?.personCreditName ?? ((i) => i.Name);
 
 	return (
-		<tr >
-			<td>
-				<ItemImage item={creditedItem} type="Primary" maxWidth="100%" />
-			</td>
-			<td>
-				<LinkToItem direction="row" item={creditedItem}>{creditedNameFuncForType(creditedItem)}</LinkToItem>
+		<LinkToItem direction="row" item={creditedItem} py=".5em">
+			<Layout direction="column" grow>
+				<Layout direction="row">{creditedNameFuncForType(creditedItem)}</Layout>
 				<Layout direction="row">Role/Part/Credit</Layout>
-			</td>
-			<td>{creditedItem.ProductionYear}</td>
-		</tr>
-	)
-}
+			</Layout>
+
+			<Layout direction="column" width="5%" px="1em" alignItems="end" justifyContent="center">{creditedItem.ProductionYear}</Layout>
+		</LinkToItem>
+	);
+};
 
 const PersonAgeBirthAndDeath: React.FC<{ person: BaseItemDto }> = (props) => {
 	if (!props.person.PremiereDate) {
@@ -157,7 +158,7 @@ const PersonAgeBirthAndDeath: React.FC<{ person: BaseItemDto }> = (props) => {
 
 	return (
 		<>
-			<Layout direction="row" alignItems="center" gap={8} mx={8}>
+			<Layout direction="row" alignItems="center" gap=".5em">
 				<TranslatedText textKey="BirthDateValue" textProps={[birthday.toLocaleDateString()]} elementType="div" className="birthDate" />
 
 				{!props.person.EndDate && (
