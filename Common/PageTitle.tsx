@@ -1,6 +1,6 @@
 import * as React from "react";
 import { TranslationRequest, useTranslatedText } from "Common/TranslatedText";
-import { Nullable } from "./MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export const PageTitle: React.FC<{ text: string|TranslationRequest|undefined|null }> = (props) => {
 	if (!Nullable.HasValue(props.text)) {

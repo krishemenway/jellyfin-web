@@ -1,5 +1,5 @@
 import { UserDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { IconProps } from "./IconProps";
+import { IconProps } from "Common/IconProps";
 
 export interface MenuAction {
 	icon: (props: IconProps) => JSX.Element,

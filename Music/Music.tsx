@@ -26,7 +26,7 @@ import { PlaylistIcon } from "Playlists/PlaylistIcon";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
-import { MusicPlayer } from "./MusicPlayer";
+import { MusicPlayer } from "Music/MusicPlayer";
 import { useObservable } from "@residualeffect/rereactor";
 import { PageTitle } from "Common/PageTitle";
 import { UserViewStore } from "Users/UserViewStore";

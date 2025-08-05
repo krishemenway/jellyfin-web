@@ -2,7 +2,7 @@ import * as React from "react";
 import { TranslatedText, TranslationRequest, useTranslatedText } from "Common/TranslatedText";
 import { useBackgroundStyles } from "AppStyles";
 import { ApplyLayoutStyleProps, StyleLayoutProps } from "Common/Layout";
-import { Nullable } from "./MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 interface BaseButtonProps extends StyleLayoutProps {
 	icon?: React.ReactNode;

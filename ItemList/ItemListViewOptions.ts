@@ -7,7 +7,7 @@ import { ItemSortOption } from "ItemList/ItemSortOption";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { EditableField } from "Common/EditableField";
-import { SortByName } from "./ItemSortTypes/SortByName";
+import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 
 export class ItemListViewOptions {
 	constructor(itemKindService: BaseItemKindService|null, data?: ItemViewOptionsData) {
