@@ -51,9 +51,9 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 						<ListOf
 							direction="row" wrap
 							items={props.libraries}
-							forEachItem={(library, index) => (
+							forEachItem={(library) => (
 								<LinkToItem
-									key={library.Id ?? index.toString()} item={library}
+									key={library.Id} item={library}
 									direction="column" alignItems="center" px={8} py={8} gap={8}
 									width={{ itemsPerRow: 3, gap: 0 }}
 								>

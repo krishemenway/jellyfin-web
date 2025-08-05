@@ -14,7 +14,7 @@ import { ItemImage } from "Items/ItemImage";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemTags } from "Items/ItemTags";
 import { ItemRating } from "Items/ItemRating";
-import { useBackgroundStyles } from "AppStyles";
+import { ResponsiveBreakpoint, useBackgroundStyles, useBreakpointValue } from "AppStyles";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { Collapsible } from "Common/Collapsible";
 import { Button } from "Common/Button";
@@ -146,7 +146,7 @@ export const Show: React.FC = () => {
 							<ListOf
 								items={seasons}
 								direction="column" gap={8}
-								forEachItem={(season, index) => <SeasonForShow key={season.Id ?? index.toString()} season={season} />}
+								forEachItem={(season) => <SeasonForShow key={season.Id} season={season} />}
 							/>
 						</Layout>
 					</Layout>
@@ -213,9 +213,9 @@ const CastAndCrew: React.FC<{ item: BaseItemDto }> = (props) => {
 			<Collapsible open={open}>
 				<ListOf
 					className={background.panel}
-					direction="row" wrap gap={16} px={8} py={8}
+					direction="row" wrap
 					items={props.item.People ?? []}
-					forEachItem={((person) => <CastAndCrewCredit person={person} />)}
+					forEachItem={((person) => <CastAndCrewCredit key={"" + person.Id + person.Role} person={person} />)}
 				/>
 			</Collapsible>
 		</Layout>
@@ -223,10 +223,12 @@ const CastAndCrew: React.FC<{ item: BaseItemDto }> = (props) => {
 };
 
 const CastAndCrewCredit: React.FC<{ person: BaseItemPerson }> = (props) => {
+	const itemsPerRow = useBreakpointValue({ [ResponsiveBreakpoint.Mobile]: 1, [ResponsiveBreakpoint.Tablet]: 3, [ResponsiveBreakpoint.Desktop]: 6 });
+
 	return (
-		<Layout direction="column" width={{ itemsPerRow: 6, gap: 16 }} gap={4}>
-			<Layout direction="row" fontSize="1em"><LinkToPerson direction="row" id={props.person.Id}>{props.person.Name}</LinkToPerson></Layout>
+		<LinkToPerson id={props.person.Id} direction="column" width={{ itemsPerRow: itemsPerRow, gap: 0 }} px=".5em" py=".5em" gap=".25em">
+			<Layout direction="row" fontSize="1em">{props.person.Name}</Layout>
 			<Layout direction="row" fontSize=".8em">{props.person.Role}</Layout>
-		</Layout>
+		</LinkToPerson>
 	);
 };

@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Property } from "csstype";
-import { Nullable } from "./MissingJavascriptFunctions";
 
 export interface StyleLayoutPropsWithRequiredDirection extends StyleLayoutProps {
 	direction: Property.FlexDirection;

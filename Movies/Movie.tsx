@@ -12,7 +12,7 @@ import { ItemRating } from "Items/ItemRating";
 import { ItemStudios } from "Items/ItemStudios";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { ItemGenres } from "Items/ItemGenres";
-import { useBackgroundStyles } from "AppStyles";
+import { ResponsiveBreakpoint, useBackgroundStyles, useBreakpointValue } from "AppStyles";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { ItemOverview } from "Items/ItemOverview";
@@ -110,19 +110,21 @@ const CastAndCrew: React.FC<{ item: BaseItemDto }> = (props) => {
 
 			<ListOf
 				className={background.panel}
-				direction="row" wrap gap={16} px={8} py={16}
+				direction="row" wrap px=".5em" py="1em"
 				items={props.item.People ?? []}
-				forEachItem={((person) => <CastAndCrewCredit person={person} />)}
+				forEachItem={((person) => <CastAndCrewCredit key={"" + person.Id + person.Role} person={person} />)}
 			/>
 		</Layout>
 	);
 };
 
 const CastAndCrewCredit: React.FC<{ person: BaseItemPerson }> = (props) => {
+	const itemsPerRow = useBreakpointValue({ [ResponsiveBreakpoint.Mobile]: 1, [ResponsiveBreakpoint.Tablet]: 3, [ResponsiveBreakpoint.Desktop]: 6 });
+
 	return (
-		<Layout direction="column" width={{ itemsPerRow: 6, gap: 16 }} gap={4}>
-			<Layout direction="row" fontSize="1em"><LinkToPerson direction="row" id={props.person.Id}>{props.person.Name}</LinkToPerson></Layout>
+		<LinkToPerson id={props.person.Id} direction="column" width={{ itemsPerRow: itemsPerRow, gap: 0 }} px=".5em" py=".5em" gap=".25em">
+			<Layout direction="row" fontSize="1em">{props.person.Name}</Layout>
 			<Layout direction="row" fontSize=".8em">{props.person.Role}</Layout>
-		</Layout>
+		</LinkToPerson>
 	);
 };

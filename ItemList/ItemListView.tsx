@@ -81,10 +81,10 @@ const ItemsGrid: React.FC<{ libraryId: string, items: BaseItemDto[]; itemList: I
 				direction="row" wrap gap={10}
 				forEachItem={(item, index) => (
 					<ItemsGridItem
+						key={item.Id ?? index.toString()}
 						item={item}
 						shape={itemKindService?.primaryShape ?? ImageShape.Portrait}
 						itemsPerRow={breakpoint === ResponsiveBreakpoint.Desktop ? 9 : breakpoint === ResponsiveBreakpoint.Tablet ? 6 : 2}
-						key={item.Id ?? index.toString()}
 					/>
 				)}
 			/>

@@ -77,7 +77,7 @@ const LoadedSearchResults: React.FC<{ results: SearchResults }> = (props) => {
 				items={selectedItems}
 				direction="column"
 				emptyListView={<TranslatedText textKey="SearchResultsEmpty" textProps={[query]} elementType="div" layout={{ px: 8, py: 8 }} />}
-				forEachItem={(item, index) => <SearchResult key={item.Id ?? index.toString()} item={item} />}
+				forEachItem={(item) => <SearchResult key={item.Id} item={item} />}
 			/>
 		</Layout>
 	);
