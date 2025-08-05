@@ -1,4 +1,4 @@
-name: rigidwing-web
+name: jellyfin-web
 
 on: [push]
 
