@@ -40,7 +40,7 @@ export const Search: React.FC = () => {
 				<Layout direction="column" className={background.panel} minHeight={300} minWidth={320} maxWidth={500}>
 					<Layout direction="row" justifyContent="space-between" px={8} py={8}>
 						<Layout direction="row" alignItems="center">Search Results</Layout>
-						<Button direction="row" alignItems="center" type="button" onClick={() => SearchService.Instance.Clear()}><CloseIcon size={24} /></Button>
+						<Button direction="row" alignItems="center" type="button" onClick={() => SearchService.Instance.Clear()} icon={<CloseIcon size={24} />} />
 					</Layout>
 
 					<Loading
@@ -65,11 +65,11 @@ const LoadedSearchResults: React.FC<{ results: SearchResults }> = (props) => {
 		<Layout direction="row">
 			<Layout direction="column">
 				{props.results.AllTypes.length > 1 && (
-					<Button px={8} py={8} direction="row" key="All" type="button" selected={selectedType === undefined} onClick={() => props.results.SelectedType.Value = undefined}><InfinityIcon size={24} /></Button>
+					<Button transparent px={8} py={8} direction="row" key="All" type="button" selected={selectedType === undefined} onClick={() => props.results.SelectedType.Value = undefined} icon={<InfinityIcon size={24} />} />
 				)}
 
 				{props.results.AllTypes.map((type) => (
-					<Button px={8} py={8} direction="row" key={type} type="button" selected={selectedType === type} onClick={() => props.results.SelectedType.Value = type}><IconForItemKind itemKind={type} size={24} /></Button>
+					<Button transparent px={8} py={8} direction="row" key={type} type="button" selected={selectedType === type} onClick={() => props.results.SelectedType.Value = type} icon={<IconForItemKind itemKind={type} size={24} />} />
 				))}
 			</Layout>
 

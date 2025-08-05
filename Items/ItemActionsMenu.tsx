@@ -3,7 +3,6 @@ import { ListOf } from "Common/ListOf";
 import { AnchoredModal } from "Common/Modal";
 import { Button } from "Common/Button";
 import { ItemActionsIcon } from "Items/ItemActionsIcon";
-import { TranslatedText } from "Common/TranslatedText";
 import { MenuAction } from "Common/MenuAction";
 import { StyleLayoutProps } from "Common/Layout";
 import { UserDto } from "@jellyfin/sdk/lib/generated-client/models";
@@ -31,9 +30,11 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 
 	return (
 		<>
-			<Button {...props} alignItems="center" type="button" onClick={(element) => setOpenAnchor(element)}>
-				<ItemActionsIcon size="1em" />
-			</Button>
+			<Button
+				type="button" onClick={(element) => setOpenAnchor(element)}
+				icon={<ItemActionsIcon size="1em" />}
+				alignItems="center" {...props}
+			/>
 
 			<AnchoredModal alternatePanel anchorAlignment="center" opensInDirection="left" anchorElement={anchor} open={anchor !== null} onClosed={closeNavigation}>
 				<ListOf
@@ -45,10 +46,13 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 							items={group.filter(((a) => (a.visible ?? (() => true))(props.user)))}
 							direction="column"
 							forEachItem={(action) => (
-								<Button key={action.textKey} type="button" direction="row" onClick={() => { closeNavigation(); action.action(); }} px={8} py={4} gap={8} alignItems="center">
-									{action.icon({ size: "1em" })}
-									<TranslatedText textKey={action.textKey} />
-								</Button>
+								<Button
+									key={action.textKey}
+									type="button" onClick={() => { closeNavigation(); action.action(); }} px={8} py={4} gap={8} alignItems="center"
+									direction="row"
+									icon={action.icon({ size: "1em" })}
+									label={action.textKey}
+								/>
 							)}
 						/>
 					)}

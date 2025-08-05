@@ -97,7 +97,7 @@ const SignInWithCredentials: React.FC = () => {
 
 					<Layout direction="column" gap={8}>
 						<TextField field={LoginService.Instance.UserName} />
-						<Layout direction="row"><TranslatedText textKey="LabelForgotPasswordUsernameHelp"></TranslatedText></Layout>
+						<Layout direction="row"><TranslatedText textKey="LabelForgotPasswordUsernameHelp" /></Layout>
 					</Layout>
 
 					<Layout direction="column" gap={8}>

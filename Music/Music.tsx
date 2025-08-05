@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TableProps, TableVirtuoso, Virtuoso } from "react-virtuoso";
+import { ItemProps, TableProps, TableVirtuoso, Virtuoso } from "react-virtuoso";
 import { useParams } from "react-router-dom";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { Loading } from "Common/Loading";
@@ -9,7 +9,7 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { DateTime, Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { LoginService } from "Users/LoginService";
-import { ApplyLayoutStyleProps, Layout, LayoutWithoutChildrenProps } from "Common/Layout";
+import { Layout } from "Common/Layout";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { NotFound } from "Common/NotFound";
 import { useBackgroundStyles } from "AppStyles";
@@ -32,6 +32,8 @@ import { PageTitle } from "Common/PageTitle";
 import { UserViewStore } from "Users/UserViewStore";
 import { Slider } from "Common/Slider";
 import { DragIcon } from "CommonIcons/DragIcon";
+import { SortByNumber, SortByObjects, SortByString } from "Common/Sort";
+import { ObservableArray } from "@residualeffect/reactor";
 
 export const Music: React.FC = () => {
 	const libraryId = useParams().libraryId;
@@ -62,17 +64,26 @@ export const Music: React.FC = () => {
 	);
 };
 
-interface Column extends LayoutWithoutChildrenProps {
+interface Column {
 	name: string;
-	getValue: (item: BaseItemDto, stats: Record<string, number>[]) => JSX.Element|string|undefined|null;
+	getValue: (item: BaseItemDto, stats: Record<string, number>[]) => string|number|undefined|null;
+	align?: "start"|"end"|"center";
+	width?: string|number;
+	getSortFunc: (stats: Record<string, number>[]) => (a: BaseItemDto, b: BaseItemDto) => number;
 }
 
 const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user: UserDto; libraries: BaseItemDto[] }> = (props) => {
 	const background = useBackgroundStyles();
+	const observableArtists = React.useMemo(() => new ObservableArray<string>([]), [props.libraryId]);
+	const observableAlbumIds = React.useMemo(() => new ObservableArray<string>([]), [props.libraryId]);
+
 	const albumList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "MusicAlbum");
 	const artistList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "MusicArtist");
-	const songList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "Audio");
+	const audioList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "Audio");
 	const library = Linq.Single(props.libraries, (l) => l.Id === props.libraryId);
+
+	const filteredArtists = useObservable(observableArtists);
+	const filteredAlbumIds = useObservable(observableAlbumIds);
 
 	return (
 		<Layout direction="row" height="100%" py="1em" gap="1em">
@@ -86,7 +97,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 				<Layout direction="row" gap="1em" height="25%">
 					<Layout direction="column" className={background.panel} grow basis={0} py="1em" px="1em" alignItems="center" justifyContent="center">
 						<Loading
-							receivers={[artistList.List, albumList.List, songList.List]}
+							receivers={[artistList.List, albumList.List, audioList.List]}
 							whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 							whenLoading={<LoadingIcon size="4em" />}
 							whenNotStarted={<LoadingIcon size="4em" />}
@@ -94,10 +105,11 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 								<LoadedItems
 									items={artists.List}
 									stats={[albums.Stats["AlbumCountByArtistId"], songs.Stats["SongCountByArtistId"]]}
+									onToggled={(artist) => { Nullable.TryExecute(artist.Name, (name) => observableArtists.toggle(name)); }}
 									columns={[
-										{ name: "Artist", getValue: (i) => i.Name, width: "80%", textAlign: "start" },
-										{ name: "Albums", getValue: (i, stats) => Nullable.ValueOrDefault(stats[0][i.Id ?? ""], "0", (n) => n.toLocaleString()), width: "10%", textAlign: "center" },
-										{ name: "Songs", getValue: (artist, stats) => Nullable.ValueOrDefault(stats[1][artist.Name ?? ""], "0", (n) => n.toLocaleString()), width: "10%", textAlign: "center" },
+										{ name: "Artist", getValue: (i) => i.Name, width: "80%", align: "start", getSortFunc: () => SortByString((i) => i.Name) },
+										{ name: "Albums", getValue: (artist, stats) => Nullable.ValueOrDefault(stats[0][artist.Id ?? ""], 0, (n) => n), width: "10%", align: "center", getSortFunc: (stats) => SortByNumber((artist) => Nullable.ValueOrDefault(stats[0][artist.Id ?? ""], 0, (n) => n)) },
+										{ name: "Songs", getValue: (artist, stats) => Nullable.ValueOrDefault(stats[1][artist.Name ?? ""], 0, (n) => n), width: "10%", align: "center", getSortFunc: (stats) => SortByNumber((artist) => Nullable.ValueOrDefault(stats[1][artist.Name ?? ""], 0, (n) => n)) },
 									]}
 								/>
 							)}
@@ -105,7 +117,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 					</Layout>
 					<Layout direction="row" className={background.panel} grow basis={0} py="1em" px="1em" alignItems="center" justifyContent="center">
 						<Loading
-							receivers={[albumList.List, songList.List]}
+							receivers={[albumList.List, audioList.List]}
 							whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 							whenLoading={<LoadingIcon size="4em" />}
 							whenNotStarted={<LoadingIcon size="4em" />}
@@ -113,11 +125,13 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 								<LoadedItems
 									items={albums.List}
 									stats={[songs.Stats["SongCountByAlbumId"]]}
+									filters={filteredArtists.map((artist) => (album) => (album.Artists ?? []).indexOf(artist) > -1)}
+									onToggled={(album) => { Nullable.TryExecute(album.Id, (id) => observableAlbumIds.toggle(id)); }}
 									columns={[
-										{ name: "Album", getValue: (i) => i.Name, width: "40%", textAlign: "start" },
-										{ name: "Artist", getValue: (i) => i.AlbumArtist, width: "40%", textAlign: "start" },
-										{ name: "LabelYear", getValue: (i) => i.ProductionYear?.toString(), width: "10%", textAlign: "center" },
-										{ name: "Songs", getValue: (album, stats) => Nullable.ValueOrDefault(stats[0][album.Id ?? ""], "0", (n) => n.toLocaleString()), width: "10%", textAlign: "center" },
+										{ name: "Album", getValue: (i) => i.Name, width: "40%", align: "start", getSortFunc: () => SortByString((i) => i.Name) },
+										{ name: "Artist", getValue: (i) => i.AlbumArtist, width: "40%", align: "start", getSortFunc: () => SortByString((i) => i.AlbumArtist) },
+										{ name: "LabelYear", getValue: (i) => i.ProductionYear, width: "10%", align: "center", getSortFunc: () => SortByNumber((i) => i.ProductionYear) },
+										{ name: "Songs", getValue: (album, stats) => Nullable.ValueOrDefault(stats[0][album.Id ?? ""], 0, (n) => n), width: "10%", align: "center", getSortFunc: (stats) => SortByNumber((album) => Nullable.ValueOrDefault(stats[0][album.Id ?? ""], 0, (n) => n)) },
 									]}
 								/>
 							)}
@@ -127,20 +141,22 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 
 				<Layout direction="row" className={background.panel} grow py="1em" px="1em" alignItems="center" justifyContent="center">
 					<Loading
-						receivers={[songList.List]}
+						receivers={[audioList.List]}
 						whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 						whenLoading={<LoadingIcon size="4em" />}
 						whenNotStarted={<LoadingIcon size="4em" />}
-						whenReceived={(songs) => (
+						whenReceived={(audios) => (
 							<LoadedItems
-								items={songs.List}
+								items={audios.List}
+								onToggled={(audio) => { MusicPlayer.Instance.Add(audio); }}
+								filters={filteredArtists.map((artist) => (song: BaseItemDto) => (song.Artists ?? []).indexOf(artist) > -1).concat(filteredAlbumIds.map((albumId) => (song: BaseItemDto) => song.AlbumId === albumId))}
 								columns={[
-									{ name: "Title", getValue: (i) => <Button type="button" textAlign="start" className={background.transparent} onClick={() => { MusicPlayer.Instance.Add(i); }}>{i.Name}</Button>, width: "30%", textAlign: "start" },
-									{ name: "Album", getValue: (i) => i.Album, width: "30%", textAlign: "start" },
-									{ name: "Artist", getValue: (i) => Nullable.ValueOrDefault(i.Artists, [], a => a).join(", "), width: "25%", textAlign: "start" },
-									{ name: "LabelDuration", getValue: (i) => DateTime.ConvertTicksToDurationString(i.RunTimeTicks), width: "5%", textAlign: "center" },
-									{ name: "Track", getValue: (i) => i.IndexNumber?.toString(), width: "5%", textAlign: "center" },
-									{ name: "LabelYear", getValue: (i) => i.ProductionYear?.toString(), width: "5%", textAlign: "center" },
+									{ name: "Songs", getValue: (i) => i.Name, width: "30%", align: "start", getSortFunc: () => SortByString((i) => i.Name) },
+									{ name: "Album", getValue: (i) => i.Album, width: "30%", align: "start", getSortFunc: () => SortByString((i) => i.Album) },
+									{ name: "Artist", getValue: (i) => Nullable.ValueOrDefault(i.Artists, [], a => a).join(", "), width: "25%", align: "start", getSortFunc: () => SortByString((i) => Nullable.ValueOrDefault(i.Artists, [], a => a).join(", ")) },
+									{ name: "LabelDuration", getValue: (i) => DateTime.ConvertTicksToDurationString(i.RunTimeTicks), width: "5%", align: "center", getSortFunc: () => SortByNumber((i) => i.RunTimeTicks) },
+									{ name: "Track", getValue: (i) => i.IndexNumber, width: "5%", align: "center", getSortFunc: () => SortByNumber((i) => i.IndexNumber) },
+									{ name: "LabelYear", getValue: (i) => i.ProductionYear, width: "5%", align: "center", getSortFunc: () => SortByNumber((i) => i.ProductionYear) },
 								]}
 							/>
 						)}
@@ -174,16 +190,16 @@ const MusicPlayerStatus: React.FC<{ className: string }> = (props) => {
 
 			<Layout direction="row" fontSize="1.5em" justifyContent="space-between">
 				<Layout direction="row" gap=".25em">
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.GoBack(); }}><BackwardIcon size="1em" /></Button>
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Play(); }}><PlayIcon size="1em" /></Button>
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Pause(); }}><PauseIcon size="1em" /></Button>
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Stop(); }}><StopIcon size="1em" /></Button>
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.GoNext(); }}><ForwardIcon size="1em" /></Button>
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.GoBack(); }} icon={<BackwardIcon size="1em" />} />
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Play(); }} icon={<PlayIcon size="1em" />} />
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Pause(); }} icon={<PauseIcon size="1em" />} />
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Stop(); }} icon={<StopIcon size="1em" />} />
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.GoNext(); }} icon={<ForwardIcon size="1em" />} />
 				</Layout>
 
 				<Layout direction="row" gap=".25em">
-					<Button type="button" px=".25em" py=".25em" selected={isRepeating} onClick={() => { MusicPlayer.Instance.ToggleRepeat(); }}><RepeatIcon size="1em" /></Button>
-					<Button type="button" px=".25em" py=".25em" selected={isShuffling} onClick={() => { MusicPlayer.Instance.ToggleShuffle(); }}><ShuffleIcon size="1em" /></Button>
+					<Button type="button" px=".25em" py=".25em" selected={isRepeating} onClick={() => { MusicPlayer.Instance.ToggleRepeat(); }} icon={<RepeatIcon size="1em" />} />
+					<Button type="button" px=".25em" py=".25em" selected={isShuffling} onClick={() => { MusicPlayer.Instance.ToggleShuffle(); }} icon={<ShuffleIcon size="1em" />} />
 				</Layout>
 			</Layout>
 		</Layout>
@@ -226,46 +242,85 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string }> = (props) 
 			</Layout>
 
 			<Layout direction="column" grow>
-				<Virtuoso
-					data={itemsInPlaylist}
-					totalCount={itemsInPlaylist.length}
-					style={{ height: "100%", width: "100%" }}
-					itemContent={(index, data) => (
-						<Layout direction="row" position="relative">
-							<Layout direction="column" alignItems="center" justifyContent="center" position="absolute" top={0} bottom={0} left={0} width="5%">
-								{Nullable.ValueOrDefault(current, <DragIcon size="1em" />, (c) => c.PlaylistItem === data ? <PlayIcon size="1em" /> : <DragIcon size="1em" />)}
+				{itemsInPlaylist.length > 0 ? (
+					<Virtuoso
+						data={itemsInPlaylist}
+						totalCount={itemsInPlaylist.length}
+						style={{ height: "100%", width: "100%" }}
+						itemContent={(index, data) => (
+							<Layout direction="row" position="relative">
+								<Layout direction="column" alignItems="center" justifyContent="center" position="absolute" top={0} bottom={0} left={0} width="5%">
+									{Nullable.ValueOrDefault(current, <DragIcon size="1em" />, (c) => c.PlaylistItem === data ? <PlayIcon size="1em" /> : <DragIcon size="1em" />)}
+								</Layout>
+
+								<Button transparent width="100%" px="5%" type="button" textAlign="start" onClick={() => { MusicPlayer.Instance.GoIndex(index)}}>
+									<Layout direction="column" px=".5em" py=".5em" width="80%">{data.Item.Name}</Layout>
+									<Layout direction="column" px=".5em" py=".5em" alignItems="end" width="20%">{DateTime.ConvertTicksToDurationString(data.Item.RunTimeTicks)}</Layout>
+								</Button>
+
+								<Button
+									type="button" onClick={() => { MusicPlayer.Instance.Remove(data); }}
+									direction="column" alignItems="center" justifyContent="center" transparent
+									position="absolute" top={0} bottom={0} right={0} width="5%"
+									icon={<DeleteIcon size="1em" />}
+								/>
 							</Layout>
-
-							<Button width="100%" px="5%" type="button" textAlign="start" className={background.transparent} onClick={() => { MusicPlayer.Instance.GoIndex(index)}}>
-								<Layout direction="column" px=".5em" py=".5em" width="80%">{data.Item.Name}</Layout>
-								<Layout direction="column" px=".5em" py=".5em" alignItems="end" width="20%">{DateTime.ConvertTicksToDurationString(data.Item.RunTimeTicks)}</Layout>
-							</Button>
-
-							<Button
-								className={background.transparent}
-								type="button" onClick={() => { MusicPlayer.Instance.Remove(data); }}
-								direction="column" alignItems="center" justifyContent="center"
-								position="absolute" top={0} bottom={0} right={0} width="5%">
-								<DeleteIcon size="1em" />
-							</Button>
-						</Layout>
-					)}
-				/>
+						)}
+					/>
+				) : (
+					<Layout className={background.dashed} direction="column" justifyContent="center" alignItems="center" width="100%" py="5em">
+						<TranslatedText textKey="AddToPlaylist" />
+					</Layout>
+				)}
 			</Layout>
 		</Layout>
 	);
 };
 
-const LoadedItems: React.FC<{ items: BaseItemDto[]; columns: Column[]; stats?: Record<string, number>[] }> = (props) => {
+const LoadedItems: React.FC<{ items: BaseItemDto[]; columns: Column[]; stats?: Record<string, number>[]; onToggled: (item: BaseItemDto) => void; filters?: ((item: BaseItemDto) => boolean)[] }> = (props) => {
 	const background = useBackgroundStyles();
+	const [sortField, setSortField] = React.useState(props.columns[0]);
+	const [sortReversed, setSortReversed] = React.useState(false);
+
+	const setSortForColumn = (column: Column) => {
+		if (sortField === column) {
+			setSortReversed(!sortReversed);
+		} else {
+			setSortField(column);
+			setSortReversed(false);
+		}
+	};
+
+	const filteredItems = React.useMemo(() => props.items.filter((i) => Nullable.ValueOrDefault(props.filters, true, (f) => f.length === 0 || f.some((filter) => filter(i)))), [props.items, props.filters]);
+	const sortedItems = React.useMemo(() => SortByObjects(filteredItems, [{ LabelKey: sortField.name, Sort: sortField.getSortFunc(props.stats ?? []), Reversed: sortReversed }]), [filteredItems, sortField, sortReversed]);
+
 	return (
 		<TableVirtuoso
-			data={props.items}
+			data={sortedItems}
 			totalCount={props.items.length}
 			style={{ height: "100%", width: "100%" }}
-			components={{ Table: ({ style, ...props }: TableProps) => <table {...props} style={{ ...style, width: "100%" }} /> }}
-			itemContent={(_, data) => <>{props.columns.map((c) => <td key={c.name} style={ApplyLayoutStyleProps({...c, ...{ display: "table-cell", py: ".25em" }})}>{c.getValue(data, props.stats ?? [])}</td>)}</>}
-			fixedHeaderContent={() => (<tr>{props.columns.map((c) => <th key={c.name} className={background.alternatePanel} style={ApplyLayoutStyleProps({...c, ...{ display: "table-cell", py: ".5em" }})}><TranslatedText textKey={c.name} /></th>)}</tr>)}
+			components={{ 
+				Table: ({ style, ...tProps }: TableProps) => <table {...tProps} style={{ ...style, width: "100%" }} />,
+				TableRow: ({ style, ...trProps }: ItemProps<BaseItemDto>) => <tr className={background.transparent} {...trProps} style={{ ...style }} onClick={() => { props.onToggled(trProps.item); }} />,
+			}}
+			itemContent={(_, data) => (
+				<>
+					{props.columns.map((column) => (
+						<Layout key={column.name} elementType="td" display="table-cell" px=".5em" py=".25em" direction="row" textAlign={column.align} width={column.width}>
+							{column.getValue(data, props.stats ?? [])}
+						</Layout>
+					))}
+				</>
+			)}
+			fixedHeaderContent={() => (
+				<tr className={background.alternatePanel}>
+					{props.columns.map((column) => (
+						<Layout key={column.name} elementType="th" display="table-cell" width={column.width} direction="row">
+							<Button type="button" onClick={() => { setSortForColumn(column); }} transparent width="100%" px=".5em" py=".5em" justifyContent={column.align} label={column.name} />
+						</Layout>
+					))}
+				</tr>
+			)}
 		/>
 	);
 };

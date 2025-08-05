@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Property } from "csstype";
+import { Nullable } from "./MissingJavascriptFunctions";
 
 export interface StyleLayoutPropsWithRequiredDirection extends StyleLayoutProps {
 	direction: Property.FlexDirection;
@@ -39,11 +40,11 @@ export interface LayoutWithoutChildrenProps {
 
 	bw?: number;
 
-	bt?: boolean;
-	bb?: boolean;
+	bt?: true;
+	bb?: true;
 
-	bl?: boolean;
-	br?: boolean;
+	bl?: true;
+	br?: true;
 
 	minWidth?: number|string;
 	maxWidth?: number|string;
@@ -114,10 +115,10 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		paddingLeft: props?.px,
 		paddingRight: props?.px,
 		borderWidth: props?.bw,
-		borderTopStyle: !props?.bt ? undefined : "solid",
-		borderBottomStyle: !props?.bb ? undefined : "solid",
-		borderLeftStyle: !props?.bl ? undefined : "solid",
-		borderRightStyle: !props?.br ? undefined : "solid",
+		borderTopStyle: props?.bt === true ? "solid" : undefined,
+		borderBottomStyle: props?.bb === true ? "solid" : undefined,
+		borderLeftStyle: props?.bl === true ? "solid" : undefined,
+		borderRightStyle: props?.br === true ? "solid" : undefined,
 		minWidth: props?.minWidth,
 		maxWidth: props?.maxWidth,
 		width: CalculateItemsPerRowPercentage(props?.width),

@@ -28,7 +28,6 @@ const NavigationButton: React.FC<{ onClick?: (element: HTMLButtonElement) => voi
 
 const NavigationMenuLinkStyles: Partial<StyleLayoutProps> = { width: "100%", px: "1em", py: "1em", gap: ".5em" };
 const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => {
-	const background = useBackgroundStyles();
 	const [anchor, setOpenAnchor] = React.useState<HTMLElement|null>(null);
 	const closeNavigation = () => setOpenAnchor(null);
 
@@ -37,7 +36,7 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 			<NavigationButton onClick={(element) => { setOpenAnchor(element); }} />
 			<AnchoredModal alternatePanel open={anchor !== null} onClosed={closeNavigation} opensInDirection="right" anchorElement={anchor}>
 				<Layout direction="column" maxWidth={300}>
-					<HyperLink direction="row" to="/" gap={16} className={background.transparent} py={16} px={16}>
+					<HyperLink direction="row" to="/" gap={16} py={16} px={16}>
 						<JellyfinIcon size="48" />
 
 						<Layout direction="column" gap={4} justifyContent="center">
@@ -57,7 +56,6 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 									key={library.Id ?? index.toString()} item={library}
 									direction="column" alignItems="center" px={8} py={8} gap={8}
 									width={{ itemsPerRow: 3, gap: 0 }}
-									className={background.transparent}
 								>
 									<Layout direction="row" justifyContent="center"><IconForItem item={library} size={24} /></Layout>
 									<Layout direction="row" justifyContent="center">{library.Name}</Layout>
@@ -109,10 +107,8 @@ const AuthorizeQuickConnectButton: React.FC<{ onOpened: () => void }> = (props) 
 };
 
 const NavigationMenuItemHyperLink: React.FC<{ text: React.ReactElement, icon: React.ReactElement, to: string; }> = (props) => {
-	const background = useBackgroundStyles();
-
 	return (
-		<HyperLink className={background.transparent} {...NavigationMenuLinkStyles} direction="row" to={props.to}>
+		<HyperLink {...NavigationMenuLinkStyles} direction="row" to={props.to}>
 			<Layout direction="row" justifyContent="center" position="relative" top={1}>{props.icon}</Layout>
 			<Layout direction="row" justifyContent="center">{props.text}</Layout>
 		</HyperLink>
@@ -120,10 +116,8 @@ const NavigationMenuItemHyperLink: React.FC<{ text: React.ReactElement, icon: Re
 };
 
 const NavigationMenuItemButton: React.FC<{ text: React.ReactElement, icon: React.ReactElement, onClick: () => void; }> = (props) => {
-	const background = useBackgroundStyles();
-
 	return (
-		<Button className={background.transparent} {...NavigationMenuLinkStyles} direction="row" type="button" onClick={props.onClick}>
+		<Button transparent {...NavigationMenuLinkStyles} direction="row" type="button" onClick={props.onClick}>
 			<Layout direction="row" justifyContent="center" position="relative" top={1}>{props.icon}</Layout>
 			<Layout direction="row" justifyContent="center">{props.text}</Layout>
 		</Button>

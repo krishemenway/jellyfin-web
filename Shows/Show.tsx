@@ -208,9 +208,7 @@ const CastAndCrew: React.FC<{ item: BaseItemDto }> = (props) => {
 
 	return (
 		<Layout direction="column" minWidth="100%">
-			<Button type="button" onClick={() => setOpen(!open)} direction="row" fontSize="1.5em" py={8} px={8} gap={8}>
-				<Layout direction="row"><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
-			</Button>
+			<Button type="button" label="HeaderCastAndCrew" onClick={() => setOpen(!open)} direction="row" fontSize="1.5em" py={8} px={8} gap={8} />
 
 			<Collapsible open={open}>
 				<ListOf

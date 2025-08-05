@@ -50,7 +50,7 @@ export const useGlobalStyles = createUseStyles({
 		menu, nav, output, ruby, section, summary, time, mark, audio, video, button, text, tspan, input`]: {
 			color: "var(--PrimaryTextColor)",
 			fill: "var(--PrimaryTextColor)",
-			borderWidth: "0",
+			borderWidth: "1px",
 			borderColor: "var(--PanelBorderColor)",
 			borderStyle: "none",
 			margin: "0",
@@ -101,6 +101,9 @@ export const useBackgroundStyles = createUseStyles({
 	field: {
 		background: "var(--FieldBackgroundColor)",
 		border: "1px solid var(--FieldBorderColor)",
+	},
+	dashed: {
+		border: "1px dashed var(--PanelBorderColor)",
 	},
 	button: {
 		cursor: "pointer",
