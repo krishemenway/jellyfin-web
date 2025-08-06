@@ -1,6 +1,10 @@
 export class Linq {
-	public static Single<T>(array: T[], matchFunc: (t: T) => boolean): T {
-		const result = array.filter(matchFunc);
+	public static Distinct<T>(array: T[]): T[] {
+		return array.filter((value, index) => array.indexOf(value) === index);
+	}
+
+	public static Single<T>(array: T[], matchFunc?: (t: T) => boolean): T {
+		const result = Nullable.ValueOrDefault(matchFunc, array, (match) => array.filter(match));
 
 		if (result.length !== 1) {
 			throw new Error(`Tried to search array expecting exactly one item and found ${result.length} items`)
