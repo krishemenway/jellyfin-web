@@ -131,21 +131,21 @@ export const useBackgroundStyles = createUseStyles({
 	},
 	selected: {
 		cursor: "pointer",
-		background: "var(--SelectedButtonIdleBackgroundColor)",
-		border: "1px solid var(--SelectedButtonIdleBorderColor)",
-		color: "var(--SelectedButtonIdleTextColor)",
+		background: "var(--ButtonSelectedIdleBackgroundColor)",
+		border: "1px solid var(--ButtonSelectedIdleBorderColor)",
+		color: "var(--ButtonSelectedIdleTextColor)",
 
 		"&:hover": {
-			background: "var(--SelectedButtonHoverBackgroundColor)",
-			border: "1px solid var(--SelectedButtonHoverBorderColor)",
-			color: "var(--SelectedButtonHoverTextColor)",
+			background: "var(--ButtonSelectedHoverBackgroundColor)",
+			border: "1px solid var(--ButtonSelectedHoverBorderColor)",
+			color: "var(--ButtonSelectedHoverTextColor)",
 		},
 
 		"&:disabled": {
 			cursor: "not-allowed",
-			background: "var(--SelectedButtonDisabledBackgroundColor)",
-			border: "1px solid var(--SelectedButtonDisabledBorderColor)",
-			color: "var(--SelectedButtonDisabledTextColor)",
+			background: "var(--ButtonSelectedDisabledBackgroundColor)",
+			border: "1px solid var(--ButtonSelectedDisabledBorderColor)",
+			color: "var(--ButtonSelectedDisabledTextColor)",
 		},
 	},
 	transparent: {
