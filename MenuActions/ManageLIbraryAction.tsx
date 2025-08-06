@@ -14,7 +14,7 @@ export const ManageLibraryAction: ItemMenuAction = {
 	textKey: "ManageLibrary",
 	visible: (user) => user.Policy?.IsAdministrator ?? false,
 	action: () => { IsOpen.Value = true; },
-	modal: (items) => <Modal items={items} />,
+	modal: (items) => <Modal key={"ManageLibraryAction" + items.map((i) => i.Id).join("")} items={items} />,
 }
 
 const Modal: React.FC<{ items: BaseItemDto[] }> = (props) => {

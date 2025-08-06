@@ -13,7 +13,7 @@ export const AddToPlaylistAction: ItemMenuAction = {
 	icon: (p) => <AddToPlaylistIcon {...p} />,
 	textKey: "AddToPlaylist",
 	action: () => { IsOpen.Value = true; },
-	modal: (items) => <Modal items={items} />,
+	modal: (items) => <Modal key={"AddToPlaylistAction" + items.map((i) => i.Id).join("")} items={items} />,
 }
 
 const Modal: React.FC<{ items: BaseItemDto[] }> = (props) => {

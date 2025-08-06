@@ -13,7 +13,7 @@ export const AddToCollectionAction: ItemMenuAction = {
 	icon: (p) => <AddToCollectionIcon {...p} />,
 	textKey: "AddToCollection",
 	action: () => { IsOpen.Value = true; },
-	modal: (items) => <Modal items={items} />,
+	modal: (items) => <Modal key={"AddToCollectionAction" + items.map((i) => i.Id).join("")} items={items} />,
 }
 
 const Modal: React.FC<{ items: BaseItemDto[] }> = (props) => {

@@ -14,7 +14,7 @@ export const EditItemAction: ItemMenuAction = {
 	textKey: "Edit",
 	visible: (user) => user.Policy?.IsAdministrator ?? false,
 	action: () => { IsOpen.Value = true; },
-	modal: (items) => <Modal items={items} />,
+	modal: (items) => <Modal key={"EditItemAction" + items.map((i) => i.Id).join("")} items={items} />,
 }
 
 const Modal: React.FC<{ items: BaseItemDto[] }> = (props) => {
