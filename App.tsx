@@ -5,6 +5,7 @@ import { useGlobalStyles, useCalculatedBreakpoint } from "AppStyles";
 import { ResetModalOnLocationChange } from "Common/Modal";
 import { useObservable } from "@residualeffect/rereactor";
 import { ThemeService } from "Users/ThemeService";
+import { ErrorBoundary } from "react-error-boundary";
 
 import { NotFound } from "Common/NotFound";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
@@ -44,7 +45,7 @@ const Layout: React.FC = () => {
 	return (
 		<ResponsiveProvider value={breakpoint}>
 			<RequireServerAndUser>
-				<Outlet />
+				<ErrorBoundary fallback={<LoadingErrorMessages errorTextKeys={["UnknownError"]} />}><Outlet /></ErrorBoundary>
 			</RequireServerAndUser>
 
 			<ResetModalOnLocationChange />
