@@ -23,8 +23,6 @@ export class EditableItemFilter {
 			const filterValue = this.FilterValue.Current.Value;
 			const operation = this.Operation.Current.Value;
 
-			console.log(filterValue, operation);
-
 			return operation.Display(filterValue) || [];
 		});
 	}
