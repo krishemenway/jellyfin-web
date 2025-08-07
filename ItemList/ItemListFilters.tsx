@@ -146,16 +146,14 @@ const PickFilterModal: React.FC<{ filterOptions: ItemFilterType[]; onPicked: (op
 		<ListOf
 			items={props.filterOptions}
 			direction="row" wrap
-			px="1em" py="1em" gap={16} grow
+			px="1em" py="1em" gap="1em" grow
 			maxWidth="400px"
 			forEachItem={(filterOption) => (
 				<Button
 					key={filterOption.labelKey}
 					label={filterOption.labelKey}
 					type="button" onClick={() => { props.onClosed(); props.onPicked(filterOption); }}
-					direction="column"
-					justifyContent="space-between"
-					width={{ itemsPerRow: 2, gap: 16 }}
+					direction="column" justifyContent="space-between" width={{ itemsPerRow: 2, gap: "1em" }}
 					px=".25em" py=".5em"
 				/>
 			)}

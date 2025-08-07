@@ -57,9 +57,9 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 			<AnchoredModal alternatePanel open={anchor !== null} onClosed={closeNavigation} opensInDirection="right" anchorElement={anchor}>
 				<Layout direction="column" maxWidth="20em">
 					<HyperLink direction="row" to="/" gap="1em" py="1em" px="1em">
-						<JellyfinIcon size="48" />
+						<JellyfinIcon size="3em" />
 
-						<Layout direction="column" gap={4} justifyContent="center">
+						<Layout direction="column" gap=".25em" justifyContent="center">
 							<h6>{ServerService.Instance.CurrentServer.Name}</h6>
 							<p>{ServerService.Instance.CurrentServer.Version}</p>
 						</Layout>
@@ -74,8 +74,8 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 							forEachItem={(library) => (
 								<LinkToItem
 									key={library.Id} item={library}
-									direction="column" alignItems="center" px=".5em" py=".5em" gap=".5em"
-									width={{ itemsPerRow: 3, gap: 0 }}
+									direction="column" alignItems="center"
+									px=".5em" py=".5em" gap=".5em" width={{ itemsPerRow: 3 }}
 								>
 									<Layout direction="row" justifyContent="center"><IconForItem item={library} size="1.5em" /></Layout>
 									<Layout direction="row" justifyContent="center">{library.Name}</Layout>

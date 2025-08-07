@@ -1,13 +1,14 @@
 import * as React from "react";
 import { Property } from "csstype";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export interface StyleLayoutPropsWithRequiredDirection extends StyleLayoutProps {
 	direction: Property.FlexDirection;
 }
 
-export interface PercentWidthWithGap {
+export interface ItemsPerRow {
 	itemsPerRow: number;
-	gap: number;
+	gap?: Property.Gap;
 }
 
 export interface LayoutWithoutChildrenProps {
@@ -47,7 +48,7 @@ export interface LayoutWithoutChildrenProps {
 
 	minWidth?: Property.MinWidth;
 	maxWidth?: Property.MaxWidth;
-	width?: Property.Width|PercentWidthWithGap;
+	width?: Property.Width|ItemsPerRow;
 
 	minHeight?: Property.MinHeight;
 	maxHeight?: Property.MaxHeight;
@@ -56,7 +57,7 @@ export interface LayoutWithoutChildrenProps {
 
 export interface StyleLayoutProps extends LayoutWithoutChildrenProps {
 	direction?: Property.FlexDirection;
-	gap?: Property.Gap|number;
+	gap?: Property.Gap;
 	alignItems?: Property.AlignItems;
 	justifyContent?: Property.JustifyContent;
 	wrap?: boolean;
@@ -68,7 +69,7 @@ interface LayoutParams extends StyleLayoutPropsWithRequiredDirection {
 	elementType?: React.ElementType;
 }
 
-function CalculateItemsPerRowPercentage(width?: number|string|PercentWidthWithGap) {
+function CalculateItemsPerRowPercentage(width?: number|string|ItemsPerRow) {
 	if (width === undefined || typeof width === "string" || typeof width === "number") {
 		return width;
 	}
@@ -77,7 +78,7 @@ function CalculateItemsPerRowPercentage(width?: number|string|PercentWidthWithGa
 		throw new Error("Invalid number of items per row");
 	}
 
-	return `calc(100% / ${width.itemsPerRow} - ${(width.itemsPerRow - 1) * width.gap / width.itemsPerRow}px)`;
+	return `calc(${100 / width.itemsPerRow}%${Nullable.HasValue(width.gap) ? ` - ${(width.itemsPerRow - 1)} * ${width.gap} / ${width.itemsPerRow}` : ""})`;
 }
 
 export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequiredDirection>): React.CSSProperties {

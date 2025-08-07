@@ -139,7 +139,7 @@ const CastAndCrewCredit: React.FC<{ person: BaseItemPerson }> = (props) => {
 	const itemsPerRow = useBreakpointValue({ [ResponsiveBreakpoint.Mobile]: 1, [ResponsiveBreakpoint.Tablet]: 3, [ResponsiveBreakpoint.Desktop]: 6 });
 
 	return (
-		<LinkToPerson id={props.person.Id} direction="column" width={{ itemsPerRow: itemsPerRow, gap: 0 }} px=".5em" py=".5em" gap=".25em">
+		<LinkToPerson id={props.person.Id} direction="column" width={{ itemsPerRow: itemsPerRow }} px=".5em" py=".5em" gap=".25em">
 			<Layout direction="row" fontSize="1em">{props.person.Name}</Layout>
 			<Layout direction="row" fontSize=".8em">{props.person.Role}</Layout>
 		</LinkToPerson>
