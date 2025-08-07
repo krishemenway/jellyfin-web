@@ -13,14 +13,16 @@ export class ItemFilterService {
 	public LoadFiltersWithAbort(libraryIds: string[]): () => void {
 		const receiver = this.FindOrCreateFiltersReceiver(libraryIds);
 
-		receiver.Start((a) => Promise.all(libraryIds.map((libraryId) => this.LoadFiltersForLibraryId(libraryId, a))).then((filters) => filters.reduce((previous, current) => this.Merge(previous, current), {})).then((results) => {
-			results.Genres = Linq.Distinct(results.Genres ?? []).sort(SortByString((x => x)));
-			results.Tags = Linq.Distinct(results.Tags ?? []).sort(SortByString((x => x)));
-			results.OfficialRatings = Linq.Distinct(results.OfficialRatings ?? []).sort(SortByString((x => x)));
-			results.Years = Linq.Distinct(results.Years ?? []).sort(SortByNumber((x => x)));
+		if (!receiver.HasData.Value) {
+			receiver.Start((a) => Promise.all(libraryIds.map((libraryId) => this.LoadFiltersForLibraryId(libraryId, a))).then((filters) => filters.reduce((previous, current) => this.Merge(previous, current), {})).then((results) => {
+				results.Genres = Linq.Distinct(results.Genres ?? []).sort(SortByString((x => x)));
+				results.Tags = Linq.Distinct(results.Tags ?? []).sort(SortByString((x => x)));
+				results.OfficialRatings = Linq.Distinct(results.OfficialRatings ?? []).sort(SortByString((x => x)));
+				results.Years = Linq.Distinct(results.Years ?? []).sort(SortByNumber((x => x)));
 
-			return results;
-		}));
+				return results;
+			}));
+		}
 
 		return () => receiver.ResetIfLoading();
 	}

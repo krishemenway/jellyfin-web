@@ -9,9 +9,9 @@ import { ServerService } from "Servers/ServerService";
 
 class ChangePasswordService {
 	constructor() {
-		this.Current = new EditableField("LabelCurrentPassword");
-		this.New = new EditableField("LabelNewPassword");
-		this.Confirm = new EditableField("LabelNewPasswordConfirm");
+		this.Current = new EditableField("LabelCurrentPassword", "");
+		this.New = new EditableField("LabelNewPassword", "");
+		this.Confirm = new EditableField("LabelNewPasswordConfirm", "");
 
 		this.ChangePasswordResult = new Receiver("UnknownError");
 	}

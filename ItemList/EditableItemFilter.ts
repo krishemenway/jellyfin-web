@@ -2,7 +2,6 @@ import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed } from "@residualeffect/reactor";
 import { EditableField } from "Common/EditableField";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { SelectField } from "Common/SelectField";
 import { FilterOperation } from "ItemList/FilterOperation";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { ItemViewOptionFilterData } from "ItemList/ItemListViewOptions";
@@ -16,8 +15,8 @@ export class EditableItemFilter {
 		this.Key = (EditableItemFilter.EditableItemFilterId++).toString();
 		this.FilterType = filterType;
 
-		this.Operation = new SelectField("Operation", filterType.operations, filterType.operations[0]);
-		this.FilterValue = new EditableField(filterValue ?? "");
+		this.Operation = new EditableField("Operation", filterType.operations[0]);
+		this.FilterValue = new EditableField("Value", filterValue ?? "");
 
 		this.DisplayValue = new Computed(() => {
 			const filterValue = this.FilterValue.Current.Value;
@@ -46,7 +45,7 @@ export class EditableItemFilter {
 
 	public Key: string;
 	public FilterType: ItemFilterType;
-	public Operation: SelectField<FilterOperation>;
+	public Operation: EditableField<FilterOperation>;
 	public FilterValue: EditableField;
 	public DisplayValue: Computed<string[]>;
 

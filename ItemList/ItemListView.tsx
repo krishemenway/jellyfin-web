@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BaseItemDto, BaseItemKind, ImageType, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemKind, ImageType, QueryFiltersLegacy, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { useComputed, useObservable } from "@residualeffect/rereactor";
 import { createStyles, useBackgroundStyles, ResponsiveBreakpoint, useBreakpoint } from "AppStyles";
 import { Layout } from "Common/Layout";
@@ -21,6 +21,7 @@ import { LoginService } from "Users/LoginService";
 import { ItemListService } from "ItemList/ItemListService";
 import { UserViewStore } from "Users/UserViewStore";
 import { PageTitle } from "Common/PageTitle";
+import { ItemFilterService } from "Items/ItemFilterService";
 
 export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = (props) => {
 	const routeParams = useParams();
@@ -34,21 +35,29 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 
 	React.useEffect(() => itemList.LoadWithAbort(), [itemList]);
 	React.useEffect(() => SettingsStore.Instance.LoadSettings(libraryId), [libraryId]);
+	React.useEffect(() => ItemFilterService.Instance.LoadFiltersWithAbort([libraryId]), [libraryId]);
 
 	return (
 		<PageWithNavigation icon={props.itemKind}>
 			<Loading
-				receivers={[itemList.List, SettingsStore.Instance.Settings, LoginService.Instance.User, UserViewStore.Instance.UserViews]}
+				receivers={[itemList.List, SettingsStore.Instance.Settings, LoginService.Instance.User, UserViewStore.Instance.UserViews, ItemFilterService.Instance.FindOrCreateFiltersReceiver([libraryId])]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-				whenReceived={(items, settings, user, libraries) => <ItemsGrid libraryId={libraryId} itemList={itemList} items={items.List} settings={settings} itemKind={props.itemKind} user={user} libraries={libraries} />}
+				whenReceived={(items, settings, user, libraries, filters) => (
+					<ItemsGrid
+						libraryId={libraryId} itemList={itemList}
+						items={items.List} settings={settings}
+						user={user} libraries={libraries}
+						itemKind={props.itemKind} filters={filters}
+					/>
+				)}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const ItemsGrid: React.FC<{ libraryId: string, items: BaseItemDto[]; itemList: ItemListService; itemKind: BaseItemKind; settings: Settings; user: UserDto; libraries: BaseItemDto[] }> = (props) => {
+const ItemsGrid: React.FC<{ libraryId: string, items: BaseItemDto[]; itemList: ItemListService; itemKind: BaseItemKind; settings: Settings; user: UserDto; libraries: BaseItemDto[]; filters: QueryFiltersLegacy }> = (props) => {
 	const breakpoint = useBreakpoint();
 	const itemKindService = BaseItemKindServiceFactory.FindOrNull(props.itemKind);
 	const listOptions = useObservable(props.itemList.ListOptions);
@@ -72,7 +81,7 @@ const ItemsGrid: React.FC<{ libraryId: string, items: BaseItemDto[]; itemList: I
 	return (
 		<Layout direction="column" gap="1em" py="1em">
 			<PageTitle text={library?.Name} />
-			{listOptions && <ItemListFilters library={library} user={props.user} listOptions={listOptions} />}
+			{listOptions && <ItemListFilters library={library} user={props.user} listOptions={listOptions} filters={props.filters} />}
 
 			<ListOf
 				items={filteredAndSortedItems}

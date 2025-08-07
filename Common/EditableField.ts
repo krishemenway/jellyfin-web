@@ -1,17 +1,17 @@
 import { Computed, Observable } from "@residualeffect/reactor";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 
-export class EditableField {
-	constructor(fieldId: string, defaultValue?: string, canMakeRequestFunc?: () => string, beforeChange?: (newValue: string) => string) {
+export class EditableField<T = string> {
+	constructor(fieldId: string, defaultValue: T, canMakeRequestFunc?: () => string, beforeChange?: (newValue: T) => T) {
 		this.FieldId = fieldId;
 		this.CanMakeRequestFunc = canMakeRequestFunc ?? (() => "");
 		this.BeforeChange = beforeChange ?? ((newValue) => newValue);
 
-		this.Saved = new Observable<string>(defaultValue ?? "");
-		this.Current = new Observable<string>(this.Saved.Value);
+		this.Saved = new Observable(defaultValue);
+		this.Current = new Observable(this.Saved.Value);
 
 		this.HasChanged = new Computed(() => this.Current.Value !== this.Saved.Value);
-		this.ServerErrorMessage = new Observable<string>("");
+		this.ServerErrorMessage = new Observable("");
 
 		this.ErrorMessage = new Computed<string>(() => Linq.Coalesce([this.CanMakeRequestFunc()], this.ServerErrorMessage.Value));
 	}
@@ -20,7 +20,7 @@ export class EditableField {
 		return !Nullable.HasValue(this.CanMakeRequestFunc());
 	}
 
-	public OnChange(newValue: string) {
+	public OnChange(newValue: T) {
 		this.Current.Value = this.BeforeChange(newValue);
 	}
 
@@ -28,7 +28,7 @@ export class EditableField {
 		this.Saved.Value = this.Current.Value;
 	}
 
-	public SetSaved(value: string) {
+	public SetSaved(value: T) {
 		this.Saved.Value = value;
 		this.Current.Value = value;
 	}
@@ -38,10 +38,10 @@ export class EditableField {
 	}
 
 	public FieldId: string;
-	public BeforeChange: (newValue: string) => string;
+	public BeforeChange: (newValue: T) => T;
 
-	public Current: Observable<string>;
-	public Saved: Observable<string>;
+	public Current: Observable<T>;
+	public Saved: Observable<T>;
 	public HasChanged: Computed<boolean>;
 	public ServerErrorMessage: Observable<string>;
 

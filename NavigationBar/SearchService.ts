@@ -49,7 +49,7 @@ export class SearchResults {
 
 export class SearchService {
 	constructor() {
-		this.SearchTermField = new EditableField("SearchQuery");
+		this.SearchTermField = new EditableField("SearchQuery", "");
 		this.ThrottledSearchTerm = new FilteredObservable("", RateLimiter(RateLimitType.Debounce, 300));
 
 		this.SearchTermField.Current.Subscribe((newValue) => this.ThrottledSearchTerm.Value = newValue);

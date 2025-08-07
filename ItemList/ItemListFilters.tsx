@@ -15,7 +15,7 @@ import { ItemSortOption } from "ItemList/ItemSortOption";
 import { EditableItemFilter } from "ItemList/EditableItemFilter";
 import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { SortFuncs } from "Common/Sort";
-import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, QueryFiltersLegacy, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { SelectFieldEditor } from "Common/SelectFieldEditor";
 import { Form } from "Common/Form";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
@@ -27,6 +27,7 @@ export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
 	user: UserDto;
 	library: BaseItemDto;
+	filters: QueryFiltersLegacy;
 }
 
 export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
@@ -80,7 +81,7 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 			</AnchoredModal>
 
 			<AnchoredModal anchorElement={filterButtonRef} open={newFilter !== undefined} anchorAlignment="center" opensInDirection="right" onClosed={() => props.listOptions.ClearNewFilter()}>
-				{newFilter && <ConfigureFilterModal listOptions={props.listOptions} newFilter={newFilter} onClosed={() => props.listOptions.ClearNewFilter()} />}
+				{newFilter && <ConfigureFilterModal listOptions={props.listOptions} newFilter={newFilter} filters={props.filters} onClosed={() => props.listOptions.ClearNewFilter()} />}
 			</AnchoredModal>
 
 			<AnchoredModal anchorElement={sortButtonRef} open={addSortOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => setAddSortOpen(false)} maxWidth="20%">
@@ -161,19 +162,22 @@ const PickFilterModal: React.FC<{ filterOptions: ItemFilterType[]; onPicked: (op
 	);
 };
 
-const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilter: EditableItemFilter; onClosed: () => void; }> = (props) => {
+const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilter: EditableItemFilter; filters: QueryFiltersLegacy; onClosed: () => void; }> = (props) => {
+	const operation = useObservable(props.newFilter.Operation.Current);
 	const FilterTypeEditor = props.newFilter.FilterType.editor;
 
 	return (
 		<Form py="1em" px="1em" gap="1em" direction="column" onSubmit={() => { props.listOptions.AddNewFilter(); props.onClosed(); }}>
-			<Layout direction="column" justifyContent="center"><TranslatedText textKey={props.newFilter.FilterType.labelKey} /></Layout>
+			<Layout direction="row" justifyContent="center" gap="1em">
+				<TranslatedText textKey={props.newFilter.FilterType.labelKey} elementType="div" />
+				<SelectFieldEditor field={props.newFilter.Operation} allOptions={props.newFilter.FilterType.operations} getKey={(o) => o.Name} getLabel={(o) => o.Name} grow />
+			</Layout>
 
-			<SelectFieldEditor field={props.newFilter.Operation} getKey={(o) => o.Name} getLabel={(o) => o.Name} />
-			<FilterTypeEditor filter={props.newFilter} />
+			<FilterTypeEditor filter={props.newFilter} currentOperation={operation} filters={props.filters} />
 
 			<Layout direction="row" gap="1em">
-				<Button type="button" justifyContent="center" onClick={() => { props.onClosed(); }} grow><TranslatedText textKey="ButtonCancel" /></Button>
-				<Button type="submit" justifyContent="center" grow><TranslatedText textKey="Save" /></Button>
+				<Button type="button" justifyContent="center" py=".25em" onClick={() => { props.onClosed(); }} grow><TranslatedText textKey="ButtonCancel" /></Button>
+				<Button type="submit" justifyContent="center" py=".25em" grow><TranslatedText textKey="Save" /></Button>
 			</Layout>
 		</Form>
 	);
