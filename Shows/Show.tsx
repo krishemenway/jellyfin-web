@@ -9,7 +9,7 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemService } from "Items/ItemsService";
 import { ListOf } from "Common/ListOf";
 import { ItemsRow } from "Items/ItemsRow";
-import { BaseItemDto, BaseItemPerson } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemPerson, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { ItemImage } from "Items/ItemImage";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemTags } from "Items/ItemTags";
@@ -32,9 +32,9 @@ import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { PageTitle } from "Common/PageTitle";
 import { EditItemAction } from "MenuActions/EditItemAction";
 import { RefreshItemAction } from "MenuActions/RefreshItemAction";
+import { CenteredModal } from "Common/Modal";
 
 export const Show: React.FC = () => {
-	const background = useBackgroundStyles();
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
 	const showId = routeParams.showId;
 
@@ -49,85 +49,114 @@ export const Show: React.FC = () => {
 		<PageWithNavigation icon="Series">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(showId).Item, ItemService.Instance.FindOrCreateItemData(showId).Children, LoginService.Instance.User]}
-				whenNotStarted={<LoadingIcon size={48} />}
-				whenLoading={<LoadingIcon size={48} />}
+				whenNotStarted={<LoadingIcon size="3em" />}
+				whenLoading={<LoadingIcon size="3em" />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(show, seasons, user) => (
-					<Layout direction="row" gap={16} py={16}>
-						<PageTitle text={show.Name} />
-						<Layout direction="column" maxWidth="20%" gap={8}>
-							<Layout direction="column" position="relative">
-								<ItemImage item={show} type="Primary" />
-								<ItemRating item={show} position="absolute" bottom={8} right={8} />
-							</Layout>
-
-							<ItemStudios
-								item={show}
-								direction="row" gap={8}
-								linkClassName={background.button}
-								linkLayout={{ direction: "column", width: "100%", py: 8, textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
-							/>
-
-							<ItemExternalLinks
-								item={show}
-								direction="row" gap={8}
-								linkClassName={background.button}
-								linkLayout={{ direction: "column", width: "100%", py: 8, textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
-							/>
-
-							<ItemGenres
-								item={show}
-								direction="row" gap={8}
-								linkClassName={background.button}
-								linkLayout={{ direction: "column", width: "100%", py: 8, textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
-							/>
-						</Layout>
-
-						<Layout direction="column" grow gap={24}>
-							<Layout direction="row" justifyContent="space-between">
-								<Layout direction="row" fontSize="2em" className="show-name">{show.Name}</Layout>
-								<ItemActionsMenu items={[show]} user={user} actions={[
-									[ // User-based actions
-										AddToFavoritesAction,
-										MarkPlayedAction,
-										AddToCollectionAction,
-										AddToPlaylistAction,
-									],
-									[ // Server-based actions
-										EditItemAction,
-										RefreshItemAction,
-									]
-								]} />
-							</Layout>
-
-							<ItemOverview item={show} />
-
-							<Layout direction="row" gap={8}>
-								<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: 4, py: 4 }} />
-								<ItemTags
-									item={show}
-									direction="row" gap={8} wrap
-									linkClassName={background.button}
-									linkLayout={{ px: 4, py: 4 }}
-								/>
-							</Layout>
-							{/* TODO: Airing/Aired Time */}
-							{/* TODO: Review/Star Rating */}
-							{/* TODO: Play */}
-							{/* TODO: Shuffle */}
-							{/* TODO: Next Up */}
-							<CastAndCrew item={show} />
-
-							<ListOf
-								items={seasons}
-								direction="column" gap={8}
-								forEachItem={(season) => <SeasonForShow key={season.Id} season={season} />}
-							/>
-						</Layout>
-					</Layout>
-				)}
+				whenReceived={(show, seasons, user) => <LoadedShow show={show} seasons={seasons} user={user} />}
 			/>
 		</PageWithNavigation>
+	);
+};
+
+const LoadedShow: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto }> = ({ show, seasons, user }) => {
+	const background = useBackgroundStyles();
+	const [selectedEpisode, setSelectedEpisode] = React.useState<BaseItemDto|undefined>(undefined);
+
+	return (
+		<Layout direction="row" gap="1em" py="1em">
+			<PageTitle text={show.Name} />
+			<Layout direction="column" maxWidth="20%" gap=".5em">
+				<Layout direction="column" position="relative">
+					<ItemImage item={show} type="Primary" />
+					<ItemRating item={show} position="absolute" bottom=".5em" right=".5em" />
+				</Layout>
+
+				<ItemStudios
+					item={show}
+					direction="row" gap=".5em"
+					linkClassName={background.button}
+					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+				/>
+
+				<ItemExternalLinks
+					item={show}
+					direction="row" gap=".5em"
+					linkClassName={background.button}
+					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+				/>
+
+				<ItemGenres
+					item={show}
+					direction="row" gap=".5em"
+					linkClassName={background.button}
+					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+				/>
+			</Layout>
+
+			<Layout direction="column" grow gap="1.5em">
+				<Layout direction="row" justifyContent="space-between">
+					<Layout direction="row" fontSize="2em" className="show-name">{show.Name}</Layout>
+					<ItemActionsMenu items={[show]} user={user} actions={[
+						[ // User-based actions
+							AddToFavoritesAction,
+							MarkPlayedAction,
+							AddToCollectionAction,
+							AddToPlaylistAction,
+						],
+						[ // Server-based actions
+							EditItemAction,
+							RefreshItemAction,
+						]
+					]} />
+				</Layout>
+
+				<ItemOverview item={show} />
+
+				<Layout direction="row" gap=".5em">
+					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
+					<ItemTags
+						item={show}
+						direction="row" gap=".5em" wrap
+						linkClassName={background.button}
+						linkLayout={{ px: ".25em", py: ".25em" }}
+					/>
+				</Layout>
+				{/* TODO: Airing/Aired Time */}
+				{/* TODO: Review/Star Rating */}
+				{/* TODO: Play */}
+				{/* TODO: Shuffle */}
+				{/* TODO: Next Up */}
+				<CastAndCrew item={show} />
+
+				<ListOf
+					items={seasons}
+					direction="column" gap=".5em"
+					forEachItem={(season) => <SeasonForShow key={season.Id} season={season} />}
+				/>
+			</Layout>
+
+			<CenteredModal open={selectedEpisode !== undefined} onClosed={() => setSelectedEpisode(undefined)}>
+				<EpisodeDetails episode={selectedEpisode} />
+			</CenteredModal>
+		</Layout>
+	);
+};
+
+const EpisodeDetails: React.FC<{ episode: BaseItemDto|undefined }> = (props) => {
+	if (!Nullable.HasValue(props.episode)) {
+		return <></>;
+	}
+
+	return (
+		<Layout direction="row">
+			<Layout direction="column">
+				{props.episode.Name}
+			</Layout>
+
+			<Layout direction="column">
+				Something else?
+			</Layout>
+		</Layout>
 	);
 };
 
@@ -145,12 +174,12 @@ const SeasonForShow: React.FC<{ season: BaseItemDto }> = (props) => {
 		<Layout direction="column" minWidth="100%">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(seasonId).Children]}
-				whenNotStarted={<LoadingIcon size={48} />}
-				whenLoading={<LoadingIcon size={48} />}
+				whenNotStarted={<LoadingIcon size="3em" />}
+				whenLoading={<LoadingIcon size="3em" />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(episodes) => (
 					<>
-						<Button type="button" onClick={() => setSeasonOpen(!seasonOpen)} direction="row" fontSize="1.5em" py={8} px={8} gap={8}>
+						<Button type="button" onClick={() => setSeasonOpen(!seasonOpen)} direction="row" fontSize="1.5em" py=".5em" px=".5em" gap=".5em">
 							<Layout direction="row">{props.season.Name}</Layout>
 							<Layout direction="row"><ProductionYearRangeForEpisodes episodes={episodes} /></Layout>
 						</Button>
@@ -183,7 +212,7 @@ const CastAndCrew: React.FC<{ item: BaseItemDto }> = (props) => {
 
 	return (
 		<Layout direction="column" minWidth="100%">
-			<Button type="button" label="HeaderCastAndCrew" onClick={() => setOpen(!open)} direction="row" fontSize="1.5em" py={8} px={8} gap={8} />
+			<Button type="button" label="HeaderCastAndCrew" onClick={() => setOpen(!open)} direction="row" fontSize="1.5em" py=".5em" px=".5em" gap=".5em" />
 
 			<Collapsible open={open}>
 				<ListOf

@@ -23,11 +23,11 @@ export const Studio: React.FC = () => {
 		<PageWithNavigation icon="Studio">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(studioId).Item]}
-				whenNotStarted={<LoadingIcon size={48} />}
-				whenLoading={<LoadingIcon size={48} />}
+				whenNotStarted={<LoadingIcon size="3em" />}
+				whenLoading={<LoadingIcon size="3em" />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(studio) => (
-					<Layout direction="row" gap={16} py={16}>
+					<Layout direction="row" gap="1em" py="1em">
 						<PageTitle text={studio.Name} />
 						<Layout elementType="h1" direction="row" fontSize="1.5em">{studio.Name}</Layout>
 					</Layout>

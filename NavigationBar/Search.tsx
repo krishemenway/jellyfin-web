@@ -13,12 +13,10 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { IconForItemKind } from "Items/IconForItemKind";
 import { InfinityIcon } from "NavigationBar/InfinityIcon";
 import { LinkToItem } from "Items/LinkToItem";
-import { ItemImage } from "Items/ItemImage";
-import { ListOf } from "Common/ListOf";
-import { TranslatedText } from "Common/TranslatedText";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
+import { Virtuoso } from "react-virtuoso";
 
 export const Search: React.FC = () => {
 	const [textRef, setTextRef] = React.useState<HTMLInputElement|null>(null);
@@ -29,25 +27,26 @@ export const Search: React.FC = () => {
 	return (
 		<Layout direction="row" alignItems="center" position="relative">
 			<SearchIcon className={searchStyles.searchIcon} size="20" />
-			<TextField px={32} py={4} className={`${background.field} ${searchStyles.queryField}`} field={SearchService.Instance.SearchTermField} ref={(r) => { setTextRef(r); return r; }} />
+			<TextField px="2em" py=".25em" className={`${background.field} ${searchStyles.queryField}`} field={SearchService.Instance.SearchTermField} ref={(r) => { setTextRef(r); return r; }} />
 
 			<AnchoredModal
+				alternatePanel
 				anchorElement={textRef}
 				open={(textRef ?? false) && resultsVisible}
-				onClosed={() => SearchService.Instance.Clear()}
+				onClosed={() => { }}
 				opensInDirection="right"
 			>
-				<Layout direction="column" className={background.panel} minHeight={300} minWidth={320} maxWidth={500}>
-					<Layout direction="row" justifyContent="space-between" px={8} py={8}>
-						<Layout direction="row" alignItems="center">Search Results</Layout>
-						<Button direction="row" alignItems="center" type="button" onClick={() => SearchService.Instance.Clear()} icon={<CloseIcon size={24} />} />
+				<Layout direction="column" className={background.panel} minHeight="22em" minWidth="25em">
+					<Layout direction="row" justifyContent="space-between" px=".5em" py=".5em" bb>
+						<Layout direction="row" alignItems="center" fontSize="1.5em">Search Results</Layout>
+						<Button className={background.transparent} direction="row" alignItems="center" type="button" onClick={() => SearchService.Instance.Clear()} icon={<CloseIcon size="2em" />} />
 					</Layout>
 
 					<Loading
 						receivers={[SearchService.Instance.Results]}
 						whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-						whenLoading={<LoadingIcon my={32} alignSelf="center" size={48} />}
-						whenNotStarted={<LoadingIcon my={32} alignSelf="center" size={48} />}
+						whenLoading={<LoadingIcon alignSelf="center" size="3em" />}
+						whenNotStarted={<LoadingIcon alignSelf="center" size="3em" />}
 						whenReceived={(results) => <LoadedSearchResults results={results} />}
 					/>
 				</Layout>
@@ -59,26 +58,25 @@ export const Search: React.FC = () => {
 const LoadedSearchResults: React.FC<{ results: SearchResults }> = (props) => {
 	const selectedType = useObservable(props.results.SelectedType);
 	const selectedItems = useObservable(props.results.SelectedItems);
-	const query = useObservable(SearchService.Instance.SearchTermField.Current);
 
 	return (
-		<Layout direction="row">
-			<Layout direction="column">
-				{props.results.AllTypes.length > 1 && (
-					<Button transparent px={8} py={8} direction="row" key="All" type="button" selected={selectedType === undefined} onClick={() => props.results.SelectedType.Value = undefined} icon={<InfinityIcon size={24} />} />
-				)}
+		<Layout direction="row" grow>
+			<Layout direction="column" fontSize="1.25em">
+				<Button transparent px=".5em" py=".5em" direction="row" key="All" type="button" selected={selectedType === undefined} onClick={() => props.results.SelectedType.Value = undefined} icon={<InfinityIcon />} />
 
 				{props.results.AllTypes.map((type) => (
-					<Button transparent px={8} py={8} direction="row" key={type} type="button" selected={selectedType === type} onClick={() => props.results.SelectedType.Value = type} icon={<IconForItemKind itemKind={type} size={24} />} />
+					<Button transparent px=".5em" py=".5em" direction="row" key={type} type="button" selected={selectedType === type} onClick={() => props.results.SelectedType.Value = type} icon={<IconForItemKind itemKind={type} />} />
 				))}
 			</Layout>
 
-			<ListOf
-				items={selectedItems}
-				direction="column"
-				emptyListView={<TranslatedText textKey="SearchResultsEmpty" textProps={[query]} elementType="div" layout={{ px: 8, py: 8 }} />}
-				forEachItem={(item) => <SearchResult key={item.Id} item={item} />}
-			/>
+			<Layout direction="column" grow>
+				<Virtuoso
+					data={selectedItems}
+					totalCount={selectedItems.length}
+					itemContent={(_, result) => <SearchResult item={result} />}
+					style={{ width: "100%", height: "100%" }}
+				/>
+			</Layout>
 		</Layout>
 	);
 };
@@ -87,9 +85,9 @@ const SearchResult: React.FC<{ item: BaseItemDto }> = (props) => {
 	const searchResultNameFunc = BaseItemKindServiceFactory.FindOrNull(props.item.Type)?.searchResultName ?? ((item) => item.Name);
 
 	return (
-		<LinkToItem item={props.item} direction="row" alignItems="center" gap={16} px={8} py={8} maxHeight="3em">
-			<ItemImage item={props.item} type="Backdrop" fillWidth={100} fillHeight={50} maxWidth={100} />
-			<Layout direction="row">{searchResultNameFunc(props.item)}</Layout>
+		<LinkToItem item={props.item} direction="row" alignItems="center" gap="1em" px=".5em" py=".5em" justifyContent="space-between">
+			<Layout direction="column">{searchResultNameFunc(props.item)}</Layout>
+			<Layout direction="column"><IconForItemKind itemKind={props.item.Type} /></Layout>
 		</LinkToItem>
 	);
 };
@@ -97,7 +95,7 @@ const SearchResult: React.FC<{ item: BaseItemDto }> = (props) => {
 const useSearchStyles = createStyles({
 	searchIcon: {
 		position: "absolute",
-		left: 8,
+		left: ".5em",
 	},
 	queryField: {
 		borderRadius: "2em",

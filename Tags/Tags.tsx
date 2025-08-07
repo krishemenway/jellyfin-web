@@ -13,7 +13,7 @@ import { Layout } from "Common/Layout";
 
 export const Tags: React.FC = () => {
 	return (
-		<PageWithNavigation icon={<TagIcon size="1em" />}>
+		<PageWithNavigation icon={<TagIcon />}>
 			<Layout direction="column" grow alignItems="center" justifyContent="center">
 				<Loading
 					receivers={[UserViewStore.Instance.UserViews]}

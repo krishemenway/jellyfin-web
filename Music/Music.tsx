@@ -68,7 +68,7 @@ interface Column {
 	name: string;
 	getValue: (item: BaseItemDto, stats: Record<string, number>[]) => string|number|undefined|null;
 	align?: "start"|"end"|"center";
-	width?: string|number;
+	width?: string;
 	getSortFunc: (stats: Record<string, number>[]) => (a: BaseItemDto, b: BaseItemDto) => number;
 }
 
@@ -176,7 +176,7 @@ const MusicPlayerStatus: React.FC<{ className: string }> = (props) => {
 	return (
 		<Layout direction="column" className={props.className} py="1em" px="1em" gap="1em">
 			<Layout direction="row" fontSize="1.5em" gap=".5em" height="1.3em">
-				{Nullable.ValueOrDefault(current, <StopIcon size="1em" />, () => <PlayIcon size="1em" />)}
+				{Nullable.ValueOrDefault(current, <StopIcon />, () => <PlayIcon />)}
 
 				<Layout direction="row" overflowX="hidden" width="100%" textOverflow="ellipsis" whiteSpace="nowrap" display="block" grow>
 					{Nullable.ValueOrDefault(current, <TranslatedText textKey="PriorityIdle" />, (c) => <>{c.PlaylistItem.Item.Name}</>)}
@@ -190,16 +190,16 @@ const MusicPlayerStatus: React.FC<{ className: string }> = (props) => {
 
 			<Layout direction="row" fontSize="1.5em" justifyContent="space-between">
 				<Layout direction="row" gap=".25em">
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.GoBack(); }} icon={<BackwardIcon size="1em" />} />
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Play(); }} icon={<PlayIcon size="1em" />} />
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Pause(); }} icon={<PauseIcon size="1em" />} />
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Stop(); }} icon={<StopIcon size="1em" />} />
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.GoNext(); }} icon={<ForwardIcon size="1em" />} />
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.GoBack(); }} icon={<BackwardIcon />} />
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Play(); }} icon={<PlayIcon />} />
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Pause(); }} icon={<PauseIcon />} />
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Stop(); }} icon={<StopIcon />} />
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.GoNext(); }} icon={<ForwardIcon />} />
 				</Layout>
 
 				<Layout direction="row" gap=".25em">
-					<Button type="button" px=".25em" py=".25em" selected={isRepeating} onClick={() => { MusicPlayer.Instance.ToggleRepeat(); }} icon={<RepeatIcon size="1em" />} />
-					<Button type="button" px=".25em" py=".25em" selected={isShuffling} onClick={() => { MusicPlayer.Instance.ToggleShuffle(); }} icon={<ShuffleIcon size="1em" />} />
+					<Button type="button" px=".25em" py=".25em" selected={isRepeating} onClick={() => { MusicPlayer.Instance.ToggleRepeat(); }} icon={<RepeatIcon />} />
+					<Button type="button" px=".25em" py=".25em" selected={isShuffling} onClick={() => { MusicPlayer.Instance.ToggleShuffle(); }} icon={<ShuffleIcon />} />
 				</Layout>
 			</Layout>
 		</Layout>
@@ -218,9 +218,9 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string }> = (props) 
 
 	return (
 		<Layout direction="column" className={props.className} grow py="1em" px="1em" gap="1em">
-			<Layout direction="row" fontSize="1.5em" justifyContent="space-between">
-				<Layout direction="row" gap=".5em">
-					<PlaylistIcon size="1em" />
+			<Layout direction="row" justifyContent="space-between">
+				<Layout direction="row" alignItems="center" gap=".5em" fontSize="1.5em">
+					<PlaylistIcon />
 					<TranslatedText textKey="LabelPlaylist" elementType="div" />
 				</Layout>
 
@@ -251,7 +251,7 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string }> = (props) 
 						itemContent={(index, data) => (
 							<Layout direction="row" position="relative">
 								<Layout direction="column" alignItems="center" justifyContent="center" position="absolute" top={0} bottom={0} left={0} width="5%">
-									{Nullable.ValueOrDefault(current, <DragIcon size="1em" />, (c) => c.PlaylistItem === data ? <PlayIcon size="1em" /> : <DragIcon size="1em" />)}
+									{Nullable.ValueOrDefault(current, <DragIcon />, (c) => c.PlaylistItem === data ? <PlayIcon /> : <DragIcon />)}
 								</Layout>
 
 								<Button transparent width="100%" px="5%" type="button" textAlign="start" onClick={() => { MusicPlayer.Instance.GoIndex(index)}}>
@@ -263,7 +263,7 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string }> = (props) 
 									type="button" onClick={() => { MusicPlayer.Instance.Remove(data); }}
 									direction="column" alignItems="center" justifyContent="center" transparent
 									position="absolute" top={0} bottom={0} right={0} width="5%"
-									icon={<DeleteIcon size="1em" />}
+									icon={<DeleteIcon />}
 								/>
 							</Layout>
 						)}

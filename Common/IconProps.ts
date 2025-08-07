@@ -2,7 +2,7 @@ import * as React from "react";
 import { Property } from "csstype";
 
 export interface IconProps extends React.ComponentPropsWithoutRef<'svg'> {
-	size: string|number;
+	size?: string;
 	color?: string;
 	className?: string;
 
@@ -14,8 +14,8 @@ export interface IconProps extends React.ComponentPropsWithoutRef<'svg'> {
 
 export function ApplyIconPropsToSvg(props: IconProps): Partial<React.SVGProps<SVGSVGElement>> {
 	return {
-		height: props.size,
-		width: props.size,
+		height: props.size ?? "1em",
+		width: props.size ?? "1em",
 		fill: props.color ?? "inherit",
 		className: props.className,
 		style: {

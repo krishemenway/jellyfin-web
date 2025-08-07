@@ -33,7 +33,7 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 		<>
 			<Button
 				type="button" onClick={(element) => setOpenAnchor(element)}
-				icon={<ItemActionsIcon size="1em" />}
+				icon={<ItemActionsIcon />}
 				alignItems="center" px=".5em" py=".5em" {...props}
 			/>
 
@@ -42,7 +42,7 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 			<AnchoredModal alternatePanel anchorAlignment="center" opensInDirection="left" anchorElement={anchor} open={anchor !== null} onClosed={closeNavigation}>
 				<ListOf
 					items={filteredActions}
-					direction="column" gap={8}
+					direction="column" gap=".5em"
 					forEachItem={(group, index) => (
 						<ListOf
 							key={index.toString()}

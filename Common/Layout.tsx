@@ -18,10 +18,10 @@ export interface LayoutWithoutChildrenProps {
 	justifySelf?: Property.JustifySelf;
 
 	position?: Property.Position;
-	top?: number,
-	bottom?: number,
-	right?: number,
-	left?: number,
+	top?: Property.Top,
+	bottom?: Property.Bottom,
+	right?: Property.Right,
+	left?: Property.Left,
 
 	overflowY?: Property.OverflowY;
 	overflowX?: Property.OverflowX;
@@ -31,13 +31,13 @@ export interface LayoutWithoutChildrenProps {
 	textOverflow?: Property.TextOverflow;
 	whiteSpace?: Property.WhiteSpace;
 
-	mx?: number,
-	my?: number;
+	mx?: Property.MarginLeft,
+	my?: Property.MarginTop;
 
-	px?: number|string;
-	py?: number|string;
+	px?: Property.PaddingLeft;
+	py?: Property.PaddingTop;
 
-	bw?: number;
+	bw?: Property.BorderWidth;
 
 	bt?: true;
 	bb?: true;
@@ -45,13 +45,13 @@ export interface LayoutWithoutChildrenProps {
 	bl?: true;
 	br?: true;
 
-	minWidth?: number|string;
-	maxWidth?: number|string;
-	width?: number|string|PercentWidthWithGap;
+	minWidth?: Property.MinWidth;
+	maxWidth?: Property.MaxWidth;
+	width?: Property.Width|PercentWidthWithGap;
 
-	minHeight?: number|string;
-	maxHeight?: number|string;
-	height?: number|string;
+	minHeight?: Property.MinHeight;
+	maxHeight?: Property.MaxHeight;
+	height?: Property.Height;
 }
 
 export interface StyleLayoutProps extends LayoutWithoutChildrenProps {

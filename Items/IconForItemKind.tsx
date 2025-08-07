@@ -4,7 +4,7 @@ import { IconProps } from "Common/IconProps";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
 
-export const IconForItemKind : React.FC<{ itemKind?: BaseItemKind, collectionType?: CollectionType }&IconProps> = (props) => {
+export const IconForItemKind : React.FC<{ itemKind: BaseItemKind|undefined, collectionType?: CollectionType }&IconProps> = (props) => {
 	const iconTypeFuncOrDefault = BaseItemKindServiceFactory.FindOrNull(props.itemKind)?.findIcon ?? ((iconProps) => <QuestionMarkIcon {...iconProps} />);
 	return iconTypeFuncOrDefault(props, props.collectionType);
 }

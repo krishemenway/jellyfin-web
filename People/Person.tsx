@@ -94,19 +94,19 @@ export const Person: React.FC = () => {
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(personId).Item, personData.CreditedItems, LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<LoadingIcon size={48} />}
-				whenNotStarted={<LoadingIcon size={48} />}
+				whenLoading={<LoadingIcon size="3em" />}
+				whenNotStarted={<LoadingIcon size="3em" />}
 				whenReceived={(person, creditedItems, user) => (
 					<Layout direction="row" gap="1em" py="1em" height="100%">
 						<PageTitle text={person.Name} />
-						<Layout direction="column" maxWidth="20%" gap={8}>
+						<Layout direction="column" maxWidth="20%" gap=".5em">
 							<ItemImage item={person} type="Primary" />
 
 							<ItemExternalLinks
 								item={person}
-								direction="row" gap={8}
+								direction="row" gap=".5em"
 								linkClassName={background.button}
-								linkLayout={{ direction: "row", width: "100%", py: 8, justifyContent: "center", grow: 1 }}
+								linkLayout={{ direction: "row", width: "100%", py: ".5em", justifyContent: "center", grow: 1 }}
 							/>
 						</Layout>
 
@@ -120,10 +120,7 @@ export const Person: React.FC = () => {
 								]]} />
 							</Layout>
 
-							<Layout direction="column" gap="1em">
-								<PersonAgeBirthAndDeath person={person} />
-								<ItemOverview item={person} />
-							</Layout>
+							<PersonDetails person={person} />
 
 							<Virtuoso
 								data={creditedItems}
@@ -154,7 +151,7 @@ const CreditedItem: React.FC<{ creditedItem: BaseItemDto }> = ({ creditedItem })
 	);
 };
 
-const PersonAgeBirthAndDeath: React.FC<{ person: BaseItemDto }> = (props) => {
+const PersonDetails: React.FC<{ person: BaseItemDto }> = (props) => {
 	if (!props.person.PremiereDate) {
 		return <></>;
 	}
@@ -164,7 +161,7 @@ const PersonAgeBirthAndDeath: React.FC<{ person: BaseItemDto }> = (props) => {
 	const ageAtDeathOrNow = intervalToDuration({ start: birthday, end: deathOrNow });
 
 	return (
-		<>
+		<Layout direction="column" gap="1em">
 			<Layout direction="row" alignItems="center" gap=".5em">
 				<TranslatedText textKey="BirthDateValue" textProps={[birthday.toLocaleDateString()]} elementType="div" className="birthDate" />
 
@@ -178,11 +175,13 @@ const PersonAgeBirthAndDeath: React.FC<{ person: BaseItemDto }> = (props) => {
 			</Layout>
 
 			{!!props.person.EndDate && (
-				<Layout direction="row" my={1} className="deathDateAndDeathAge">
+				<Layout direction="row" className="deathDateAndDeathAge">
 					<TranslatedText textKey="DeathDateValue" textProps={[deathOrNow.toLocaleDateString()]} />
 					<TranslatedText textKey="AgeValue" textProps={[ageAtDeathOrNow.years?.toString() ?? ""]} />
 				</Layout>
 			)}
-		</>
+
+			<ItemOverview item={props.person} />
+		</Layout>
 	);
 };

@@ -77,7 +77,6 @@ export const useGlobalStyles = createUseStyles({
 			height: "100%",
 		},
 		"body": {
-			overflowY: "scroll",
 			width: "100%",
 			height: "100%",
 		},

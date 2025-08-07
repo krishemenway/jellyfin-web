@@ -8,10 +8,10 @@ import { PageTitle } from "Common/PageTitle";
 
 export const Settings: React.FC = () => {
 	return (
-		<PageWithNavigation icon={<SettingsIcon size={24} />}>
+		<PageWithNavigation icon={<SettingsIcon />}>
 			<PageTitle text={({ Key: "Settings" })} />
 			<Layout direction="column">
-				<Layout direction="row" gap={16}>
+				<Layout direction="row" gap="1em">
 					<TranslatedText textKey="LabelCurrentPassword" elementType="div" layout={{ alignSelf: "end" }} />
 					<ChangePassword />
 				</Layout>

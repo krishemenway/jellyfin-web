@@ -25,8 +25,8 @@ export const MusicAlbum: React.FC = () => {
 		<PageWithNavigation icon="MusicAlbum">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(albumId).Item, ItemService.Instance.FindOrCreateItemData(albumId).Children]}
-				whenNotStarted={<LoadingIcon size={48} />}
-				whenLoading={<LoadingIcon size={48} />}
+				whenNotStarted={<LoadingIcon size="3em" />}
+				whenLoading={<LoadingIcon size="3em" />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(album, children) => (
 					<Layout direction="column">

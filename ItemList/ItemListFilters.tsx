@@ -42,27 +42,27 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 	return (
 		<>
 			<Layout direction="row" gap="1em">
-				<Button type="button" px=".5em" py=".25em" justifyContent="center" alignItems="center" onClick={(button) => { setSaveButtonRef(button)}} icon={<SaveIcon size="1em" />} />
+				<Button type="button" px=".5em" py=".25em" justifyContent="center" alignItems="center" onClick={(button) => { setSaveButtonRef(button)}} icon={<SaveIcon />} />
 
 				{(props.listOptions.ItemKindService?.filterOptions ?? []).length > 0 && (
-					<Layout direction="row" gap={8} alignItems="center">
+					<Layout direction="row" gap=".5em" alignItems="center">
 						<TranslatedText textKey="Filters" elementType="div" formatText={(t) => `${t}:`} />
-						<Button px=".25em" py=".25em" type="button" onClick={() => setAddFilterOpen(true)} ref={(element) => { setFilterButtonRef(element); }} icon={<AddIcon size="1em" />} />
+						<Button px=".25em" py=".25em" type="button" onClick={() => setAddFilterOpen(true)} ref={(element) => { setFilterButtonRef(element); }} icon={<AddIcon />} />
 						<ListOf
 							items={filters}
-							direction="row" gap={8}
+							direction="row" gap=".5em"
 							forEachItem={(filter) => <ConfiguredFilter key={filter.Key} filter={filter} listOptions={props.listOptions} />}
 						/>
 					</Layout>
 				)}
 
 				{(props.listOptions.ItemKindService?.sortOptions ?? []).length > 0 && (
-					<Layout direction="row" gap={8} alignItems="center">
+					<Layout direction="row" gap=".5em" alignItems="center">
 						<TranslatedText textKey="HeaderSortBy" elementType="div" formatText={(t) => `${t}:`} />
-						<Button px=".25em" py=".25em" type="button" onClick={() => setAddSortOpen(true)} ref={(element) => { setSortButtonRef(element); }} icon={<AddIcon size="1em" />} />
+						<Button px=".25em" py=".25em" type="button" onClick={() => setAddSortOpen(true)} ref={(element) => { setSortButtonRef(element); }} icon={<AddIcon />} />
 						<ListOf
 							items={sorts}
-							direction="row" gap={8}
+							direction="row" gap=".5em"
 							forEachItem={(sort) => <ConfiguredSort key={sort.LabelKey} sort={sort} listOptions={props.listOptions} />}
 						/>
 					</Layout>
@@ -99,14 +99,14 @@ const ConfiguredFilter: React.FC<{ filter: EditableItemFilter; listOptions: Item
 	const displayValue = useObservable(props.filter.DisplayValue);
 
 	return (
-		<Layout direction="row" gap={8} className={background.alternatePanel} px={8} py={4}>
+		<Layout direction="row" gap=".5em" className={background.alternatePanel} px=".5em" py=".25em">
 			<Layout direction="row">
 				<TranslatedText textKey={props.filter.FilterType.labelKey} />
 				&nbsp;
 				<TranslatedText textKey={displayValue[0]} textProps={displayValue.slice(1)} />
 			</Layout>
 
-			<Button type="button" onClick={() => props.listOptions.Filters.remove(props.filter)} icon={<DeleteIcon size="1em" />} />
+			<Button type="button" onClick={() => props.listOptions.Filters.remove(props.filter)} icon={<DeleteIcon />} />
 		</Layout>
 	);
 };
@@ -115,10 +115,10 @@ const ConfiguredSort: React.FC<{ sort: SortFuncs<BaseItemDto>; listOptions: Item
 	const background = useBackgroundStyles();
 
 	return (
-		<Layout direction="row" gap={8} className={background.alternatePanel} px={8} py={4}>
-			{props.sort.Reversed ? <ArrowUpIcon size="1em" /> : <ArrowDownIcon size="1em" />}
+		<Layout direction="row" gap=".5em" className={background.alternatePanel} px=".5em" py=".25em">
+			{props.sort.Reversed ? <ArrowUpIcon /> : <ArrowDownIcon />}
 			<TranslatedText textKey={props.sort.LabelKey} elementType="div" />
-			<Button type="button" onClick={() => props.listOptions.SortBy.remove(props.sort)} icon={<DeleteIcon size="1em" />} />
+			<Button type="button" onClick={() => props.listOptions.SortBy.remove(props.sort)} icon={<DeleteIcon />} />
 		</Layout>
 	);
 };
@@ -128,13 +128,13 @@ const PickSortOptionModal: React.FC<{ sortOptions: ItemSortOption[]; onPicked: (
 		<ListOf
 			items={props.sortOptions}
 			direction="column"
-			px={16} py={16} gap={16}
+			px="1em" py="1em" gap="1em"
 			maxWidth="416px"
 			forEachItem={(sortOption) => (
 				<Layout key={sortOption.labelKey} width="100%" direction="row" alignItems="center" gap="1em">
-					<Button type="button" grow justifyContent="center" onClick={() => { props.onPicked(sortOption, false); props.onClosed(); }}><ArrowUpIcon size="1em" /></Button>
+					<Button type="button" grow justifyContent="center" onClick={() => { props.onPicked(sortOption, false); props.onClosed(); }}><ArrowUpIcon /></Button>
 					<TranslatedText elementType="div" textKey={sortOption.labelKey} />
-					<Button type="button" grow justifyContent="center" onClick={() => { props.onPicked(sortOption, true); props.onClosed(); }}><ArrowDownIcon size="1em" /></Button>
+					<Button type="button" grow justifyContent="center" onClick={() => { props.onPicked(sortOption, true); props.onClosed(); }}><ArrowDownIcon /></Button>
 				</Layout>
 			)}
 		/>
@@ -146,7 +146,7 @@ const PickFilterModal: React.FC<{ filterOptions: ItemFilterType[]; onPicked: (op
 		<ListOf
 			items={props.filterOptions}
 			direction="row" wrap
-			px={16} py={16} gap={16} grow
+			px="1em" py="1em" gap={16} grow
 			maxWidth="400px"
 			forEachItem={(filterOption) => (
 				<Button
@@ -156,7 +156,7 @@ const PickFilterModal: React.FC<{ filterOptions: ItemFilterType[]; onPicked: (op
 					direction="column"
 					justifyContent="space-between"
 					width={{ itemsPerRow: 2, gap: 16 }}
-					px={4} py={8}
+					px=".25em" py=".5em"
 				/>
 			)}
 		/>

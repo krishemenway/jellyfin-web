@@ -60,11 +60,11 @@ export const ItemsRow: React.FC<ItemsRowProps> = (props) => {
 	const background = useBackgroundStyles();
 
 	return (
-		<Layout direction="row" px={8} py={8} gap={8} wrap className={background.panel}>
+		<Layout direction="row" px=".5em" py=".5em" gap={8} wrap className={background.panel}>
 			{props.items.map((item) => (
 				<LinkToItem key={item.Id} item={item} className={background.button} direction="column" gap={4} width={{ itemsPerRow: 7, gap: 8 }}>
 					<ItemImage item={item} className={items.itemImage} type="Primary" />
-					<Layout direction="row" textAlign="center" justifyContent="center" alignItems="end" py={8} grow elementType="p">{props.itemName(item)}</Layout>
+					<Layout direction="row" textAlign="center" justifyContent="center" alignItems="end" py=".5em" grow elementType="p">{props.itemName(item)}</Layout>
 				</LinkToItem>
 			))}
 		</Layout>

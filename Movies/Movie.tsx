@@ -44,42 +44,42 @@ export const Movie: React.FC = () => {
 		<PageWithNavigation icon="Movie">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(movieId).Item, LoginService.Instance.User]}
-				whenNotStarted={<LoadingIcon size={48} />}
-				whenLoading={<LoadingIcon size={48} />}
+				whenNotStarted={<LoadingIcon size="3em" />}
+				whenLoading={<LoadingIcon size="3em" />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(movie, user) => (
-					<Layout direction="row" gap={16} py={16}>
+					<Layout direction="row" gap="1em" py="1em">
 						<PageTitle text={movie.Name} />
-						<Layout direction="column" maxWidth="20%" gap={8}>
-							<Layout direction="column" gap={8}>
+						<Layout direction="column" maxWidth="20%" gap=".5em">
+							<Layout direction="column" gap=".5em">
 								<Layout direction="column" position="relative">
 									<ItemImage item={movie} type="Primary" />
-									<ItemRating item={movie} position="absolute" bottom={8} right={8} />
+									<ItemRating item={movie} position="absolute" bottom=".5em" right=".5em" />
 								</Layout>
 
 								<ItemExternalLinks
 									item={movie}
-									direction="row" gap={8}
+									direction="row" gap=".5em"
 									linkClassName={background.button}
-									linkLayout={{ direction: "column", width: "100%", py: 8, textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
+									linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 								/>
 
 								<ItemGenres
 									item={movie}
-									direction="row" gap={8}
+									direction="row" gap=".5em"
 									linkClassName={background.button}
-									linkLayout={{ direction: "column", width: "100%", py: 8, textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
+									linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 								/>
 
 								<ItemStudios
 									item={movie}
-									direction="column" gap={8}
+									direction="column" gap=".5em"
 									linkClassName={background.button}
-									linkLayout={{ direction: "column", width: "100%", py: 8, textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
+									linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 								/>
 							</Layout>
 						</Layout>
-						<Layout direction="column" grow gap={32}>
+						<Layout direction="column" grow gap="2em">
 							<Layout direction="row" justifyContent="space-between">
 								<Layout direction="row" fontSize="2em" className="show-name">{movie.Name}</Layout>
 								<ItemActionsMenu items={[movie]} actions={[
@@ -96,13 +96,13 @@ export const Movie: React.FC = () => {
 								]} user={user} />
 							</Layout>
 							<ItemOverview item={movie} />
-							<Layout direction="row" gap={8}>
-								<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: 4, py: 4 }} />
+							<Layout direction="row" gap=".5em">
+								<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
 								<ItemTags
 									item={movie}
-									direction="row" gap={8} wrap
+									direction="row" gap=".5em" wrap
 									linkClassName={background.button}
-									linkLayout={{ px: 4, py: 4 }}
+									linkLayout={{ px: ".25em", py: ".25em" }}
 								/>
 							</Layout>
 							<CastAndCrew item={movie} />
@@ -123,7 +123,7 @@ const CastAndCrew: React.FC<{ item: BaseItemDto }> = (props) => {
 
 	return (
 		<Layout direction="column" minWidth="100%">
-			<Layout direction="row" fontSize="1.5em" py={8} px={8} className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
+			<Layout direction="row" fontSize="1.5em" py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
 
 			<ListOf
 				className={background.panel}

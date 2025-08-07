@@ -7,7 +7,7 @@ export const Tag: React.FC = () => {
 	const routeParams = useParams<{ tag: string }>();
 
 	return (
-		<PageWithNavigation icon={<TagIcon size={24} />}>
+		<PageWithNavigation icon={<TagIcon />}>
 			Tag {routeParams.tag}
 		</PageWithNavigation>
 	);

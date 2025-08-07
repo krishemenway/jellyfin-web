@@ -6,7 +6,7 @@ export const LoadingErrorMessages: React.FC<{ errorTextKeys: string[] }> = (prop
 	return (
 		<ListOf
 			items={props.errorTextKeys}
-			direction="column" gap={16}
+			direction="column" gap="1em"
 			forEachItem={(textKey) => <TranslatedText key={textKey} textKey={textKey} />}
 		/>
 	);
