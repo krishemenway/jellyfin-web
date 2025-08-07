@@ -79,7 +79,9 @@ export class MusicPlayer {
 
 	public GoIndex(index: number): void {
 		Nullable.TryExecute(this.Playlist.AsArray()[index], (item) => {
-			this.Load(item);
+			if (this.Current.Value?.PlaylistItem !== item) {
+				this.Load(item);
+			}
 		});
 	}
 
