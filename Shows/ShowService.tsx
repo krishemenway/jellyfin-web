@@ -20,6 +20,7 @@ import { RefreshItemAction } from "MenuActions/RefreshItemAction";
 import { RenameLibraryAction } from "MenuActions/RenameLibraryAction";
 import { ManageLibraryAction } from "MenuActions/ManageLIbraryAction";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
+import { SortByOfficialRating } from "ItemList/ItemSortTypes/SortByOfficialRating";
 
 export const ShowService: BaseItemKindService = {
 	findIcon: (props) => <ShowIcon {...props} />,
@@ -50,5 +51,6 @@ export const ShowService: BaseItemKindService = {
 		SortByCommunityRating,
 		SortByCriticRating,
 		SortByRandom,
+		SortByOfficialRating,
 	],
 };
