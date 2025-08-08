@@ -1,24 +1,29 @@
 import * as React from "react";
 import { ContainOperation, NotContainOperation } from "ItemList/FilterOperations/ContainOperation";
-import { ItemFilterType, ItemFilterTypeProps } from "ItemList/ItemFilterType";
+import { ItemFilterType } from "ItemList/ItemFilterType";
 import { Layout } from "Common/Layout";
-import { TextField } from "Common/TextField";
-
-const OfficialRatingPicker: React.FC<ItemFilterTypeProps> = (props) => {
-	return (
-		<Layout direction="column">
-			<TextField field={props.filter.FilterValue} />
-		</Layout>
-	);
-};
+import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
+import { EmptyOperation, NotEmptyOperation } from "ItemList/FilterOperations/EmptyOperation";
 
 export const FilterByOfficialRating: ItemFilterType = {
 	type: "FilterByOfficialRating",
 	labelKey: "LabelParentalRating",
-	editor: OfficialRatingPicker,
 	targetField: (item) => item.OfficialRating,
+	editor: (props) => {
+		if (props.currentOperation === EmptyOperation || props.currentOperation === NotEmptyOperation) {
+			return <></>;
+		}
+
+		return (
+			<Layout direction="column">
+				<AutoCompleteFieldEditor field={props.filter.FilterValue} allOptions={props.filters.OfficialRatings ?? []} getKey={(rating) => rating} getLabel={(rating) => rating} />
+			</Layout>
+		);
+	},
 	operations: [
 		ContainOperation,
 		NotContainOperation,
+		EmptyOperation,
+		NotEmptyOperation,
 	],
 };

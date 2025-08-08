@@ -23,6 +23,7 @@ import { ImageShape } from "Items/ItemImage";
 import { RefreshItemAction } from "MenuActions/RefreshItemAction";
 import { RenameLibraryAction } from "MenuActions/RenameLibraryAction";
 import { ManageLibraryAction } from "MenuActions/ManageLIbraryAction";
+import { FilterByOfficialRating } from "ItemList/ItemFilterTypes/FilterByOfficialRating";
 
 export const MovieService: BaseItemKindService = {
 	primaryShape: ImageShape.Portrait,
@@ -44,6 +45,7 @@ export const MovieService: BaseItemKindService = {
 		FilterByStudio,
 		FilterByTag,
 		FilterByGenre,
+		FilterByOfficialRating,
 	],
 	sortOptions: [
 		SortByName,
