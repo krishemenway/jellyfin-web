@@ -11,7 +11,7 @@ import { FilterByProductionYear } from "ItemList/ItemFilterTypes/FilterByProduct
 import { FilterByIsFavorite } from "ItemList/ItemFilterTypes/FilterByIsFavorite";
 import { FilterByHasSubtitles } from "ItemList/ItemFilterTypes/FilterByHasSubtitles";
 import { FilterByOfficialRating } from "ItemList/ItemFilterTypes/FilterByOfficialRating";
-import { FilterBySeriesStatus } from "ItemList/ItemFilterTypes/FilterBySeriesStatus";
+import { FilterByHasEnded } from "ItemList/ItemFilterTypes/FilterByHasEnded";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
 import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
@@ -41,7 +41,7 @@ export const ShowService: BaseItemKindService = {
 		FilterByContinueWatching,
 		FilterByProductionYear,
 		FilterByIsFavorite,
-		FilterBySeriesStatus,
+		FilterByHasEnded,
 		FilterByHasSubtitles,
 		FilterByOfficialRating,
 	],
