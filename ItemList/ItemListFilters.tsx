@@ -81,7 +81,7 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 			</AnchoredModal>
 
 			<AnchoredModal anchorElement={filterButtonRef} open={newFilter !== undefined} anchorAlignment="center" opensInDirection="right" onClosed={() => props.listOptions.ClearNewFilter()}>
-				{newFilter && <ConfigureFilterModal listOptions={props.listOptions} newFilter={newFilter} filters={props.filters} onClosed={() => props.listOptions.ClearNewFilter()} />}
+				{newFilter && <ConfigureFilterModal libraryId={props.library.Id!} listOptions={props.listOptions} newFilter={newFilter} filters={props.filters} onClosed={() => props.listOptions.ClearNewFilter()} />}
 			</AnchoredModal>
 
 			<AnchoredModal anchorElement={sortButtonRef} open={addSortOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => setAddSortOpen(false)} maxWidth="20%">
@@ -162,18 +162,18 @@ const PickFilterModal: React.FC<{ filterOptions: ItemFilterType[]; onPicked: (op
 	);
 };
 
-const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilter: EditableItemFilter; filters: QueryFiltersLegacy; onClosed: () => void; }> = (props) => {
+const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilter: EditableItemFilter; filters: QueryFiltersLegacy; libraryId: string; onClosed: () => void; }> = (props) => {
 	const operation = useObservable(props.newFilter.Operation.Current);
 	const FilterTypeEditor = props.newFilter.FilterType.editor;
 
 	return (
-		<Form py="1em" px="1em" gap="1em" direction="column" onSubmit={() => { props.listOptions.AddNewFilter(); props.onClosed(); }}>
+		<Form py="1em" px="1em" gap="1em" direction="column" onSubmit={() => { props.listOptions.AddNewFilter(); props.onClosed(); }} minWidth="20em">
 			<Layout direction="row" justifyContent="center" gap="1em">
 				<TranslatedText textKey={props.newFilter.FilterType.labelKey} elementType="div" />
 				<SelectFieldEditor field={props.newFilter.Operation} allOptions={props.newFilter.FilterType.operations} getKey={(o) => o.Name} getLabel={(o) => o.Name} grow />
 			</Layout>
 
-			<FilterTypeEditor filter={props.newFilter} currentOperation={operation} filters={props.filters} />
+			<FilterTypeEditor {...props} filter={props.newFilter} currentOperation={operation} />
 
 			<Layout direction="row" gap="1em">
 				<Button type="button" justifyContent="center" py=".25em" onClick={() => { props.onClosed(); }} grow><TranslatedText textKey="ButtonCancel" /></Button>

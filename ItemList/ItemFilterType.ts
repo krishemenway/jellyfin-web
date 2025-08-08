@@ -6,6 +6,7 @@ export interface ItemFilterTypeProps {
 	filter: EditableItemFilter;
 	filters: QueryFiltersLegacy;
 	currentOperation: FilterOperation;
+	libraryId: string;
 }
 
 export interface ItemFilterType {

@@ -25,7 +25,7 @@ export class ItemListService {
 		this.ItemKind = itemKind;
 		this.List = new Receiver("UnknownError");
 		this.ListOptions = new Observable(null);
-		this.DefaultLoadItems = (a, id) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: id, fields: ["DateCreated", "Genres", "Tags", "SortName"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((response) => response.data.Items ?? []);
+		this.DefaultLoadItems = (a, id) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: id, fields: ["DateCreated", "Genres", "Tags", "SortName", "Studios"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((response) => response.data.Items ?? []);
 	}
 
 	public LoadWithAbort(statConfigs?: ItemListStatConfig[]): () => void {

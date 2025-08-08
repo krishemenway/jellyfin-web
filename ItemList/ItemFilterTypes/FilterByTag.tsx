@@ -11,7 +11,7 @@ const TagEditor: React.FC<ItemFilterTypeProps> = (props) => {
 	}
 
 	return (
-		<Layout direction="column" minWidth="20em">
+		<Layout direction="column">
 			<AutoCompleteFieldEditor field={props.filter.FilterValue} allOptions={props.filters.Tags ?? []} getKey={(tag) => tag} getLabel={(tag) => tag} />
 		</Layout>
 	);
