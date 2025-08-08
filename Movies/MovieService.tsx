@@ -8,7 +8,7 @@ import { FilterByContinueWatching } from "ItemList/ItemFilterTypes/FilterByConti
 import { FilterByStudio } from "ItemList/ItemFilterTypes/FilterByStudio";
 import { FilterByGenre } from "ItemList/ItemFilterTypes/FilterByGenre";
 import { FilterByTag } from "ItemList/ItemFilterTypes/FilterByTag";
-import { FilterByPremiereDate } from "ItemList/ItemFilterTypes/FilterByPremiereDate";
+import { FilterByProductionYear } from "ItemList/ItemFilterTypes/FilterByProductionYear";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
@@ -41,7 +41,7 @@ export const MovieService: BaseItemKindService = {
 		FilterByHasPlayed,
 		FilterByContinueWatching,
 		FilterByIsFavorite,
-		FilterByPremiereDate,
+		FilterByProductionYear,
 		FilterByStudio,
 		FilterByTag,
 		FilterByGenre,

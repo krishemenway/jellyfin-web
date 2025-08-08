@@ -26,15 +26,19 @@ export function AutoCompleteFieldEditor<TOption>(props: SelectFieldEditorProps<T
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 	const current = useObservable(props.field.Current);
 
+	const allOptions = props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getKey(o) }));
+	const selectedOption = Nullable.ValueOrDefault(current, undefined, (c) => allOptions.find((o) => o.value === props.getKey(c)));
+
 	return (
 		<Select
-			value={Nullable.ValueOrDefault(current, undefined, (c) => ({ label: props.getLabel(c), value: props.getKey(c) }))}
+			options={allOptions}
+			value={selectedOption}
+			onChange={(newValue) => props.field.OnChange(props.allOptions.find((o) => props.getKey(o) === newValue?.value)!)}
 			styles={{
+				container: (base) => ({ ...base, width: "100%" }),
 				menu: (base) => ({ ...base, backgroundColor: theme.PanelBackgroundColor }),
 				option: (base, p) => ({ ...base, backgroundColor: (p.isSelected ? (p.isFocused ? theme.ButtonSelected.Hover : theme.ButtonSelected.Idle) : p.isFocused ? theme.Button.Hover : theme.Button.Idle).BackgroundColor }),
 			}}
-			options={props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getKey(o) }))}
-			onChange={(newValue) => props.field.OnChange(props.allOptions.find((o) => props.getKey(o) === newValue?.value)!)}
 		/>
 	);
 };

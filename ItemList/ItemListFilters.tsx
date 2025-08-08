@@ -16,7 +16,7 @@ import { EditableItemFilter } from "ItemList/EditableItemFilter";
 import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { SortFuncs } from "Common/Sort";
 import { BaseItemDto, QueryFiltersLegacy, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { SelectFieldEditor } from "Common/SelectFieldEditor";
+import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
 import { Form } from "Common/Form";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { SaveIcon } from "CommonIcons/SaveIcon";
@@ -168,9 +168,9 @@ const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilt
 
 	return (
 		<Form py="1em" px="1em" gap="1em" direction="column" onSubmit={() => { props.listOptions.AddNewFilter(); props.onClosed(); }} minWidth="20em">
-			<Layout direction="row" justifyContent="center" gap="1em">
-				<TranslatedText textKey={props.newFilter.FilterType.labelKey} elementType="div" />
-				<SelectFieldEditor field={props.newFilter.Operation} allOptions={props.newFilter.FilterType.operations} getKey={(o) => o.Name} getLabel={(o) => o.Name} grow />
+			<Layout direction="row" alignItems="center" justifyContent="center" gap="1em">
+				<Layout direction="column" fontSize="1.2em"><TranslatedText textKey={props.newFilter.FilterType.labelKey} /></Layout>
+				<AutoCompleteFieldEditor field={props.newFilter.Operation} allOptions={props.newFilter.FilterType.operations} getKey={(o) => o.Name} getLabel={(o) => <TranslatedText textKey={o.Name} />} grow />
 			</Layout>
 
 			<FilterTypeEditor {...props} filter={props.newFilter} currentOperation={operation} />

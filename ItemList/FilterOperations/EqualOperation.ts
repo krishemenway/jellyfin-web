@@ -2,8 +2,7 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 import { FilterOperation } from "ItemList/FilterOperation";
 
 export const EqualOperation: FilterOperation = {
-	Name: "Equal",
-	SupportsTypes: ["string", "number", "boolean"],
+	Name: "Equals",
 	Display: (filterValue) => ["IsEqual", filterValue],
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
@@ -14,10 +13,10 @@ export const EqualOperation: FilterOperation = {
 			return value.toLowerCase() === filterValue.toLowerCase();
 		}
 
-		if (typeof value === "number" && typeof filterValue === "number") {
-			return value === filterValue;
+		if (typeof value === "number") {
+			return value === parseFloat(filterValue);
 		}
 
-		throw new Error("Value not supported");
+		throw new Error(`Value not supported ('${value}') with filter value ('${filterValue}')`);
 	},
 };

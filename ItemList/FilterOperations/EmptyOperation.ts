@@ -2,9 +2,8 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 import { FilterOperation } from "ItemList/FilterOperation";
 
 export const EmptyOperation: FilterOperation = {
-	Name: "Empty",
+	Name: "IsEmpty",
 	Display: () => ["IsEmpty"],
-	SupportsTypes: ["string", "string[]", "number[]"],
 	Operation: (value) => {
 		if (!Nullable.HasValue(value)) {
 			return true;
@@ -14,14 +13,13 @@ export const EmptyOperation: FilterOperation = {
 			return value.length === 0;
 		}
 
-		throw new Error("Value not supported");
+		throw new Error(`Value not supported ('${value}')`);
 	},
 };
 
 export const NotEmptyOperation: FilterOperation = {
-	Name: "NotEmpty",
+	Name: "IsNotEmpty",
 	Display: () => ["IsNotEmpty"],
-	SupportsTypes: ["string", "string[]", "number[]"],
 	Operation: (value) => {
 		if (!Nullable.HasValue(value)) {
 			return false;
@@ -31,6 +29,6 @@ export const NotEmptyOperation: FilterOperation = {
 			return value.length > 0;
 		}
 
-		throw new Error("Value not supported");
+		throw new Error(`Value not supported ('${value}')`);
 	},
 };

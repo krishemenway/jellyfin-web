@@ -8,7 +8,7 @@ import { TextField } from "Common/TextField";
 const NameEditor: React.FC<ItemFilterTypeProps> = (props) => {
 	return (
 		<Layout direction="column">
-			<TextField field={props.filter.FilterValue} />
+			<TextField field={props.filter.FilterValue} placeholder={{ Key: "LabelValue" }} px=".5em" py=".25em" />
 		</Layout>
 	);
 };

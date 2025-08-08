@@ -7,7 +7,7 @@ import { FilterByHasPlayed } from "ItemList/ItemFilterTypes/FilterByHasPlayed";
 import { FilterByStudio } from "ItemList/ItemFilterTypes/FilterByStudio";
 import { FilterByTag } from "ItemList/ItemFilterTypes/FilterByTag";
 import { FilterByContinueWatching } from "ItemList/ItemFilterTypes/FilterByContinueWatching";
-import { FilterByPremiereDate } from "ItemList/ItemFilterTypes/FilterByPremiereDate";
+import { FilterByProductionYear } from "ItemList/ItemFilterTypes/FilterByProductionYear";
 import { FilterByIsFavorite } from "ItemList/ItemFilterTypes/FilterByIsFavorite";
 import { FilterByHasSubtitles } from "ItemList/ItemFilterTypes/FilterByHasSubtitles";
 import { FilterByOfficialRating } from "ItemList/ItemFilterTypes/FilterByOfficialRating";
@@ -39,7 +39,7 @@ export const ShowService: BaseItemKindService = {
 		FilterByStudio,
 		FilterByTag,
 		FilterByContinueWatching,
-		FilterByPremiereDate,
+		FilterByProductionYear,
 		FilterByIsFavorite,
 		FilterBySeriesStatus,
 		FilterByHasSubtitles,

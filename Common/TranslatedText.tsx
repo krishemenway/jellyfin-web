@@ -4,6 +4,7 @@ import { useObservable } from "@residualeffect/rereactor";
 import { Receiver } from "Common/Receiver";
 import * as defaultLanguage from "strings/en-us.json";
 import { ApplyLayoutStyleProps, StyleLayoutProps } from "Common/Layout";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export interface TranslationRequest {
 	Key: string;
@@ -56,9 +57,9 @@ class TranslationService {
 	private static _instance: TranslationService;
 }
 
-export function useTranslatedText(key?: string, textProps?: string[]): string|undefined {
-	if (key === undefined || key === "") {
-		return textProps?.join(" ") ?? "";
+export function useTranslatedText(request: TranslationRequest|undefined): string|undefined {
+	if (!Nullable.HasValue(request)) {
+		return undefined;
 	}
 
 	const translations = useObservable(TranslationService.Instance.Translations.Data);
@@ -66,16 +67,17 @@ export function useTranslatedText(key?: string, textProps?: string[]): string|un
 		return undefined;
 	}
 
-	let textFromStore = translations.ReceivedData[key];
-	if (textProps !== undefined && textProps.length > 0) {
-		textProps.forEach((tp, i) => { textFromStore = textFromStore.replace(`{${i}}`, tp)})
+	let textFromStore = translations.ReceivedData[request.Key];
+
+	if (request.KeyProps !== undefined && request.KeyProps.length > 0) {
+		request.KeyProps.forEach((tp, i) => { textFromStore = textFromStore.replace(`{${i}}`, tp)})
 	}
 
 	return textFromStore;
 }
 
 export const TranslatedText: React.FC<{ textKey: string, textProps?: string[], formatText?: (translatedText?: string) => string, elementType?: string, layout?: StyleLayoutProps, className?: string }> = (props) => {
-	let translated = useTranslatedText(props.textKey, props.textProps);
+	let translated = useTranslatedText({ Key: props.textKey, KeyProps: props.textProps });
 
 	if (props.formatText !== undefined) {
 		translated = props.formatText(translated);

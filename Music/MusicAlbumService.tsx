@@ -5,7 +5,7 @@ import { ImageShape } from "Items/ItemImage";
 import { FilterByName } from "ItemList/ItemFilterTypes/FilterByName";
 import { FilterByIsFavorite } from "ItemList/ItemFilterTypes/FilterByIsFavorite";
 import { FilterByHasPlayed } from "ItemList/ItemFilterTypes/FilterByHasPlayed";
-import { FilterByPremiereDate } from "ItemList/ItemFilterTypes/FilterByPremiereDate";
+import { FilterByProductionYear } from "ItemList/ItemFilterTypes/FilterByProductionYear";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { SortByDatePlayed } from "ItemList/ItemSortTypes/SortByDatePlayed";
 import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
@@ -33,6 +33,6 @@ export const MusicAlbumService: BaseItemKindService = {
 		FilterByName,
 		FilterByIsFavorite,
 		FilterByHasPlayed,
-		FilterByPremiereDate,
+		FilterByProductionYear,
 	],
 };

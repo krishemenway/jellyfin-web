@@ -12,7 +12,7 @@ interface BaseButtonProps extends StyleLayoutProps {
 	children?: React.ReactNode,
 
 	className?: string;
-	title?: string;
+	title?: TranslationRequest;
 
 	disabled?: boolean;
 	selected?: boolean;

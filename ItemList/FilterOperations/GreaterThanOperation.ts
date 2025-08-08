@@ -2,26 +2,24 @@ import { FilterOperation } from "ItemList/FilterOperation";
 
 export const GreaterThanOperation: FilterOperation = {
 	Name: "GreaterThan",
-	SupportsTypes: ["number"],
-	Display: (filterValue) => ["GreaterThan", filterValue],
+	Display: (filterValue) => ["GreaterThanFilterDisplay", filterValue],
 	Operation: (value, filterValue) => {
-		if (typeof value === "number" && typeof filterValue === "number") {
-			return value > filterValue;
+		if (typeof value === "number") {
+			return value > parseFloat(filterValue);
 		}
 
-		throw new Error("Value not supported");
+		throw new Error(`Value not supported ('${value}') with filter value ('${filterValue}')`);
 	}
 }
 
 export const GreaterThanOrEqualsOperation: FilterOperation = {
 	Name: "GreaterThanOrEquals",
-	SupportsTypes: ["number"],
-	Display: (filterValue) => ["GreaterThanOrEquals", filterValue],
+	Display: (filterValue) => ["GreaterThanOrEqualsFilterDisplay", filterValue],
 	Operation: (value, filterValue) => {
-		if (typeof value === "number" && typeof filterValue === "number") {
-			return value >= filterValue;
+		if (typeof value === "number") {
+			return value >= parseFloat(filterValue);
 		}
 
-		throw new Error("Value not supported");
+		throw new Error(`Value not supported ('${value}') with filter value ('${filterValue}')`);
 	}
 }

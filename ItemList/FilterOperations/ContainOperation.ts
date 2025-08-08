@@ -3,8 +3,7 @@ import { FilterOperation } from "ItemList/FilterOperation";
 
 export const ContainOperation: FilterOperation = {
 	Name: "Contains",
-	Display: (filterValue) => ["Contains", filterValue],
-	SupportsTypes: ["string", "string[]", "number[]"],
+	Display: (filterValue) => ["ContainsFilterDisplay", filterValue],
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return false;
@@ -23,8 +22,8 @@ export const ContainOperation: FilterOperation = {
 				return (value as string[]).includes(filterValue);
 			}
 
-			if (typeof value[0] === "number" && typeof filterValue === "number") {
-				return (value as number[]).includes(filterValue);
+			if (typeof value[0] === "number") {
+				return (value as number[]).includes(parseFloat(filterValue));
 			}
 		}
 
@@ -34,8 +33,7 @@ export const ContainOperation: FilterOperation = {
 
 export const NotContainOperation: FilterOperation = {
 	Name: "NotContain",
-	Display: (filterValue) => ["NotContain", filterValue],
-	SupportsTypes: ["string", "string[]", "number[]"],
+	Display: (filterValue) => ["NotContainFilterDisplay", filterValue],
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return true;
@@ -54,8 +52,8 @@ export const NotContainOperation: FilterOperation = {
 				return !(value as string[]).includes(filterValue);
 			}
 
-			if (typeof value[0] === "number" && typeof filterValue === "number") {
-				return !(value as number[]).includes(filterValue);
+			if (typeof value[0] === "number") {
+				return !(value as number[]).includes(parseFloat(filterValue));
 			}
 		}
 

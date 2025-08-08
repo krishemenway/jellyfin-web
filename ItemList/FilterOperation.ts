@@ -1,8 +1,7 @@
-export type FilterOperationFunc = (value: string[]|number[]|string|number|boolean|undefined|null, filterValue: string|number) => boolean;
+export type FilterOperationFunc = (value: string[]|number[]|string|number|boolean|undefined|null, filterValue: string) => boolean;
 
 export interface FilterOperation {
 	Name: string;
 	Operation: FilterOperationFunc;
-	SupportsTypes: string[];
 	Display: (filterValue: string) => string[];
 }
