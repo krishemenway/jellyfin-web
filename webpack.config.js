@@ -30,6 +30,7 @@ module.exports = {
 			patterns: [
 				{ from: "./strings/*.json", to: "[name][ext]" },
 				{ from: "./app.html", to: "[name][ext]" },
+				{ from: "./favicon.ico", to: "[name][ext]" },
 			]
 		}),
 	],
