@@ -1,3 +1,4 @@
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { FilterOperation } from "ItemList/FilterOperation";
 
 export const EqualOperation: FilterOperation = {
@@ -5,6 +6,10 @@ export const EqualOperation: FilterOperation = {
 	SupportsTypes: ["string", "number", "boolean"],
 	Display: (filterValue) => ["IsEqual", filterValue],
 	Operation: (value, filterValue) => {
+		if (!Nullable.HasValue(value)) {
+			return false;
+		}
+
 		if (typeof value === "string" && typeof filterValue === "string") {
 			return value.toLowerCase() === filterValue.toLowerCase();
 		}
