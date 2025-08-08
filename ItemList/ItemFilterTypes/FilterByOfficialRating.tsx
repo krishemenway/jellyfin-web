@@ -1,9 +1,9 @@
 import * as React from "react";
-import { ContainOperation, NotContainOperation } from "ItemList/FilterOperations/ContainOperation";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { Layout } from "Common/Layout";
 import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
 import { EmptyOperation, NotEmptyOperation } from "ItemList/FilterOperations/EmptyOperation";
+import { EqualOperation } from "ItemList/FilterOperations/EqualOperation";
 
 export const FilterByOfficialRating: ItemFilterType = {
 	type: "FilterByOfficialRating",
@@ -21,8 +21,7 @@ export const FilterByOfficialRating: ItemFilterType = {
 		);
 	},
 	operations: [
-		ContainOperation,
-		NotContainOperation,
+		EqualOperation,
 		EmptyOperation,
 		NotEmptyOperation,
 	],
