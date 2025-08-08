@@ -1,19 +1,12 @@
 import * as React from "react";
 import { IsFalseOperation } from "ItemList/FilterOperations/IsFalseOperation";
 import { IsTrueOperation } from "ItemList/FilterOperations/IsTrueOperation";
-import { ItemFilterType, ItemFilterTypeProps } from "ItemList/ItemFilterType";
-
-const IsFavoriteEditor: React.FC<ItemFilterTypeProps> = () => {
-	return (
-		<>
-		</>
-	);
-};
+import { ItemFilterType } from "ItemList/ItemFilterType";
 
 export const FilterByIsFavorite: ItemFilterType = {
 	type: "FilterByIsFavorite",
 	labelKey: "Favorite",
-	editor: IsFavoriteEditor,
+	editor: () => <></>,
 	targetField: (item) => item.UserData?.IsFavorite,
 	operations: [
 		IsTrueOperation,
