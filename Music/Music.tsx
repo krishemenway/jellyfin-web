@@ -84,13 +84,16 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 
 	const filteredArtists = useObservable(observableArtists);
 	const filteredAlbumIds = useObservable(observableAlbumIds);
+	const state = useObservable(MusicPlayer.Instance.State);
+
+	const stateIcon = state === PlayState.Paused ? <PauseIcon /> : state === PlayState.Playing ? <PlayIcon /> : <StopIcon />;
 
 	return (
 		<Layout direction="row" height="100%" py="1em" gap="1em">
 			<PageTitle text={library.Name!} />
 			<Layout direction="column" width="25%" gap="1em">
-				<MusicPlayerStatus className={background.panel} />
-				<CurrentPlaylist className={background.panel} user={props.user} />
+				<MusicPlayerStatus className={background.panel} stateIcon={stateIcon} />
+				<CurrentPlaylist className={background.panel} user={props.user} stateIcon={stateIcon} />
 			</Layout>
 
 			<Layout direction="column" grow gap="1em">
@@ -167,17 +170,16 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 	);
 };
 
-const MusicPlayerStatus: React.FC<{ className: string }> = (props) => {
+const MusicPlayerStatus: React.FC<{ className: string; stateIcon: JSX.Element; }> = (props) => {
 	const current = useObservable(MusicPlayer.Instance.Current);
 	const currentProgress = useObservable(MusicPlayer.Instance.CurrentProgress);
 	const isRepeating = useObservable(MusicPlayer.Instance.Repeat);
 	const isShuffling = useObservable(MusicPlayer.Instance.Shuffle);
-	const state = useObservable(MusicPlayer.Instance.State);
 
 	return (
 		<Layout direction="column" className={props.className} py="1em" px="1em" gap="1em">
 			<Layout direction="row" fontSize="1.5em" gap=".5em" height="1.3em">
-				{state === PlayState.Paused ? <PauseIcon /> : state === PlayState.Playing ? <PlayIcon /> : <StopIcon />}
+				{props.stateIcon}
 
 				<Layout direction="row" overflowX="hidden" width="100%" textOverflow="ellipsis" whiteSpace="nowrap" display="block" grow>
 					{Nullable.ValueOrDefault(current, <TranslatedText textKey="PriorityIdle" />, (c) => <>{c.PlaylistItem.Item.Name}</>)}
@@ -212,7 +214,7 @@ const Duration: React.FC<{ ticks: number|undefined|null }> = (props) => {
 	return <>{totalProgress}</>;
 };
 
-const CurrentPlaylist: React.FC<{ user: UserDto, className: string }> = (props) => {
+const CurrentPlaylist: React.FC<{ user: UserDto, className: string; stateIcon: JSX.Element; }> = (props) => {
 	const background = useBackgroundStyles();
 	const itemsInPlaylist = useObservable(MusicPlayer.Instance.Playlist);
 	const current = useObservable(MusicPlayer.Instance.Current);
@@ -252,7 +254,7 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string }> = (props) 
 						itemContent={(index, data) => (
 							<Layout direction="row" position="relative">
 								<Layout direction="column" alignItems="center" justifyContent="center" position="absolute" top={0} bottom={0} left={0} width="5%">
-									{Nullable.ValueOrDefault(current, <DragIcon />, (c) => c.PlaylistItem === data ? <PlayIcon /> : <DragIcon />)}
+									{Nullable.ValueOrDefault(current, <DragIcon />, (c) => c.PlaylistItem === data ? props.stateIcon : <DragIcon />)}
 								</Layout>
 
 								<Button transparent width="100%" px="5%" type="button" textAlign="start" onClick={() => { MusicPlayer.Instance.GoIndex(index)}}>
