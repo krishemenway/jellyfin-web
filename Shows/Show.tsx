@@ -33,6 +33,7 @@ import { EditItemAction } from "MenuActions/EditItemAction";
 import { RefreshItemAction } from "MenuActions/RefreshItemAction";
 import { CenteredModal } from "Common/Modal";
 import { CastAndCrew } from "Items/CastAndCrew";
+import { BackdropService } from "Common/BackdropService";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
@@ -61,6 +62,8 @@ export const Show: React.FC = () => {
 const LoadedShow: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto }> = ({ show, seasons, user }) => {
 	const background = useBackgroundStyles();
 	const [selectedEpisode, setSelectedEpisode] = React.useState<BaseItemDto|undefined>(undefined);
+
+	React.useEffect(() => BackdropService.Instance.SetWithDispose(show), [show]);
 
 	return (
 		<Layout direction="row" gap="1em" py="1em">

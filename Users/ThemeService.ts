@@ -15,6 +15,7 @@ interface ButtonStates {
 export interface Theme {
 	Name: string;
 	PageBackgroundColor: string;
+	BackdropSuppressorColor: string;
 
 	PanelBackgroundColor: string;
 	PanelBorderColor: string;
@@ -49,6 +50,7 @@ export class ThemeService {
 		const root = window.document.querySelector(":root") as HTMLElement;
 
 		root.style.setProperty("--PageBackgroundColor", theme.PageBackgroundColor);
+		root.style.setProperty("--BackdropSuppressorColor", theme.BackdropSuppressorColor);
 		root.style.setProperty("--FontFamily", theme.FontFamily);
 
 		root.style.setProperty("--PanelBackgroundColor", theme.PanelBackgroundColor);
@@ -86,6 +88,7 @@ export class ThemeService {
 			Name: "Default",
 			FontFamily: "Segoe UI",
 			PageBackgroundColor: "#050505",
+			BackdropSuppressorColor: "rgba(5, 5, 5, .97)",
 
 			PanelBackgroundColor: "#202020",
 			PanelBorderColor: "rgba(255, 255, 255, 0.12)",

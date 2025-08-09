@@ -53,6 +53,9 @@ export interface LayoutWithoutChildrenProps {
 	minHeight?: Property.MinHeight;
 	maxHeight?: Property.MaxHeight;
 	height?: Property.Height;
+
+	backgroundUrl?: string;
+	backgroundColor?: Property.BackgroundColor;
 }
 
 export interface StyleLayoutProps extends LayoutWithoutChildrenProps {
@@ -125,6 +128,9 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		minHeight: props?.minHeight,
 		maxHeight: props?.maxHeight,
 		height: props?.height,
+
+		backgroundColor: props?.backgroundColor,
+		backgroundImage: Nullable.ValueOrDefault(props?.backgroundUrl, undefined, (u) => `url('${u}')`),
 	};
 }
 
