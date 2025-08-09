@@ -18,6 +18,7 @@ interface ModalProps {
 	open: boolean;
 	className?: string;
 	alternatePanel?: boolean;
+	noPanel?: boolean;
 	onClosed: () => void;
 	children: React.ReactNode;
 	maxWidth?: string;
@@ -102,7 +103,7 @@ export const CenteredModal: React.FC<ModalProps> = (props) => {
 			modalRoot.classList.remove(modalClasses.fadeBackground);
 		}
 
-		element.className = `${modalClasses.centeredModal} ${props.alternatePanel ? background.alternatePanel : background.panel} ${props.className ?? ""}`;
+		element.className = `${modalClasses.centeredModal} ${props.alternatePanel ? background.alternatePanel : !props.noPanel ? background.panel : ""} ${props.className ?? ""}`;
 		element.style.maxWidth = props.maxWidth ?? "";
 
 		return tryCleanupModal;
@@ -157,7 +158,7 @@ export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
 			closedFuncs.remove(props.onClosed);
 		}
 
-		element.className = `${modalClasses.anchoredModal} ${props.alternatePanel ? background.alternatePanel : background.panel} ${props.className ?? ""}`;
+		element.className = `${modalClasses.anchoredModal} ${props.alternatePanel ? background.alternatePanel : !props.noPanel ? background.panel : ""} ${props.className ?? ""}`;
 		element.style.zIndex = (++lastZIndex).toString();
 
 		if (props.anchorElement !== null) {

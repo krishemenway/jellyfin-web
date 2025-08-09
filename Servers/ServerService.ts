@@ -65,6 +65,11 @@ export class ServerService {
 		return this.CurrentServer.UserId ?? "";
 	}
 
+	public Remove(server: ServerConnection): void {
+		this.Servers.remove(server);
+		this.SetServersToLocalStorage();
+	}
+
 	public TryAddServer(): void {
 		this.AddServerResult.Start(async (abort) => this.CheckSystemInfoForHost(this.ServerHost.Current.Value, abort));
 	}

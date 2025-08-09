@@ -16,6 +16,7 @@ import { FieldLabel } from "Common/FieldLabel";
 import { Form } from "Common/Form";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ServerService } from "Servers/ServerService";
+import { ChangeServerButton } from "Servers/ChangeServerButton";
 
 const SignInWithQuickConnect: React.FC = () => {
 	React.useEffect(() => { return () => LoginService.Instance.Dispose(); }, []);
@@ -71,15 +72,15 @@ const SignInWithCredentials: React.FC = () => {
 
 	return (
 		<>
-			<Form onSubmit={() => LoginService.Instance.SignInWithCredentials()} direction="column" gap="1em" px="1em" py="1em">
+			<Form onSubmit={() => LoginService.Instance.SignInWithCredentials()} direction="column" gap="1.25em" px="1em" py="1em">
 				<Layout direction="column" gap=".5em">
 					<FieldLabel field={LoginService.Instance.UserName} />
-					<TextField field={LoginService.Instance.UserName} />
+					<TextField field={LoginService.Instance.UserName} px=".25em" py=".25em" />
 				</Layout>
 
 				<Layout direction="column" gap=".5em">
 					<FieldLabel field={LoginService.Instance.Password} />
-					<TextField password field={LoginService.Instance.Password} />
+					<TextField password field={LoginService.Instance.Password} px=".25em" py=".25em" />
 				</Layout>
 
 				<Layout direction="row" gap=".5em" alignItems="center">
@@ -87,8 +88,11 @@ const SignInWithCredentials: React.FC = () => {
 					<FieldLabel field={LoginService.Instance.RememberMe} />
 				</Layout>
 
-				<Button direction="row" label="ButtonSignIn" type="submit" justifyContent="center" px=".5em" py=".25em" />
-				<Button direction="row" label="ButtonForgotPassword" type="button" justifyContent="center" px=".5em" py=".25em" onClick={() => { LoginService.Instance.ShowForgotPassword.Value = true; }} />
+				<Layout direction="column" gap=".5em">
+					<Button direction="row" label="ButtonSignIn" type="submit" justifyContent="center" py=".5em" />
+					<Button direction="row" label="ButtonForgotPassword" type="button" justifyContent="center" py=".5em" onClick={() => { LoginService.Instance.ShowForgotPassword.Value = true; }} />
+					<ChangeServerButton justifyContent="center" py=".5em" withoutIcon onOpened={() => { }} />
+				</Layout>
 			</Form>
 
 			<CenteredModal open={showForgotPassword} onClosed={() => { LoginService.Instance.ShowForgotPassword.Value = false; }}>
@@ -96,13 +100,13 @@ const SignInWithCredentials: React.FC = () => {
 					<Layout direction="row"><TranslatedText textKey="ButtonForgotPassword" /></Layout>
 
 					<Layout direction="column" gap=".5em">
-						<TextField field={LoginService.Instance.UserName} />
+						<TextField field={LoginService.Instance.UserName} px=".25em" py=".25em" />
 						<Layout direction="row"><TranslatedText textKey="LabelForgotPasswordUsernameHelp" /></Layout>
 					</Layout>
 
-					<Layout direction="column" gap=".5em">
-						<Button direction="row" type="submit" label="ButtonSubmit" px=".5em" py=".25em" />
-						<Button direction="row" type="button" label="ButtonCancel" px=".5em" py=".25em" onClick={() => { LoginService.Instance.ShowForgotPassword.Value = false; }} />
+					<Layout direction="row" gap=".5em" justifyContent="end">
+						<Button direction="row" type="button" label="ButtonCancel" justifyContent="center" px="1em" py=".5em" onClick={() => { LoginService.Instance.ShowForgotPassword.Value = false; }} />
+						<Button direction="row" type="submit" label="ButtonSubmit" justifyContent="center" px="1em" py=".5em" />
 					</Layout>
 				</Form>
 			</CenteredModal>

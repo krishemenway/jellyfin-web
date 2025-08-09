@@ -12,16 +12,15 @@ export const ConnectToServer: React.FC = () => {
 	const background = useBackgroundStyles();
 
 	return (
-		<Form onSubmit={() => ServerService.Instance.TryAddServer()} direction="column" justifyContent="center" gap="2em" className={background.panel} px="1em" py="1em" my="2em">
-			<Layout elementType="h2" direction="row"><TranslatedText textKey="HeaderConnectToServer" /></Layout>
+		<Form onSubmit={() => ServerService.Instance.TryAddServer()} direction="column" justifyContent="center" gap="2em" className={background.panel} px="1em" py="1em">
+			<Layout elementType="h2" direction="row" fontSize="1.2em"><TranslatedText textKey="HeaderConnectToServer" /></Layout>
 
 			<Layout direction="column" gap=".5em">
 				<FieldLabel field={ServerService.Instance.ServerHost} />
-				<TextField field={ServerService.Instance.ServerHost} />
-				<Layout direction="row"><TranslatedText textKey="LabelServerHostHelp" /></Layout>
+				<TextField field={ServerService.Instance.ServerHost} placeholder={{ Key: "LabelServerHostHelp" }} px=".5em" py=".5em" />
 			</Layout>
 
-			<Button type="submit" label="Connect" px=".5em" py=".25em" />
+			<Button type="submit" label="Connect" py=".5em" justifyContent="center" />
 		</Form>
 	);
 };

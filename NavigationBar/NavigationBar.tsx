@@ -21,6 +21,7 @@ import { SettingsIcon } from "Users/SettingsIcon";
 import { SignOutIcon } from "Users/SignOutIcon";
 import { UserViewStore } from "Users/UserViewStore";
 import { LinkToItem } from "Items/LinkToItem";
+import { ChangeServerButton } from "Servers/ChangeServerButton";
 
 export const NavigationBar: React.FC<{ icon?: React.ReactElement; }> = (props) => {
 	const background = useBackgroundStyles();
@@ -49,7 +50,7 @@ const NavigationButton: React.FC<{ onClick?: (element: HTMLButtonElement) => voi
 const NavigationMenuLinkStyles: Partial<StyleLayoutProps> = { width: "100%", px: "1em", py: "1em", gap: ".5em" };
 const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => {
 	const [anchor, setOpenAnchor] = React.useState<HTMLElement|null>(null);
-	const closeNavigation = () => setOpenAnchor(null);
+	const closeNavigation = () => { setOpenAnchor(null); };
 
 	return (
 		<>
@@ -98,6 +99,7 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 
 						<NavigationMenuItemHyperLink to="/Settings" icon={<SettingsIcon />} text={<TranslatedText textKey="Settings" />} />
 						<AuthorizeQuickConnectButton onOpened={closeNavigation} />
+						<ChangeServerButton transparent {...NavigationMenuLinkStyles} onOpened={closeNavigation} />
 						<NavigationMenuItemButton icon={<SignOutIcon />} text={<TranslatedText textKey="ButtonSignOut" />} onClick={() => { closeNavigation(); LoginService.Instance.SignOut(); }} />
 					</Layout>
 				</Layout>

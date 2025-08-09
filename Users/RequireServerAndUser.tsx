@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useObservable } from "@residualeffect/rereactor";
-import { Layout } from "Common/Layout";
 import { Login } from "Users/Login";
 import { ServerService } from "Servers/ServerService";
 import { ConnectToServer } from "Servers/ConnectToServer";
@@ -12,7 +11,7 @@ export const RequireServerAndUser: React.FC<{ children: React.ReactNode }> = (pr
 	React.useEffect(() => LoginService.Instance.LoadUser(), [servers]);
 
 	if (servers.length === 0) {
-		return <Layout direction="column" alignItems="center"><ConnectToServer /></Layout>;
+		return <ConnectToServer />;
 	}
 
 	if (!servers[0].UserId) {
