@@ -29,7 +29,7 @@ interface BaseInputFieldProps extends LayoutWithoutChildrenProps {
 
 const ForwardedTextField: React.ForwardRefRenderFunction<HTMLInputElement, TextFieldProps> = (props, ref) => {
 	const currentValue = useObservable(props.field.Current);
-	return <InputField id={props.field.FieldId} value={currentValue} onChange={(newValue) => props.field.OnChange(newValue)} ref={ref} />;
+	return <InputField {...props} id={props.field.FieldId} value={currentValue} onChange={(newValue) => props.field.OnChange(newValue)} ref={ref} />;
 };
 
 const ForwardedInputField: React.ForwardRefRenderFunction<HTMLInputElement, InputFieldProps> = (props, ref) => {
