@@ -9,12 +9,12 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemService } from "Items/ItemsService";
 import { ListOf } from "Common/ListOf";
 import { ItemsRow } from "Items/ItemsRow";
-import { BaseItemDto, BaseItemPerson, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { ItemImage } from "Items/ItemImage";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemTags } from "Items/ItemTags";
 import { ItemRating } from "Items/ItemRating";
-import { ResponsiveBreakpoint, useBackgroundStyles, useBreakpointValue } from "AppStyles";
+import { useBackgroundStyles } from "AppStyles";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { Collapsible } from "Common/Collapsible";
 import { Button } from "Common/Button";
@@ -23,7 +23,6 @@ import { ItemGenres } from "Items/ItemGenres";
 import { ItemStudios } from "Items/ItemStudios";
 import { TranslatedText } from "Common/TranslatedText";
 import { ItemOverview } from "Items/ItemOverview";
-import { LinkToPerson } from "People/LinkToPerson";
 import { LoginService } from "Users/LoginService";
 import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
@@ -33,6 +32,7 @@ import { PageTitle } from "Common/PageTitle";
 import { EditItemAction } from "MenuActions/EditItemAction";
 import { RefreshItemAction } from "MenuActions/RefreshItemAction";
 import { CenteredModal } from "Common/Modal";
+import { CastAndCrew } from "Items/CastAndCrew";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
@@ -121,12 +121,8 @@ const LoadedShow: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: Us
 						linkLayout={{ px: ".25em", py: ".25em" }}
 					/>
 				</Layout>
-				{/* TODO: Airing/Aired Time */}
-				{/* TODO: Review/Star Rating */}
-				{/* TODO: Play */}
-				{/* TODO: Shuffle */}
-				{/* TODO: Next Up */}
-				<CastAndCrew item={show} />
+
+				<CastAndCrewSection show={show} />
 
 				<ListOf
 					items={seasons}
@@ -202,11 +198,11 @@ const ProductionYearRangeForEpisodes: React.FC<{ episodes: BaseItemDto[] }> = (p
 	return <>({earliest !== newest ? `${earliest} - ${newest}` : earliest})</>;
 };
 
-const CastAndCrew: React.FC<{ item: BaseItemDto }> = (props) => {
+const CastAndCrewSection: React.FC<{ show: BaseItemDto }> = (props) => {
 	const [open, setOpen] = React.useState(false);
 	const background = useBackgroundStyles();
 
-	if (!Nullable.HasValue(props.item.People) || props.item.People.length === 0 ) {
+	if (!Nullable.HasValue(props.show.People) || props.show.People.length === 0 ) {
 		return <></>;
 	}
 
@@ -215,24 +211,12 @@ const CastAndCrew: React.FC<{ item: BaseItemDto }> = (props) => {
 			<Button type="button" label="HeaderCastAndCrew" onClick={() => setOpen(!open)} direction="row" fontSize="1.5em" py=".5em" px=".5em" gap=".5em" />
 
 			<Collapsible open={open}>
-				<ListOf
+				<CastAndCrew
 					className={background.panel}
+					itemWithPeople={props.show}
 					direction="row" wrap
-					items={props.item.People ?? []}
-					forEachItem={((person) => <CastAndCrewCredit key={"" + person.Id + person.Role} person={person} />)}
-				/>
+					linkProps={{ px: ".5em", py: ".5em", gap: ".25em" }} />
 			</Collapsible>
 		</Layout>
-	);
-};
-
-const CastAndCrewCredit: React.FC<{ person: BaseItemPerson }> = (props) => {
-	const itemsPerRow = useBreakpointValue({ [ResponsiveBreakpoint.Mobile]: 1, [ResponsiveBreakpoint.Tablet]: 3, [ResponsiveBreakpoint.Desktop]: 6 });
-
-	return (
-		<LinkToPerson id={props.person.Id} direction="column" width={{ itemsPerRow: itemsPerRow }} px=".5em" py=".5em" gap=".25em">
-			<Layout direction="row" fontSize="1em">{props.person.Name}</Layout>
-			<Layout direction="row" fontSize=".8em">{props.person.Role}</Layout>
-		</LinkToPerson>
 	);
 };

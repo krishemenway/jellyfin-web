@@ -12,14 +12,11 @@ import { ItemRating } from "Items/ItemRating";
 import { ItemStudios } from "Items/ItemStudios";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { ItemGenres } from "Items/ItemGenres";
-import { ResponsiveBreakpoint, useBackgroundStyles, useBreakpointValue } from "AppStyles";
+import { useBackgroundStyles } from "AppStyles";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { ItemOverview } from "Items/ItemOverview";
-import { BaseItemDto, BaseItemPerson } from "@jellyfin/sdk/lib/generated-client/models";
 import { TranslatedText } from "Common/TranslatedText";
-import { ListOf } from "Common/ListOf";
-import { LinkToPerson } from "People/LinkToPerson";
 import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
 import { PageTitle } from "Common/PageTitle";
@@ -29,6 +26,7 @@ import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
 import { RefreshItemAction } from "MenuActions/RefreshItemAction";
+import { CastAndCrew } from "Items/CastAndCrew";
 
 export const Movie: React.FC = () => {
 	const movieId = useParams<{ movieId: string }>().movieId;
@@ -95,7 +93,9 @@ export const Movie: React.FC = () => {
 									]
 								]} user={user} />
 							</Layout>
+
 							<ItemOverview item={movie} />
+
 							<Layout direction="row" gap=".5em">
 								<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
 								<ItemTags
@@ -105,43 +105,23 @@ export const Movie: React.FC = () => {
 									linkLayout={{ px: ".25em", py: ".25em" }}
 								/>
 							</Layout>
-							<CastAndCrew item={movie} />
+
+							{Nullable.HasValue(movie.People) && movie.People.length > 0 && (
+								<Layout direction="column" minWidth="100%">
+									<Layout direction="row" fontSize="1.5em" py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
+
+									<CastAndCrew
+										itemWithPeople={movie}
+										className={background.panel}
+										direction="row" wrap px=".5em" py="1em"
+										linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
+									/>
+								</Layout>
+							)}
 						</Layout>
 					</Layout>
 				)}
 			/>
 		</PageWithNavigation>
-	);
-};
-
-const CastAndCrew: React.FC<{ item: BaseItemDto }> = (props) => {
-	const background = useBackgroundStyles();
-
-	if (!Nullable.HasValue(props.item.People) || props.item.People.length === 0 ) {
-		return <></>;
-	}
-
-	return (
-		<Layout direction="column" minWidth="100%">
-			<Layout direction="row" fontSize="1.5em" py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
-
-			<ListOf
-				className={background.panel}
-				direction="row" wrap px=".5em" py="1em"
-				items={props.item.People ?? []}
-				forEachItem={((person) => <CastAndCrewCredit key={"" + person.Id + person.Role} person={person} />)}
-			/>
-		</Layout>
-	);
-};
-
-const CastAndCrewCredit: React.FC<{ person: BaseItemPerson }> = (props) => {
-	const itemsPerRow = useBreakpointValue({ [ResponsiveBreakpoint.Mobile]: 1, [ResponsiveBreakpoint.Tablet]: 3, [ResponsiveBreakpoint.Desktop]: 6 });
-
-	return (
-		<LinkToPerson id={props.person.Id} direction="column" width={{ itemsPerRow: itemsPerRow }} px=".5em" py=".5em" gap=".25em">
-			<Layout direction="row" fontSize="1em">{props.person.Name}</Layout>
-			<Layout direction="row" fontSize=".8em">{props.person.Role}</Layout>
-		</LinkToPerson>
 	);
 };
