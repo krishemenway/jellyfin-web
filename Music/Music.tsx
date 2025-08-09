@@ -26,7 +26,7 @@ import { PlaylistIcon } from "Playlists/PlaylistIcon";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
-import { MusicPlayer } from "Music/MusicPlayer";
+import { MusicPlayer, PlayState } from "Music/MusicPlayer";
 import { useObservable } from "@residualeffect/rereactor";
 import { PageTitle } from "Common/PageTitle";
 import { UserViewStore } from "Users/UserViewStore";
@@ -172,11 +172,12 @@ const MusicPlayerStatus: React.FC<{ className: string }> = (props) => {
 	const currentProgress = useObservable(MusicPlayer.Instance.CurrentProgress);
 	const isRepeating = useObservable(MusicPlayer.Instance.Repeat);
 	const isShuffling = useObservable(MusicPlayer.Instance.Shuffle);
+	const state = useObservable(MusicPlayer.Instance.State);
 
 	return (
 		<Layout direction="column" className={props.className} py="1em" px="1em" gap="1em">
 			<Layout direction="row" fontSize="1.5em" gap=".5em" height="1.3em">
-				{Nullable.ValueOrDefault(current, <StopIcon />, () => <PlayIcon />)}
+				{state === PlayState.Paused ? <PauseIcon /> : state === PlayState.Playing ? <PlayIcon /> : <StopIcon />}
 
 				<Layout direction="row" overflowX="hidden" width="100%" textOverflow="ellipsis" whiteSpace="nowrap" display="block" grow>
 					{Nullable.ValueOrDefault(current, <TranslatedText textKey="PriorityIdle" />, (c) => <>{c.PlaylistItem.Item.Name}</>)}

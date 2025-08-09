@@ -3,6 +3,12 @@ import { Observable, ObservableArray } from "@residualeffect/reactor";
 import { Nullable, NumberLimits } from "Common/MissingJavascriptFunctions";
 import { ServerService } from "Servers/ServerService";
 
+export enum PlayState {
+	Stopped,
+	Paused,
+	Playing,
+}
+
 interface PlayItem {
 	PlaylistItem: PlaylistItem;
 	Audio: HTMLAudioElement;
@@ -22,6 +28,7 @@ export class MusicPlayer {
 		this.Playlist = new ObservableArray([]);
 		this.Repeat = new Observable(false);
 		this.Shuffle = new Observable(false);
+		this.State = new Observable(PlayState.Stopped);
 	}
 
 	public Add(item: BaseItemDto): void {
@@ -54,11 +61,7 @@ export class MusicPlayer {
 		} else if (this.Repeat.Value) {
 			this.GoIndex(NumberLimits.NoGreaterThan(this.CurrentIndex() + 1, this.Playlist.length - 1, 0));
 		} else {
-			const nextIndex = this.CurrentIndex() + 1;
-
-			if (nextIndex < this.Playlist.length) {
-				this.GoIndex(nextIndex);
-			}
+			this.GoIndex(this.CurrentIndex() + 1);
 		}
 	}
 
@@ -68,11 +71,7 @@ export class MusicPlayer {
 		} else if (this.Repeat.Value) {
 			this.GoIndex(NumberLimits.NoLessThan(this.CurrentIndex() - 1, 0, this.Playlist.length - 1));
 		} else {
-			const nextIndex = this.CurrentIndex() - 1;
-
-			if (nextIndex > -1) {
-				this.GoIndex(nextIndex);
-			}
+			this.GoIndex(this.CurrentIndex() - 1);
 		}
 	}
 
@@ -85,7 +84,7 @@ export class MusicPlayer {
 			if (this.Current.Value?.PlaylistItem !== item) {
 				this.Load(item);
 			}
-		});
+		}, () => { this.Stop(); });
 	}
 
 	public Load(playlistItem: PlaylistItem): void {
@@ -98,7 +97,7 @@ export class MusicPlayer {
 		});
 
 		const onTimeUpdate = (evt: Event) => this.OnTimeUpdate(evt);
-		const onLoaded = () => { audioElement.play(); };
+		const onLoaded = () => { this.Play(); };
 		const onEnded = () => this.GoNext();
 
 		const audioElement = new Audio(this.CreateAudioUrl(playlistItem.Item));
@@ -118,14 +117,15 @@ export class MusicPlayer {
 
 	public Stop(): void {
 		Nullable.TryExecute(this.Current.Value, (current) => { current.Audio.pause(); current.Audio.fastSeek(0); });
+		this.State.Value = PlayState.Stopped;
 	}
 
 	public Pause(): void {
-		Nullable.TryExecute(this.Current.Value, (current) => { current.Audio.pause(); });
+		Nullable.TryExecute(this.Current.Value, (current) => { current.Audio.pause(); this.State.Value = PlayState.Paused; });
 	}
 
 	public Play(): void {
-		Nullable.TryExecute(this.Current.Value, (current) => { current.Audio.play(); });
+		Nullable.TryExecute(this.Current.Value, (current) => { current.Audio.play(); this.State.Value = PlayState.Playing; });
 	}
 
 	public ChangeProgress(newProgress: number): void {
@@ -167,6 +167,7 @@ export class MusicPlayer {
 	}
 
 	public Current: Observable<PlayItem|undefined>;
+	public State: Observable<PlayState>;
 	public CurrentProgress: Observable<number>;
 	public Playlist: ObservableArray<PlaylistItem>;
 	public Repeat: Observable<boolean>;
