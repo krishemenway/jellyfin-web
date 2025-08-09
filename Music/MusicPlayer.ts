@@ -6,6 +6,9 @@ import { ServerService } from "Servers/ServerService";
 interface PlayItem {
 	PlaylistItem: PlaylistItem;
 	Audio: HTMLAudioElement;
+	TimeUpdateFunc: (evt: Event) => void;
+	LoadedDataFunc: () => void;
+	EndedFunc: () => void;
 }
 
 interface PlaylistItem {
@@ -86,17 +89,17 @@ export class MusicPlayer {
 	}
 
 	public Load(playlistItem: PlaylistItem): void {
-		const onTimeUpdate = (evt: Event) => this.OnTimeUpdate(evt);
-		const onLoaded = () => { audioElement.play(); };
-		const onEnded = () => this.GoNext();
-
 		this.Stop();
 		
 		Nullable.TryExecute(this.Current.Value, (current) => {
-			current.Audio.removeEventListener("timeupdate", onTimeUpdate);
-			current.Audio.removeEventListener("loadeddata", onLoaded);
-			current.Audio.removeEventListener("ended", onEnded);
+			current.Audio.removeEventListener("timeupdate", current.TimeUpdateFunc);
+			current.Audio.removeEventListener("loadeddata", current.LoadedDataFunc);
+			current.Audio.removeEventListener("ended", current.EndedFunc);
 		});
+
+		const onTimeUpdate = (evt: Event) => this.OnTimeUpdate(evt);
+		const onLoaded = () => { audioElement.play(); };
+		const onEnded = () => this.GoNext();
 
 		const audioElement = new Audio(this.CreateAudioUrl(playlistItem.Item));
 		audioElement.addEventListener("timeupdate", onTimeUpdate);
@@ -107,6 +110,9 @@ export class MusicPlayer {
 		this.Current.Value = {
 			PlaylistItem: playlistItem,
 			Audio: audioElement,
+			TimeUpdateFunc: onTimeUpdate,
+			LoadedDataFunc: onLoaded,
+			EndedFunc: onEnded,
 		};
 	}
 
