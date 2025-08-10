@@ -66,7 +66,7 @@ export const Music: React.FC = () => {
 
 interface Column {
 	name: string;
-	getValue: (item: BaseItemDto, stats: Record<string, number>[]) => string|number|undefined|null;
+	getValue: (item: BaseItemDto, stats: Record<string, number>[]) => React.ReactNode;
 	align?: "start"|"end"|"center";
 	width?: string;
 	getSortFunc: (stats: Record<string, number>[]) => (a: BaseItemDto, b: BaseItemDto) => number;
@@ -93,7 +93,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 			<PageTitle text={library.Name!} />
 			<Layout direction="column" width="25%" gap="1em">
 				<MusicPlayerStatus className={background.panel} stateIcon={stateIcon} />
-				<CurrentPlaylist className={background.panel} user={props.user} stateIcon={stateIcon} />
+				<CurrentPlaylist className={background.panel} user={props.user} stateIcon={stateIcon} library={library} />
 			</Layout>
 
 			<Layout direction="column" grow gap="1em">
@@ -107,6 +107,8 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 							whenReceived={(artists, albums, songs) => (
 								<LoadedItems
 									items={artists.List}
+									selectedKeys={filteredArtists}
+									getSelectedKey={(i) => i.Name!}
 									stats={[albums.Stats["AlbumCountByArtistId"], songs.Stats["SongCountByArtistId"]]}
 									onToggled={(artist) => { Nullable.TryExecute(artist.Name, (name) => observableArtists.toggle(name)); }}
 									columns={[
@@ -127,6 +129,8 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 							whenReceived={(albums, songs) => (
 								<LoadedItems
 									items={albums.List}
+									getSelectedKey={(i) => i.Id!}
+									selectedKeys={filteredAlbumIds}
 									stats={[songs.Stats["SongCountByAlbumId"]]}
 									filters={filteredArtists.map((artist) => (album) => (album.Artists ?? []).indexOf(artist) > -1)}
 									onToggled={(album) => { Nullable.TryExecute(album.Id, (id) => observableAlbumIds.toggle(id)); }}
@@ -151,6 +155,8 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 						whenReceived={(audios) => (
 							<LoadedItems
 								items={audios.List}
+								selectedKeys={[]}
+								getSelectedKey={() => ""}
 								onToggled={(audio) => { MusicPlayer.Instance.Add(audio); }}
 								filters={filteredArtists.map((artist) => (song: BaseItemDto) => (song.Artists ?? []).indexOf(artist) > -1).concat(filteredAlbumIds.map((albumId) => (song: BaseItemDto) => song.AlbumId === albumId))}
 								columns={[
@@ -214,7 +220,7 @@ const Duration: React.FC<{ ticks: number|undefined|null }> = (props) => {
 	return <>{totalProgress}</>;
 };
 
-const CurrentPlaylist: React.FC<{ user: UserDto, className: string; stateIcon: JSX.Element; }> = (props) => {
+const CurrentPlaylist: React.FC<{ user: UserDto, className: string; stateIcon: JSX.Element; library: BaseItemDto }> = (props) => {
 	const background = useBackgroundStyles();
 	const itemsInPlaylist = useObservable(MusicPlayer.Instance.Playlist);
 	const current = useObservable(MusicPlayer.Instance.Current);
@@ -245,7 +251,11 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string; stateIcon: J
 				</Layout>
 			</Layout>
 
-			<Layout direction="column" grow>
+			<Layout
+				direction="column" grow
+				onDrop={(evt) => { evt.preventDefault(); evt.dataTransfer.dropEffect ="copy"; MusicPlayer.Instance.AddFromId(evt.dataTransfer.getData("ItemId"), evt.dataTransfer.getData("ItemName"), props.library); }}
+				onDragOver={(evt) => { evt.preventDefault(); evt.dataTransfer.dropEffect = "copy"; }}
+			>
 				{itemsInPlaylist.length > 0 ? (
 					<Virtuoso
 						data={itemsInPlaylist}
@@ -281,7 +291,7 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string; stateIcon: J
 	);
 };
 
-const LoadedItems: React.FC<{ items: BaseItemDto[]; columns: Column[]; stats?: Record<string, number>[]; onToggled: (item: BaseItemDto) => void; filters?: ((item: BaseItemDto) => boolean)[] }> = (props) => {
+const LoadedItems: React.FC<{ items: BaseItemDto[]; columns: Column[]; stats?: Record<string, number>[]; selectedKeys: readonly string[]; getSelectedKey: (item: BaseItemDto) => string; onToggled: (item: BaseItemDto) => void; filters?: ((item: BaseItemDto) => boolean)[] }> = (props) => {
 	const background = useBackgroundStyles();
 	const [sortField, setSortField] = React.useState(props.columns[0]);
 	const [sortReversed, setSortReversed] = React.useState(false);
@@ -295,7 +305,7 @@ const LoadedItems: React.FC<{ items: BaseItemDto[]; columns: Column[]; stats?: R
 		}
 	};
 
-	const filteredItems = React.useMemo(() => props.items.filter((i) => Nullable.ValueOrDefault(props.filters, true, (f) => f.length === 0 || f.some((filter) => filter(i)))), [props.items, props.filters]);
+	const filteredItems = React.useMemo(() => props.items.filter((i) => Nullable.ValueOrDefault(props.filters, true, (f) => f.length === 0 || f.some((filter) => filter(i) || props.selectedKeys.includes(props.getSelectedKey(i))))), [props.items, props.filters, props.selectedKeys, props.getSelectedKey]);
 	const sortedItems = React.useMemo(() => SortByObjects(filteredItems, [{ LabelKey: sortField.name, Sort: sortField.getSortFunc(props.stats ?? []), Reversed: sortReversed }]), [filteredItems, sortField, sortReversed]);
 
 	return (
@@ -305,7 +315,15 @@ const LoadedItems: React.FC<{ items: BaseItemDto[]; columns: Column[]; stats?: R
 			style={{ height: "100%", width: "100%" }}
 			components={{ 
 				Table: ({ style, ...tProps }: TableProps) => <table {...tProps} style={{ ...style, width: "100%" }} />,
-				TableRow: ({ style, ...trProps }: ItemProps<BaseItemDto>) => <tr className={background.transparent} {...trProps} style={{ ...style }} onClick={() => { props.onToggled(trProps.item); }} />,
+				TableRow: ({ style, item, ...trProps }: ItemProps<BaseItemDto>) => (
+					<tr
+						{...trProps}
+						style={{ ...style }}
+						className={props.selectedKeys.includes(props.getSelectedKey(item)) ? background.selected : background.transparent}
+						draggable onDragStart={(evt) => { evt.dataTransfer.setData("ItemId", item.Id!); evt.dataTransfer.setData("ItemName", item.Name!); }}
+						onClick={() => { props.onToggled(item); }}
+					/>
+				),
 			}}
 			itemContent={(_, data) => (
 				<>

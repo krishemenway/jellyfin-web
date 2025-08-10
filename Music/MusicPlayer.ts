@@ -1,6 +1,8 @@
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Observable, ObservableArray } from "@residualeffect/reactor";
 import { Nullable, NumberLimits } from "Common/MissingJavascriptFunctions";
+import { SortByNumber } from "Common/Sort";
+import { ItemService } from "Items/ItemsService";
 import { ServerService } from "Servers/ServerService";
 
 export enum PlayState {
@@ -29,6 +31,22 @@ export class MusicPlayer {
 		this.Repeat = new Observable(false);
 		this.Shuffle = new Observable(false);
 		this.State = new Observable(PlayState.Stopped);
+	}
+
+	public AddFromId(itemId: string, itemName: string, library: BaseItemDto): void {
+		const audioList = ItemService.Instance.FindOrCreateItemList(library.Id!, "Audio").List;
+
+		(audioList.Data.Value.ReceivedData?.List ?? []).filter((i) => i.Artists?.includes(itemName)).forEach((item) => {
+			this.Add(item);
+		});
+
+		(audioList.Data.Value.ReceivedData?.List ?? []).filter((i) => i.AlbumId === itemId).sort(SortByNumber((i) => i.IndexNumber)).forEach((item) => {
+			this.Add(item);
+		});
+
+		(audioList.Data.Value.ReceivedData?.List ?? []).filter((i) => i.Id === itemId).forEach((item) => {
+			this.Add(item);
+		});
 	}
 
 	public Add(item: BaseItemDto): void {

@@ -130,9 +130,9 @@ export const useBackgroundStyles = createUseStyles({
 	},
 	selected: {
 		cursor: "pointer",
-		background: "var(--ButtonSelectedIdleBackgroundColor)",
-		border: "1px solid var(--ButtonSelectedIdleBorderColor)",
-		color: "var(--ButtonSelectedIdleTextColor)",
+		background: "var(--ButtonSelectedIdleBackgroundColor)!important", // Fighting with nth-child(odd) precedence
+		border: "1px solid var(--ButtonSelectedIdleBorderColor)!important",
+		color: "var(--ButtonSelectedIdleTextColor)!important",
 
 		"&:hover": {
 			background: "var(--ButtonSelectedHoverBackgroundColor)",

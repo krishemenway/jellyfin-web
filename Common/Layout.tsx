@@ -72,6 +72,10 @@ interface LayoutParams extends StyleLayoutPropsWithRequiredDirection {
 	className?: string;
 	children?: React.ReactNode;
 	elementType?: React.ElementType;
+
+	onDrag?: (evt: React.DragEvent<HTMLElement>) => void;
+	onDrop?: (evt: React.DragEvent<HTMLElement>) => void;
+	onDragOver?: (evt: React.DragEvent<HTMLElement>) => void;
 }
 
 function CalculateItemsPerRowPercentage(width?: number|string|ItemsPerRow) {
@@ -139,8 +143,11 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 }
 
 export const Layout: React.FC<LayoutParams> = (props) => {
-	return React.createElement(props.elementType ?? "div", { 
+	return React.createElement(props.elementType ?? "div", {
 		className: props.className,
 		style: ApplyLayoutStyleProps(props),
+		onDrag: props.onDrag,
+		onDrop: props.onDrop,
+		onDragOver: props.onDragOver,
 	}, props.children);
 };
