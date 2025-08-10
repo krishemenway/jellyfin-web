@@ -9,7 +9,7 @@ export const PageTitle: React.FC<{ text: string|TranslationRequest|undefined|nul
 	}
 
 	const text = typeof props.text === "string" ? props.text : useTranslatedText(props.text) ?? "";
-	React.useEffect(() => { document.title = ServerService.Instance.CurrentServer.Name + " | " + text; }, [text, ServerService.Instance.CurrentServer.Name]);
+	React.useEffect(() => { document.title = text + " | " + ServerService.Instance.CurrentServer.Name; }, [text, ServerService.Instance.CurrentServer.Name]);
 
 	return <></>;
 };
