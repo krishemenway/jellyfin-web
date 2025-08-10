@@ -14,7 +14,7 @@ export const PageWithNavigation: React.FC<{ icon: React.ReactElement|BaseItemKin
 
 	if (Nullable.HasValue(backdropUrl)) {
 		return (
-			<Layout key="page-with-navigation" direction="column" height="100%" backgroundUrl={backdropUrl}>
+			<Layout key="page-with-navigation" direction="column" height="100%" backgroundRepeat="no-repeat" backgroundSize="cover" backgroundUrl={backdropUrl}>
 				<Layout key="backdrop-suppressor" direction="column" px="2em" py="1em" height="100%" backgroundColor={theme.BackdropSuppressorColor}>
 					<NavigationBar key="navigation-bar" icon={typeof props.icon === "string" ? <IconForItemKind itemKind={props.icon} /> : props.icon} />
 					<Layout key="page-content" direction="column" gap="1em" className="page-content" children={props.children} grow />

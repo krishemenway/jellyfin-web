@@ -56,6 +56,8 @@ export interface LayoutWithoutChildrenProps {
 
 	backgroundUrl?: string;
 	backgroundColor?: Property.BackgroundColor;
+	backgroundRepeat?: Property.BackgroundRepeat;
+	backgroundSize?: Property.BackgroundSize;
 }
 
 export interface StyleLayoutProps extends LayoutWithoutChildrenProps {
@@ -131,6 +133,8 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 
 		backgroundColor: props?.backgroundColor,
 		backgroundImage: Nullable.ValueOrDefault(props?.backgroundUrl, undefined, (u) => `url('${u}')`),
+		backgroundRepeat: props?.backgroundRepeat,
+		backgroundSize: props?.backgroundSize,
 	};
 }
 
