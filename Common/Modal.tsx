@@ -228,6 +228,5 @@ const useStyles = createUseStyles({
 	},
 	isOpen: {
 		overflow: "hidden",
-		paddingRight: "17px",
 	},
 });
