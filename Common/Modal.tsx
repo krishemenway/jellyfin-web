@@ -35,7 +35,7 @@ export const ResetModalOnLocationChange: React.FC = () => {
 };
 
 function ResetAllModals(): void {
-	body.className = "";
+	body.classList.remove("is-open");
 	modalRoot.innerHTML = "";
 
 	closedFuncs.Value.forEach((func) => {
@@ -58,13 +58,14 @@ function ResetAllModals(): void {
 export const CenteredModal: React.FC<ModalProps> = (props) => {
 	const [modalClasses, background] = [useStyles(), useBackgroundStyles()];
 	const [element] = React.useState(document.createElement("div"));
+
 	const tryCleanupModal = () => {
 		if (modalRoot.contains(element)) {
 			modalRoot.removeChild(element);
 		}
 
 		if (!modalRoot.hasChildNodes()) {
-			body.classList.remove(modalClasses.isOpen);
+			body.classList.remove("is-open");
 		}
 
 		modalRoot.classList.remove(modalClasses.fadeBackground);
@@ -83,7 +84,7 @@ export const CenteredModal: React.FC<ModalProps> = (props) => {
 			outsideModalClickHandlerEvents.push(outsideModalClickHandler);
 			escapeModalKeyHandlerEvents.push(escapeModalKeyHandler);
 			closedFuncs.push(props.onClosed);
-			body.classList.add(modalClasses.isOpen);
+			body.classList.add("is-open");
 			modalRoot.classList.add(modalClasses.fadeBackground);
 		} else {
 			if (modalRoot.contains(element))
@@ -120,13 +121,14 @@ export interface AnchoredModalProps extends ModalProps {
 export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
 	const [modalClasses, background] = [useStyles(), useBackgroundStyles()];
 	const [element] = React.useState(document.createElement("div"));
+
 	const tryCleanupModal = () => {
 		if (modalRoot.contains(element)) {
 			modalRoot.removeChild(element);
 		}
 
 		if (!modalRoot.hasChildNodes()) {
-			body.classList.remove(modalClasses.isOpen);
+			body.classList.remove("is-open");
 		}
 	};
 
@@ -143,7 +145,7 @@ export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
 			outsideModalClickHandlerEvents.push(outsideModalClickHandler);
 			escapeModalKeyHandlerEvents.push(escapeModalKeyHandler);
 			closedFuncs.push(props.onClosed);
-			body.classList.add(modalClasses.isOpen);
+			body.classList.add("is-open");
 		} else {
 			tryCleanupModal();
 
@@ -200,7 +202,7 @@ const useStyles = createUseStyles({
 		zIndex: 10,
 		display: "none",
 
-		"$isOpen &": {
+		".is-open &": {
 			display: "block",
 		},
 	},
@@ -211,7 +213,7 @@ const useStyles = createUseStyles({
 		position: "absolute",
 		display: "none",
 
-		"$isOpen &": {
+		".is-open &": {
 			display: "block",
 		},
 	},
@@ -222,11 +224,13 @@ const useStyles = createUseStyles({
 		left: "50%",
 		transform: "translate(-50%, -50%)",
 
-		"$isOpen &": {
+		".is-open &": {
 			display: "block",
 		},
 	},
-	isOpen: {
-		overflow: "hidden",
+	"@global": {
+		".is-open": {
+			overflow: "hidden",
+		},
 	},
 });
