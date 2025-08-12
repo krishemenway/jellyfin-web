@@ -26,7 +26,7 @@ import { PlaylistIcon } from "Playlists/PlaylistIcon";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
-import { MusicPlayer, PlayState } from "Music/MusicPlayer";
+import { AddPlaylistItemType, MusicPlayer, PlayState } from "Music/MusicPlayer";
 import { useObservable } from "@residualeffect/rereactor";
 import { PageTitle } from "Common/PageTitle";
 import { UserViewStore } from "Users/UserViewStore";
@@ -106,6 +106,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 							whenNotStarted={<LoadingIcon size="4em" />}
 							whenReceived={(artists, albums, songs) => (
 								<LoadedItems
+									addType="ArtistName"
 									items={artists.List}
 									selectedKeys={filteredArtists}
 									getSelectedKey={(i) => i.Name!}
@@ -128,6 +129,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 							whenNotStarted={<LoadingIcon size="4em" />}
 							whenReceived={(albums, songs) => (
 								<LoadedItems
+									addType="AlbumId"
 									items={albums.List}
 									getSelectedKey={(i) => i.Id!}
 									selectedKeys={filteredAlbumIds}
@@ -154,10 +156,11 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 						whenNotStarted={<LoadingIcon size="4em" />}
 						whenReceived={(audios) => (
 							<LoadedItems
+								addType="AudioId"
 								items={audios.List}
 								selectedKeys={[]}
 								getSelectedKey={() => ""}
-								onToggled={(audio) => { MusicPlayer.Instance.Add(audio); }}
+								onToggled={(audio) => { MusicPlayer.Instance.AddRange([audio]); }}
 								filters={filteredArtists.map((artist) => (song: BaseItemDto) => (song.Artists ?? []).indexOf(artist) > -1).concat(filteredAlbumIds.map((albumId) => (song: BaseItemDto) => song.AlbumId === albumId))}
 								columns={[
 									{ name: "Songs", getValue: (i) => i.Name, width: "30%", align: "start", getSortFunc: () => SortByString((i) => i.Name) },
@@ -253,8 +256,44 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string; stateIcon: J
 
 			<Layout
 				direction="column" grow
-				onDrop={(evt) => { evt.preventDefault(); evt.dataTransfer.dropEffect ="copy"; MusicPlayer.Instance.AddFromId(evt.dataTransfer.getData("ItemId"), evt.dataTransfer.getData("ItemName"), props.library); }}
-				onDragOver={(evt) => { evt.preventDefault(); evt.dataTransfer.dropEffect = "copy"; }}
+				onDragOver={(evt) => {
+					evt.preventDefault();
+					evt.dataTransfer.dropEffect = "copy";
+
+					Nullable.TryExecute((evt.target as HTMLElement).closest("*[data-index]") as HTMLElement|undefined|null, (element) => {
+						const elementMidpoint = element.getBoundingClientRect().height / 2;
+						
+						if (evt.nativeEvent.offsetY > elementMidpoint) {
+							element.style.borderTopStyle = "";
+							element.style.borderBottomStyle = "solid";
+						} else {
+							element.style.borderTopStyle = "solid";
+							element.style.borderBottomStyle = "";
+						}
+					});
+				}}
+				onDragLeave={(evt) => {
+					evt.preventDefault();
+					evt.dataTransfer.dropEffect = "copy";
+
+					Nullable.TryExecute((evt.target as HTMLElement).closest("*[data-index]") as HTMLElement|undefined|null, (element) => {
+						element.style.borderStyle = "";
+					});
+				}}
+				onDrop={(evt) => {
+					evt.preventDefault();
+					evt.dataTransfer.dropEffect ="copy";
+
+					const addAfterIndex = Nullable.ValueOrDefault((evt.target as HTMLElement).closest("*[data-index]") as HTMLElement|undefined|null, undefined, (element) => {
+						const index = parseInt(element.attributes.getNamedItem("data-index")?.value ?? "0", 10);
+						const elementMidpoint = element.getBoundingClientRect().height / 2;
+						element.style.borderStyle = "";
+
+						return evt.nativeEvent.offsetY > elementMidpoint ? index + 1 : index;
+					});
+
+					MusicPlayer.Instance.AddFromId(evt.dataTransfer.getData("AddType") as AddPlaylistItemType, evt.dataTransfer.getData("AddTypeId"), props.library, addAfterIndex);
+				}}
 			>
 				{itemsInPlaylist.length > 0 ? (
 					<Virtuoso
@@ -262,7 +301,7 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string; stateIcon: J
 						totalCount={itemsInPlaylist.length}
 						style={{ height: "100%", width: "100%" }}
 						itemContent={(index, data) => (
-							<Layout direction="row" position="relative">
+							<Layout direction="row" position="relative" draggable onDragStart={(evt) => { evt.dataTransfer.setData("AddType", "PlaylistId"); evt.dataTransfer.setData("AddTypeId", index.toString()); }}>
 								<Layout direction="column" alignItems="center" justifyContent="center" position="absolute" top={0} bottom={0} left={0} width="5%">
 									{Nullable.ValueOrDefault(current, <DragIcon />, (c) => c.PlaylistItem === data ? props.stateIcon : <DragIcon />)}
 								</Layout>
@@ -291,7 +330,7 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string; stateIcon: J
 	);
 };
 
-const LoadedItems: React.FC<{ items: BaseItemDto[]; columns: Column[]; stats?: Record<string, number>[]; selectedKeys: readonly string[]; getSelectedKey: (item: BaseItemDto) => string; onToggled: (item: BaseItemDto) => void; filters?: ((item: BaseItemDto) => boolean)[] }> = (props) => {
+const LoadedItems: React.FC<{ addType: AddPlaylistItemType, items: BaseItemDto[]; columns: Column[]; stats?: Record<string, number>[]; selectedKeys: readonly string[]; getSelectedKey: (item: BaseItemDto) => string; onToggled: (item: BaseItemDto) => void; filters?: ((item: BaseItemDto) => boolean)[] }> = (props) => {
 	const background = useBackgroundStyles();
 	const [sortField, setSortField] = React.useState(props.columns[0]);
 	const [sortReversed, setSortReversed] = React.useState(false);
@@ -320,7 +359,7 @@ const LoadedItems: React.FC<{ items: BaseItemDto[]; columns: Column[]; stats?: R
 						{...trProps}
 						style={{ ...style }}
 						className={props.selectedKeys.includes(props.getSelectedKey(item)) ? background.selected : background.transparent}
-						draggable onDragStart={(evt) => { evt.dataTransfer.setData("ItemId", item.Id!); evt.dataTransfer.setData("ItemName", item.Name!); }}
+						draggable onDragStart={(evt) => { evt.dataTransfer.setData("AddType", props.addType); evt.dataTransfer.setData("AddTypeId", (props.addType === "ArtistName" ? item.Name : item.Id) ?? ""); }}
 						onClick={() => { props.onToggled(item); }}
 					/>
 				),

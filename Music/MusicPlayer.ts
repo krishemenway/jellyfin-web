@@ -5,6 +5,8 @@ import { SortByNumber } from "Common/Sort";
 import { ItemService } from "Items/ItemsService";
 import { ServerService } from "Servers/ServerService";
 
+export type AddPlaylistItemType = "ArtistName"|"AlbumId"|"PlaylistId"|"AudioId";
+
 export enum PlayState {
 	Stopped,
 	Paused,
@@ -33,31 +35,33 @@ export class MusicPlayer {
 		this.State = new Observable(PlayState.Stopped);
 	}
 
-	public AddFromId(itemId: string, itemName: string, library: BaseItemDto): void {
+	public AddFromId(addType: AddPlaylistItemType, typeId: string, library: BaseItemDto, addAfterIndex?: number): void {
 		const audioList = ItemService.Instance.FindOrCreateItemList(library.Id!, "Audio").List;
-
-		(audioList.Data.Value.ReceivedData?.List ?? []).filter((i) => i.Artists?.includes(itemName)).forEach((item) => {
-			this.Add(item);
-		});
-
-		(audioList.Data.Value.ReceivedData?.List ?? []).filter((i) => i.AlbumId === itemId).sort(SortByNumber((i) => i.IndexNumber)).forEach((item) => {
-			this.Add(item);
-		});
-
-		(audioList.Data.Value.ReceivedData?.List ?? []).filter((i) => i.Id === itemId).forEach((item) => {
-			this.Add(item);
-		});
+		
+		switch (addType) {
+			case "PlaylistId":
+				this.MovePlaylistItem(parseInt(typeId, 10), addAfterIndex);
+				break;
+			case "AlbumId":
+				this.AddRange((audioList.Data.Value.ReceivedData?.List ?? []).filter((i) => i.AlbumId === typeId).sort(SortByNumber((i) => i.IndexNumber)), addAfterIndex);
+				break;
+			case "ArtistName":
+				this.AddRange((audioList.Data.Value.ReceivedData?.List ?? []).filter((i) => i.Artists?.includes(typeId)), addAfterIndex);
+				break;
+			case "AudioId":
+				this.AddRange((audioList.Data.Value.ReceivedData?.List ?? []).filter((audio) => audio.Id === typeId), addAfterIndex);
+				break;
+		}
 	}
 
-	public Add(item: BaseItemDto): void {
-		const newPlaylistItem: PlaylistItem = {
-			Item: item,
-		};
+	public AddRange(items: BaseItemDto[], addAfterIndex?: number): void {
+		const lengthBeforeAdding = this.Playlist.length;
+		const playlistItems = items.map((item) => ({ Item: item }) as PlaylistItem);
 
-		this.Playlist.push(newPlaylistItem);
+		this.AddRangeOfPlaylistItems(playlistItems, addAfterIndex);
 
-		if (this.Playlist.length === 1) {
-			this.Load(newPlaylistItem);
+		if (lengthBeforeAdding === 0 && this.Playlist.length > 0) {
+			this.Load(this.Playlist.Value[0]);
 		}
 	}
 
@@ -182,6 +186,19 @@ export class MusicPlayer {
 		});
 
 		return `${ServerService.Instance.CurrentApi.basePath}/Audio/${item.Id}/universal?${queryParams.toString()}`;
+	}
+	
+	private AddRangeOfPlaylistItems(items: readonly PlaylistItem[], addAfterIndex?: number): void {
+		Nullable.TryExecute(addAfterIndex, (index) => {
+			this.Playlist.push(...this.Playlist.splice(index, this.Playlist.length - index, ...items));
+		}, () => {
+			this.Playlist.push(...items);
+		});
+	}
+
+	private MovePlaylistItem(atIndex: number, addAfterIndex?: number): void {
+		const itemToMove = this.Playlist.splice(atIndex, 1);
+		this.AddRangeOfPlaylistItems(itemToMove, addAfterIndex);
 	}
 
 	public Current: Observable<PlayItem|undefined>;
