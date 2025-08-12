@@ -1,10 +1,11 @@
 import * as React from "react";
-import Select from "react-select";
+import Select, { MenuListProps, SingleValue } from "react-select";
 import { useObservable } from "@residualeffect/rereactor";
 import { ApplyLayoutStyleProps, LayoutWithoutChildrenProps } from "Common/Layout";
 import { ThemeService } from "Users/ThemeService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { EditableField } from "Common/EditableField";
+import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
 interface SelectFieldEditorProps<TOption> extends LayoutWithoutChildrenProps {
 	className?: string;
@@ -33,12 +34,30 @@ export function AutoCompleteFieldEditor<TOption>(props: SelectFieldEditorProps<T
 		<Select
 			options={allOptions}
 			value={selectedOption}
-			onChange={(newValue) => props.field.OnChange(props.allOptions.find((o) => props.getKey(o) === newValue?.value)!)}
+			onChange={(newValue) => props.field.OnChange(props.allOptions.find((o) => props.getKey(o) === (newValue as SingleValue<{ value: string; label: string }>)?.value)!)}
+			components={{ MenuList: MenuList }}
 			styles={{
 				container: (base) => ({ ...base, width: "100%" }),
 				menu: (base) => ({ ...base, backgroundColor: theme.PanelBackgroundColor }),
 				option: (base, p) => ({ ...base, backgroundColor: (p.isSelected ? (p.isFocused ? theme.ButtonSelected.Hover : theme.ButtonSelected.Idle) : p.isFocused ? theme.Button.Hover : theme.Button.Idle).BackgroundColor }),
 			}}
+		/>
+	);
+};
+
+export const MenuList = ({ children, maxHeight }: MenuListProps<{ value: string; label: React.ReactNode }>) => {
+	const ref = React.useRef<VirtuosoHandle>(null);
+
+	if (!Array.isArray(children)) {
+		return <></>;
+	}
+
+	return (
+		<Virtuoso
+			ref={ref}
+			totalCount={React.Children.count(children)}
+			itemContent={(index) => children[index]}
+			style={{ height: maxHeight }}
 		/>
 	);
 };
