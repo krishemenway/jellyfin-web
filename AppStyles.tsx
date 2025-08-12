@@ -129,22 +129,25 @@ export const useBackgroundStyles = createUseStyles({
 		},
 	},
 	selected: {
-		cursor: "pointer",
-		background: "var(--ButtonSelectedIdleBackgroundColor)!important", // Fighting with nth-child(odd) precedence
-		border: "1px solid var(--ButtonSelectedIdleBorderColor)!important",
-		color: "var(--ButtonSelectedIdleTextColor)!important",
+		// Fighting with nth-child(odd) precedence
+		"body.jellyfin-base &": {
+			cursor: "pointer",
+			background: "var(--ButtonSelectedIdleBackgroundColor)",
+			border: "1px solid var(--ButtonSelectedIdleBorderColor)",
+			color: "var(--ButtonSelectedIdleTextColor)",
 
-		"&:hover": {
-			background: "var(--ButtonSelectedHoverBackgroundColor)",
-			border: "1px solid var(--ButtonSelectedHoverBorderColor)",
-			color: "var(--ButtonSelectedHoverTextColor)",
-		},
+			"&:hover": {
+				background: "var(--ButtonSelectedHoverBackgroundColor)",
+				border: "1px solid var(--ButtonSelectedHoverBorderColor)",
+				color: "var(--ButtonSelectedHoverTextColor)",
+			},
 
-		"&:disabled": {
-			cursor: "not-allowed",
-			background: "var(--ButtonSelectedDisabledBackgroundColor)",
-			border: "1px solid var(--ButtonSelectedDisabledBorderColor)",
-			color: "var(--ButtonSelectedDisabledTextColor)",
+			"&:disabled": {
+				cursor: "not-allowed",
+				background: "var(--ButtonSelectedDisabledBackgroundColor)",
+				border: "1px solid var(--ButtonSelectedDisabledBorderColor)",
+				color: "var(--ButtonSelectedDisabledTextColor)",
+			},
 		},
 	},
 	transparent: {

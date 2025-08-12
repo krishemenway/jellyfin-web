@@ -117,4 +117,4 @@ const App: React.FC<{ basePath: string }> = (props) => {
 
  /* Pass in the DOM element to render inside of into the initialize function and watch react do it's thing. */
 declare global { interface Window { initialize?: (element: Element, basePath: string) => void; } }
-window.initialize = window.initialize ?? ((element, basePath) => { createRoot(element).render(<App basePath={basePath} />); });
+window.initialize = window.initialize ?? ((element, basePath) => { createRoot(element).render(<App basePath={basePath} />); document.body.className = "jellyfin-base"; });
