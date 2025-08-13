@@ -9,6 +9,7 @@ export const ItemTags: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutPro
 		<ListOf
 			items={props.item.Tags ?? []}
 			forEachItem={(tag) => <TagLink key={tag} tag={tag} direction="row" {...props.linkLayout} className={props.linkClassName} />}
+			showMoreButtonStyles={props.linkLayout}
 			{...props}
 		/>
 	);

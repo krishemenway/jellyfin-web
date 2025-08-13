@@ -79,6 +79,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: Us
 					direction="row" gap=".5em"
 					linkClassName={background.button}
 					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+					showMoreLimit={3}
 				/>
 
 				<ItemExternalLinks
@@ -93,6 +94,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: Us
 					direction="row" gap=".5em"
 					linkClassName={background.button}
 					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+					showMoreLimit={4}
 				/>
 			</Layout>
 
@@ -122,6 +124,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: Us
 						direction="row" gap=".5em" wrap
 						linkClassName={background.button}
 						linkLayout={{ px: ".25em", py: ".25em" }}
+						showMoreLimit={25}
 					/>
 				</Layout>
 
@@ -218,7 +221,8 @@ const CastAndCrewSection: React.FC<{ show: BaseItemDto }> = (props) => {
 					className={background.panel}
 					itemWithPeople={props.show}
 					direction="row" wrap
-					linkProps={{ px: ".5em", py: ".5em", gap: ".25em" }} />
+					linkProps={{ px: ".5em", py: ".5em", gap: ".25em" }}
+				/>
 			</Collapsible>
 		</Layout>
 	);

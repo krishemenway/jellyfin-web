@@ -9,6 +9,7 @@ export const ItemGenres: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutP
 		<ListOf
 			items={props.item.Genres ?? []}
 			forEachItem={(genre) => <HyperLink key={genre} to={`/Genres/${genre}`} direction="row" {...props.linkLayout} className={props.linkClassName}>{genre}</HyperLink>}
+			showMoreButtonStyles={props.linkLayout}
 			{...props}
 		/>
 	);

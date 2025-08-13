@@ -79,6 +79,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 						direction="row" gap=".5em"
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
+						showMoreLimit={4}
 					/>
 
 					<ItemStudios
@@ -86,6 +87,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 						direction="column" gap=".5em"
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
+						showMoreLimit={3}
 					/>
 				</Layout>
 			</Layout>
@@ -115,6 +117,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 						direction="row" gap=".5em" wrap
 						linkClassName={background.button}
 						linkLayout={{ px: ".25em", py: ".25em" }}
+						showMoreLimit={25}
 					/>
 				</Layout>
 
