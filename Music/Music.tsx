@@ -13,27 +13,21 @@ import { Layout } from "Common/Layout";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { NotFound } from "Common/NotFound";
 import { useBackgroundStyles } from "AppStyles";
-import { PlayIcon } from "PlayerIcons/PlayIcon";
 import { TranslatedText } from "Common/TranslatedText";
-import { StopIcon } from "PlayerIcons/StopIcon";
-import { ForwardIcon } from "PlayerIcons/ForwardIcon";
 import { Button } from "Common/Button";
-import { BackwardIcon } from "PlayerIcons/BackwardIcon";
-import { RepeatIcon } from "PlayerIcons/RepeatIcon";
-import { ShuffleIcon } from "PlayerIcons/ShuffleIcon";
-import { PauseIcon } from "PlayerIcons/PauseIcon";
 import { PlaylistIcon } from "Playlists/PlaylistIcon";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
-import { AddPlaylistItemType, MusicPlayer, PlayState } from "Music/MusicPlayer";
+import { AddPlaylistItemType, MusicPlayer } from "Music/MusicPlayer";
 import { useObservable } from "@residualeffect/rereactor";
 import { PageTitle } from "Common/PageTitle";
 import { UserViewStore } from "Users/UserViewStore";
-import { Slider } from "Common/Slider";
 import { DragIcon } from "CommonIcons/DragIcon";
 import { SortByNumber, SortByObjects, SortByString } from "Common/Sort";
 import { ObservableArray } from "@residualeffect/reactor";
+import { MusicPlayerStatus } from "Music/MusicPlayerStatus";
+import { PlayStateIcon } from "Music/PlayStateIcon";
 
 export const Music: React.FC = () => {
 	const libraryId = useParams().libraryId;
@@ -50,6 +44,7 @@ export const Music: React.FC = () => {
 	React.useEffect(() => albumList.LoadWithAbort([{ Key: "AlbumCountByArtistId", GetKeysForItem: (i) => i.AlbumArtists?.map((a) => a.Id) ?? [] }]), [albumList]);
 	React.useEffect(() => songList.LoadWithAbort([{ Key: "SongCountByArtistId", GetKeysForItem: (i) => i.Artists?.map((a) => a) ?? [] }, { Key: "SongCountByAlbumId", GetKeysForItem: (i) => [i.AlbumId] }]), [songList]);
 	React.useEffect(() => SettingsStore.Instance.LoadSettings(libraryId), [libraryId]);
+	React.useEffect(() => MusicPlayer.Instance.CloseMiniPlayerAndReopenIfNecessary(), [libraryId]);
 
 	return (
 		<PageWithNavigation icon="Audio">
@@ -84,16 +79,13 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 
 	const filteredArtists = useObservable(observableArtists);
 	const filteredAlbumIds = useObservable(observableAlbumIds);
-	const state = useObservable(MusicPlayer.Instance.State);
-
-	const stateIcon = state === PlayState.Paused ? <PauseIcon /> : state === PlayState.Playing ? <PlayIcon /> : <StopIcon />;
 
 	return (
 		<Layout direction="row" height="100%" py="1em" gap="1em">
 			<PageTitle text={library.Name!} />
 			<Layout direction="column" width="25%" gap="1em">
-				<MusicPlayerStatus className={background.panel} stateIcon={stateIcon} />
-				<CurrentPlaylist className={background.panel} user={props.user} stateIcon={stateIcon} library={library} />
+				<MusicPlayerStatus className={background.panel} />
+				<CurrentPlaylist className={background.panel} user={props.user} library={library} />
 			</Layout>
 
 			<Layout direction="column" grow gap="1em">
@@ -179,54 +171,11 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 	);
 };
 
-const MusicPlayerStatus: React.FC<{ className: string; stateIcon: JSX.Element; }> = (props) => {
-	const current = useObservable(MusicPlayer.Instance.Current);
-	const currentProgress = useObservable(MusicPlayer.Instance.CurrentProgress);
-	const isRepeating = useObservable(MusicPlayer.Instance.Repeat);
-	const isShuffling = useObservable(MusicPlayer.Instance.Shuffle);
-
-	return (
-		<Layout direction="column" className={props.className} py="1em" px="1em" gap="1em">
-			<Layout direction="row" fontSize="1.5em" gap=".5em" height="1.3em">
-				{props.stateIcon}
-
-				<Layout direction="row" overflowX="hidden" width="100%" textOverflow="ellipsis" whiteSpace="nowrap" display="block" grow>
-					{Nullable.ValueOrDefault(current, <TranslatedText textKey="PriorityIdle" />, (c) => <>{c.PlaylistItem.Item.Name}</>)}
-				</Layout>
-			</Layout>
-
-			<Layout direction="row" gap="1em">
-				<Slider min={0} max={(current?.PlaylistItem.Item.RunTimeTicks ?? 0) / DateTime.TicksPerSecond} current={currentProgress} grow onChange={(newValue) => { MusicPlayer.Instance.ChangeProgress(newValue); }} />
-				<Layout direction="row"><Duration ticks={currentProgress * DateTime.TicksPerSecond} /> / <Duration ticks={current?.PlaylistItem.Item.RunTimeTicks} /></Layout>
-			</Layout>
-
-			<Layout direction="row" fontSize="1.5em" justifyContent="space-between">
-				<Layout direction="row" gap=".25em">
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.GoBack(); }} icon={<BackwardIcon />} />
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Play(); }} icon={<PlayIcon />} />
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Pause(); }} icon={<PauseIcon />} />
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.Stop(); }} icon={<StopIcon />} />
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayer.Instance.GoNext(); }} icon={<ForwardIcon />} />
-				</Layout>
-
-				<Layout direction="row" gap=".25em">
-					<Button type="button" px=".25em" py=".25em" selected={isRepeating} onClick={() => { MusicPlayer.Instance.ToggleRepeat(); }} icon={<RepeatIcon />} />
-					<Button type="button" px=".25em" py=".25em" selected={isShuffling} onClick={() => { MusicPlayer.Instance.ToggleShuffle(); }} icon={<ShuffleIcon />} />
-				</Layout>
-			</Layout>
-		</Layout>
-	);
-};
-
-const Duration: React.FC<{ ticks: number|undefined|null }> = (props) => {
-	const totalProgress = React.useMemo(() => !Nullable.HasValue(props.ticks) ? "00:00" : DateTime.ConvertTicksToDurationString(props.ticks), [props.ticks])
-	return <>{totalProgress}</>;
-};
-
-const CurrentPlaylist: React.FC<{ user: UserDto, className: string; stateIcon: JSX.Element; library: BaseItemDto }> = (props) => {
+const CurrentPlaylist: React.FC<{ user: UserDto, className: string; library: BaseItemDto }> = (props) => {
 	const background = useBackgroundStyles();
 	const itemsInPlaylist = useObservable(MusicPlayer.Instance.Playlist);
 	const current = useObservable(MusicPlayer.Instance.Current);
+	const playState = useObservable(MusicPlayer.Instance.State);
 
 	return (
 		<Layout direction="column" className={props.className} grow py="1em" px="1em" gap="1em">
@@ -303,7 +252,7 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string; stateIcon: J
 						itemContent={(index, data) => (
 							<Layout direction="row" position="relative" draggable onDragStart={(evt) => { evt.dataTransfer.setData("AddType", "PlaylistId"); evt.dataTransfer.setData("AddTypeId", index.toString()); }}>
 								<Layout direction="column" alignItems="center" justifyContent="center" position="absolute" top={0} bottom={0} left={0} width="5%">
-									{Nullable.ValueOrDefault(current, <DragIcon />, (c) => c.PlaylistItem === data ? props.stateIcon : <DragIcon />)}
+									{Nullable.ValueOrDefault(current, <DragIcon />, (c) => c.PlaylistItem === data ? <PlayStateIcon state={playState} /> : <DragIcon />)}
 								</Layout>
 
 								<Button transparent width="100%" px="5%" type="button" textAlign="start" onClick={() => { MusicPlayer.Instance.GoIndex(index)}}>
