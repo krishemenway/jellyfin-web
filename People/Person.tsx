@@ -87,7 +87,7 @@ export const Person: React.FC = () => {
 	}
 
 	const personData = PersonService.Instance.FindOrCreatePersonData(personId);
-	React.useEffect(() => personData.Load(), [personId])
+	React.useEffect(() => personData.Load(), [personId]);
 
 	return (
 		<PageWithNavigation icon="Person" key={personId}>

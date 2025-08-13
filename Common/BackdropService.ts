@@ -2,7 +2,7 @@ import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { getImageApi } from "@jellyfin/sdk/lib/utils/api";
 import { Computed, Observable } from "@residualeffect/reactor";
 import { ServerService } from "Servers/ServerService";
-import { Nullable } from "./MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export class BackdropService {
 	constructor() {

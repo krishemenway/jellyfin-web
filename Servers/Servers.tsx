@@ -6,7 +6,7 @@ import { useObservable } from "@residualeffect/rereactor";
 import { ServerService } from "Servers/ServerService";
 import { useBackgroundStyles } from "AppStyles";
 import { ConnectToServer } from "Servers/ConnectToServer";
-import { ServerIcon } from "./ServerIcon";
+import { ServerIcon } from "Servers/ServerIcon";
 import { TranslatedText } from "Common/TranslatedText";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
 

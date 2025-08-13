@@ -8,7 +8,7 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { UserViewStore } from "Users/UserViewStore";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { ListOf } from "Common/ListOf";
-import { TagLink } from "./TagLink";
+import { TagLink } from "Tags/TagLink";
 import { Layout } from "Common/Layout";
 
 export const Tags: React.FC = () => {
