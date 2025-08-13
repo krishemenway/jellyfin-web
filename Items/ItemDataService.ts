@@ -17,7 +17,7 @@ export class ItemDataService {
 			return () => { };
 		}
 
-		this.Item.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ids: [this.Id], fields: ["Overview", "Tags", "ExternalUrls", "Genres", "Studios", "People", "ProductionLocations"] }, { signal: a.signal }).then((response) => (response.data.Items ?? [])[0] ));
+		this.Item.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ids: [this.Id], fields: ["Overview", "Tags", "ExternalUrls", "Genres", "Studios", "People", "ProductionLocations"] }, { signal: a.signal }).then((response) => (response.data.Items ?? [])[0] ), true);
 		return () => this.Item.ResetIfLoading();
 	}
 
@@ -26,7 +26,7 @@ export class ItemDataService {
 			return () => { };
 		}
 
-		this.Children.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: this.Id }, { signal: a.signal }).then((response) => response.data.Items ?? []));
+		this.Children.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: this.Id, recursive: true, fields: ["Overview", "Tags", "ExternalUrls", "Genres", "Studios", "People", "ProductionLocations"] }, { signal: a.signal }).then((response) => response.data.Items ?? []), true);
 		return () => this.Children.ResetIfLoading();
 	}
 

@@ -110,18 +110,20 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 
 				<ItemOverview item={movie} />
 
-				<Layout direction="row" gap=".5em">
-					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
-					<ItemTags
-						item={movie}
-						direction="row" gap=".5em" wrap
-						linkClassName={background.button}
-						linkLayout={{ px: ".25em", py: ".25em" }}
-						showMoreLimit={25}
-					/>
-				</Layout>
+				{(movie.Tags?.length ?? 0) > 0 && (
+					<Layout direction="row" gap=".5em">
+						<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
+						<ItemTags
+							item={movie}
+							direction="row" gap=".5em" wrap
+							linkClassName={background.button}
+							linkLayout={{ px: ".25em", py: ".25em" }}
+							showMoreLimit={25}
+						/>
+					</Layout>
+				)}
 
-				{Nullable.HasValue(movie.People) && movie.People.length > 0 && (
+				{(movie.People?.length ?? 0) > 0 && (
 					<Layout direction="column" minWidth="100%">
 						<Layout direction="row" fontSize="1.5em" py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
 

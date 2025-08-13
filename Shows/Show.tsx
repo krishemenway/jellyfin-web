@@ -31,7 +31,6 @@ import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { PageTitle } from "Common/PageTitle";
 import { EditItemAction } from "MenuActions/EditItemAction";
 import { RefreshItemAction } from "MenuActions/RefreshItemAction";
-import { CenteredModal } from "Common/Modal";
 import { CastAndCrew } from "Items/CastAndCrew";
 import { BackdropService } from "Common/BackdropService";
 
@@ -50,18 +49,20 @@ export const Show: React.FC = () => {
 		<PageWithNavigation icon="Series">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(showId).Item, ItemService.Instance.FindOrCreateItemData(showId).Children, LoginService.Instance.User]}
-				whenNotStarted={<LoadingIcon size="3em" />}
-				whenLoading={<LoadingIcon size="3em" />}
+				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
+				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(show, seasons, user) => <LoadedShow show={show} seasons={seasons} user={user} />}
+				whenReceived={(show, children, user) => <LoadedShow show={show} children={children} user={user} seasonId={routeParams.seasonId} episodeId={routeParams.episodeId} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const LoadedShow: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto }> = ({ show, seasons, user }) => {
+const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; seasonId?: string; episodeId?: string; }> = ({ show, children, user, episodeId }) => {
 	const background = useBackgroundStyles();
-	const [selectedEpisode, setSelectedEpisode] = React.useState<BaseItemDto|undefined>(undefined);
+	const seasons = React.useMemo(() => children.filter((i) => i.Type === "Season"), [children]);
+	const allEpisodes = React.useMemo(() => children.filter((i) => i.Type === "Episode"), [children]);
+	const selectedEpisode = Nullable.ValueOrDefault(episodeId, undefined, (e) => allEpisodes.find((i) => i.Id === e));
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(show), [show]);
 
@@ -98,25 +99,36 @@ const LoadedShow: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: Us
 				/>
 			</Layout>
 
-			<Layout direction="column" grow gap="1.5em">
-				<Layout direction="row" justifyContent="space-between">
-					<Layout direction="row" fontSize="2em" className="show-name">{show.Name}</Layout>
-					<ItemActionsMenu items={[show]} user={user} actions={[
-						[ // User-based actions
-							AddToFavoritesAction,
-							MarkPlayedAction,
-							AddToCollectionAction,
-							AddToPlaylistAction,
-						],
-						[ // Server-based actions
-							EditItemAction,
-							RefreshItemAction,
-						]
-					]} />
-				</Layout>
+			{Nullable.ValueOrDefault(selectedEpisode, <ShowDetails show={show} user={user} seasons={seasons} allEpisodes={allEpisodes} />, (episode) => (
+				<EpisodeDetails episode={episode} user={user} />
+			))}
+		</Layout>
+	);
+};
 
-				<ItemOverview item={show} />
+const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto; allEpisodes: BaseItemDto[] }> = ({ show, seasons, user, allEpisodes }) => {
+	const background = useBackgroundStyles();
+	return (
+		<Layout direction="column" grow gap="1.5em">
+			<Layout direction="row" justifyContent="space-between">
+				<Layout direction="row" fontSize="2em" className="show-name">{show.Name}</Layout>
+				<ItemActionsMenu items={[show]} user={user} actions={[
+					[ // User-based actions
+						AddToFavoritesAction,
+						MarkPlayedAction,
+						AddToCollectionAction,
+						AddToPlaylistAction,
+					],
+					[ // Server-based actions
+						EditItemAction,
+						RefreshItemAction,
+					]
+				]} />
+			</Layout>
 
+			<ItemOverview item={show} />
+
+			{(show.Tags?.length ?? 0) > 0 && (
 				<Layout direction="row" gap=".5em">
 					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
 					<ItemTags
@@ -127,71 +139,89 @@ const LoadedShow: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: Us
 						showMoreLimit={25}
 					/>
 				</Layout>
+			)}
 
-				<CastAndCrewSection show={show} />
+			<CastAndCrewSection show={show} />
 
-				<ListOf
-					items={seasons}
-					direction="column" gap=".5em"
-					forEachItem={(season) => <SeasonForShow key={season.Id} season={season} />}
-				/>
-			</Layout>
-
-			<CenteredModal open={selectedEpisode !== undefined} onClosed={() => setSelectedEpisode(undefined)}>
-				<EpisodeDetails episode={selectedEpisode} />
-			</CenteredModal>
+			<ListOf
+				items={seasons}
+				direction="column" gap=".5em"
+				forEachItem={(season) => <SeasonForShow key={season.Id} season={season} allEpisodes={allEpisodes} />}
+			/>
 		</Layout>
-	);
+	)
 };
 
-const EpisodeDetails: React.FC<{ episode: BaseItemDto|undefined }> = (props) => {
-	if (!Nullable.HasValue(props.episode)) {
-		return <></>;
-	}
-
+const EpisodeDetails: React.FC<{ episode: BaseItemDto; user: UserDto; }> = ({ episode, user }) => {
+	const background = useBackgroundStyles();
 	return (
-		<Layout direction="row">
-			<Layout direction="column">
-				{props.episode.Name}
+		<Layout direction="column" grow gap="1.5em">
+			<Layout direction="row" justifyContent="space-between">
+				<Layout direction="row" fontSize="2em" className="show-name">{episode.ParentIndexNumber}x{episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}</Layout>
+				<ItemActionsMenu items={[episode]} user={user} actions={[
+					[ // User-based actions
+						AddToFavoritesAction,
+						MarkPlayedAction,
+						AddToCollectionAction,
+						AddToPlaylistAction,
+					],
+					[ // Server-based actions
+						EditItemAction,
+						RefreshItemAction,
+					]
+				]} />
 			</Layout>
 
-			<Layout direction="column">
-				Something else?
-			</Layout>
+			<ItemOverview item={episode} />
+
+			{(episode.Tags?.length ?? 0) > 0 && (
+				<Layout direction="row" gap=".5em">
+					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
+					<ItemTags
+						item={episode}
+						direction="row" gap=".5em" wrap
+						linkClassName={background.button}
+						linkLayout={{ px: ".25em", py: ".25em" }}
+						showMoreLimit={25}
+					/>
+				</Layout>
+			)}
+
+			{(episode.People?.length ?? 0) > 0 && (
+				<Layout direction="column" minWidth="100%">
+					<Layout direction="row" fontSize="1.5em" py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
+
+					<CastAndCrew
+						itemWithPeople={episode}
+						className={background.panel}
+						direction="row" wrap px=".5em" py="1em"
+						linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
+					/>
+				</Layout>
+			)}
 		</Layout>
 	);
 };
 
-const SeasonForShow: React.FC<{ season: BaseItemDto }> = (props) => {
-	const [seasonOpen, setSeasonOpen] = React.useState(props.season.IndexNumber === 1);
-	const seasonId = props.season.Id;
+const SeasonForShow: React.FC<{ season: BaseItemDto; allEpisodes: BaseItemDto[]; }> = ({ season, allEpisodes }) => {
+	const [seasonOpen, setSeasonOpen] = React.useState(season.IndexNumber === 1);
 
-	if (!Nullable.HasValue(seasonId)) {
+	if (!Nullable.HasValue(season.Id)) {
 		return <></>;
 	}
 
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(seasonId).LoadChildrenWithAbort(), [props.season]);
+	const episodes = React.useMemo(() => allEpisodes.filter((e) => e.SeasonId === season.Id), [season, allEpisodes]);
 
 	return (
 		<Layout direction="column" minWidth="100%">
-			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(seasonId).Children]}
-				whenNotStarted={<LoadingIcon size="3em" />}
-				whenLoading={<LoadingIcon size="3em" />}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(episodes) => (
-					<>
-						<Button type="button" onClick={() => setSeasonOpen(!seasonOpen)} direction="row" fontSize="1.5em" py=".5em" px=".5em" gap=".5em">
-							<Layout direction="row">{props.season.Name}</Layout>
-							<Layout direction="row"><ProductionYearRangeForEpisodes episodes={episodes} /></Layout>
-						</Button>
+			<Button type="button" onClick={() => setSeasonOpen(!seasonOpen)} direction="row" fontSize="1.5em" py=".5em" px=".5em" gap=".5em">
+				<Layout direction="row">{season.Name}</Layout>
+				<Layout direction="row"><ProductionYearRangeForEpisodes episodes={episodes} /></Layout>
+			</Button>
 
-						<Collapsible open={seasonOpen}>
-							<ItemsRow items={episodes} itemName={(item) => `${item.IndexNumber}. ${item.Name}`} />
-						</Collapsible>
-					</>
-				)}
-			/>
+			<Collapsible open={seasonOpen}>
+				<ItemsRow items={episodes} itemName={(item) => `${item.IndexNumber}. ${item.Name}`} />
+			</Collapsible>
 		</Layout>
 	);
 };
