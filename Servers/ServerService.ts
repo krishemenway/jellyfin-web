@@ -4,6 +4,7 @@ import { EditableField } from "Common/EditableField";
 import { Receiver } from "Common/Receiver";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { Nullable } from "Common/MissingJavascriptFunctions";
+import { SystemInfo } from "@jellyfin/sdk/lib/generated-client/models";
 
 interface JellyfinCredentials {
 	Servers: ServerConnection[]
@@ -35,6 +36,7 @@ export class ServerService {
 		this.Servers = new ObservableArray(this.LoadServersFromLocalStorage());
 		this.ServerHost = new EditableField("LabelServerHost", "");
 		this.AddServerResult = new Receiver("UnknownError");
+		this.ServerInfo = new Receiver("UnknownError");
 		this._apis = {};
 	}
 
@@ -94,6 +96,11 @@ export class ServerService {
 		if (this.Servers.length === 0) {
 			this.CheckSystemInfoForHost(window.location.origin);
 		}
+	}
+
+	public LoadServerInfo(): () => void {
+		this.ServerInfo.Start((a) => getSystemApi(this.CurrentApi).getSystemInfo({ signal: a.signal }).then((response) => response.data));
+		return () => this.ServerInfo.ResetIfLoading();
 	}
 
 	private CheckSystemInfoForHost(host: string, abort?: AbortController): Promise<boolean> {
@@ -165,6 +172,7 @@ export class ServerService {
 
 	public ServerHost: EditableField;
 	public Servers: ObservableArray<ServerConnection>;
+	public ServerInfo: Receiver<SystemInfo>;
 
 	public AddServerResult: Receiver<boolean>;
 
