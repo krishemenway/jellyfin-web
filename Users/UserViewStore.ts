@@ -8,12 +8,13 @@ export class UserViewStore {
 		this.UserViews = new Receiver("UnknownError");
 	}
 
-	public LoadUserViews(): void {
+	public LoadUserViewsWithAbort(): () => void {
 		if (this.UserViews.HasData.Value) {
-			return;
+			return () => { };
 		}
 
-		this.UserViews.Start((abort) => getUserViewsApi(ServerService.Instance.CurrentApi).getUserViews({ userId: ServerService.Instance.CurrentUserId }, { signal: abort.signal }).then((value) => value.data.Items ?? []))
+		this.UserViews.Start((abort) => getUserViewsApi(ServerService.Instance.CurrentApi).getUserViews({ userId: ServerService.Instance.CurrentUserId }, { signal: abort.signal }).then((value) => value.data.Items ?? []));
+		return () => this.UserViews.ResetIfLoading();
 	}
 
 	public UserViews: Receiver<BaseItemDto[]>;

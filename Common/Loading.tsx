@@ -23,6 +23,15 @@ export function isBusy(receiver: Receiver<unknown>): boolean {
 	return useObservable(receiver.IsBusy);
 }
 
+/**
+ * Used for subscribing to a receiver to check for it is busy. Good for disabling buttons.
+ * @param receiver Receiver to observe for state changes.
+ * @returns If the receiver is busy loading data.
+ */
+export function useDataOrNull<T>(receiver: Receiver<T>): T|null {
+	return useObservable(receiver.Data).ReceivedData;
+}
+
 function LoadingComponent<A>(props: { receivers: [Receiver<A>], whenReceived: (a: A) => JSX.Element } & BaseLoadingComponentProps): JSX.Element;
 function LoadingComponent<A, B>(props: { receivers: [Receiver<A>, Receiver<B>], whenReceived: (a: A, b: B) => JSX.Element } & BaseLoadingComponentProps): JSX.Element;
 function LoadingComponent<A, B, C>(props: { receivers: [Receiver<A>, Receiver<B>, Receiver<C>], whenReceived: (a: A, b: B, c: C) => JSX.Element } & BaseLoadingComponentProps): JSX.Element;

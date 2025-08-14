@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, SystemInfo } from "@jellyfin/sdk/lib/generated-client/models";
 import { useBackgroundStyles } from "AppStyles";
 import { Button } from "Common/Button";
 import { EditIcon } from "CommonIcons/EditIcon";
@@ -26,16 +26,17 @@ import { ChangeServerButton } from "Servers/ChangeServerButton";
 export const NavigationBar: React.FC<{ icon?: React.ReactElement; }> = (props) => {
 	const background = useBackgroundStyles();
 
-	React.useEffect(() => { UserViewStore.Instance.LoadUserViews(); }, []);
+	React.useEffect(() => UserViewStore.Instance.LoadUserViewsWithAbort(), []);
+	React.useEffect(() => ServerService.Instance.LoadServerInfoWithAbort(), []);
 
 	return (
 		<Layout className={background.panel} direction="row" gap="1em" px="1em" py=".5em" width="calc(100% + 2em)" mx="-1em">
 			<Loading
-				receivers={[UserViewStore.Instance.UserViews]}
+				receivers={[UserViewStore.Instance.UserViews, ServerService.Instance.ServerInfo]}
 				whenNotStarted={<NavigationButton />}
 				whenLoading={<NavigationButton />}
 				whenError={() => <NavigationButton />}
-				whenReceived={(libraries) => <OpenNavigationButton libraries={libraries} />}
+				whenReceived={(libraries, server) => <OpenNavigationButton libraries={libraries} server={server} />}
 			/>
 			{props.icon && (<Layout direction="row" alignItems="center" fontSize="1.5em">{props.icon}</Layout>)}
 			<Layout direction="row" alignItems="center"><Search /></Layout>
@@ -48,7 +49,7 @@ const NavigationButton: React.FC<{ onClick?: (element: HTMLButtonElement) => voi
 }
 
 const NavigationMenuLinkStyles: Partial<StyleLayoutProps> = { width: "100%", px: "1em", py: "1em", gap: ".5em" };
-const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => {
+const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[]; server: SystemInfo }> = ({ libraries, server }) => {
 	const [anchor, setOpenAnchor] = React.useState<HTMLElement|null>(null);
 	const closeNavigation = () => { setOpenAnchor(null); };
 
@@ -61,8 +62,8 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 						<JellyfinIcon size="3em" />
 
 						<Layout direction="column" gap=".25em" justifyContent="center">
-							<h6>{ServerService.Instance.CurrentServer.Name}</h6>
-							<p>{ServerService.Instance.CurrentServer.Version}</p>
+							<h6>{server.ServerName}</h6>
+							<p>{server.Version}</p>
 						</Layout>
 					</HyperLink>
 
@@ -71,7 +72,7 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[] }> = (props) => 
 						<Layout direction="row" elementType="h3" py="1em" px="1em"><TranslatedText textKey="HeaderLibraries" /></Layout>
 						<ListOf
 							direction="row" wrap
-							items={props.libraries}
+							items={libraries}
 							forEachItem={(library) => (
 								<LinkToItem
 									key={library.Id} item={library}
