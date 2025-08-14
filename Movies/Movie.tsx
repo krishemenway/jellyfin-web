@@ -43,8 +43,8 @@ export const Movie: React.FC = () => {
 		<PageWithNavigation icon="Movie">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(movieId).Item, LoginService.Instance.User]}
-				whenNotStarted={<LoadingIcon size="3em" />}
-				whenLoading={<LoadingIcon size="3em" />}
+				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
+				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(movie, user) => <LoadedMovie movie={movie} user={user} />}
 			/>

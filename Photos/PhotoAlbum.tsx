@@ -24,8 +24,8 @@ export const PhotoAlbum: React.FC = () => {
 		<PageWithNavigation icon="PhotoAlbum">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(albumId).Item, ItemService.Instance.FindOrCreateItemData(albumId).Children]}
-				whenNotStarted={<LoadingIcon size="3em" />}
-				whenLoading={<LoadingIcon size="3em" />}
+				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
+				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(album, children) => (
 					<Layout direction="column">

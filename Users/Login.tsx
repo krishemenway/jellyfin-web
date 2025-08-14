@@ -29,7 +29,7 @@ const SignInWithQuickConnect: React.FC = () => {
 				receivers={[LoginService.Instance.QuickConnectResult]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenNotStarted={<StartQuickConnect />}
-				whenLoading={<LoadingIcon size="3em" />}
+				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 				whenReceived={(result) => <ReceivedQuickConnectResult code={result.Code} />}
 			/>
 		</Layout>

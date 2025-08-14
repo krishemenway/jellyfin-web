@@ -17,8 +17,8 @@ export const Tags: React.FC = () => {
 			<Layout direction="column" grow alignItems="center" justifyContent="center">
 				<Loading
 					receivers={[UserViewStore.Instance.UserViews]}
-					whenNotStarted={<LoadingIcon size="3em" />}
-					whenLoading={<LoadingIcon size="3em" />}
+					whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
+					whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 					whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 					whenReceived={(libraries) => <TagsForLibraries libraries={libraries} />}
 				/>
@@ -35,8 +35,8 @@ const TagsForLibraries: React.FC<{ libraries: BaseItemDto[] }> = (props) => {
 	return (
 		<Loading
 			receivers={[receiver]}
-			whenNotStarted={<LoadingIcon size="3em" />}
-			whenLoading={<LoadingIcon size="3em" />}
+			whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
+			whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 			whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 			whenReceived={(filters) => (
 				<ListOf

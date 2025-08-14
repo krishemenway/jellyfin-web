@@ -94,8 +94,8 @@ export const Person: React.FC = () => {
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(personId).Item, personData.CreditedItems, LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<LoadingIcon size="3em" />}
-				whenNotStarted={<LoadingIcon size="3em" />}
+				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
+				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
 				whenReceived={(person, creditedItems, user) => (
 					<Layout direction="row" gap="1em" py="1em" height="100%">
 						<PageTitle text={person.Name} />

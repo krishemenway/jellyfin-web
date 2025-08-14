@@ -23,8 +23,8 @@ export const Studio: React.FC = () => {
 		<PageWithNavigation icon="Studio">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(studioId).Item]}
-				whenNotStarted={<LoadingIcon size="3em" />}
-				whenLoading={<LoadingIcon size="3em" />}
+				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
+				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(studio) => (
 					<Layout direction="row" gap="1em" py="1em">
