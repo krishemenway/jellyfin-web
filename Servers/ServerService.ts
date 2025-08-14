@@ -1,5 +1,5 @@
 import { Api, Jellyfin } from "@jellyfin/sdk";
-import { ObservableArray } from "@residualeffect/reactor";
+import { Observable, ObservableArray } from "@residualeffect/reactor";
 import { EditableField } from "Common/EditableField";
 import { Receiver } from "Common/Receiver";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
@@ -34,8 +34,9 @@ enum ConnectionMode {
 export class ServerService {
 	constructor() {
 		this.Servers = new ObservableArray(this.LoadServersFromLocalStorage());
-		this.ServerHost = new EditableField("LabelServerHost", "");
-		this.AddServerResult = new Receiver("UnknownError");
+		this.TryAddServerHost = new EditableField("LabelServerHost", "", (current) => !Nullable.StringHasValue(current) ? "ValueIsRequiredMessage" : "");
+		this.TryAddServerResult = new Receiver("UnknownError");
+		this.TryAddServerErrorMessagesShown = new Observable(false);
 		this.ServerInfo = new Receiver("UnknownError");
 		this._apis = {};
 	}
@@ -73,7 +74,25 @@ export class ServerService {
 	}
 
 	public TryAddServer(): void {
-		this.AddServerResult.Start(async (abort) => this.CheckSystemInfoForHost(this.ServerHost.Current.Value, abort));
+		this.TryAddServerErrorMessagesShown.Value = true;
+
+		if (!this.TryAddServerHost.CanMakeRequest()) {
+			return;
+		}
+
+		this.TryAddServerResult.Start(async (abort) => this.CheckSystemInfoForHost(this.TryAddServerHost.Current.Value, abort));
+	}
+
+	public ResetTryAddServer(): () => void {
+		this.TryAddServerResult.Reset();
+		this.TryAddServerHost.Revert();
+		this.TryAddServerErrorMessagesShown.Value = false;
+
+		return () => {
+			this.TryAddServerResult.Reset();
+			this.TryAddServerHost.Revert();
+			this.TryAddServerErrorMessagesShown.Value = false;
+		};
 	}
 
 	public SelectServerConnection(connection: ServerConnection): void {
@@ -98,7 +117,11 @@ export class ServerService {
 		}
 	}
 
-	public LoadServerInfo(): () => void {
+	public LoadServerInfoWithAbort(): () => void {
+		if (this.ServerInfo.HasData.Value) {
+			return () => { };
+		}
+
 		this.ServerInfo.Start((a) => getSystemApi(this.CurrentApi).getSystemInfo({ signal: a.signal }).then((response) => response.data));
 		return () => this.ServerInfo.ResetIfLoading();
 	}
@@ -121,6 +144,7 @@ export class ServerService {
 					});
 					this.SetServersToLocalStorage();
 					this.ResetApiForCurrentServer();
+					this.TryAddServerErrorMessagesShown.Value = false;
 					return true;
 				} else {
 					throw new Error("UnknownError");
@@ -170,11 +194,12 @@ export class ServerService {
 		return deviceId;
 	}
 
-	public ServerHost: EditableField;
 	public Servers: ObservableArray<ServerConnection>;
 	public ServerInfo: Receiver<SystemInfo>;
 
-	public AddServerResult: Receiver<boolean>;
+	public TryAddServerHost: EditableField;
+	public TryAddServerResult: Receiver<boolean>;
+	public TryAddServerErrorMessagesShown: Observable<boolean>;
 
 	private _apis: Record<string, Api>;
 	private _deviceId: string|undefined;

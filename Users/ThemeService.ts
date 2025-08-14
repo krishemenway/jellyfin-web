@@ -31,6 +31,7 @@ export interface Theme {
 
 	PrimaryTextColor: string;
 	SecondaryTextColor: string;
+	ErrorTextColor: string;
 
 	TableOddRowBackgroundColor: string;
 
@@ -64,6 +65,7 @@ export class ThemeService {
 
 		root.style.setProperty("--PrimaryTextColor", theme.PrimaryTextColor);
 		root.style.setProperty("--SecondaryTextColor", theme.SecondaryTextColor);
+		root.style.setProperty("--ErrorTextColor", theme.ErrorTextColor);
 
 		root.style.setProperty("--TableOddRowBackgroundColor", theme.TableOddRowBackgroundColor);
 
@@ -101,6 +103,7 @@ export class ThemeService {
 
 			PrimaryTextColor: "rgba(255, 255, 255, 0.8)",
 			SecondaryTextColor: "rgba(200, 200, 200, 0.8)",
+			ErrorTextColor: "#c51244",
 
 			TableOddRowBackgroundColor: "rgba(255, 255, 255, 0.05)",
 

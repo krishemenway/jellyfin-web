@@ -28,6 +28,15 @@ export function isBusy(receiver: Receiver<unknown>): boolean {
  * @param receiver Receiver to observe for state changes.
  * @returns If the receiver is busy loading data.
  */
+export function useError(receiver: Receiver<unknown>): string {
+	return useObservable(receiver.Data).ErrorMessage;
+}
+
+/**
+ * Used for subscribing to a receiver to check for it is busy. Good for disabling buttons.
+ * @param receiver Receiver to observe for state changes.
+ * @returns If the receiver is busy loading data.
+ */
 export function useDataOrNull<T>(receiver: Receiver<T>): T|null {
 	return useObservable(receiver.Data).ReceivedData;
 }

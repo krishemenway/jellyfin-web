@@ -11,7 +11,7 @@ export const RequireServerAndUser: React.FC<{ children: React.ReactNode }> = (pr
 	React.useEffect(() => LoginService.Instance.LoadUser(), [servers]);
 
 	if (servers.length === 0) {
-		return <ConnectToServer />;
+		return <ConnectToServer open={true} />;
 	}
 
 	if (!servers[0].UserId) {

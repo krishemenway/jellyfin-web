@@ -15,7 +15,7 @@ import { LoginService } from "Users/LoginService";
 import { useBackgroundStyles } from "AppStyles";
 
 export const ServerDashboard: React.FC = () => {
-	React.useEffect(() => ServerService.Instance.LoadServerInfo(), []);
+	React.useEffect(() => ServerService.Instance.LoadServerInfoWithAbort(), []);
 
 	return (
 		<PageWithNavigation icon={<ServerIcon />}>

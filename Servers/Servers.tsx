@@ -10,7 +10,7 @@ import { ServerIcon } from "Servers/ServerIcon";
 import { TranslatedText } from "Common/TranslatedText";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
 
-export const Servers: React.FC = () => {
+export const Servers: React.FC<{ open: boolean; }> = ({ open }) => {
 	const background = useBackgroundStyles();
 	const servers = useObservable(ServerService.Instance.Servers);
 	React.useEffect(() => { ServerService.Instance.AttemptSetupOfCurrentDomainAsServer(); }, []);
@@ -45,7 +45,7 @@ export const Servers: React.FC = () => {
 				/>
 			</Layout>
 			
-			<ConnectToServer />
+			<ConnectToServer open={open} />
 		</Layout>
 	);
 };

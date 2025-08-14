@@ -2,7 +2,7 @@ import { Computed, Observable } from "@residualeffect/reactor";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 
 export class EditableField<T = string> {
-	constructor(fieldId: string, defaultValue: T, canMakeRequestFunc?: () => string, beforeChange?: (newValue: T) => T) {
+	constructor(fieldId: string, defaultValue: T, canMakeRequestFunc?: (current: T) => string, beforeChange?: (newValue: T) => T) {
 		this.FieldId = fieldId;
 		this.CanMakeRequestFunc = canMakeRequestFunc ?? (() => "");
 		this.BeforeChange = beforeChange ?? ((newValue) => newValue);
@@ -13,11 +13,11 @@ export class EditableField<T = string> {
 		this.HasChanged = new Computed(() => this.Current.Value !== this.Saved.Value);
 		this.ServerErrorMessage = new Observable("");
 
-		this.ErrorMessage = new Computed<string>(() => Linq.Coalesce([this.CanMakeRequestFunc()], this.ServerErrorMessage.Value));
+		this.ErrorMessage = new Computed<string>(() => Linq.Coalesce([this.CanMakeRequestFunc(this.Current.Value)], this.ServerErrorMessage.Value));
 	}
 
 	public CanMakeRequest(): boolean {
-		return !Nullable.HasValue(this.CanMakeRequestFunc());
+		return !Nullable.StringHasValue(this.CanMakeRequestFunc(this.Current.Value));
 	}
 
 	public OnChange(newValue: T) {
@@ -47,5 +47,5 @@ export class EditableField<T = string> {
 
 	public ErrorMessage: Computed<string>;
 
-	private CanMakeRequestFunc: () => string;
+	private CanMakeRequestFunc: (current: T) => string;
 }

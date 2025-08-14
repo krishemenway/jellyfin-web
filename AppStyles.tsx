@@ -94,6 +94,9 @@ export const useGlobalStyles = createUseStyles({
 });
 
 export const useBackgroundStyles = createUseStyles({
+	error: {
+		color: "var(--ErrorTextColor)",
+	},
 	panel: {
 		background: "var(--PanelBackgroundColor)",
 		border: "1px solid var(--PanelBorderColor)",
