@@ -1,5 +1,5 @@
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api";
+import { getItemsApi, getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 
@@ -17,7 +17,7 @@ export class ItemDataService {
 			return () => { };
 		}
 
-		this.Item.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ids: [this.Id], fields: ["Overview", "Tags", "ExternalUrls", "Genres", "Studios", "People", "ProductionLocations"] }, { signal: a.signal }).then((response) => (response.data.Items ?? [])[0] ), true);
+		this.Item.Start((a) => getUserLibraryApi(ServerService.Instance.CurrentApi).getItem({ itemId: this.Id, userId: ServerService.Instance.CurrentUserId }, { signal: a.signal }).then(response => response.data));
 		return () => this.Item.ResetIfLoading();
 	}
 

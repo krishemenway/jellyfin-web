@@ -27,6 +27,9 @@ import { Virtuoso } from "react-virtuoso";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
+import { IconForItem } from "Items/IconForItem";
+import { SortByObjects } from "Common/Sort";
+import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYear";
 
 class PersonData {
 	constructor(id: string) {
@@ -37,8 +40,8 @@ class PersonData {
 
 	public Load(): () => void {
 		ItemService.Instance.FindOrCreateItemData(this.Id).LoadItemWithAbort();
-		this.CreditedItems.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ enableUserData: true, imageTypeLimit: 1, enableTotalRecordCount: true, fields: ["MediaSourceCount"], personIds: [this.Id], recursive: true, userId: ServerService.Instance.CurrentUserId, includeItemTypes: [ "Audio", "Movie", "Episode", "AudioBook", "Photo", "Video"] }, { signal: a.signal }).then((response) => {
-			return response.data.Items?.sort((a, b) => (b.ProductionYear ?? 10000) - (a.ProductionYear ?? 10000)) ?? [];
+		this.CreditedItems.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ enableUserData: true, imageTypeLimit: 1, enableTotalRecordCount: true, fields: ["MediaSourceCount", "People"], personIds: [this.Id], recursive: true, userId: ServerService.Instance.CurrentUserId, includeItemTypes: [ "Audio", "Movie", "Episode", "AudioBook", "Photo", "Video"] }, { signal: a.signal }).then((response) => {
+			return SortByObjects(response.data.Items ?? [], [ { LabelKey: SortByProductionYear.labelKey, Sort: SortByProductionYear.sortFunc, Reversed: true } ]);
 		}));
 
 		return () => {
@@ -125,7 +128,7 @@ export const Person: React.FC = () => {
 							<Virtuoso
 								data={creditedItems}
 								totalCount={creditedItems.length}
-								itemContent={(_, item) => <CreditedItem creditedItem={item} />}
+								itemContent={(_, item) => <CreditedItem creditedItem={item} person={person} />}
 								style={{ height: "100%", width: "100%" }}
 							/>
 						</Layout>
@@ -136,14 +139,16 @@ export const Person: React.FC = () => {
 	);
 };
 
-const CreditedItem: React.FC<{ creditedItem: BaseItemDto }> = ({ creditedItem }) => {
+const CreditedItem: React.FC<{ creditedItem: BaseItemDto, person: BaseItemDto }> = ({ creditedItem, person }) => {
 	const creditedNameFuncForType = BaseItemKindServiceFactory.FindOrNull(creditedItem.Type)?.personCreditName ?? ((i) => i.Name);
 
 	return (
-		<LinkToItem direction="row" item={creditedItem} py=".5em">
-			<Layout direction="column" grow>
+		<LinkToItem direction="row" alignItems="center" item={creditedItem} gap=".25em" py=".5em">
+			<Layout direction="column" px="1em" py=".25em"><IconForItem item={creditedItem} /></Layout>
+
+			<Layout direction="column" grow gap=".25em">
 				<Layout direction="row">{creditedNameFuncForType(creditedItem)}</Layout>
-				<Layout direction="row">Role/Part/Credit</Layout>
+				<Layout direction="row">{creditedItem.People?.find(x => x.Id === person.Id)?.Role}</Layout>
 			</Layout>
 
 			<Layout direction="column" width="5%" px="1em" alignItems="end" justifyContent="center">{creditedItem.ProductionYear}</Layout>
