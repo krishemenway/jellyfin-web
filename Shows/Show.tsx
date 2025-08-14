@@ -156,20 +156,23 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; user: UserDto; }> = ({ ep
 	const background = useBackgroundStyles();
 	return (
 		<Layout direction="column" grow gap="1.5em">
-			<Layout direction="row" justifyContent="space-between">
-				<Layout direction="row" fontSize="2em" className="show-name">{episode.ParentIndexNumber}x{episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}</Layout>
-				<ItemActionsMenu items={[episode]} user={user} actions={[
-					[ // User-based actions
-						AddToFavoritesAction,
-						MarkPlayedAction,
-						AddToCollectionAction,
-						AddToPlaylistAction,
-					],
-					[ // Server-based actions
-						EditItemAction,
-						RefreshItemAction,
-					]
-				]} />
+			<Layout direction="column" gap=".5em">
+				<Layout direction="row" justifyContent="space-between">
+					<Layout direction="row" fontSize="2em" className="show-name">{episode.SeriesName}</Layout>
+					<ItemActionsMenu items={[episode]} user={user} actions={[
+						[ // User-based actions
+							AddToFavoritesAction,
+							MarkPlayedAction,
+							AddToCollectionAction,
+							AddToPlaylistAction,
+						],
+						[ // Server-based actions
+							EditItemAction,
+							RefreshItemAction,
+						]
+					]} />
+				</Layout>
+				<Layout direction="row" fontSize="1.3em" className="show-name">{episode.SeasonName} <TranslatedText textKey="Episode" /> {episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}</Layout>
 			</Layout>
 
 			<ItemOverview item={episode} />
