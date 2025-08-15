@@ -43,7 +43,7 @@ export const Show: React.FC = () => {
 	}
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(showId).LoadItemWithAbort(), [showId]);
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(showId).LoadChildrenWithAbort(), [showId]);
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(showId).LoadChildrenWithAbort(true, { recursive: true }), [showId]);
 
 	return (
 		<PageWithNavigation icon="Series">

@@ -1,7 +1,7 @@
 import * as React from "react";
-import { BaseItemDto, BaseItemKind, ImageType, QueryFiltersLegacy, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemKind, QueryFiltersLegacy, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { useComputed, useObservable } from "@residualeffect/rereactor";
-import { createStyles, useBackgroundStyles, ResponsiveBreakpoint, useBreakpoint } from "AppStyles";
+import { ResponsiveBreakpoint, useBreakpoint } from "AppStyles";
 import { Layout } from "Common/Layout";
 import { ListOf } from "Common/ListOf";
 import { Loading } from "Common/Loading";
@@ -10,9 +10,8 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
 import { ItemListFilters } from "ItemList/ItemListFilters";
-import { ImageShape, ItemImage } from "Items/ItemImage";
+import { ImageShape } from "Items/ItemImage";
 import { ItemService } from "Items/ItemsService";
-import { LinkToItem } from "Items/LinkToItem";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { useParams } from "react-router-dom";
 import { Settings, SettingsStore } from "Users/SettingsStore";
@@ -22,6 +21,7 @@ import { ItemListService } from "ItemList/ItemListService";
 import { UserViewStore } from "Users/UserViewStore";
 import { PageTitle } from "Common/PageTitle";
 import { ItemFilterService } from "Items/ItemFilterService";
+import { ItemsGridItem } from "ItemList/ItemGridItem";
 
 export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = (props) => {
 	const routeParams = useParams();
@@ -98,29 +98,3 @@ const ItemsGrid: React.FC<{ libraryId: string, items: BaseItemDto[]; itemList: I
 		</Layout>
 	);
 };
-
-const ItemsGridItem: React.FC<{ item: BaseItemDto; imageType?: ImageType; shape: ImageShape; itemsPerRow: number }> = (props) => {
-	const background = useBackgroundStyles();
-	const classes = useItemGridClasses();
-	const width = props.shape !== ImageShape.Landscape ? 220 : 330;
-	const height = props.shape !== ImageShape.Portrait ? 220 : 330;
-	const shapeClass = props.shape === ImageShape.Landscape ? classes.landscape : props.shape == ImageShape.Portrait ? classes.portrait : classes.square;
-
-	return (
-		<LinkToItem item={props.item} className={`${background.button} ${shapeClass}`} direction="column" justifyContent="center" alignItems="center" py=".5em" px=".5em" gap="1em" width={{ itemsPerRow: props.itemsPerRow, gap: ".5em" }}>
-			<ItemImage item={props.item} className={classes.itemImage} type={props.imageType ?? ImageType.Primary} fillWidth={width} fillHeight={height} lazy />
-			<Layout direction="column" py=".25em" textAlign="center">{props.item.Name}</Layout>
-		</LinkToItem>
-	);
-}
-
-const useItemGridClasses = createStyles({
-	landscape: { },
-	portrait: {	},
-	square: { },
-
-	itemImage: {
-		maxWidth: "100%",
-		objectFit: "contain",
-	},
-});

@@ -2,12 +2,9 @@ import * as React from "react";
 import { parseISO, intervalToDuration } from "date-fns";
 import { useParams } from "react-router-dom";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { Layout } from "Common/Layout";
 import { Loading } from "Common/Loading";
-import { Receiver } from "Common/Receiver";
 import { NotFound } from "Common/NotFound";
-import { ServerService } from "Servers/ServerService";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { TranslatedText } from "Common/TranslatedText";
@@ -28,58 +25,20 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
 import { IconForItem } from "Items/IconForItem";
-import { SortByObjects } from "Common/Sort";
+import { SortFuncs } from "Common/Sort";
 import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYear";
+import { ItemsApiGetItemsRequest } from "@jellyfin/sdk/lib/generated-client/api/items-api";
 
-class PersonData {
-	constructor(id: string) {
-		this.Id = id;
-		this.Person = ItemService.Instance.FindOrCreateItemData(id).Item;
-		this.CreditedItems = new Receiver("UnknownError");
-	}
+const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
+	imageTypeLimit: 1,
+	enableTotalRecordCount: true,
+	recursive: true,
+	includeItemTypes: [ "Audio", "Movie", "Episode", "AudioBook", "Photo", "Video"],
+};
 
-	public Load(): () => void {
-		ItemService.Instance.FindOrCreateItemData(this.Id).LoadItemWithAbort();
-		this.CreditedItems.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ enableUserData: true, imageTypeLimit: 1, enableTotalRecordCount: true, fields: ["MediaSourceCount", "People"], personIds: [this.Id], recursive: true, userId: ServerService.Instance.CurrentUserId, includeItemTypes: [ "Audio", "Movie", "Episode", "AudioBook", "Photo", "Video"] }, { signal: a.signal }).then((response) => {
-			return SortByObjects(response.data.Items ?? [], [ { LabelKey: SortByProductionYear.labelKey, Sort: SortByProductionYear.sortFunc, Reversed: true } ]);
-		}));
-
-		return () => {
-			this.Person.ResetIfLoading();
-			this.CreditedItems.ResetIfLoading();
-		};
-	}
-
-	public Id: string;
-	public Person: Receiver<BaseItemDto>;
-	public CreditedItems: Receiver<BaseItemDto[]>;
-}
-
-class PersonService {
-	constructor() {
-		this.PersonDataById = {};
-	}
-
-	public TryLoadPersonForId(id?: string): void {
-		if (id === undefined) {
-			return;
-		}
-
-		this.FindOrCreatePersonData(id).Load();
-	}
-
-	public FindOrCreatePersonData(id: string): PersonData {
-		return this.PersonDataById[id] ?? (this.PersonDataById[id] = new PersonData(id));
-	}
-
-	public PersonDataById: Record<string, PersonData>;
-
-	static get Instance(): PersonService {
-		return this._instance ?? (this._instance = new PersonService());
-	}
-
-	private static _instance: PersonService;
-}
+const CreditSortOrder: SortFuncs<BaseItemDto>[] = [
+	{ LabelKey: SortByProductionYear.labelKey, Sort: SortByProductionYear.sortFunc, Reversed: true }
+];
 
 export const Person: React.FC = () => {
 	const personId = useParams().personId;
@@ -89,13 +48,15 @@ export const Person: React.FC = () => {
 		return <PageWithNavigation icon="Person"><NotFound /></PageWithNavigation>;
 	}
 
-	const personData = PersonService.Instance.FindOrCreatePersonData(personId);
-	React.useEffect(() => personData.Load(), [personId]);
+	const personData = ItemService.Instance.FindOrCreateItemData(personId);
+
+	React.useEffect(() => personData.LoadItemWithAbort(), [personData]);
+	React.useEffect(() => personData.LoadChildrenWithAbort(false, { ...BaseCreditRequestData, ...{ personIds: [ personId ] }}, CreditSortOrder), [personData]);
 
 	return (
 		<PageWithNavigation icon="Person" key={personId}>
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(personId).Item, personData.CreditedItems, LoginService.Instance.User]}
+				receivers={[personData.Item, personData.Children, LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
