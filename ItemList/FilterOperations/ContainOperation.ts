@@ -3,7 +3,7 @@ import { FilterOperation } from "ItemList/FilterOperation";
 
 export const ContainOperation: FilterOperation = {
 	Name: "Contains",
-	Display: (filterValue) => ["ContainsFilterDisplay", filterValue],
+	Display: (filterValue) => typeof filterValue === "string" ? ["ContainsFilterDisplay", filterValue] : ["ContainsFilterDisplay", filterValue.join(", ")],
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return false;
@@ -18,12 +18,12 @@ export const ContainOperation: FilterOperation = {
 				return false;
 			}
 
-			if (typeof value[0] === "string" && typeof filterValue === "string") {
-				return (value as string[]).includes(filterValue);
+			if (typeof value[0] === "string") {
+				return Array.isArray(filterValue) ? (value as string[]).some((v) =>  filterValue.includes(v)) : (value as string[]).includes(filterValue);
 			}
 
 			if (typeof value[0] === "number") {
-				return (value as number[]).includes(parseFloat(filterValue));
+				return Array.isArray(filterValue) ? (value as number[]).some((v) =>  filterValue.map((v) => parseFloat(v)).includes(v)) :  (value as number[]).includes(parseFloat(filterValue));
 			}
 		}
 
@@ -33,7 +33,7 @@ export const ContainOperation: FilterOperation = {
 
 export const NotContainOperation: FilterOperation = {
 	Name: "NotContain",
-	Display: (filterValue) => ["NotContainFilterDisplay", filterValue],
+	Display: (filterValue) => typeof filterValue === "string" ? ["NotContainFilterDisplay", filterValue] : ["NotContainFilterDisplay", filterValue.join(", ")],
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return true;
@@ -48,12 +48,12 @@ export const NotContainOperation: FilterOperation = {
 				return true;
 			}
 
-			if (typeof value[0] === "string" && typeof filterValue === "string") {
-				return !(value as string[]).includes(filterValue);
+			if (typeof value[0] === "string") {
+				return !(Array.isArray(filterValue) ? (value as string[]).some((v) =>  filterValue.includes(v)) : (value as string[]).includes(filterValue));
 			}
 
 			if (typeof value[0] === "number") {
-				return !(value as number[]).includes(parseFloat(filterValue));
+				return !(Array.isArray(filterValue) ? (value as number[]).some((v) =>  filterValue.map((v) => parseFloat(v)).includes(v)) :  (value as number[]).includes(parseFloat(filterValue)));
 			}
 		}
 

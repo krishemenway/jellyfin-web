@@ -22,7 +22,7 @@ export class EditableItemFilter {
 			const filterValue = this.FilterValue.Current.Value;
 			const operation = this.Operation.Current.Value;
 
-			return operation.Display(filterValue) || [];
+			return operation.Display(filterValue.indexOf("|") > -1 ? filterValue.split("|") : filterValue) || [];
 		});
 	}
 
@@ -40,7 +40,7 @@ export class EditableItemFilter {
 		const valueForItem = this.FilterType.targetField(item);
 		const filterValue = this.FilterValue.Current.Value;
 
-		return this.Operation.Current.Value?.Operation(valueForItem, filterValue) ?? true;
+		return this.Operation.Current.Value?.Operation(valueForItem, filterValue.indexOf("|") > -1 ? filterValue.split("|") : filterValue) ?? true;
 	}
 
 	public Key: string;

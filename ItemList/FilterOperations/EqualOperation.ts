@@ -3,7 +3,7 @@ import { FilterOperation } from "ItemList/FilterOperation";
 
 export const EqualOperation: FilterOperation = {
 	Name: "Equals",
-	Display: (filterValue) => ["IsEqual", filterValue],
+	Display: (filterValue) => typeof filterValue === "string" ? ["IsEqual", filterValue] : [],
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return false;
@@ -13,7 +13,7 @@ export const EqualOperation: FilterOperation = {
 			return value.toLowerCase() === filterValue.toLowerCase();
 		}
 
-		if (typeof value === "number") {
+		if (typeof value === "number"&& typeof filterValue === "string") {
 			return value === parseFloat(filterValue);
 		}
 

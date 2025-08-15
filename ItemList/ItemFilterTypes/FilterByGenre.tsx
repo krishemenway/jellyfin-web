@@ -1,5 +1,5 @@
 import * as React from "react";
-import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
+import { MultiSelectEditor } from "Common/SelectFieldEditor";
 import { Layout } from "Common/Layout";
 import { ContainOperation, NotContainOperation } from "ItemList/FilterOperations/ContainOperation";
 import { ItemFilterType, ItemFilterTypeProps } from "ItemList/ItemFilterType";
@@ -12,7 +12,7 @@ const GenreEditor: React.FC<ItemFilterTypeProps> = (props) => {
 
 	return (
 		<Layout direction="column">
-			<AutoCompleteFieldEditor field={props.filter.FilterValue} allOptions={props.filters.Genres ?? []} getKey={(genre) => genre} getLabel={(genre) => genre} />
+			<MultiSelectEditor field={props.filter.FilterValue} allOptions={props.filters.Genres ?? []} getValue={(genre) => genre} getLabel={(genre) => genre} />
 		</Layout>
 	);
 };

@@ -2,7 +2,7 @@ import * as React from "react";
 import { ContainOperation, NotContainOperation } from "ItemList/FilterOperations/ContainOperation";
 import { ItemFilterType, ItemFilterTypeProps } from "ItemList/ItemFilterType";
 import { Layout } from "Common/Layout";
-import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
+import { MultiSelectEditor } from "Common/SelectFieldEditor";
 import { EmptyOperation, NotEmptyOperation } from "ItemList/FilterOperations/EmptyOperation";
 import { ItemService } from "Items/ItemsService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
@@ -26,7 +26,7 @@ const StudioEditor: React.FC<ItemFilterTypeProps> = (props) => {
 				whenLoading={<LoadingIcon alignSelf="center" size="2em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="2em" />}
 				whenReceived={(items) => (
-					<AutoCompleteFieldEditor field={props.filter.FilterValue} allOptions={items.List.map((s) => s.Name ?? "")} getKey={(studioName) => studioName} getLabel={(studioName) => studioName} />
+					<MultiSelectEditor field={props.filter.FilterValue} allOptions={items.List.map((s) => s.Name ?? "")} getValue={(studioName) => studioName} getLabel={(studioName) => studioName} />
 				)}
 			/>
 		</Layout>

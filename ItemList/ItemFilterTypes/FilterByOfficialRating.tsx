@@ -16,7 +16,7 @@ export const FilterByOfficialRating: ItemFilterType = {
 
 		return (
 			<Layout direction="column">
-				<AutoCompleteFieldEditor field={props.filter.FilterValue} allOptions={props.filters.OfficialRatings ?? []} getKey={(rating) => rating} getLabel={(rating) => rating} />
+				<AutoCompleteFieldEditor field={props.filter.FilterValue} allOptions={props.filters.OfficialRatings ?? []} getValue={(rating) => rating} getLabel={(rating) => rating} />
 			</Layout>
 		);
 	},

@@ -1,11 +1,16 @@
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { FilterOperation } from "ItemList/FilterOperation";
 
 export const IsBetweenOperation: FilterOperation = {
 	Name: "IsBetween",
-	Display: (filterValue) => ["IsBetweenFilterDisplay"].concat(filterValue.split("|")),
+	Display: (filterValue) => ["IsBetweenFilterDisplay"].concat(filterValue),
 	Operation: (value, filterValue) => {
-		if (typeof value === "number") {
-			const [greaterThan, lessThan] = filterValue.split("|");
+		if (!Nullable.HasValue(value)) {
+			return false;
+		}
+
+		if (typeof value === "number" && Array.isArray(filterValue)) {
+			const [greaterThan, lessThan] = filterValue;
 			return value > parseFloat(greaterThan) && value < parseFloat(lessThan);
 		}
 
@@ -15,10 +20,14 @@ export const IsBetweenOperation: FilterOperation = {
 
 export const IsNotBetweenOperation: FilterOperation = {
 	Name: "IsNotBetween",
-	Display: (filterValue) => ["IsNotBetweenFilterDisplay"].concat(filterValue.split("|")),
+	Display: (filterValue) => ["IsNotBetweenFilterDisplay"].concat(filterValue),
 	Operation: (value, filterValue) => {
-		if (typeof value === "number") {
-			const [greaterThan, lessThan] = filterValue.split("|");
+		if (!Nullable.HasValue(value)) {
+			return false;
+		}
+
+		if (typeof value === "number" && Array.isArray(filterValue)) {
+			const [greaterThan, lessThan] = filterValue;
 			return value < parseFloat(greaterThan) && value > parseFloat(lessThan);
 		}
 

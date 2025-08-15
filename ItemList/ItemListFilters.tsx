@@ -10,6 +10,7 @@ import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { useBackgroundStyles } from "AppStyles";
 import { ArrowDownIcon } from "CommonIcons/ArrowDownIcon";
 import { ArrowUpIcon } from "CommonIcons/ArrowUpIcon";
+import { LoadViewOptionsIcon } from "ItemList/LoadViewOptionsIcon";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { ItemSortOption } from "ItemList/ItemSortOption";
 import { EditableItemFilter } from "ItemList/EditableItemFilter";
@@ -39,10 +40,12 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 	const [filterButtonRef, setFilterButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [sortButtonRef, setSortButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [saveButtonRef, setSaveButtonRef] = React.useState<HTMLButtonElement|null>(null);
+	const [loadOptionsButtonRef, setLoadOptionsButtonRef] = React.useState<HTMLButtonElement|null>(null);
 
 	return (
 		<>
 			<Layout direction="row" gap="1em">
+				<Button type="button" px=".5em" py=".25em" justifyContent="center" alignItems="center" onClick={(button) => { setLoadOptionsButtonRef(button)}} icon={<LoadViewOptionsIcon />} />
 				<Button type="button" px=".5em" py=".25em" justifyContent="center" alignItems="center" onClick={(button) => { setSaveButtonRef(button)}} icon={<SaveIcon />} />
 
 				{(props.listOptions.ItemKindService?.filterOptions ?? []).length > 0 && (
@@ -86,6 +89,10 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 
 			<AnchoredModal anchorElement={sortButtonRef} open={addSortOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => setAddSortOpen(false)} maxWidth="20%">
 				<PickSortOptionModal sortOptions={props.listOptions.ItemKindService?.sortOptions ?? []} onPicked={(option, reversed) => props.listOptions.AddSort(option, reversed)} onClosed={() => setAddSortOpen(false)} />
+			</AnchoredModal>
+
+			<AnchoredModal anchorElement={loadOptionsButtonRef} open={loadOptionsButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => setLoadOptionsButtonRef(null)}>
+				<PickOptionsModal onClosed={() => setLoadOptionsButtonRef(null)} />
 			</AnchoredModal>
 
 			<AnchoredModal anchorElement={saveButtonRef} open={saveButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => setSaveButtonRef(null)}>
@@ -167,10 +174,10 @@ const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilt
 	const FilterTypeEditor = props.newFilter.FilterType.editor;
 
 	return (
-		<Form py="1em" px="1em" gap="1em" direction="column" onSubmit={() => { props.listOptions.AddNewFilter(); props.onClosed(); }} minWidth="20em">
+		<Form py="1em" px="1em" gap="1em" direction="column" onSubmit={() => { props.listOptions.AddNewFilter(); props.onClosed(); }} minWidth="20em" maxWidth="26em">
 			<Layout direction="row" alignItems="center" justifyContent="center" gap="1em">
 				<Layout direction="column" fontSize="1.2em"><TranslatedText textKey={props.newFilter.FilterType.labelKey} /></Layout>
-				<AutoCompleteFieldEditor field={props.newFilter.Operation} allOptions={props.newFilter.FilterType.operations} getKey={(o) => o.Name} getLabel={(o) => <TranslatedText textKey={o.Name} />} grow />
+				<AutoCompleteFieldEditor field={props.newFilter.Operation} allOptions={props.newFilter.FilterType.operations} getValue={(o) => o.Name} getLabel={(o) => <TranslatedText textKey={o.Name} />} grow />
 			</Layout>
 
 			<FilterTypeEditor {...props} filter={props.newFilter} currentOperation={operation} />
@@ -188,10 +195,18 @@ const SaveOptionsModal: React.FC<{ listOptions: ItemListViewOptions; onClosed: (
 		<Form direction="column" py="1em" px="1em" gap="1em" onSubmit={() => { props.onClosed(); }}>
 			<Layout direction="column" gap=".5em">
 				<FieldLabel field={props.listOptions.Label} />
-				<TextField field={props.listOptions.Label} py=".25em" />
+				<TextField field={props.listOptions.Label} py=".25em" px=".5em" />
 			</Layout>
 
 			<Button type="submit" justifyContent="center" py=".5em"><TranslatedText textKey="Save" /></Button>
 		</Form>
+	);
+};
+
+const PickOptionsModal: React.FC<{ onClosed: () => void }> = () => {
+	return (
+		<Layout direction="column" py="1em" px="1em" gap="1em">
+			Picker
+		</Layout>
 	);
 };

@@ -3,13 +3,13 @@ import { FilterOperation } from "ItemList/FilterOperation";
 
 export const LessThanOperation: FilterOperation = {
 	Name: "LessThan",
-	Display: (filterValue) => ["LessThanFilterDisplay", filterValue],
+	Display: (filterValue) => typeof filterValue === "string" ? ["LessThanFilterDisplay", filterValue] : [],
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return false;
 		}
 
-		if (typeof value === "number") {
+		if (typeof value === "number" && typeof filterValue === "string") {
 			return value < parseFloat(filterValue);
 		}
 
@@ -19,13 +19,13 @@ export const LessThanOperation: FilterOperation = {
 
 export const LessThanOrEqualsOperation: FilterOperation = {
 	Name: "LessThanOrEquals",
-	Display: (filterValue) => ["LessThanOrEqualsFilterDisplay", filterValue],
+	Display: (filterValue) => typeof filterValue === "string" ? ["LessThanOrEqualsFilterDisplay", filterValue] : [],
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return false;
 		}
 
-		if (typeof value === "number") {
+		if (typeof value === "number" && typeof filterValue === "string") {
 			return value <= parseFloat(filterValue);
 		}
 

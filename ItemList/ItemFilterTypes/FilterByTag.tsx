@@ -1,5 +1,5 @@
 import * as React from "react";
-import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
+import { MultiSelectEditor } from "Common/SelectFieldEditor";
 import { Layout } from "Common/Layout";
 import { ContainOperation, NotContainOperation } from "ItemList/FilterOperations/ContainOperation";
 import { ItemFilterType, ItemFilterTypeProps } from "ItemList/ItemFilterType";
@@ -12,7 +12,7 @@ const TagEditor: React.FC<ItemFilterTypeProps> = (props) => {
 
 	return (
 		<Layout direction="column">
-			<AutoCompleteFieldEditor field={props.filter.FilterValue} allOptions={props.filters.Tags ?? []} getKey={(tag) => tag} getLabel={(tag) => tag} />
+			<MultiSelectEditor field={props.filter.FilterValue} allOptions={props.filters.Tags ?? []} getValue={(tag) => tag} getLabel={(tag) => tag} />
 		</Layout>
 	);
 };
