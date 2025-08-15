@@ -21,6 +21,8 @@ import { RenameLibraryAction } from "MenuActions/RenameLibraryAction";
 import { ManageLibraryAction } from "MenuActions/ManageLIbraryAction";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByOfficialRating } from "ItemList/ItemSortTypes/SortByOfficialRating";
+import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
+import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYear";
 
 export const ShowService: BaseItemKindService = {
 	findIcon: (props) => <ShowIcon {...props} />,
@@ -52,5 +54,7 @@ export const ShowService: BaseItemKindService = {
 		SortByCriticRating,
 		SortByRandom,
 		SortByOfficialRating,
+		SortByPremiereDate,
+		SortByProductionYear,
 	],
 };
