@@ -192,7 +192,30 @@ export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
 	return portal;
 };
 
+function detectScrollbarWidth(): number {
+	const scrollDiv = document.createElement("div");
+
+	scrollDiv.style.overflowY = "scroll";
+	scrollDiv.style.width = "3em";
+	scrollDiv.style.height = "3em";
+
+	document.body.appendChild(scrollDiv);
+	const scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+	document.body.removeChild(scrollDiv);
+
+	return scrollbarWidth;
+}
+
 const useStyles = createUseStyles({
+	"@global": {
+		"body": {
+			overflowY: "scroll",
+		},
+		".is-open": {
+			overflow: "hidden",
+			paddingRight: detectScrollbarWidth(),
+		},
+	},
 	modalOverlay: {
 		position: "fixed",
 		top: 0,
@@ -226,11 +249,6 @@ const useStyles = createUseStyles({
 
 		".is-open &": {
 			display: "block",
-		},
-	},
-	"@global": {
-		".is-open": {
-			overflow: "hidden",
 		},
 	},
 });
