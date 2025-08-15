@@ -17,7 +17,7 @@ const ProductionYearEditor: React.FC<ItemFilterTypeProps> = (props) => {
 		<Layout direction="row" gap="1em">
 			<InputField
 				id="YearValueStart"
-				grow basis="0" px=".5em" py=".25em" value={left ?? ""}
+				grow basis="0" px=".5em" py=".25em" minWidth={0} value={left ?? ""}
 				placeholder={{ Key: hasMultipleValues ? "LabelFrom" : "LabelValue" }}
 				onChange={((newValue) => props.filter.FilterValue.OnChange(hasMultipleValues ? `${newValue}|${right ?? ""}` : newValue))}
 			/>
@@ -25,7 +25,7 @@ const ProductionYearEditor: React.FC<ItemFilterTypeProps> = (props) => {
 			{hasMultipleValues && (
 				<InputField
 					id="YearValueEnd"
-					grow basis="0" px=".5em" py=".25em" value={right ?? ""}
+					grow basis="0" px=".5em" py=".25em" minWidth={0} value={right ?? ""}
 					placeholder={{ Key: "LabelTo" }}
 					onChange={((newValue) => props.filter.FilterValue.OnChange(`${left}|${newValue}`))}
 				/>
