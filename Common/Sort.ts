@@ -1,5 +1,6 @@
 export interface SortFuncs<T> {
 	LabelKey: string;
+	SortType: string,
 	Sort: (a: T, b: T) => number;
 	Reversed: boolean;
 }

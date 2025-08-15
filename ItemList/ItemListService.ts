@@ -4,7 +4,7 @@ import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { ItemListViewOptions, ItemViewOptionsData } from "ItemList/ItemListViewOptions";
 import { Observable } from "@residualeffect/reactor";
-import { Settings } from "Users/SettingsStore";
+import { Settings, SettingsStore } from "Users/SettingsStore";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { Nullable } from "Common/MissingJavascriptFunctions";
@@ -54,14 +54,16 @@ export class ItemListService {
 		return () => this.List.ResetIfLoading();
 	}
 
-	public LoadItemListViewOptionsOrNew(settings: Settings, itemKind: BaseItemKindService|null): void {
-		const mostRecent = settings.Read(`MostRecentOption-${this.LibraryId}`) ?? "Default";
-		const allViewOptions = settings.ReadAsJson<ItemViewOptionsData[]>(`AllViewOptions-${this.LibraryId}`, []) ?? [];
-		const mostRecentOption = allViewOptions.find(x => x.Label === mostRecent);
-
-		if (this.ListOptions.Value === null) {
-			this.ListOptions.Value = new ItemListViewOptions(itemKind, mostRecentOption);
+	public LoadItemListViewOptionsOrNew(context: string, settings: Settings, itemKind: BaseItemKindService|null, optionsName?: string): void {
+		if (Nullable.HasValue(optionsName)) {
+			this.ListOptions.Value = new ItemListViewOptions(itemKind, settings.ReadAsJson(`ViewOption-${context}-${optionsName}`));
+		} else {
+			this.ListOptions.Value = new ItemListViewOptions(itemKind);
 		}
+	}
+
+	public SaveViewOptions(context: string, settings: Settings, listOptions: ItemListViewOptions): void {
+		SettingsStore.Instance.SaveSettings(settings.CreateSaveRequest(`ViewOption-${context}-${listOptions.Label.Current.Value}`, listOptions.CreateSaveRequest()));
 	}
 
 	public LibraryId: string;

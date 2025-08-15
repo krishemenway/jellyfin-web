@@ -71,6 +71,7 @@ const App: React.FC<{ basePath: string }> = (props) => {
 
 						{ path: "/Person/:personId", element: <Person /> },
 
+						{ path: "/Shows/:libraryId/:optionsName", element: <ItemListView itemKind="Series" paramName="libraryId" /> },
 						{ path: "/Shows/:libraryId", element: <ItemListView itemKind="Series" paramName="libraryId" /> },
 						{ path: "/Show/:showId", element: <Show /> },
 						{ path: "/Show/:showId/Season/:seasonId", element: <Show /> },
@@ -80,19 +81,25 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ path: "/Music/Artist/:artistId", element: <MusicArtist /> },
 
 						{ path: "/Music/:libraryId", element: <Music /> },
+						{ path: "/Music/Songs/:libraryId/:optionsName", element: <ItemListView itemKind="Audio" paramName="libraryId" /> },
 						{ path: "/Music/Songs/:libraryId", element: <ItemListView itemKind="Audio" paramName="libraryId" /> },
+						{ path: "/Music/Albums/:libraryId/:optionsName", element: <ItemListView itemKind="MusicAlbum" paramName="libraryId" /> },
 						{ path: "/Music/Albums/:libraryId", element: <ItemListView itemKind="MusicAlbum" paramName="libraryId" /> },
+						{ path: "/Music/Artists/:libraryId/:optionsName", element: <ItemListView itemKind="MusicArtist" paramName="libraryId" /> },
 						{ path: "/Music/Artists/:libraryId", element: <ItemListView itemKind="MusicArtist" paramName="libraryId" /> },
 
+						{ path: "/Photo/Albums/:libraryId/:optionsName", element: <ItemListView itemKind="PhotoAlbum" paramName="libraryId" /> },
 						{ path: "/Photo/Albums/:libraryId", element: <ItemListView itemKind="PhotoAlbum" paramName="libraryId" /> },
 						{ path: "/Photo/Album/:albumId", element: <PhotoAlbum /> },
 
+						{ path: "/Movies/:libraryId/:optionsName", element: <ItemListView itemKind="Movie" paramName="libraryId" /> },
 						{ path: "/Movies/:libraryId", element: <ItemListView itemKind="Movie" paramName="libraryId" /> },
 						{ path: "/Movie/:movieId", element: <Movie /> },
 
 						{ path: "/Studios", element: <Studios /> },
 						{ path: "/Studio/:studioId", element: <Studio /> },
 
+						{ path: "/Collections/:collectionsId/:optionsName", element: <ItemListView itemKind="BoxSet" paramName="collectionsId" /> },
 						{ path: "/Collections/:collectionsId", element: <ItemListView itemKind="BoxSet" paramName="collectionsId" /> },
 						{ path: "/Collection/:collectionId", element: <Collection /> },
 

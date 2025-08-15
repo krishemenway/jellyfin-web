@@ -23,11 +23,17 @@ import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { TextField } from "Common/TextField";
 import { FieldLabel } from "Common/FieldLabel";
+import { ItemListService } from "ItemList/ItemListService";
+import { Settings } from "Users/SettingsStore";
+import { Nullable } from "Common/MissingJavascriptFunctions";
+import { LinkToItem } from "Items/LinkToItem";
 
 export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
+	itemList: ItemListService;
 	user: UserDto;
 	library: BaseItemDto;
+	settings: Settings;
 	filters: QueryFiltersLegacy;
 }
 
@@ -41,12 +47,15 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 	const [sortButtonRef, setSortButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [saveButtonRef, setSaveButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [loadOptionsButtonRef, setLoadOptionsButtonRef] = React.useState<HTMLButtonElement|null>(null);
+	const currentOptionLabel = useObservable(props.listOptions.Label.Current);
 
 	return (
 		<>
-			<Layout direction="row" gap="1em">
+			<Layout direction="row" gap="1em" alignItems="center">
 				<Button type="button" px=".5em" py=".25em" justifyContent="center" alignItems="center" onClick={(button) => { setLoadOptionsButtonRef(button)}} icon={<LoadViewOptionsIcon />} />
 				<Button type="button" px=".5em" py=".25em" justifyContent="center" alignItems="center" onClick={(button) => { setSaveButtonRef(button)}} icon={<SaveIcon />} />
+
+				{(Nullable.StringHasValue(currentOptionLabel) && <Layout direction="column">{currentOptionLabel}</Layout>)}
 
 				{(props.listOptions.ItemKindService?.filterOptions ?? []).length > 0 && (
 					<Layout direction="row" gap=".5em" alignItems="center">
@@ -92,11 +101,11 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 			</AnchoredModal>
 
 			<AnchoredModal anchorElement={loadOptionsButtonRef} open={loadOptionsButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => setLoadOptionsButtonRef(null)}>
-				<PickOptionsModal onClosed={() => setLoadOptionsButtonRef(null)} />
+				<PickOptionsModal {...props} onClosed={() => setLoadOptionsButtonRef(null)} />
 			</AnchoredModal>
 
 			<AnchoredModal anchorElement={saveButtonRef} open={saveButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => setSaveButtonRef(null)}>
-				<SaveOptionsModal listOptions={props.listOptions} onClosed={() => setSaveButtonRef(null)} />
+				<SaveOptionsModal {...props} onClosed={() => setSaveButtonRef(null)} />
 			</AnchoredModal>
 		</>
 	);
@@ -190,12 +199,12 @@ const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilt
 	);
 };
 
-const SaveOptionsModal: React.FC<{ listOptions: ItemListViewOptions; onClosed: () => void }> = (props) => {
+const SaveOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings; listOptions: ItemListViewOptions; onClosed: () => void }> = (props) => {
 	return (
-		<Form direction="column" py="1em" px="1em" gap="1em" onSubmit={() => { props.onClosed(); }}>
+		<Form direction="column" py="1em" px="1em" gap="1em" onSubmit={() => { props.itemList.SaveViewOptions(props.itemList.LibraryId, props.settings, props.listOptions); props.onClosed(); }}>
 			<Layout direction="column" gap=".5em">
 				<FieldLabel field={props.listOptions.Label} />
-				<TextField field={props.listOptions.Label} py=".25em" px=".5em" />
+				<TextField field={props.listOptions.Label} py=".25em" px=".5em" placeholder={{ Key: "New" }} />
 			</Layout>
 
 			<Button type="submit" justifyContent="center" py=".5em"><TranslatedText textKey="Save" /></Button>
@@ -203,10 +212,17 @@ const SaveOptionsModal: React.FC<{ listOptions: ItemListViewOptions; onClosed: (
 	);
 };
 
-const PickOptionsModal: React.FC<{ onClosed: () => void }> = () => {
+const PickOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings; library: BaseItemDto; onClosed: () => void }> = (props) => {
+	const contextForOptions = `ViewOption-${props.itemList.LibraryId}-`;
+	const existingListOptions = React.useMemo(() => props.settings.AllKeys().filter((k) => k.startsWith(contextForOptions)).map((k) => k.replace(contextForOptions, "")), [props.itemList, props.settings]);
+
 	return (
 		<Layout direction="column" py="1em" px="1em" gap="1em">
-			Picker
+			<ListOf
+				direction="column"
+				items={existingListOptions}
+				forEachItem={(option) => <LinkToItem key={option} direction="column" item={props.library} afterUrl={`/${option}`}>{option}</LinkToItem>}
+			/>
 		</Layout>
 	);
 };

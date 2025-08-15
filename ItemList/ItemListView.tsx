@@ -26,6 +26,7 @@ import { ItemsGridItem } from "ItemList/ItemGridItem";
 export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = (props) => {
 	const routeParams = useParams();
 	const libraryId = routeParams[props.paramName];
+	const optionsName = routeParams.optionsName;
 	
 	if (!Nullable.HasValue(libraryId)) {
 		return <PageWithNavigation icon={props.itemKind}><NotFound /></PageWithNavigation>;
@@ -46,7 +47,7 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenReceived={(items, settings, user, libraries, filters) => (
 					<ItemsGrid
-						libraryId={libraryId} itemList={itemList}
+						libraryId={libraryId} optionsName={optionsName} itemList={itemList}
 						items={items.List} settings={settings}
 						user={user} libraries={libraries}
 						itemKind={props.itemKind} filters={filters}
@@ -57,7 +58,7 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 	);
 };
 
-const ItemsGrid: React.FC<{ libraryId: string, items: BaseItemDto[]; itemList: ItemListService; itemKind: BaseItemKind; settings: Settings; user: UserDto; libraries: BaseItemDto[]; filters: QueryFiltersLegacy }> = (props) => {
+const ItemsGrid: React.FC<{ libraryId: string, optionsName?: string; items: BaseItemDto[]; itemList: ItemListService; itemKind: BaseItemKind; settings: Settings; user: UserDto; libraries: BaseItemDto[]; filters: QueryFiltersLegacy }> = (props) => {
 	const breakpoint = useBreakpoint();
 	const itemKindService = BaseItemKindServiceFactory.FindOrNull(props.itemKind);
 	const listOptions = useObservable(props.itemList.ListOptions);
@@ -76,12 +77,12 @@ const ItemsGrid: React.FC<{ libraryId: string, items: BaseItemDto[]; itemList: I
 		return props.items.filter(filterFunc).sort(sortFunc);
 	});
 
-	React.useEffect(() => { props.itemList.LoadItemListViewOptionsOrNew(props.settings, itemKindService); }, [props.settings, itemKindService]);
+	React.useEffect(() => { props.itemList.LoadItemListViewOptionsOrNew(props.libraryId, props.settings, itemKindService, props.optionsName); }, [props.settings, itemKindService, props.optionsName]);
 
 	return (
 		<Layout direction="column" gap="1em" py="1em">
 			<PageTitle text={library?.Name} />
-			{listOptions && <ItemListFilters library={library} user={props.user} listOptions={listOptions} filters={props.filters} />}
+			{listOptions && <ItemListFilters library={library} user={props.user} listOptions={listOptions} filters={props.filters} itemList={props.itemList} settings={props.settings} />}
 
 			<ListOf
 				items={filteredAndSortedItems}

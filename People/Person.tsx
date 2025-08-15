@@ -28,6 +28,7 @@ import { IconForItem } from "Items/IconForItem";
 import { SortFuncs } from "Common/Sort";
 import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYear";
 import { ItemsApiGetItemsRequest } from "@jellyfin/sdk/lib/generated-client/api/items-api";
+import { CreateSortFunc } from "ItemList/ItemSortOption";
 
 const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
 	imageTypeLimit: 1,
@@ -36,9 +37,7 @@ const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
 	includeItemTypes: [ "Audio", "Movie", "Episode", "AudioBook", "Photo", "Video"],
 };
 
-const CreditSortOrder: SortFuncs<BaseItemDto>[] = [
-	{ LabelKey: SortByProductionYear.labelKey, Sort: SortByProductionYear.sortFunc, Reversed: true }
-];
+const CreditSortOrder: SortFuncs<BaseItemDto>[] = [CreateSortFunc(SortByProductionYear, true)];
 
 export const Person: React.FC = () => {
 	const personId = useParams().personId;

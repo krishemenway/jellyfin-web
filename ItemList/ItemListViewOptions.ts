@@ -3,7 +3,7 @@ import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByObjectsFunc, SortFuncs } from "Common/Sort";
 import { EditableItemFilter } from "ItemList/EditableItemFilter";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { CreateSortFunc, ItemSortOption } from "ItemList/ItemSortOption";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { EditableField } from "Common/EditableField";
@@ -11,7 +11,7 @@ import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 
 export class ItemListViewOptions {
 	constructor(itemKindService: BaseItemKindService|null, data?: ItemViewOptionsData) {
-		this.Label = new EditableField("Filter", Nullable.ValueOrDefault(data, "New", (d) => d.Label));
+		this.Label = new EditableField("Filter", Nullable.ValueOrDefault(data, "", (d) => d.Label));
 
 		this.ItemKindService = itemKindService;
 		this.NewFilter = new Observable(undefined);
@@ -27,11 +27,11 @@ export class ItemListViewOptions {
 				throw new Error("Missing sort type");
 			}
 
-			return this.CreateSortFunc(sort, d.Reversed);
+			return CreateSortFunc(sort, d.Reversed);
 		}));
 
 		this.FilterFunc = new Computed(() => (item) => this.Filters.Value.every((f) => f.ShowItem(item)))
-		this.SortByFunc = new Computed(() => SortByObjectsFunc(this.SortBy.Value.concat([this.CreateSortFunc(SortByName, false)])));
+		this.SortByFunc = new Computed(() => SortByObjectsFunc(this.SortBy.Value.concat([CreateSortFunc(SortByName, false)])));
 	}
 
 	public CreateNewFilter(filterOption: ItemFilterType): void {
@@ -43,11 +43,7 @@ export class ItemListViewOptions {
 	}
 
 	public AddSort(sortFunc: ItemSortOption, reversed: boolean): void {
-		this.SortBy.unshift({
-			LabelKey: sortFunc.labelKey,
-			Reversed: reversed,
-			Sort: sortFunc.sortFunc,
-		});
+		this.SortBy.unshift(CreateSortFunc(sortFunc, reversed));
 	}
 
 	public AddNewFilter(): void {
@@ -59,8 +55,12 @@ export class ItemListViewOptions {
 		this.ClearNewFilter();
 	}
 
-	private CreateSortFunc(sortOption: ItemSortOption, reversed: boolean): SortFuncs<BaseItemDto> {
-		return { LabelKey: sortOption.labelKey, Sort: sortOption.sortFunc, Reversed: reversed };
+	public CreateSaveRequest(): ItemViewOptionsData {
+		return {
+			Label: this.Label.Current.Value,
+			Filters: this.Filters.Value.map((i) => ({ FilterType: i.FilterType.type, FilterValue: i.FilterValue.Current.Value })),
+			Sorts: this.SortBy.Value.map((s) => ({ SortType: s.SortType, Reversed: s.Reversed }) as ItemViewOptionSortData),
+		};
 	}
 
 	public Label: EditableField;

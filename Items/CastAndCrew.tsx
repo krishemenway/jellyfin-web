@@ -10,7 +10,7 @@ import { TranslatedText } from "Common/TranslatedText";
 
 export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; className?: string; linkProps?: StyleLayoutProps }&StyleLayoutProps> = (props) => {
 	const orderedCastAndCrew = React.useMemo(() => SortByObjects(props.itemWithPeople.People ?? [], [
-		{ LabelKey: "", Reversed: false, Sort: SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"]) },
+		{ LabelKey: "", Reversed: false, SortType: "PriorityOrder", Sort: SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"]) },
 	]), [props.itemWithPeople.People]);
 
 	return (
