@@ -30,7 +30,7 @@ export const MusicArtist: React.FC = () => {
 				whenReceived={(artist, children) => (
 					<Layout direction="column">
 						<PageTitle text={artist.Name} />
-						{artist.Name} {children.length}
+						{children.length}
 					</Layout>
 				)}
 			/>

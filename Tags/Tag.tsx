@@ -9,7 +9,6 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { PageTitle } from "Common/PageTitle";
 import { Layout } from "Common/Layout";
-import { TranslatedText } from "Common/TranslatedText";
 import { ListOf } from "Common/ListOf";
 import { ResponsiveBreakpoint, useBreakpoint } from "AppStyles";
 import { ImageShape } from "Items/ItemImage";
@@ -39,7 +38,6 @@ export const Tag: React.FC = () => {
 				whenReceived={(items) => (
 					<Layout direction="column" gap="1em" py="1em" height="100%">
 						<PageTitle text={tag} />
-						<Layout fontSize="1.4em" elementType="h1" direction="row"><TranslatedText textKey="LabelTag" />: {tag}</Layout>
 
 						<ListOf
 							items={items}

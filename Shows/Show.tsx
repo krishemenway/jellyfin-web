@@ -68,7 +68,6 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 
 	return (
 		<Layout direction="row" gap="1em" py="1em">
-			<PageTitle text={show.Name} />
 			<Layout direction="column" maxWidth="20%" gap=".5em">
 				<Layout direction="column" position="relative">
 					<ItemImage item={show} type="Primary" />
@@ -111,7 +110,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 	return (
 		<Layout direction="column" grow gap="1.5em">
 			<Layout direction="row" justifyContent="space-between">
-				<Layout direction="row" fontSize="2em" className="show-name">{show.Name}</Layout>
+				<PageTitle text={show.Name} />
 				<ItemActionsMenu items={[show]} user={user} actions={[
 					[ // User-based actions
 						AddToFavoritesAction,
@@ -158,7 +157,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; user: UserDto; }> = ({ ep
 		<Layout direction="column" grow gap="1.5em">
 			<Layout direction="column" gap=".5em">
 				<Layout direction="row" justifyContent="space-between">
-					<Layout direction="row" fontSize="2em" className="show-name">{episode.SeriesName}</Layout>
+					<PageTitle text={episode.SeriesName} />
 					<ItemActionsMenu items={[episode]} user={user} actions={[
 						[ // User-based actions
 							AddToFavoritesAction,
@@ -172,7 +171,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; user: UserDto; }> = ({ ep
 						]
 					]} />
 				</Layout>
-				<Layout direction="row" fontSize="1.3em" className="show-name">{episode.SeasonName} <TranslatedText textKey="Episode" /> {episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}</Layout>
+				<Layout direction="row" fontSize="1.3em" elementType="h2" className="show-name">{episode.SeasonName} <TranslatedText textKey="Episode" /> {episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}</Layout>
 			</Layout>
 
 			<ItemOverview item={episode} />

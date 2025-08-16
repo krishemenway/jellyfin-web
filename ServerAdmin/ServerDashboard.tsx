@@ -19,7 +19,7 @@ export const ServerDashboard: React.FC = () => {
 
 	return (
 		<PageWithNavigation icon={<ServerIcon />}>
-			<PageTitle text={({ Key: "TabServer" })} />
+			<PageTitle text={({ Key: "TabServer" })} suppressOnScreen />
 			<Loading
 				receivers={[ServerService.Instance.ServerInfo, LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}

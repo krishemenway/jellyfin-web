@@ -81,7 +81,7 @@ const ItemsGrid: React.FC<{ libraryId: string, optionsName?: string; items: Base
 
 	return (
 		<Layout direction="column" gap="1em" py="1em">
-			<PageTitle text={library?.Name} />
+			<PageTitle text={library?.Name} suppressOnScreen />
 			{listOptions && <ItemListFilters library={library} user={props.user} listOptions={listOptions} filters={props.filters} itemList={props.itemList} settings={props.settings} />}
 
 			<ListOf

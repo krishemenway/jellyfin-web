@@ -59,7 +59,6 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 
 	return (
 		<Layout direction="row" gap="1em" py="1em">
-			<PageTitle text={movie.Name} />
 			<Layout direction="column" maxWidth="20%" gap=".5em">
 				<Layout direction="column" gap=".5em">
 					<Layout direction="column" position="relative">
@@ -93,7 +92,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 			</Layout>
 			<Layout direction="column" grow gap="2em">
 				<Layout direction="row" justifyContent="space-between">
-					<Layout direction="row" fontSize="2em" className="show-name">{movie.Name}</Layout>
+					<PageTitle text={movie.Name} />
 					<ItemActionsMenu items={[movie]} actions={[
 						[ // User-based actions
 							AddToFavoritesAction,

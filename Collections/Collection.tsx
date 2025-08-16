@@ -39,8 +39,6 @@ export const Collection: React.FC = () => {
 					<Layout direction="column" gap="1em" py="1em" height="100%">
 						<PageTitle text={collection.Name} />
 
-						<Layout fontSize="1.4em" elementType="h1" direction="row">{collection.Name}</Layout>
-
 						<ListOf
 							items={collectionItems}
 							direction="row" wrap gap=".5em"

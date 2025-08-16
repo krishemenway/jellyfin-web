@@ -6,7 +6,6 @@ export const Studios: React.FC = () => {
 	return (
 		<PageWithNavigation icon="Studio">
 			<PageTitle text={({ Key: "Studios" })} />
-			All Studios
 		</PageWithNavigation>
 	);
 };

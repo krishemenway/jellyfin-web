@@ -82,7 +82,8 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 
 	return (
 		<Layout direction="row" height="100%" py="1em" gap="1em">
-			<PageTitle text={library.Name!} />
+			<PageTitle text={library.Name} suppressOnScreen />
+
 			<Layout direction="column" width="25%" gap="1em">
 				<MusicPlayerStatus className={background.panel} />
 				<CurrentPlaylist className={background.panel} user={props.user} library={library} />

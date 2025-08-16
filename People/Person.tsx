@@ -61,7 +61,6 @@ export const Person: React.FC = () => {
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
 				whenReceived={(person, creditedItems, user) => (
 					<Layout direction="row" gap="1em" py="1em" height="100%">
-						<PageTitle text={person.Name} />
 						<Layout direction="column" maxWidth="20%" gap=".5em">
 							<ItemImage item={person} type="Primary" />
 
@@ -75,7 +74,7 @@ export const Person: React.FC = () => {
 
 						<Layout direction="column" grow gap="1.5em">
 							<Layout direction="row" justifyContent="space-between">
-								<Layout direction="row" fontSize="2em" className="person-name">{person.Name}</Layout>
+								<PageTitle text={person.Name} />
 								<ItemActionsMenu items={[person]} user={user} actions={[[
 									AddToFavoritesAction,
 									AddToCollectionAction,

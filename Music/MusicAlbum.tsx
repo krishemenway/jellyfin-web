@@ -31,7 +31,7 @@ export const MusicAlbum: React.FC = () => {
 				whenReceived={(album, children) => (
 					<Layout direction="column">
 						<PageTitle text={album.Name} />
-						{album.Name} {children.length}
+						{children.length}
 					</Layout>
 				)}
 			/>

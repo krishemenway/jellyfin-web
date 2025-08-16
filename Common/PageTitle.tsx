@@ -3,8 +3,9 @@ import { TranslationRequest, useTranslatedText } from "Common/TranslatedText";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ServerService } from "Servers/ServerService";
 import { useDataOrNull } from "Common/Loading";
+import { Layout } from "Common/Layout";
 
-export const PageTitle: React.FC<{ text: string|TranslationRequest|undefined|null }> = (props) => {
+export const PageTitle: React.FC<{ text: string|TranslationRequest|undefined|null; suppressOnScreen?: true }> = (props) => {
 	if (!Nullable.HasValue(props.text)) {
 		return <></>;
 	}
@@ -14,5 +15,9 @@ export const PageTitle: React.FC<{ text: string|TranslationRequest|undefined|nul
 
 	React.useEffect(() => { document.title = text + Nullable.Value(server, "", (s) => ` | ${s.ServerName}`); }, [text, server]);
 
-	return <></>;
+	if (props.suppressOnScreen === true) {
+		return <></>;
+	}
+
+	return <Layout direction="row" fontSize="1.5em" elementType="h1">{text}</Layout>;
 };
