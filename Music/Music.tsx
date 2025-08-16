@@ -106,8 +106,8 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 									onToggled={(artist) => { Nullable.TryExecute(artist.Name, (name) => observableArtists.toggle(name)); }}
 									columns={[
 										{ name: "Artist", getValue: (i) => i.Name, width: "80%", align: "start", getSortFunc: () => SortByString((i) => i.Name) },
-										{ name: "Albums", getValue: (artist, stats) => Nullable.ValueOrDefault(stats[0][artist.Id ?? ""], 0, (n) => n), width: "10%", align: "center", getSortFunc: (stats) => SortByNumber((artist) => Nullable.ValueOrDefault(stats[0][artist.Id ?? ""], 0, (n) => n)) },
-										{ name: "Songs", getValue: (artist, stats) => Nullable.ValueOrDefault(stats[1][artist.Name ?? ""], 0, (n) => n), width: "10%", align: "center", getSortFunc: (stats) => SortByNumber((artist) => Nullable.ValueOrDefault(stats[1][artist.Name ?? ""], 0, (n) => n)) },
+										{ name: "Albums", getValue: (artist, stats) => Nullable.Value(stats[0][artist.Id ?? ""], 0, (n) => n), width: "10%", align: "center", getSortFunc: (stats) => SortByNumber((artist) => Nullable.Value(stats[0][artist.Id ?? ""], 0, (n) => n)) },
+										{ name: "Songs", getValue: (artist, stats) => Nullable.Value(stats[1][artist.Name ?? ""], 0, (n) => n), width: "10%", align: "center", getSortFunc: (stats) => SortByNumber((artist) => Nullable.Value(stats[1][artist.Name ?? ""], 0, (n) => n)) },
 									]}
 								/>
 							)}
@@ -132,7 +132,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 										{ name: "Album", getValue: (i) => i.Name, width: "40%", align: "start", getSortFunc: () => SortByString((i) => i.Name) },
 										{ name: "Artist", getValue: (i) => i.AlbumArtist, width: "40%", align: "start", getSortFunc: () => SortByString((i) => i.AlbumArtist) },
 										{ name: "LabelYear", getValue: (i) => i.ProductionYear, width: "10%", align: "center", getSortFunc: () => SortByNumber((i) => i.ProductionYear) },
-										{ name: "Songs", getValue: (album, stats) => Nullable.ValueOrDefault(stats[0][album.Id ?? ""], 0, (n) => n), width: "10%", align: "center", getSortFunc: (stats) => SortByNumber((album) => Nullable.ValueOrDefault(stats[0][album.Id ?? ""], 0, (n) => n)) },
+										{ name: "Songs", getValue: (album, stats) => Nullable.Value(stats[0][album.Id ?? ""], 0, (n) => n), width: "10%", align: "center", getSortFunc: (stats) => SortByNumber((album) => Nullable.Value(stats[0][album.Id ?? ""], 0, (n) => n)) },
 									]}
 								/>
 							)}
@@ -157,7 +157,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 								columns={[
 									{ name: "Songs", getValue: (i) => i.Name, width: "30%", align: "start", getSortFunc: () => SortByString((i) => i.Name) },
 									{ name: "Album", getValue: (i) => i.Album, width: "30%", align: "start", getSortFunc: () => SortByString((i) => i.Album) },
-									{ name: "Artist", getValue: (i) => Nullable.ValueOrDefault(i.Artists, [], a => a).join(", "), width: "25%", align: "start", getSortFunc: () => SortByString((i) => Nullable.ValueOrDefault(i.Artists, [], a => a).join(", ")) },
+									{ name: "Artist", getValue: (i) => Nullable.Value(i.Artists, [], a => a).join(", "), width: "25%", align: "start", getSortFunc: () => SortByString((i) => Nullable.Value(i.Artists, [], a => a).join(", ")) },
 									{ name: "LabelDuration", getValue: (i) => DateTime.ConvertTicksToDurationString(i.RunTimeTicks), width: "5%", align: "center", getSortFunc: () => SortByNumber((i) => i.RunTimeTicks) },
 									{ name: "Track", getValue: (i) => i.IndexNumber, width: "5%", align: "center", getSortFunc: () => SortByNumber((i) => i.IndexNumber) },
 									{ name: "LabelYear", getValue: (i) => i.ProductionYear, width: "5%", align: "center", getSortFunc: () => SortByNumber((i) => i.ProductionYear) },
@@ -233,7 +233,7 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string; library: Bas
 					evt.preventDefault();
 					evt.dataTransfer.dropEffect ="copy";
 
-					const addAfterIndex = Nullable.ValueOrDefault((evt.target as HTMLElement).closest("*[data-index]") as HTMLElement|undefined|null, undefined, (element) => {
+					const addAfterIndex = Nullable.Value((evt.target as HTMLElement).closest("*[data-index]") as HTMLElement|undefined|null, undefined, (element) => {
 						const index = parseInt(element.attributes.getNamedItem("data-index")?.value ?? "0", 10);
 						const elementMidpoint = element.getBoundingClientRect().height / 2;
 						element.style.borderStyle = "";
@@ -252,7 +252,7 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string; library: Bas
 						itemContent={(index, data) => (
 							<Layout direction="row" position="relative" draggable onDragStart={(evt) => { evt.dataTransfer.setData("AddType", "PlaylistId"); evt.dataTransfer.setData("AddTypeId", index.toString()); }}>
 								<Layout direction="column" alignItems="center" justifyContent="center" position="absolute" top={0} bottom={0} left={0} width="5%">
-									{Nullable.ValueOrDefault(current, <DragIcon />, (c) => c.PlaylistItem === data ? <PlayStateIcon state={playState} /> : <DragIcon />)}
+									{Nullable.Value(current, <DragIcon />, (c) => c.PlaylistItem === data ? <PlayStateIcon state={playState} /> : <DragIcon />)}
 								</Layout>
 
 								<Button transparent width="100%" px="5%" type="button" textAlign="start" onClick={() => { MusicPlayer.Instance.GoIndex(index)}}>
@@ -293,7 +293,7 @@ const LoadedItems: React.FC<{ addType: AddPlaylistItemType, items: BaseItemDto[]
 		}
 	};
 
-	const filteredItems = React.useMemo(() => props.items.filter((i) => Nullable.ValueOrDefault(props.filters, true, (f) => f.length === 0 || f.some((filter) => filter(i) || props.selectedKeys.includes(props.getSelectedKey(i))))), [props.items, props.filters, props.selectedKeys, props.getSelectedKey]);
+	const filteredItems = React.useMemo(() => props.items.filter((i) => Nullable.Value(props.filters, true, (f) => f.length === 0 || f.some((filter) => filter(i) || props.selectedKeys.includes(props.getSelectedKey(i))))), [props.items, props.filters, props.selectedKeys, props.getSelectedKey]);
 	const sortedItems = React.useMemo(() => SortByObjects(filteredItems, [{ SortType: sortField.name, LabelKey: sortField.name, Sort: sortField.getSortFunc(props.stats ?? []), Reversed: sortReversed }]), [filteredItems, sortField, sortReversed]);
 
 	return (

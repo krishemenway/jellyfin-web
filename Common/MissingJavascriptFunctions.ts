@@ -4,7 +4,7 @@ export class Linq {
 	}
 
 	public static Single<T>(array: T[], matchFunc?: (t: T) => boolean): T {
-		const result = Nullable.ValueOrDefault(matchFunc, array, (match) => array.filter(match));
+		const result = Nullable.Value(matchFunc, array, (match) => array.filter(match));
 
 		if (result.length !== 1) {
 			throw new Error(`Tried to search array expecting exactly one item and found ${result.length} items`)
@@ -55,7 +55,7 @@ export class Nullable {
 		}
 	}
 
-	public static ValueOrDefault<T, T2>(obj: T|undefined|null, defaultValue: T2, valueSelector: (o: T) => T2): T2 {
+	public static Value<T, T2>(obj: T|undefined|null, defaultValue: T2, valueSelector: (o: T) => T2): T2 {
 		return Nullable.HasValue(obj) ? valueSelector(obj) : defaultValue;
 	}
 }

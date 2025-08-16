@@ -27,7 +27,7 @@ export function ListOf<TItem>(props: ListPropsOf<TItem>): React.ReactNode {
 	return (
 		<Layout {...props}>
 			{props.items.map((item, index) => props.forEachItem(item, index)).slice(0, showMore ? undefined : props.showMoreLimit)}
-			{Nullable.ValueOrDefault(props.showMoreLimit, <></>, (limit) => !showMore && props.items.length > limit && <Button {...props.showMoreButtonStyles} type="button" onClick={() => { setShowMore(true); }}>+{props.items.length - limit} <TranslatedText textKey="ButtonMore" /></Button>)}
+			{Nullable.Value(props.showMoreLimit, <></>, (limit) => !showMore && props.items.length > limit && <Button {...props.showMoreButtonStyles} type="button" onClick={() => { setShowMore(true); }}>+{props.items.length - limit} <TranslatedText textKey="ButtonMore" /></Button>)}
 		</Layout>
 	);
 }

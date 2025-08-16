@@ -21,7 +21,7 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 
 	const filteredActions = React.useMemo(() => {
 		return props.actions
-			.map((group) => group.filter((action) => Nullable.ValueOrDefault(action.visible, () => true, a => a)(props.user)))
+			.map((group) => group.filter((action) => Nullable.Value(action.visible, () => true, a => a)(props.user)))
 			.filter((group) => group.length > 0);
 	}, [props.user, props.actions]);
 
@@ -37,7 +37,7 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 				alignItems="center" px=".5em" py=".5em" {...props}
 			/>
 
-			{filteredActions.flat().map((action) => Nullable.ValueOrDefault(action.modal, undefined, (m) => m(props.items)))}
+			{filteredActions.flat().map((action) => Nullable.Value(action.modal, undefined, (m) => m(props.items)))}
 
 			<AnchoredModal alternatePanel anchorAlignment="center" opensInDirection="left" anchorElement={anchor} open={anchor !== null} onClosed={closeNavigation}>
 				<ListOf

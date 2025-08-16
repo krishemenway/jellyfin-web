@@ -34,7 +34,7 @@ const ForwardedTextField: React.ForwardRefRenderFunction<HTMLInputElement, TextF
 
 const ForwardedInputField: React.ForwardRefRenderFunction<HTMLInputElement, InputFieldProps> = (props, ref) => {
 	const background = useBackgroundStyles();
-	const placeholder = Nullable.ValueOrDefault(props.placeholder, undefined, (p) => useTranslatedText(p));
+	const placeholder = Nullable.Value(props.placeholder, undefined, (p) => useTranslatedText(p));
 
 	return (
 		<input

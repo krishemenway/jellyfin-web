@@ -219,7 +219,7 @@ export class MusicPlayer {
 	}
 
 	private CurrentIndex(): number {
-		return Nullable.ValueOrDefault(this.Current.Value, -1, (c) => this.Playlist.AsArray().indexOf(c.PlaylistItem));
+		return Nullable.Value(this.Current.Value, -1, (c) => this.Playlist.AsArray().indexOf(c.PlaylistItem));
 	}
 
 	private CreateAudioUrl(item: BaseItemDto): string {

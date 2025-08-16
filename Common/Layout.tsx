@@ -138,7 +138,7 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		height: props?.height,
 
 		backgroundColor: props?.backgroundColor,
-		backgroundImage: Nullable.ValueOrDefault(props?.backgroundUrl, undefined, (u) => `url('${u}')`),
+		backgroundImage: Nullable.Value(props?.backgroundUrl, undefined, (u) => `url('${u}')`),
 		backgroundRepeat: props?.backgroundRepeat,
 		backgroundSize: props?.backgroundSize,
 	};

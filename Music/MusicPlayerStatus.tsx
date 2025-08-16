@@ -26,7 +26,7 @@ export const MusicPlayerStatus: React.FC<{ className?: string; forPortable?: tru
 				<PlayStateIcon state={playState} />
 
 				<Layout direction="row" overflowX="hidden" width="100%" textOverflow="ellipsis" whiteSpace="nowrap" display="block" grow>
-					{Nullable.ValueOrDefault(current, <TranslatedText textKey="PriorityIdle" />, (c) => <>{c.PlaylistItem.Item.Name}</>)}
+					{Nullable.Value(current, <TranslatedText textKey="PriorityIdle" />, (c) => <>{c.PlaylistItem.Item.Name}</>)}
 				</Layout>
 
 				{props.forPortable && (

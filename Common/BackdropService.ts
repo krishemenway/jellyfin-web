@@ -19,7 +19,7 @@ export class BackdropService {
 	}
 
 	private FindBackdropImage(): string|undefined {
-		return Nullable.ValueOrDefault(this.Current.Value, undefined, (c) => getImageApi(ServerService.Instance.CurrentApi).getItemImageUrl(c, "Backdrop" ));
+		return Nullable.Value(this.Current.Value, undefined, (c) => getImageApi(ServerService.Instance.CurrentApi).getItemImageUrl(c, "Backdrop" ));
 	}
 
 	public Current: Observable<BaseItemDto|undefined>;

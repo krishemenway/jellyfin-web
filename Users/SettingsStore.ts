@@ -21,7 +21,7 @@ export class Settings {
 	}
 
 	public Read(key: string): string|null {
-		return Nullable.ValueOrDefault(this._fromServer.CustomPrefs, "", preferences => preferences[key]);
+		return Nullable.Value(this._fromServer.CustomPrefs, "", preferences => preferences[key]);
 	}
 
 	public AllKeys(): string[] {

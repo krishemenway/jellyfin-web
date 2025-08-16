@@ -28,7 +28,7 @@ export function AutoCompleteFieldEditor<TOption>(props: SelectFieldEditorProps<T
 	const current = useObservable(props.field.Current);
 
 	const allOptions = props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) }));
-	const selectedOption = Nullable.ValueOrDefault(current, undefined, (c) => allOptions.find((o) => o.value === props.getValue(c)));
+	const selectedOption = Nullable.Value(current, undefined, (c) => allOptions.find((o) => o.value === props.getValue(c)));
 
 	return (
 		<Select

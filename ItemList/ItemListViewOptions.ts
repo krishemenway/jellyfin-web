@@ -11,16 +11,16 @@ import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 
 export class ItemListViewOptions {
 	constructor(itemKindService: BaseItemKindService|null, data?: ItemViewOptionsData) {
-		this.Label = new EditableField("Filter", Nullable.ValueOrDefault(data, "", (d) => d.Label));
+		this.Label = new EditableField("Filter", Nullable.Value(data, "", (d) => d.Label));
 
 		this.ItemKindService = itemKindService;
 		this.NewFilter = new Observable(undefined);
-		this.Filters = new ObservableArray(Nullable.ValueOrDefault(data, [], (d) => d.Filters).map((d) => {
+		this.Filters = new ObservableArray(Nullable.Value(data, [], (d) => d.Filters).map((d) => {
 			const filterType = (itemKindService?.filterOptions ?? []).find((f) => f.type === d.FilterType);
 			return new EditableItemFilter(filterType, d.FilterValue);
 		}));
 
-		this.SortBy = new ObservableArray(Nullable.ValueOrDefault(data, [], (d) => d.Sorts).map((d) => {
+		this.SortBy = new ObservableArray(Nullable.Value(data, [], (d) => d.Sorts).map((d) => {
 			const sort = (itemKindService?.sortOptions ?? []).find((s) => s.field === d.SortType);
 
 			if (sort === undefined) {

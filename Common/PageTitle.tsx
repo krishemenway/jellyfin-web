@@ -12,7 +12,7 @@ export const PageTitle: React.FC<{ text: string|TranslationRequest|undefined|nul
 	const server = useDataOrNull(ServerService.Instance.ServerInfo);
 	const text = typeof props.text === "string" ? props.text : useTranslatedText(props.text) ?? "";
 
-	React.useEffect(() => { document.title = text + Nullable.ValueOrDefault(server, "", (s) => ` | ${s.ServerName}`); }, [text, server]);
+	React.useEffect(() => { document.title = text + Nullable.Value(server, "", (s) => ` | ${s.ServerName}`); }, [text, server]);
 
 	return <></>;
 };

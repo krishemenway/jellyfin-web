@@ -62,7 +62,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 	const background = useBackgroundStyles();
 	const seasons = React.useMemo(() => children.filter((i) => i.Type === "Season"), [children]);
 	const allEpisodes = React.useMemo(() => children.filter((i) => i.Type === "Episode"), [children]);
-	const selectedEpisode = Nullable.ValueOrDefault(episodeId, undefined, (e) => allEpisodes.find((i) => i.Id === e));
+	const selectedEpisode = Nullable.Value(episodeId, undefined, (e) => allEpisodes.find((i) => i.Id === e));
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(show), [show]);
 
@@ -99,7 +99,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 				/>
 			</Layout>
 
-			{Nullable.ValueOrDefault(selectedEpisode, <ShowDetails show={show} user={user} seasons={seasons} allEpisodes={allEpisodes} />, (episode) => (
+			{Nullable.Value(selectedEpisode, <ShowDetails show={show} user={user} seasons={seasons} allEpisodes={allEpisodes} />, (episode) => (
 				<EpisodeDetails episode={episode} user={user} />
 			))}
 		</Layout>
