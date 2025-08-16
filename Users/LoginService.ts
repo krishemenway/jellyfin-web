@@ -1,9 +1,10 @@
-import { getQuickConnectApi, getUserApi } from "@jellyfin/sdk/lib/utils/api";
-import { AuthenticationResult, QuickConnectResult, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { getUserApi } from "@jellyfin/sdk/lib/utils/api";
+import { AuthenticationResult, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { EditableField } from "Common/EditableField";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { Observable } from "@residualeffect/reactor";
+import { QuickConnectService } from "./QuickConnect";
 
 export class LoginService {
 	constructor() {
@@ -16,9 +17,6 @@ export class LoginService {
 
 		this.User = new Receiver("UnknownError");
 		this.AuthenticationResponse = new Receiver("UnknownError");
-		this.QuickConnectResult = new Receiver("UnknownError");
-
-		this.QuickConnectPollingIntervalId = 0;
 
 		this.AuthenticationResponse.OnReceived.push((response) => {
 			if (!response.User?.Id) {
@@ -56,7 +54,7 @@ export class LoginService {
 	}
 
 	public SignInWithCredentials(): void {
-		this.AuthenticationResponse.Start(async () => {
+		this.AuthenticationResponse.Start(() => {
 			const userName = this.UserName.Current.Value;
 			const password = this.Password.Current.Value;
 
@@ -64,48 +62,11 @@ export class LoginService {
 		});
 	}
 
-	public FindQuickConnectTokenAndBeginWaitingForAuthentication(): void {
-		this.QuickConnectResult.Start(async (abort): Promise<QuickConnectResult> => {
-			const response = await getQuickConnectApi(ServerService.Instance.CurrentApi).initiateQuickConnect({ signal: abort.signal, headers: { Authorization: ServerService.Instance.CurrentApi.authorizationHeader }});
-
-			if (response.data.Secret !== undefined) {
-				this.StartQuickConnectPolling(response.data.Secret);
-			}
-
-			return response.data;
-		});
-	}
-
 	public Dispose(): void {
 		this.AllFields.forEach((f) => f.Revert());
 		this.AuthenticationResponse.Reset();
-		this.QuickConnectResult.Reset();
-
-		this.StopQuickConnectPolling();
-	}
-
-	private StartQuickConnectPolling(secret: string): void {
-		this.QuickConnectPollingIntervalId = window.setInterval(() => {
-			this.QuickConnectResult.Start(async (abort): Promise<QuickConnectResult> => {
-				const result = (await getQuickConnectApi(ServerService.Instance.CurrentApi).getQuickConnectState({ secret: secret }, { signal: abort.signal })).data;
-
-				if (result.Authenticated === true) {
-					this.StopQuickConnectPolling();
-
-					this.AuthenticationResponse.Start(async (abort) => {
-						return (await getUserApi(ServerService.Instance.CurrentApi).authenticateWithQuickConnect({ quickConnectDto: { Secret: secret }}, { signal: abort.signal })).data;
-					});
-				}
-
-				return result;
-			}, true);
-		}, 5000);
-	}
-
-	private StopQuickConnectPolling() {
-		if (this.QuickConnectPollingIntervalId !== 0) {
-			window.clearInterval(this.QuickConnectPollingIntervalId);
-		}
+		QuickConnectService.Instance.Dispose();
+		
 	}
 
 	private get AllFields(): EditableField[] {
@@ -122,12 +83,9 @@ export class LoginService {
 
 	public ShowForgotPassword: Observable<boolean>;
 
-	public QuickConnectResult: Receiver<QuickConnectResult>;
 	public AuthenticationResponse: Receiver<AuthenticationResult>;
 
 	public User: Receiver<UserDto>;
-
-	private QuickConnectPollingIntervalId: number;
 
 	static get Instance(): LoginService {
 		return this._instance ?? (this._instance = new LoginService());

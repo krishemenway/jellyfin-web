@@ -2,7 +2,7 @@ import * as React from "react";
 import { useBackgroundStyles } from "AppStyles";
 import { TranslatedText } from "Common/TranslatedText";
 import { TextField } from "Common/TextField";
-import { Layout } from "Common/Layout";
+import { Layout, StyleLayoutProps } from "Common/Layout";
 import { Button } from "Common/Button";
 import { Form } from "Common/Form";
 import { ServerService } from "Servers/ServerService";
@@ -13,7 +13,7 @@ import { useError } from "Common/Loading";
 import { Receiver } from "Common/Receiver";
 import { RequestError } from "Common/RequestError";
 
-export const ConnectToServer: React.FC<{ open: boolean }> = ({ open }) => {
+export const ConnectToServer: React.FC<{ open: boolean; onClosed: () => void; }&StyleLayoutProps> = ({ open, onClosed, ...props }) => {
 	const background = useBackgroundStyles();
 	const showErrors = useObservable(ServerService.Instance.TryAddServerErrorMessagesShown);
 	const submitError = useError(ServerService.Instance.TryAddServerResult as Receiver<unknown>);
@@ -21,7 +21,7 @@ export const ConnectToServer: React.FC<{ open: boolean }> = ({ open }) => {
 	React.useEffect(() => ServerService.Instance.ResetTryAddServer(), [open]);
 
 	return (
-		<Form onSubmit={() => ServerService.Instance.TryAddServer()} direction="column" justifyContent="center" gap="2em" className={background.panel} px="1em" py="1em">
+		<Form onSubmit={() => { ServerService.Instance.TryAddServer(onClosed); }} direction="column" justifyContent="center" gap="2em" className={background.panel} px="1em" py="1em" {...props}>
 			<Layout elementType="h2" direction="row" fontSize="1.2em"><TranslatedText textKey="HeaderConnectToServer" /></Layout>
 
 			<Layout direction="column" gap=".5em">

@@ -10,7 +10,7 @@ export enum LoadState {
 
 export interface ReceiverData<TReceivedData> {
 	readonly ReceivedData: TReceivedData | null;
-	readonly ErrorMessage: string;
+	readonly ErrorMessage: string | undefined;
 	readonly State: LoadState;
 }
 
@@ -57,7 +57,7 @@ export class Receiver<TReceivedData> {
 	 * @param data Received data.
 	 */
 	public Received(data: TReceivedData): void {
-		this.SetWritableData({ ReceivedData: data, State: LoadState.Received, ErrorMessage: "" });
+		this.SetWritableData({ ReceivedData: data, State: LoadState.Received, ErrorMessage: undefined });
 		this.OnReceived.forEach((f) => f(data));
 	}
 

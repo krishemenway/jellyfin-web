@@ -3,8 +3,9 @@ import { CenteredModal } from "Common/Modal";
 import { Servers } from "Servers/Servers";
 import { Button, ButtonProps } from "Common/Button";
 import { ServerIcon } from "Servers/ServerIcon";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
-export const ChangeServerButton: React.FC<{ withoutIcon?: boolean; onOpened: () => void }&Partial<ButtonProps>> = (props) => {
+export const ChangeServerButton: React.FC<{ withoutIcon?: boolean; onOpened?: () => void }&Partial<ButtonProps>> = (props) => {
 	const [changingServer, setChangingServer] = React.useState(false);
 
 	return (
@@ -12,11 +13,11 @@ export const ChangeServerButton: React.FC<{ withoutIcon?: boolean; onOpened: () 
 			<Button
 				{...props}
 				icon={props.withoutIcon === true ? <></> : <ServerIcon />} label="ButtonChangeServer"
-				type="button" onClick={() => { props.onOpened(); setChangingServer(true); }}
+				type="button" onClick={() => { Nullable.TryExecute(props.onOpened, (o) => o()); setChangingServer(true); }}
 			/>
 
 			<CenteredModal noPanel open={changingServer} onClosed={() => { setChangingServer(false); }}>
-				<Servers open={changingServer} />
+				<Servers open={changingServer} onClosed={() => { setChangingServer(false); }} />
 			</CenteredModal>
 		</>
 	);

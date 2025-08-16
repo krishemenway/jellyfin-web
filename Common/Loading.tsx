@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useObservable } from "@residualeffect/rereactor";
 import { LoadState, Receiver, ReceiverData } from "Common/Receiver";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export interface BaseLoadingComponentProps {
 	minimumTimeRequiredToRender?: number;
@@ -19,7 +20,7 @@ export interface BaseLoadingComponentProps {
  * @param receiver Receiver to observe for state changes.
  * @returns If the receiver is busy loading data.
  */
-export function isBusy(receiver: Receiver<unknown>): boolean {
+export function useIsBusy(receiver: Receiver<unknown>): boolean {
 	return useObservable(receiver.IsBusy);
 }
 
@@ -28,7 +29,7 @@ export function isBusy(receiver: Receiver<unknown>): boolean {
  * @param receiver Receiver to observe for state changes.
  * @returns If the receiver is busy loading data.
  */
-export function useError(receiver: Receiver<unknown>): string {
+export function useError(receiver: Receiver<unknown>): string|undefined {
 	return useObservable(receiver.Data).ErrorMessage;
 }
 
@@ -68,7 +69,7 @@ function LoadingComponent(props: { receivers: Receiver<unknown>[], whenReceived:
 
 	switch (receiveState) {
 		case LoadState.Failed:
-			return props.whenError(receiverData.map((data) => data.ErrorMessage).filter(message => (message?.length ?? 0) > 0));
+			return props.whenError(receiverData.map((data) => data.ErrorMessage).filter(message => Nullable.HasValue(message)));
 		case LoadState.Received:
 			return props.whenReceived(...receiverData.map((data) => data.ReceivedData));
 		case LoadState.NotStarted:

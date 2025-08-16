@@ -10,7 +10,7 @@ import { ServerIcon } from "Servers/ServerIcon";
 import { TranslatedText } from "Common/TranslatedText";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
 
-export const Servers: React.FC<{ open: boolean; }> = ({ open }) => {
+export const Servers: React.FC<{ open: boolean; onClosed: () => void; }> = ({ open, onClosed }) => {
 	const background = useBackgroundStyles();
 	const servers = useObservable(ServerService.Instance.Servers);
 	React.useEffect(() => { ServerService.Instance.AttemptSetupOfCurrentDomainAsServer(); }, []);
@@ -28,7 +28,7 @@ export const Servers: React.FC<{ open: boolean; }> = ({ open }) => {
 						<Layout key={server.Id} direction="row" position="relative">
 							<Button
 								transparent px="1em" py="1em" textAlign="start" width="80%" gap="1em"
-								type="button" onClick={() => ServerService.Instance.SelectServerConnection(server)}
+								type="button" onClick={() => { ServerService.Instance.SelectServerConnection(server); onClosed(); }}
 								selected={server === ServerService.Instance.CurrentServer}
 								children={server.Name} icon={<ServerIcon />}
 							/>
@@ -45,7 +45,7 @@ export const Servers: React.FC<{ open: boolean; }> = ({ open }) => {
 				/>
 			</Layout>
 			
-			<ConnectToServer open={open} />
+			<ConnectToServer open={open} onClosed={onClosed} />
 		</Layout>
 	);
 };

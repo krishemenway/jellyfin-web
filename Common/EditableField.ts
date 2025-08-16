@@ -2,18 +2,18 @@ import { Computed, Observable } from "@residualeffect/reactor";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 
 export class EditableField<T = string> {
-	constructor(fieldId: string, defaultValue: T, canMakeRequestFunc?: (current: T) => string, beforeChange?: (newValue: T) => T) {
+	constructor(fieldId: string, defaultValue: T, canMakeRequestFunc?: (current: T) => string|undefined, beforeChange?: (newValue: T) => T) {
 		this.FieldId = fieldId;
-		this.CanMakeRequestFunc = canMakeRequestFunc ?? (() => "");
+		this.CanMakeRequestFunc = canMakeRequestFunc ?? (() => undefined);
 		this.BeforeChange = beforeChange ?? ((newValue) => newValue);
 
 		this.Saved = new Observable(defaultValue);
 		this.Current = new Observable(this.Saved.Value);
 
 		this.HasChanged = new Computed(() => this.Current.Value !== this.Saved.Value);
-		this.ServerErrorMessage = new Observable("");
+		this.ServerErrorMessage = new Observable(undefined);
 
-		this.ErrorMessage = new Computed<string>(() => Linq.Coalesce([this.CanMakeRequestFunc(this.Current.Value)], this.ServerErrorMessage.Value));
+		this.ErrorMessage = new Computed<string|undefined>(() => Linq.Coalesce([this.CanMakeRequestFunc(this.Current.Value)], this.ServerErrorMessage.Value));
 	}
 
 	public CanMakeRequest(): boolean {
@@ -22,6 +22,7 @@ export class EditableField<T = string> {
 
 	public OnChange(newValue: T) {
 		this.Current.Value = this.BeforeChange(newValue);
+		this.ServerErrorMessage.Value = undefined;
 	}
 
 	public OnSaved(): void {
@@ -35,6 +36,7 @@ export class EditableField<T = string> {
 
 	public Revert(): void {
 		this.Current.Value = this.Saved.Value;
+		this.ServerErrorMessage.Value = "";
 	}
 
 	public FieldId: string;
@@ -43,9 +45,9 @@ export class EditableField<T = string> {
 	public Current: Observable<T>;
 	public Saved: Observable<T>;
 	public HasChanged: Computed<boolean>;
-	public ServerErrorMessage: Observable<string>;
+	public ServerErrorMessage: Observable<string|undefined>;
 
-	public ErrorMessage: Computed<string>;
+	public ErrorMessage: Computed<string|undefined>;
 
-	private CanMakeRequestFunc: (current: T) => string;
+	private CanMakeRequestFunc: (current: T) => string|undefined;
 }

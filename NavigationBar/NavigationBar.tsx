@@ -22,21 +22,23 @@ import { SignOutIcon } from "Users/SignOutIcon";
 import { UserViewStore } from "Users/UserViewStore";
 import { LinkToItem } from "Items/LinkToItem";
 import { ChangeServerButton } from "Servers/ChangeServerButton";
+import { QuickConnectService } from "Users/QuickConnect";
 
 export const NavigationBar: React.FC<{ icon?: React.ReactElement; }> = (props) => {
 	const background = useBackgroundStyles();
 
 	React.useEffect(() => UserViewStore.Instance.LoadUserViewsWithAbort(), []);
 	React.useEffect(() => ServerService.Instance.LoadServerInfoWithAbort(), []);
+	React.useEffect(() => QuickConnectService.Instance.LoadQuickConnectEnabled(), []);
 
 	return (
 		<Layout className={background.panel} direction="row" gap="1em" px="1em" py=".5em" width="calc(100% + 2em)" mx="-1em">
 			<Loading
-				receivers={[UserViewStore.Instance.UserViews, ServerService.Instance.ServerInfo]}
+				receivers={[UserViewStore.Instance.UserViews, ServerService.Instance.ServerInfo, QuickConnectService.Instance.QuickConnectEnabled]}
 				whenNotStarted={<NavigationButton />}
 				whenLoading={<NavigationButton />}
 				whenError={() => <NavigationButton />}
-				whenReceived={(libraries, server) => <OpenNavigationButton libraries={libraries} server={server} />}
+				whenReceived={(libraries, server, quickConnectEnabled) => <OpenNavigationButton libraries={libraries} server={server} quickConnectEnabled={quickConnectEnabled} />}
 			/>
 			{props.icon && (<Layout direction="row" alignItems="center" fontSize="1.5em">{props.icon}</Layout>)}
 			<Layout direction="row" alignItems="center"><Search /></Layout>
@@ -49,7 +51,7 @@ const NavigationButton: React.FC<{ onClick?: (element: HTMLButtonElement) => voi
 }
 
 const NavigationMenuLinkStyles: Partial<StyleLayoutProps> = { width: "100%", px: "1em", py: "1em", gap: ".5em" };
-const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[]; server: SystemInfo }> = ({ libraries, server }) => {
+const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[]; server: SystemInfo; quickConnectEnabled: boolean }> = ({ libraries, server, quickConnectEnabled }) => {
 	const [anchor, setOpenAnchor] = React.useState<HTMLElement|null>(null);
 	const closeNavigation = () => { setOpenAnchor(null); };
 
@@ -99,7 +101,7 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[]; server: SystemI
 						<Layout direction="row" elementType="h3" py="1em" px="1em"><TranslatedText textKey="UserMenu" /></Layout>
 
 						<NavigationMenuItemHyperLink to="/Settings" icon={<SettingsIcon />} text={<TranslatedText textKey="Settings" />} />
-						<AuthorizeQuickConnectButton onOpened={closeNavigation} />
+						{quickConnectEnabled && <AuthorizeQuickConnectButton onOpened={closeNavigation} />}
 						<ChangeServerButton transparent {...NavigationMenuLinkStyles} onOpened={closeNavigation} />
 						<NavigationMenuItemButton icon={<SignOutIcon />} text={<TranslatedText textKey="ButtonSignOut" />} onClick={() => { closeNavigation(); LoginService.Instance.SignOut(); }} />
 					</Layout>
@@ -123,7 +125,7 @@ const AuthorizeQuickConnectButton: React.FC<{ onOpened: () => void }> = (props) 
 			/>
 
 			<CenteredModal open={authorizeQuickConnectOpen} onClosed={() => { setAuthorizeQuickConnectOpen(false); }}>
-				<AuthorizeQuickConnect />
+				<AuthorizeQuickConnect open={authorizeQuickConnectOpen} onClose={() => { setAuthorizeQuickConnectOpen(false); }} />
 			</CenteredModal>
 		</>
 	);

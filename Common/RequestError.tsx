@@ -1,20 +1,20 @@
 import * as React from "react";
 import { TranslatedText } from "Common/TranslatedText";
-import { Layout } from "Common/Layout";
 import { useBackgroundStyles } from "AppStyles";
+import { Nullable } from "./MissingJavascriptFunctions";
 
 interface RequestErrorProps {
 	className?: string;
-	errorKey: string;
+	errorKey?: string;
 	showErrors: boolean;
 }
 
 export const RequestError: React.FC<RequestErrorProps> = (props) => {
 	const background = useBackgroundStyles();
 
-	if (!props.showErrors) {
+	if (!props.showErrors || !Nullable.HasValue(props.errorKey)) {
 		return <></>;
 	}
 
-	return <Layout className={background.error} direction="row"><TranslatedText textKey={props.errorKey} /></Layout>;
+	return <TranslatedText textKey={props.errorKey} elementType="p" className={background.error} />;
 };

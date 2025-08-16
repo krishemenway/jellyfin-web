@@ -34,7 +34,7 @@ enum ConnectionMode {
 export class ServerService {
 	constructor() {
 		this.Servers = new ObservableArray(this.LoadServersFromLocalStorage());
-		this.TryAddServerHost = new EditableField("LabelServerHost", "", (current) => !Nullable.StringHasValue(current) ? "ValueIsRequiredMessage" : "");
+		this.TryAddServerHost = new EditableField("LabelServerHost", "", (current) => !Nullable.StringHasValue(current) ? "ValueIsRequiredMessage" : undefined);
 		this.TryAddServerResult = new Receiver("UnknownError");
 		this.TryAddServerErrorMessagesShown = new Observable(false);
 		this.ServerInfo = new Receiver("UnknownError");
@@ -73,14 +73,14 @@ export class ServerService {
 		this.SetServersToLocalStorage();
 	}
 
-	public TryAddServer(): void {
+	public TryAddServer(onSuccess: () => void): void {
 		this.TryAddServerErrorMessagesShown.Value = true;
 
 		if (!this.TryAddServerHost.CanMakeRequest()) {
 			return;
 		}
 
-		this.TryAddServerResult.Start(async (abort) => this.CheckSystemInfoForHost(this.TryAddServerHost.Current.Value, abort));
+		this.TryAddServerResult.Start(async (abort) => this.CheckSystemInfoForHost(this.TryAddServerHost.Current.Value, onSuccess, abort));
 	}
 
 	public ResetTryAddServer(): () => void {
@@ -126,7 +126,7 @@ export class ServerService {
 		return () => this.ServerInfo.ResetIfLoading();
 	}
 
-	private CheckSystemInfoForHost(host: string, abort?: AbortController): Promise<boolean> {
+	private CheckSystemInfoForHost(host: string, onSuccess?: () => void, abort?: AbortController): Promise<boolean> {
 		return getSystemApi(this.CreateJellyfin().createApi(host)).getPublicSystemInfo({ signal: abort?.signal })
 			.then((response) => {
 				if (Nullable.HasValue(response.data.Id)) {
@@ -145,6 +145,7 @@ export class ServerService {
 					this.SetServersToLocalStorage();
 					this.ResetApiForCurrentServer();
 					this.TryAddServerErrorMessagesShown.Value = false;
+					Nullable.TryExecute(onSuccess, (f) => f());
 					return true;
 				} else {
 					throw new Error("UnknownError");
