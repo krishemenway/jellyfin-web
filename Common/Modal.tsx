@@ -21,6 +21,7 @@ interface ModalProps {
 	noPanel?: boolean;
 	onClosed: () => void;
 	children: React.ReactNode;
+	minWidth?: string;
 	maxWidth?: string;
 }
 
@@ -105,6 +106,7 @@ export const CenteredModal: React.FC<ModalProps> = (props) => {
 		}
 
 		element.className = `${modalClasses.centeredModal} ${props.alternatePanel ? background.alternatePanel : !props.noPanel ? background.panel : ""} ${props.className ?? ""}`;
+		element.style.minWidth = props.minWidth ?? "";
 		element.style.maxWidth = props.maxWidth ?? "";
 
 		return tryCleanupModal;
