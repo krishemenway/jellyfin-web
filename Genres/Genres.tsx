@@ -10,14 +10,18 @@ import { ListOf } from "Common/ListOf";
 import { HyperLink } from "Common/HyperLink";
 import { PageTitle } from "Common/PageTitle";
 import { Layout } from "Common/Layout";
+import { useObservable } from "@residualeffect/rereactor";
+import { ServerService } from "Servers/ServerService";
 
 export const Genres: React.FC = () => {
+	const user = useObservable(ServerService.Instance.CurrentUserId);
+
 	return (
 		<PageWithNavigation icon="Genre">
 			<Layout direction="column" gap="2em" py="1em">
 				<PageTitle text={{ Key: "Genres" }} />
 				<Loading
-					receivers={[UserViewStore.Instance.UserViews]}
+					receivers={[UserViewStore.Instance.FindOrCreateForUser(user)]}
 					whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
 					whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 					whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}

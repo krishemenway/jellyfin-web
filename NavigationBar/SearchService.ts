@@ -65,7 +65,7 @@ export class SearchService {
 		}
 
 		const request: ItemsApiGetItemsRequest = {
-			userId: ServerService.Instance.CurrentUserId,
+			userId: ServerService.Instance.CurrentUserId.Value,
 			enableTotalRecordCount: false,
 			fields: [ ItemFields.PrimaryImageAspectRatio, ItemFields.CanDelete, ItemFields.MediaSourceCount ],
 			limit: 100,

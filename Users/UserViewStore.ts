@@ -5,19 +5,26 @@ import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api";
 
 export class UserViewStore {
 	constructor() {
-		this.UserViews = new Receiver("UnknownError");
+		this._userViewsByUserId = {};
 	}
 
-	public LoadUserViewsWithAbort(): () => void {
-		if (this.UserViews.HasData.Value) {
+	public LoadUserViewsWithAbort(userId: string): () => void {
+		const userViewsForUser = this.FindOrCreateForUser(userId);
+
+		if (userViewsForUser.HasData.Value) {
 			return () => { };
 		}
 
-		this.UserViews.Start((abort) => getUserViewsApi(ServerService.Instance.CurrentApi).getUserViews({ userId: ServerService.Instance.CurrentUserId }, { signal: abort.signal }).then((value) => value.data.Items ?? []));
-		return () => this.UserViews.ResetIfLoading();
+		userViewsForUser.Start((abort) => getUserViewsApi(ServerService.Instance.CurrentApi).getUserViews({ userId: userId }, { signal: abort.signal }).then((value) => value.data.Items ?? []));
+		return () => userViewsForUser.ResetIfLoading();
 	}
 
-	public UserViews: Receiver<BaseItemDto[]>;
+	public FindOrCreateForUser(userId: string): Receiver<BaseItemDto[]> {
+		return this._userViewsByUserId[userId] ?? (this._userViewsByUserId[userId] = new Receiver(`UnknownError${this._iterator++}`));
+	}
+
+	private _iterator = 0;
+	private _userViewsByUserId: Record<string, Receiver<BaseItemDto[]>>;
 
 	static get Instance(): UserViewStore {
 		return this._instance ?? (this._instance = new UserViewStore());

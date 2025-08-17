@@ -5,6 +5,7 @@ import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { Observable } from "@residualeffect/reactor";
 import { QuickConnectService } from "./QuickConnect";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export class LoginService {
 	constructor() {
@@ -33,7 +34,7 @@ export class LoginService {
 	}
 
 	public LoadUser(): () => void {
-		if (ServerService.Instance.Servers.length === 0 || ServerService.Instance.CurrentUserId.length === 0) {
+		if (ServerService.Instance.Servers.length === 0 || !Nullable.StringHasValue(ServerService.Instance.CurrentUserId.Value)) {
 			return () => { };
 		}
 

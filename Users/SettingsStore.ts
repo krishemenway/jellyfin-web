@@ -54,7 +54,7 @@ export class SettingsStore {
 			throw new Error("Cannot load settings for missing id");
 		}
 
-		this.Settings.Start((a) => getDisplayPreferencesApi(ServerService.Instance.CurrentApi).getDisplayPreferences({ client: "emby", userId: ServerService.Instance.CurrentUserId, displayPreferencesId: id }, { signal: a.signal }).then((response) => {
+		this.Settings.Start((a) => getDisplayPreferencesApi(ServerService.Instance.CurrentApi).getDisplayPreferences({ client: "emby", userId: ServerService.Instance.CurrentUserId.Value, displayPreferencesId: id }, { signal: a.signal }).then((response) => {
 			return new Settings(id, response.data);
 		}));
 
@@ -62,7 +62,7 @@ export class SettingsStore {
 	}
 
 	public SaveSettings(settings: DisplayPreferencesDto): void {
-		this.SaveSettingsResult.Start((abort) => getDisplayPreferencesApi(ServerService.Instance.CurrentApi).updateDisplayPreferences({ client: "emby", userId: ServerService.Instance.CurrentUserId, displayPreferencesId: settings.Id!, displayPreferencesDto: settings }, { signal: abort.signal }).then((response) => response.status === 200));
+		this.SaveSettingsResult.Start((abort) => getDisplayPreferencesApi(ServerService.Instance.CurrentApi).updateDisplayPreferences({ client: "emby", userId: ServerService.Instance.CurrentUserId.Value, displayPreferencesId: settings.Id!, displayPreferencesDto: settings }, { signal: abort.signal }).then((response) => response.status === 200));
 	}
 
 	public Settings: Receiver<Settings>;

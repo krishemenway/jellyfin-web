@@ -19,7 +19,7 @@ export class ItemDataService {
 			return () => { };
 		}
 
-		this.Item.Start((a) => getUserLibraryApi(ServerService.Instance.CurrentApi).getItem({ itemId: this.Id, userId: ServerService.Instance.CurrentUserId }, { signal: a.signal }).then(response => response.data));
+		this.Item.Start((a) => getUserLibraryApi(ServerService.Instance.CurrentApi).getItem({ itemId: this.Id, userId: ServerService.Instance.CurrentUserId.Value }, { signal: a.signal }).then(response => response.data));
 		return () => this.Item.ResetIfLoading();
 	}
 
@@ -29,7 +29,7 @@ export class ItemDataService {
 		}
 
 		const baseRequest: Partial<ItemsApiGetItemsRequest> = { enableUserData: true,
-			userId: ServerService.Instance.CurrentUserId,
+			userId: ServerService.Instance.CurrentUserId.Value,
 			parentId: withParentId !== false ? this.Id : undefined,
 			fields: ["Overview", "Tags", "ExternalUrls", "Genres", "Studios", "People", "ProductionLocations", "MediaSourceCount"],
 			sortBy: ["PremiereDate"],

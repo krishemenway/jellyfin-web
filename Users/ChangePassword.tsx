@@ -19,7 +19,7 @@ class ChangePasswordService {
 	public ChangePassword(): void {
 		getUserApi(ServerService.Instance.CurrentApi).updateUserPassword({
 			updateUserPassword: { CurrentPw: this.Current.Current.Value, NewPw: this.New.Current.Value },
-			userId: ServerService.Instance.CurrentUserId,
+			userId: ServerService.Instance.CurrentUserId.Value,
 		});
 	}
 

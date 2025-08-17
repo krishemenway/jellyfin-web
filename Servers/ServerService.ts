@@ -1,5 +1,5 @@
 import { Api, Jellyfin } from "@jellyfin/sdk";
-import { Observable, ObservableArray } from "@residualeffect/reactor";
+import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
 import { EditableField } from "Common/EditableField";
 import { Receiver } from "Common/Receiver";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
@@ -38,6 +38,7 @@ export class ServerService {
 		this.TryAddServerResult = new Receiver("UnknownError");
 		this.TryAddServerErrorMessagesShown = new Observable(false);
 		this.ServerInfo = new Receiver("UnknownError");
+		this.CurrentUserId = new Computed(() => this.CurrentServer.UserId ?? "");
 		this._apis = {};
 	}
 
@@ -62,10 +63,6 @@ export class ServerService {
 
 	public get CurrentServer(): ServerConnection {
 		return this.Servers.Value[0];
-	}
-
-	public get CurrentUserId(): string {
-		return this.CurrentServer.UserId ?? "";
 	}
 
 	public Remove(server: ServerConnection): void {
@@ -100,6 +97,9 @@ export class ServerService {
 		this.Servers.unshift(connection);
 		this.SetServersToLocalStorage();
 		this.ResetApiForCurrentServer();
+
+		this.ServerInfo.Reset();
+		this.LoadServerInfoWithAbort();
 	}
 
 	public SetAccessTokenForServer(accessToken: string|null, userId: string|null): void {
@@ -197,6 +197,7 @@ export class ServerService {
 
 	public Servers: ObservableArray<ServerConnection>;
 	public ServerInfo: Receiver<SystemInfo>;
+	public CurrentUserId: Computed<string>;
 
 	public TryAddServerHost: EditableField;
 	public TryAddServerResult: Receiver<boolean>;

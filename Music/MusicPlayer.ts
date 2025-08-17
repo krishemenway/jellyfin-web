@@ -226,7 +226,7 @@ export class MusicPlayer {
 		const api = ServerService.Instance.CurrentApi;
 
 		const queryParams = new URLSearchParams({
-			UserId: ServerService.Instance.CurrentUserId,
+			UserId: ServerService.Instance.CurrentUserId.Value,
 			DeviceId: api.deviceInfo.id,
 			MaxStreamingBitrate: "321754827",
 			Container: "opus,webm|opus,ts|mp3,mp3,aac,m4a|aac,m4b|aac,flac,webma,webm|webma,wav,ogg",

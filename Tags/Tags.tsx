@@ -10,13 +10,17 @@ import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { ListOf } from "Common/ListOf";
 import { TagLink } from "Tags/TagLink";
 import { Layout } from "Common/Layout";
+import { useObservable } from "@residualeffect/rereactor";
+import { ServerService } from "Servers/ServerService";
 
 export const Tags: React.FC = () => {
+	const user = useObservable(ServerService.Instance.CurrentUserId);
+
 	return (
 		<PageWithNavigation icon={<TagIcon />}>
 			<Layout direction="column" grow alignItems="center" justifyContent="center">
 				<Loading
-					receivers={[UserViewStore.Instance.UserViews]}
+					receivers={[UserViewStore.Instance.FindOrCreateForUser(user)]}
 					whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
 					whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 					whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}

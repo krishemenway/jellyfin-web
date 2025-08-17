@@ -4,7 +4,7 @@ import { useComputed, useObservable } from "@residualeffect/rereactor";
 import { ResponsiveBreakpoint, useBreakpoint } from "AppStyles";
 import { Layout } from "Common/Layout";
 import { ListOf } from "Common/ListOf";
-import { Loading } from "Common/Loading";
+import { Loading, useDataOrNull } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
@@ -22,12 +22,16 @@ import { UserViewStore } from "Users/UserViewStore";
 import { PageTitle } from "Common/PageTitle";
 import { ItemFilterService } from "Items/ItemFilterService";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
+import { ServerService } from "Servers/ServerService";
+import { Navigate } from "react-router-dom";
 
 export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = (props) => {
 	const routeParams = useParams();
+	const userId = useObservable(ServerService.Instance.CurrentUserId);
+	const librariesOrNull = useDataOrNull(UserViewStore.Instance.FindOrCreateForUser(userId));
 	const libraryId = routeParams[props.paramName];
 	const optionsName = routeParams.optionsName;
-	
+
 	if (!Nullable.HasValue(libraryId)) {
 		return <PageWithNavigation icon={props.itemKind}><NotFound /></PageWithNavigation>;
 	}
@@ -38,18 +42,22 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 	React.useEffect(() => SettingsStore.Instance.LoadSettings(libraryId), [libraryId]);
 	React.useEffect(() => ItemFilterService.Instance.LoadFiltersWithAbort([libraryId]), [libraryId]);
 
+	if ((librariesOrNull ?? []).every((l) => l.Id !== libraryId)) {
+		return <Navigate to="/" />;
+	}
+
 	return (
 		<PageWithNavigation icon={props.itemKind}>
 			<Loading
-				receivers={[itemList.List, SettingsStore.Instance.Settings, LoginService.Instance.User, UserViewStore.Instance.UserViews, ItemFilterService.Instance.FindOrCreateFiltersReceiver([libraryId])]}
+				receivers={[itemList.List, SettingsStore.Instance.Settings, LoginService.Instance.User, ItemFilterService.Instance.FindOrCreateFiltersReceiver([libraryId])]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-				whenReceived={(items, settings, user, libraries, filters) => (
+				whenReceived={(items, settings, user, filters) => (
 					<ItemsGrid
 						libraryId={libraryId} optionsName={optionsName} itemList={itemList}
 						items={items.List} settings={settings}
-						user={user} libraries={libraries}
+						user={user} libraries={librariesOrNull ?? []}
 						itemKind={props.itemKind} filters={filters}
 					/>
 				)}
@@ -63,6 +71,7 @@ const ItemsGrid: React.FC<{ libraryId: string, optionsName?: string; items: Base
 	const itemKindService = BaseItemKindServiceFactory.FindOrNull(props.itemKind);
 	const listOptions = useObservable(props.itemList.ListOptions);
 	const library = Linq.Single(props.libraries, (l) => l.Id === props.libraryId);
+
 
 	const filteredAndSortedItems = useComputed(() => {
 		const options = props.itemList.ListOptions.Value;

@@ -1,8 +1,8 @@
 import * as React from "react";
 import { ItemProps, TableProps, TableVirtuoso, Virtuoso } from "react-virtuoso";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
-import { Loading } from "Common/Loading";
+import { Loading, useDataOrNull } from "Common/Loading";
 import { ItemService } from "Items/ItemsService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
@@ -28,9 +28,12 @@ import { SortByNumber, SortByObjects, SortByString } from "Common/Sort";
 import { ObservableArray } from "@residualeffect/reactor";
 import { MusicPlayerStatus } from "Music/MusicPlayerStatus";
 import { PlayStateIcon } from "Music/PlayStateIcon";
+import { ServerService } from "Servers/ServerService";
 
 export const Music: React.FC = () => {
 	const libraryId = useParams().libraryId;
+	const userId = useObservable(ServerService.Instance.CurrentUserId);
+	const librariesOrNull = useDataOrNull(UserViewStore.Instance.FindOrCreateForUser(userId));
 
 	if (!Nullable.HasValue(libraryId)) {
 		return <PageWithNavigation icon="Audio"><NotFound /></PageWithNavigation>;
@@ -46,14 +49,18 @@ export const Music: React.FC = () => {
 	React.useEffect(() => SettingsStore.Instance.LoadSettings(libraryId), [libraryId]);
 	React.useEffect(() => MusicPlayer.Instance.CloseMiniPlayerAndReopenIfNecessary(), [libraryId]);
 
+	if ((librariesOrNull ?? []).every((l) => l.Id !== libraryId)) {
+		return <Navigate to="/" />;
+	}
+
 	return (
 		<PageWithNavigation icon="Audio">
 			<Loading
-				receivers={[SettingsStore.Instance.Settings, LoginService.Instance.User, UserViewStore.Instance.UserViews]}
+				receivers={[SettingsStore.Instance.Settings, LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-				whenReceived={(settings, user, libraries) => <LoadedMusicLibrary libraryId={libraryId} settings={settings} user={user} libraries={libraries} />}
+				whenReceived={(settings, user) => <LoadedMusicLibrary libraryId={libraryId} settings={settings} user={user} libraries={librariesOrNull ?? []} />}
 			/>
 		</PageWithNavigation>
 	);

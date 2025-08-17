@@ -8,6 +8,6 @@ export const AddToFavoritesAction: ItemMenuAction = {
 	icon: (p) => <ItemFavoriteIcon {...p} />,
 	textKey: "AddToFavorites",
 	action: (items) => {
-		Promise.all(items.map((item) => getUserLibraryApi(ServerService.Instance.CurrentApi).markFavoriteItem({ itemId: item.Id ?? "", userId: ServerService.Instance.CurrentUserId })));
+		Promise.all(items.map((item) => getUserLibraryApi(ServerService.Instance.CurrentApi).markFavoriteItem({ itemId: item.Id ?? "", userId: ServerService.Instance.CurrentUserId.Value })));
 	},
 };

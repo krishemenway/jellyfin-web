@@ -33,7 +33,7 @@ export class QuickConnectService {
 			return;
 		}
 
-		this.AuthorizeResult.Start((a) => getQuickConnectApi(ServerService.Instance.CurrentApi).authorizeQuickConnect({ code: this.QuickConnectCode.Current.Value.trim(), userId: ServerService.Instance.CurrentUserId }, { signal: a.signal }).then((r) => r.data ?? false).catch((error) => {
+		this.AuthorizeResult.Start((a) => getQuickConnectApi(ServerService.Instance.CurrentApi).authorizeQuickConnect({ code: this.QuickConnectCode.Current.Value.trim(), userId: ServerService.Instance.CurrentUserId.Value }, { signal: a.signal }).then((r) => r.data ?? false).catch((error) => {
 			if (error.response.status === 404) {
 				this.QuickConnectCode.ServerErrorMessage.Value = "QuickConnectAuthorizeFail";
 				return false;

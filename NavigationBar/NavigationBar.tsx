@@ -23,18 +23,20 @@ import { UserViewStore } from "Users/UserViewStore";
 import { LinkToItem } from "Items/LinkToItem";
 import { ChangeServerButton } from "Servers/ChangeServerButton";
 import { QuickConnectService } from "Users/QuickConnect";
+import { useObservable } from "@residualeffect/rereactor";
 
 export const NavigationBar: React.FC<{ icon?: React.ReactElement; }> = (props) => {
 	const background = useBackgroundStyles();
+	const userId = useObservable(ServerService.Instance.CurrentUserId);
 
-	React.useEffect(() => UserViewStore.Instance.LoadUserViewsWithAbort(), []);
-	React.useEffect(() => ServerService.Instance.LoadServerInfoWithAbort(), []);
-	React.useEffect(() => QuickConnectService.Instance.LoadQuickConnectEnabled(), []);
+	React.useEffect(() => UserViewStore.Instance.LoadUserViewsWithAbort(userId), [userId]);
+	React.useEffect(() => ServerService.Instance.LoadServerInfoWithAbort(), [userId]);
+	React.useEffect(() => QuickConnectService.Instance.LoadQuickConnectEnabled(), [userId]);
 
 	return (
 		<Layout className={background.panel} direction="row" gap="1em" px="1em" py=".5em" width="calc(100% + 2em)" mx="-1em">
 			<Loading
-				receivers={[UserViewStore.Instance.UserViews, ServerService.Instance.ServerInfo, QuickConnectService.Instance.QuickConnectEnabled]}
+				receivers={[UserViewStore.Instance.FindOrCreateForUser(userId), ServerService.Instance.ServerInfo, QuickConnectService.Instance.QuickConnectEnabled]}
 				whenNotStarted={<NavigationButton />}
 				whenLoading={<NavigationButton />}
 				whenError={() => <NavigationButton />}
