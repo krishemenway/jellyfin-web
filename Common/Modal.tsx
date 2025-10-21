@@ -4,12 +4,13 @@ import { useLocation } from "react-router-dom";
 import { createUseStyles } from "react-jss";
 import { ObservableArray } from "@residualeffect/reactor";
 import { useBackgroundStyles } from "AppStyles";
+import { DimensionZLayers } from "Common/Layout";
 
 const body = document.getElementsByTagName("body")[0];
 const modalRoot = document.createElement('div');
 body.appendChild(modalRoot);
 
-let lastZIndex: number = 10;
+let lastZIndex: number = DimensionZLayers.Modal;
 const outsideModalClickHandlerEvents: ObservableArray<(evt: MouseEvent) => void> = new ObservableArray([]);
 const escapeModalKeyHandlerEvents: ObservableArray<(evt: KeyboardEvent) => void> = new ObservableArray([]);
 const closedFuncs: ObservableArray<() => void> = new ObservableArray([]);
@@ -94,7 +95,7 @@ export const CenteredModal: React.FC<ModalProps> = (props) => {
 			}
 
 			if (modalRoot.children.length === 0) {
-				lastZIndex = 10;
+				lastZIndex = DimensionZLayers.Modal;
 			}
 
 			modalRoot.removeEventListener("click", outsideModalClickHandler);
@@ -152,7 +153,7 @@ export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
 			tryCleanupModal();
 
 			if (modalRoot.children.length === 0) {
-				lastZIndex = 10;
+				lastZIndex = DimensionZLayers.Modal;
 			}
 
 			modalRoot.removeEventListener("click", outsideModalClickHandler);
@@ -224,7 +225,7 @@ const useStyles = createUseStyles({
 		bottom: 0,
 		left: 0,
 		right: 0,
-		zIndex: 10,
+		zIndex: DimensionZLayers.Modal,
 		display: "none",
 
 		".is-open &": {

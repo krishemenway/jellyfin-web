@@ -34,7 +34,7 @@ export const CollectionFolderService: BaseItemKindService = {
 		switch(item.CollectionType?.toLowerCase()) {
 			case "movies": return `/Movies/${item.Id}`;
 			case "tvshows": return `/Shows/${item.Id}`;
-			case "music": return `/Music/${item.Id}`;
+			case "music": return `/Music/Albums/${item.Id}`;
 			case "musicvideos": return `/MusicVideos/${item.Id}`;
 			case "trailers": return `/Trailers/${item.Id}`;
 			case "homevideos": return `/HomeVideos/${item.Id}`;

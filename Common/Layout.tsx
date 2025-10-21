@@ -2,6 +2,12 @@ import * as React from "react";
 import { Property } from "csstype";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 
+export enum DimensionZLayers {
+	Default = 0,
+	Player = 5,
+	Modal = 10,
+}
+
 export interface StyleLayoutPropsWithRequiredDirection extends StyleLayoutProps {
 	direction: Property.FlexDirection;
 }
@@ -23,6 +29,7 @@ export interface LayoutWithoutChildrenProps {
 	bottom?: Property.Bottom,
 	right?: Property.Right,
 	left?: Property.Left,
+	zIndex?: Property.ZIndex,
 
 	overflowY?: Property.OverflowY;
 	overflowX?: Property.OverflowX;
@@ -108,6 +115,7 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		bottom: props?.bottom,
 		left: props?.left,
 		right: props?.right,
+		zIndex: props?.zIndex,
 
 		overflowX: props?.overflowX,
 		overflowY: props?.overflowY,

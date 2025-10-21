@@ -3,6 +3,11 @@ export class Linq {
 		return array.filter((value, index) => array.indexOf(value) === index);
 	}
 
+	public static First<T>(array: T[], matchFunc?: (t: T) => boolean): T {
+		const result = Nullable.Value(matchFunc, array, (match) => array.filter(match));
+		return result[0];
+	}
+
 	public static Single<T>(array: T[], matchFunc?: (t: T) => boolean): T {
 		const result = Nullable.Value(matchFunc, array, (match) => array.filter(match));
 

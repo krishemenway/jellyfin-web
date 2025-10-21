@@ -7,7 +7,6 @@ import { useObservable } from "@residualeffect/rereactor";
 import { BackdropService } from "Common/BackdropService";
 import { ThemeService } from "Users/ThemeService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { PortableMusicPlayer } from "Music/PortableMusicPlayer";
 
 export const PageWithNavigation: React.FC<{ icon: React.ReactElement|BaseItemKind; children?: React.ReactNode; }> = (props) => {
 	const backdropUrl = useObservable(BackdropService.Instance.CurrentBackdropImageUrl);
@@ -19,8 +18,6 @@ export const PageWithNavigation: React.FC<{ icon: React.ReactElement|BaseItemKin
 				<NavigationBar key="navigation-bar" icon={typeof props.icon === "string" ? <IconForItemKind itemKind={props.icon} /> : props.icon} />
 				<Layout key="page-content" direction="column" gap="1em" className="page-content" children={props.children} grow />
 			</Layout>
-
-			<PortableMusicPlayer />
 		</Layout>
 	);
 };

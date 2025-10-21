@@ -1,46 +1,36 @@
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api";
-import { Observable, ObservableArray } from "@residualeffect/reactor";
+import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
 import { DateTime, Nullable, NumberLimits } from "Common/MissingJavascriptFunctions";
 import { SortByNumber } from "Common/Sort";
 import { ItemService } from "Items/ItemsService";
+import { MediaPlayerService } from "MediaPlayer/MediaPlayerService";
+import { MediaPlayerType } from "MediaPlayer/MediaPlayerType";
+import { MediaPlayState } from "MediaPlayer/MediaPlayState";
+import { MediaPlaylistItem } from "MediaPlayer/MediaPlaylistItem";
 import { ServerService } from "Servers/ServerService";
 
 export type AddPlaylistItemType = "ArtistName"|"AlbumId"|"PlaylistId"|"AudioId";
 
-export enum PlayState {
-	Stopped,
-	Paused,
-	Playing,
-}
-
 interface PlayItem {
-	PlaylistItem: PlaylistItem;
+	PlaylistItem: MediaPlaylistItem;
 	Audio: HTMLAudioElement;
 	TimeUpdateFunc: (evt: Event) => void;
 	LoadedDataFunc: () => void;
 	EndedFunc: () => void;
 }
 
-interface PlaylistItem {
-	Item: BaseItemDto;
-}
-
-export class MusicPlayer {
+export class MusicPlayerService {
 	constructor() {
-		this.PortablePlayerOpen = new Observable(false);
 		this.Current = new Observable(undefined);
 		this.CurrentProgress = new Observable(0);
 		this.Playlist = new ObservableArray([]);
 		this.Repeat = new Observable(false);
 		this.Shuffle = new Observable(false);
-		this.State = new Observable(PlayState.Stopped);
+		this.State = new Observable(MediaPlayState.Stopped);
+		this.HasPrevious = new Computed(() => this.Shuffle.Value || this.Repeat.Value || this.CurrentIndex() > 0);
+		this.HasNext = new Computed(() => this.Shuffle.Value || this.Repeat.Value || this.CurrentIndex() < this.Playlist.length - 1);
 		this.PlaySessionId = (new Date().getTime() + 1).toString();
-	}
-
-	public CloseMiniPlayerAndReopenIfNecessary(): () => void {
-		this.PortablePlayerOpen.Value = false;
-		return () => { this.PortablePlayerOpen.Value = this.State.Value !== PlayState.Stopped; };
 	}
 
 	public AddFromId(addType: AddPlaylistItemType, typeId: string, library: BaseItemDto, addAfterIndex?: number): void {
@@ -62,9 +52,15 @@ export class MusicPlayer {
 		}
 	}
 
+	public ClearAndPlay(items: BaseItemDto[]): void {
+		this.Playlist.clear();
+		this.AddRange(items);
+		MediaPlayerService.Instance.PlayerType.Value = MediaPlayerType.Music;
+	}
+
 	public AddRange(items: BaseItemDto[], addAfterIndex?: number): void {
 		const lengthBeforeAdding = this.Playlist.length;
-		const playlistItems = items.map((item) => ({ Item: item }) as PlaylistItem);
+		const playlistItems = items.map((item) => ({ Item: item }) as MediaPlaylistItem);
 
 		this.AddRangeOfPlaylistItems(playlistItems, addAfterIndex);
 
@@ -73,7 +69,7 @@ export class MusicPlayer {
 		}
 	}
 
-	public Remove(item: PlaylistItem): void {
+	public Remove(item: MediaPlaylistItem): void {
 		this.Playlist.remove(item);
 	}
 
@@ -117,7 +113,7 @@ export class MusicPlayer {
 		}, () => { this.Stop(); });
 	}
 
-	public Load(playlistItem: PlaylistItem): void {
+	public Load(playlistItem: MediaPlaylistItem): void {
 		this.Stop();
 		
 		Nullable.TryExecute(this.Current.Value, (current) => {
@@ -158,13 +154,13 @@ export class MusicPlayer {
 			}});
 		});
 
-		this.State.Value = PlayState.Stopped;
+		this.State.Value = MediaPlayState.Stopped;
 	}
 
 	public Pause(): void {
 		Nullable.TryExecute(this.Current.Value, (current) => {
 			current.Audio.pause();
-			this.State.Value = PlayState.Paused;
+			this.State.Value = MediaPlayState.Paused;
 			
 			getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackProgress({ playbackProgressInfo: {
 				ItemId: current.PlaylistItem.Item.Id,
@@ -179,7 +175,7 @@ export class MusicPlayer {
 	public Play(): void {
 		Nullable.TryExecute(this.Current.Value, (current) => {
 			current.Audio.play();
-			this.State.Value = PlayState.Playing;
+			this.State.Value = MediaPlayState.Playing;
 
 			getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackStart({ playbackStartInfo: {
 				ItemId: current.PlaylistItem.Item.Id,
@@ -204,7 +200,7 @@ export class MusicPlayer {
 				ItemId: current.PlaylistItem.Item.Id,
 				MediaSourceId: current.PlaylistItem.Item.Id,
 				PlaySessionId: this.PlaySessionId,
-				IsPaused: currentState === PlayState.Paused,
+				IsPaused: currentState === MediaPlayState.Paused,
 				PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
 			}});
 		});
@@ -244,7 +240,7 @@ export class MusicPlayer {
 		return `${ServerService.Instance.CurrentApi.basePath}/Audio/${item.Id}/universal?${queryParams.toString()}`;
 	}
 	
-	private AddRangeOfPlaylistItems(items: readonly PlaylistItem[], addAfterIndex?: number): void {
+	private AddRangeOfPlaylistItems(items: readonly MediaPlaylistItem[], addAfterIndex?: number): void {
 		Nullable.TryExecute(addAfterIndex, (index) => {
 			this.Playlist.push(...this.Playlist.splice(index, this.Playlist.length - index, ...items));
 		}, () => {
@@ -258,17 +254,20 @@ export class MusicPlayer {
 	}
 
 	public Current: Observable<PlayItem|undefined>;
-	public State: Observable<PlayState>;
+	public State: Observable<MediaPlayState>;
 	public CurrentProgress: Observable<number>;
-	public Playlist: ObservableArray<PlaylistItem>;
+	public Playlist: ObservableArray<MediaPlaylistItem>;
 	public Repeat: Observable<boolean>;
 	public Shuffle: Observable<boolean>;
-	public PortablePlayerOpen: Observable<boolean>;
+
+	public HasPrevious: Computed<boolean>;
+	public HasNext: Computed<boolean>;
+
 	public PlaySessionId: string;
 
-	static get Instance(): MusicPlayer {
-		return this._instance ?? (this._instance = new MusicPlayer());
+	static get Instance(): MusicPlayerService {
+		return this._instance ?? (this._instance = new MusicPlayerService());
 	}
 
-	private static _instance: MusicPlayer;
+	private static _instance: MusicPlayerService;
 }

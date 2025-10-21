@@ -1,17 +1,12 @@
 import * as React from "react";
 import { ItemProps, TableProps, TableVirtuoso, Virtuoso } from "react-virtuoso";
-import { Navigate, useParams } from "react-router-dom";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
-import { Loading, useDataOrNull } from "Common/Loading";
+import { Loading } from "Common/Loading";
 import { ItemService } from "Items/ItemsService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { DateTime, Linq, Nullable } from "Common/MissingJavascriptFunctions";
-import { Settings, SettingsStore } from "Users/SettingsStore";
-import { LoginService } from "Users/LoginService";
-import { Layout } from "Common/Layout";
+import { DimensionZLayers, Layout, StyleLayoutProps } from "Common/Layout";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { NotFound } from "Common/NotFound";
 import { useBackgroundStyles } from "AppStyles";
 import { TranslatedText } from "Common/TranslatedText";
 import { Button } from "Common/Button";
@@ -19,50 +14,53 @@ import { PlaylistIcon } from "Playlists/PlaylistIcon";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
-import { AddPlaylistItemType, MusicPlayer } from "Music/MusicPlayer";
+import { AddPlaylistItemType, MusicPlayerService } from "Music/MusicPlayerService";
 import { useObservable } from "@residualeffect/rereactor";
-import { PageTitle } from "Common/PageTitle";
-import { UserViewStore } from "Users/UserViewStore";
 import { DragIcon } from "CommonIcons/DragIcon";
 import { SortByNumber, SortByObjects, SortByString } from "Common/Sort";
 import { ObservableArray } from "@residualeffect/reactor";
 import { MusicPlayerStatus } from "Music/MusicPlayerStatus";
-import { PlayStateIcon } from "Music/PlayStateIcon";
-import { ServerService } from "Servers/ServerService";
+import { MediaPlayStateIcon } from "MediaPlayer/MediaPlayStateIcon";
+import { CloseIcon } from "CommonIcons/CloseIcon";
+import { MediaPlayerService } from "MediaPlayer/MediaPlayerService";
+import { MediaPlayerType } from "MediaPlayer/MediaPlayerType";
+import { FullscreenIcon } from "MediaPlayer/FullscreenIcon";
 
-export const Music: React.FC = () => {
-	const libraryId = useParams().libraryId;
-	const userId = useObservable(ServerService.Instance.CurrentUserId);
-	const librariesOrNull = useDataOrNull(UserViewStore.Instance.FindOrCreateForUser(userId));
-
-	if (!Nullable.HasValue(libraryId)) {
-		return <PageWithNavigation icon="Audio"><NotFound /></PageWithNavigation>;
+function getLayoutProps(isFullscreen: boolean): Partial<StyleLayoutProps> {
+	if (isFullscreen) {
+		return ({
+			top: "1em",
+			bottom: "1em",
+			left: "1em",
+			right: "1em",
+		});
+	} else {
+		return ({
+			bottom: "1em",
+			right: "1em",
+			minWidth: "25em",
+			maxWidth: "30em",
+		});
 	}
+}
 
-	const albumList = ItemService.Instance.FindOrCreateItemList(libraryId, "MusicAlbum");
-	const artistList = ItemService.Instance.FindOrCreateItemList(libraryId, "MusicArtist");
-	const songList = ItemService.Instance.FindOrCreateItemList(libraryId, "Audio");
-
-	React.useEffect(() => artistList.LoadWithAbort(), [artistList]);
-	React.useEffect(() => albumList.LoadWithAbort([{ Key: "AlbumCountByArtistId", GetKeysForItem: (i) => i.AlbumArtists?.map((a) => a.Id) ?? [] }]), [albumList]);
-	React.useEffect(() => songList.LoadWithAbort([{ Key: "SongCountByArtistId", GetKeysForItem: (i) => i.Artists?.map((a) => a) ?? [] }, { Key: "SongCountByAlbumId", GetKeysForItem: (i) => [i.AlbumId] }]), [songList]);
-	React.useEffect(() => SettingsStore.Instance.LoadSettings(libraryId), [libraryId]);
-	React.useEffect(() => MusicPlayer.Instance.CloseMiniPlayerAndReopenIfNecessary(), [libraryId]);
-
-	if ((librariesOrNull ?? []).every((l) => l.Id !== libraryId)) {
-		return <Navigate to="/" />;
-	}
+export const MusicPlayer: React.FC<{ user: UserDto; libraries: BaseItemDto[] }> = ({ user, libraries }) => {
+	const background = useBackgroundStyles();
+	const isFullscreen = useObservable(MediaPlayerService.Instance.IsFullscreen);
 
 	return (
-		<PageWithNavigation icon="Audio">
-			<Loading
-				receivers={[SettingsStore.Instance.Settings, LoginService.Instance.User]}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-				whenReceived={(settings, user) => <LoadedMusicLibrary libraryId={libraryId} settings={settings} user={user} libraries={librariesOrNull ?? []} />}
-			/>
-		</PageWithNavigation>
+		<Layout direction="column" position="fixed" zIndex={DimensionZLayers.Player} {...getLayoutProps(isFullscreen)}>
+			<Layout direction="row" justifyContent="end">
+				<Button type="button" icon={<FullscreenIcon />} onClick={() => { MediaPlayerService.Instance.IsFullscreen.Value = !MediaPlayerService.Instance.IsFullscreen.Value; }} px=".5em" py=".5em" />
+				<Button type="button" icon={<CloseIcon />} onClick={() => { MusicPlayerService.Instance.Unload(); MediaPlayerService.Instance.PlayerType.Value = MediaPlayerType.None; }} px=".5em" py=".5em" />
+			</Layout>
+
+			{
+				isFullscreen
+					? <FullscreenMusicPlayer user={user} libraries={libraries} />
+					: <MusicPlayerStatus className={background.alternatePanel} />
+			}
+		</Layout>
 	);
 };
 
@@ -74,26 +72,32 @@ interface Column {
 	getSortFunc: (stats: Record<string, number>[]) => (a: BaseItemDto, b: BaseItemDto) => number;
 }
 
-const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user: UserDto; libraries: BaseItemDto[] }> = (props) => {
-	const background = useBackgroundStyles();
-	const observableArtists = React.useMemo(() => new ObservableArray<string>([]), [props.libraryId]);
-	const observableAlbumIds = React.useMemo(() => new ObservableArray<string>([]), [props.libraryId]);
+const FullscreenMusicPlayer: React.FC<{ user: UserDto; libraries: BaseItemDto[]; }> = ({ user, libraries }) => {
+	const library = Linq.First(libraries, (l) => l.CollectionType === "music");
+	const libraryId = library.Id ?? "";
 
-	const albumList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "MusicAlbum");
-	const artistList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "MusicArtist");
-	const audioList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "Audio");
-	const library = Linq.Single(props.libraries, (l) => l.Id === props.libraryId);
+	console.log(libraryId);
+
+	const background = useBackgroundStyles();
+	const observableArtists = React.useMemo(() => new ObservableArray<string>([]), [libraryId]);
+	const observableAlbumIds = React.useMemo(() => new ObservableArray<string>([]), [libraryId]);
+
+	const albumList = ItemService.Instance.FindOrCreateItemList(libraryId, "MusicAlbum");
+	const artistList = ItemService.Instance.FindOrCreateItemList(libraryId, "MusicArtist");
+	const audioList = ItemService.Instance.FindOrCreateItemList(libraryId, "Audio");
 
 	const filteredArtists = useObservable(observableArtists);
 	const filteredAlbumIds = useObservable(observableAlbumIds);
 
+	React.useEffect(() => artistList.LoadWithAbort(), [artistList]);
+	React.useEffect(() => albumList.LoadWithAbort([{ Key: "AlbumCountByArtistId", GetKeysForItem: (i) => i.AlbumArtists?.map((a) => a.Id) ?? [] }]), [albumList]);
+	React.useEffect(() => audioList.LoadWithAbort([{ Key: "SongCountByArtistId", GetKeysForItem: (i) => i.Artists?.map((a) => a) ?? [] }, { Key: "SongCountByAlbumId", GetKeysForItem: (i) => [i.AlbumId] }]), [audioList]);
+
 	return (
 		<Layout direction="row" height="100%" py="1em" gap="1em">
-			<PageTitle text={library.Name} suppressOnScreen />
-
 			<Layout direction="column" width="25%" gap="1em">
-				<MusicPlayerStatus className={background.panel} />
-				<CurrentPlaylist className={background.panel} user={props.user} library={library} />
+				<MusicPlayerStatus isFullscreen className={background.panel} />
+				<CurrentPlaylist className={background.panel} user={user} library={library} />
 			</Layout>
 
 			<Layout direction="column" grow gap="1em">
@@ -160,7 +164,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 								items={audios.List}
 								selectedKeys={[]}
 								getSelectedKey={() => ""}
-								onToggled={(audio) => { MusicPlayer.Instance.AddRange([audio]); }}
+								onToggled={(audio) => { MusicPlayerService.Instance.AddRange([audio]); }}
 								filters={filteredArtists.map((artist) => (song: BaseItemDto) => (song.Artists ?? []).indexOf(artist) > -1).concat(filteredAlbumIds.map((albumId) => (song: BaseItemDto) => song.AlbumId === albumId))}
 								columns={[
 									{ name: "Songs", getValue: (i) => i.Name, width: "30%", align: "start", getSortFunc: () => SortByString((i) => i.Name) },
@@ -181,9 +185,9 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 
 const CurrentPlaylist: React.FC<{ user: UserDto, className: string; library: BaseItemDto }> = (props) => {
 	const background = useBackgroundStyles();
-	const itemsInPlaylist = useObservable(MusicPlayer.Instance.Playlist);
-	const current = useObservable(MusicPlayer.Instance.Current);
-	const playState = useObservable(MusicPlayer.Instance.State);
+	const itemsInPlaylist = useObservable(MusicPlayerService.Instance.Playlist);
+	const current = useObservable(MusicPlayerService.Instance.Current);
+	const playState = useObservable(MusicPlayerService.Instance.State);
 
 	return (
 		<Layout direction="column" className={props.className} grow py="1em" px="1em" gap="1em">
@@ -204,7 +208,7 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string; library: Bas
 							},
 							{
 								textKey: "ClearQueue", icon: (p) => <DeleteIcon {...p} />,
-								action: () => { MusicPlayer.Instance.Playlist.clear(); },
+								action: () => { MusicPlayerService.Instance.Playlist.clear(); },
 							},
 						]]}
 					/>
@@ -249,7 +253,7 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string; library: Bas
 						return evt.nativeEvent.offsetY > elementMidpoint ? index + 1 : index;
 					});
 
-					MusicPlayer.Instance.AddFromId(evt.dataTransfer.getData("AddType") as AddPlaylistItemType, evt.dataTransfer.getData("AddTypeId"), props.library, addAfterIndex);
+					MusicPlayerService.Instance.AddFromId(evt.dataTransfer.getData("AddType") as AddPlaylistItemType, evt.dataTransfer.getData("AddTypeId"), props.library, addAfterIndex);
 				}}
 			>
 				{itemsInPlaylist.length > 0 ? (
@@ -260,16 +264,16 @@ const CurrentPlaylist: React.FC<{ user: UserDto, className: string; library: Bas
 						itemContent={(index, data) => (
 							<Layout direction="row" position="relative" draggable onDragStart={(evt) => { evt.dataTransfer.setData("AddType", "PlaylistId"); evt.dataTransfer.setData("AddTypeId", index.toString()); }}>
 								<Layout direction="column" alignItems="center" justifyContent="center" position="absolute" top={0} bottom={0} left={0} width="5%">
-									{Nullable.Value(current, <DragIcon />, (c) => c.PlaylistItem === data ? <PlayStateIcon state={playState} /> : <DragIcon />)}
+									{Nullable.Value(current, <DragIcon />, (c) => c.PlaylistItem === data ? <MediaPlayStateIcon state={playState} /> : <DragIcon />)}
 								</Layout>
 
-								<Button transparent width="100%" px="5%" type="button" textAlign="start" onClick={() => { MusicPlayer.Instance.GoIndex(index)}}>
+								<Button transparent width="100%" px="5%" type="button" textAlign="start" onClick={() => { MusicPlayerService.Instance.GoIndex(index)}}>
 									<Layout direction="column" px=".5em" py=".5em" width="80%">{data.Item.Name}</Layout>
-									<Layout direction="column" px=".5em" py=".5em" alignItems="end" width="20%">{DateTime.ConvertTicksToDurationString(data.Item.RunTimeTicks)}</Layout>
+									<Layout direction="column" px=".5em" py=".5em" justifyContent="center" alignItems="end" width="20%">{DateTime.ConvertTicksToDurationString(data.Item.RunTimeTicks)}</Layout>
 								</Button>
 
 								<Button
-									type="button" onClick={() => { MusicPlayer.Instance.Remove(data); }}
+									type="button" onClick={() => { MusicPlayerService.Instance.Remove(data); }}
 									direction="column" alignItems="center" justifyContent="center" transparent
 									position="absolute" top={0} bottom={0} right={0} width="5%"
 									icon={<DeleteIcon />}

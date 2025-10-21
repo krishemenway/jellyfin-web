@@ -37,8 +37,6 @@ import { Tags } from "Tags/Tags";
 import { Genre } from "Genres/Genre";
 import { Genres } from "Genres/Genres";
 
-import { Music } from "Music/Music";
-
 const Layout: React.FC = () => {
 	const [breakpoint, ResponsiveProvider] = useCalculatedBreakpoint();
 
@@ -80,7 +78,6 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ path: "/Music/Album/:albumId", element: <MusicAlbum /> },
 						{ path: "/Music/Artist/:artistId", element: <MusicArtist /> },
 
-						{ path: "/Music/:libraryId", element: <Music /> },
 						{ path: "/Music/Songs/:libraryId/:optionsName", element: <ItemListView itemKind="Audio" paramName="libraryId" /> },
 						{ path: "/Music/Songs/:libraryId", element: <ItemListView itemKind="Audio" paramName="libraryId" /> },
 						{ path: "/Music/Albums/:libraryId/:optionsName", element: <ItemListView itemKind="MusicAlbum" paramName="libraryId" /> },

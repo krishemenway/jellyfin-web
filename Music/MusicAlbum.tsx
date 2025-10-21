@@ -9,6 +9,10 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { NotFound } from "Common/NotFound";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { PageTitle } from "Common/PageTitle";
+import { Button } from "Common/Button";
+import { PlayIcon } from "MediaPlayer/PlayIcon";
+import { MusicPlayerService } from "Music/MusicPlayerService";
+import { ListOf } from "Common/ListOf";
 
 export const MusicAlbum: React.FC = () => {
 	const routeParams = useParams<{ albumId: string; songId?: string; }>();
@@ -30,8 +34,18 @@ export const MusicAlbum: React.FC = () => {
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(album, children) => (
 					<Layout direction="column">
-						<PageTitle text={album.Name} />
-						{children.length}
+						<Layout direction="row" justifyContent="space-between">
+							<PageTitle text={album.Name} />
+							<Button type="button" icon={<PlayIcon />} onClick={() => MusicPlayerService.Instance.ClearAndPlay(children)} title={{ Key: "HeaderPlayAll" }} px=".5em" />
+						</Layout>
+
+						<ListOf
+							items={children}
+							direction="column"
+							forEachItem={(song) => (
+								<Layout key={song.Id} direction="row">{song.Name}</Layout>
+							)}
+						/>
 					</Layout>
 				)}
 			/>

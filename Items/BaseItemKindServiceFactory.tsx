@@ -18,7 +18,7 @@ import { LiveTVProgramService } from "Shows/LiveTVProgramService";
 import { RecordingService } from "Movies/RecordingService";
 import { MovieService } from "Movies/MovieService";
 import { TrailerService } from "Movies/TrailerService";
-import { VideoService } from "Movies/VideoService";
+import { VideoService } from "Videos/VideoService";
 import { AudioService } from "Music/AudioService";
 import { MusicAlbumService } from "Music/MusicAlbumService";
 import { MusicArtistService } from "Music/MusicArtistService";

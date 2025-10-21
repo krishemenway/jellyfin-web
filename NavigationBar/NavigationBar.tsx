@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BaseItemDto, SystemInfo } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, SystemInfo, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { useBackgroundStyles } from "AppStyles";
 import { Button } from "Common/Button";
 import { EditIcon } from "CommonIcons/EditIcon";
@@ -24,6 +24,7 @@ import { LinkToItem } from "Items/LinkToItem";
 import { ChangeServerButton } from "Servers/ChangeServerButton";
 import { QuickConnectService } from "Users/QuickConnect";
 import { useObservable } from "@residualeffect/rereactor";
+import { MediaPlayer } from "MediaPlayer/MediaPlayer";
 
 export const NavigationBar: React.FC<{ icon?: React.ReactElement; }> = (props) => {
 	const background = useBackgroundStyles();
@@ -36,11 +37,16 @@ export const NavigationBar: React.FC<{ icon?: React.ReactElement; }> = (props) =
 	return (
 		<Layout className={background.panel} direction="row" gap="1em" px="1em" py=".5em" width="calc(100% + 2em)" mx="-1em">
 			<Loading
-				receivers={[UserViewStore.Instance.FindOrCreateForUser(userId), ServerService.Instance.ServerInfo, QuickConnectService.Instance.QuickConnectEnabled]}
+				receivers={[UserViewStore.Instance.FindOrCreateForUser(userId), ServerService.Instance.ServerInfo, QuickConnectService.Instance.QuickConnectEnabled, LoginService.Instance.User]}
 				whenNotStarted={<NavigationButton />}
 				whenLoading={<NavigationButton />}
 				whenError={() => <NavigationButton />}
-				whenReceived={(libraries, server, quickConnectEnabled) => <OpenNavigationButton libraries={libraries} server={server} quickConnectEnabled={quickConnectEnabled} />}
+				whenReceived={(libraries, server, quickConnectEnabled, user) => (
+					<>
+						<OpenNavigationButton libraries={libraries} server={server} quickConnectEnabled={quickConnectEnabled} />
+						<MediaPlayer user={user} libraries={libraries} />
+					</>
+				)}
 			/>
 			{props.icon && (<Layout direction="row" alignItems="center" fontSize="1.5em">{props.icon}</Layout>)}
 			<Layout direction="row" alignItems="center"><Search /></Layout>

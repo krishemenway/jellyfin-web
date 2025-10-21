@@ -33,6 +33,8 @@ import { EditItemAction } from "MenuActions/EditItemAction";
 import { RefreshItemAction } from "MenuActions/RefreshItemAction";
 import { CastAndCrew } from "Items/CastAndCrew";
 import { BackdropService } from "Common/BackdropService";
+import { PlayIcon } from "MediaPlayer/PlayIcon";
+import { VideoPlayerService } from "Videos/VideoPlayerService";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
@@ -158,18 +160,21 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; user: UserDto; }> = ({ ep
 			<Layout direction="column" gap=".5em">
 				<Layout direction="row" justifyContent="space-between">
 					<PageTitle text={episode.SeriesName} />
-					<ItemActionsMenu items={[episode]} user={user} actions={[
-						[ // User-based actions
-							AddToFavoritesAction,
-							MarkPlayedAction,
-							AddToCollectionAction,
-							AddToPlaylistAction,
-						],
-						[ // Server-based actions
-							EditItemAction,
-							RefreshItemAction,
-						]
-					]} />
+					<Layout direction="row" gap=".5em">
+						<Button type="button" icon={<PlayIcon />} alignItems="center" px=".5em" py=".5em" onClick={() => VideoPlayerService.Instance.ClearAndPlay([episode])} />
+						<ItemActionsMenu items={[episode]} user={user} actions={[
+							[ // User-based actions
+								AddToFavoritesAction,
+								MarkPlayedAction,
+								AddToCollectionAction,
+								AddToPlaylistAction,
+							],
+							[ // Server-based actions
+								EditItemAction,
+								RefreshItemAction,
+							]
+						]} />
+					</Layout>
 				</Layout>
 				<Layout direction="row" fontSize="1.3em" elementType="h2" className="show-name">{episode.SeasonName} <TranslatedText textKey="Episode" /> {episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}</Layout>
 			</Layout>
