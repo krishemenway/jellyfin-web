@@ -8,9 +8,9 @@
     "dev-server": "node ./dev-server.js",
     "lint": "npx eslint .",
     "build": "npm run build-prod",
-    "build-dev": "esbuild App.tsx --bundle --outfile=/dist/app.js --sourcemap",
-    "build-prod": "esbuild App.tsx --bundle --outfile=/dist/app.js --minify",
-    "watch": "esbuild App.tsx --bundle --outfile=/dist/app.js --sourcemap --watch"
+    "build-dev": "esbuild App.tsx --bundle --outfile=./dist/app.js --sourcemap",
+    "build-prod": "esbuild App.tsx --bundle --outfile=./dist/app.js --minify",
+    "watch": "esbuild App.tsx --bundle --outfile=./dist/app.js --sourcemap --watch"
   },
   "engines": {
     "node": "22.13.0"
