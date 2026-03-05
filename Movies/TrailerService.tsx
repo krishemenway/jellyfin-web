@@ -4,4 +4,5 @@ import { TrailerIcon } from "Movies/TrailerIcon";
 
 export const TrailerService: BaseItemKindService = {
 	findIcon: (props) => <TrailerIcon {...props} />,
+	listUrl: (library) => `/Trailers/${library.Id}`,
 };

@@ -4,4 +4,5 @@ import { PlaylistIcon } from "Playlists/PlaylistIcon";
 
 export const PlaylistService: BaseItemKindService = {
 	findIcon: (props) => <PlaylistIcon {...props} />,
+	listUrl: (library) => `/Playlists/${library.Id}`,
 };

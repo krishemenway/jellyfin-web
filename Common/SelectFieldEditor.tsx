@@ -2,7 +2,7 @@ import * as React from "react";
 import Select, { MenuListProps, SingleValue } from "react-select";
 import { useObservable } from "@residualeffect/rereactor";
 import { ApplyLayoutStyleProps, LayoutWithoutChildrenProps } from "Common/Layout";
-import { ThemeService } from "Users/ThemeService";
+import { ThemeService } from "Themes/ThemeService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { EditableField } from "Common/EditableField";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";

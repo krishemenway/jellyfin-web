@@ -35,6 +35,8 @@ import { CastAndCrew } from "Items/CastAndCrew";
 import { BackdropService } from "Common/BackdropService";
 import { PlayIcon } from "MediaPlayer/PlayIcon";
 import { VideoPlayerService } from "Videos/VideoPlayerService";
+import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
+import { PlayVideoAction } from "MenuActions/PlayVideoAction";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
@@ -62,7 +64,7 @@ export const Show: React.FC = () => {
 
 const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; seasonId?: string; episodeId?: string; }> = ({ show, children, user, episodeId }) => {
 	const background = useBackgroundStyles();
-	const seasons = React.useMemo(() => children.filter((i) => i.Type === "Season"), [children]);
+	const seasons = React.useMemo(() => children.filter((i) => i.Type === "Season").sort(sortSeasons), [children]);
 	const allEpisodes = React.useMemo(() => children.filter((i) => i.Type === "Episode"), [children]);
 	const selectedEpisode = Nullable.Value(episodeId, undefined, (e) => allEpisodes.find((i) => i.Id === e));
 
@@ -164,6 +166,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; user: UserDto; }> = ({ ep
 						<Button type="button" icon={<PlayIcon />} alignItems="center" px=".5em" py=".5em" onClick={() => VideoPlayerService.Instance.ClearAndPlay([episode])} />
 						<ItemActionsMenu items={[episode]} user={user} actions={[
 							[ // User-based actions
+								PlayVideoAction,
 								AddToFavoritesAction,
 								MarkPlayedAction,
 								AddToCollectionAction,
@@ -217,7 +220,7 @@ const SeasonForShow: React.FC<{ season: BaseItemDto; allEpisodes: BaseItemDto[];
 		return <></>;
 	}
 
-	const episodes = React.useMemo(() => allEpisodes.filter((e) => e.SeasonId === season.Id), [season, allEpisodes]);
+	const episodes = React.useMemo(() => allEpisodes.filter((e) => e.SeasonId === season.Id).sort(SortByIndexNumber.sortFunc), [season, allEpisodes]);
 
 	return (
 		<Layout direction="column" minWidth="100%">
@@ -264,3 +267,18 @@ const CastAndCrewSection: React.FC<{ show: BaseItemDto }> = (props) => {
 		</Layout>
 	);
 };
+
+function sortSeasons(itemA: BaseItemDto, itemB: BaseItemDto): number {
+    const a = itemA.IndexNumber ?? 0;
+    const b = itemB.IndexNumber ?? 0;
+
+    if (a === 0 && b === 0) {
+        return (itemA.Name ?? '').localeCompare(itemB.Name ?? '');
+    } else if (a === 0) {
+        return 1;
+    } else if (b === 0) {
+        return -1;
+    } else {
+        return a - b;
+    }
+}

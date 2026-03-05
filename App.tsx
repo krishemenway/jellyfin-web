@@ -4,7 +4,7 @@ import { RouterProvider, Outlet, createBrowserRouter } from "react-router-dom";
 import { useGlobalStyles, useCalculatedBreakpoint } from "AppStyles";
 import { ResetModalOnLocationChange } from "Common/Modal";
 import { useObservable } from "@residualeffect/rereactor";
-import { ThemeService } from "Users/ThemeService";
+import { ThemeService } from "Themes/ThemeService";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { NotFound } from "Common/NotFound";
@@ -17,6 +17,8 @@ import { Icons } from "ServerAdmin/Icons";
 
 import { Home } from "Home/Home";
 import { Person } from "People/Person";
+
+import { PlaylistView } from "Playlists/PlaylistView";
 
 import { Settings } from "Users/Settings";
 import { RequireServerAndUser } from "Users/RequireServerAndUser";
@@ -37,13 +39,22 @@ import { Tags } from "Tags/Tags";
 import { Genre } from "Genres/Genre";
 import { Genres } from "Genres/Genres";
 
+import { SongListView } from "Music/SongListView";
+import { MusicVideo } from "Music/MusicVideo";
+import { Loading } from "Common/Loading";
+import { TranslationService } from "Common/TranslatedText";
+
 const Layout: React.FC = () => {
 	const [breakpoint, ResponsiveProvider] = useCalculatedBreakpoint();
 
 	return (
 		<ResponsiveProvider value={breakpoint}>
 			<RequireServerAndUser>
-				<ErrorBoundary fallback={<LoadingErrorMessages errorTextKeys={["UnknownError"]} />}><Outlet /></ErrorBoundary>
+				<Loading
+					receivers={[TranslationService.Instance.Translations]}
+					whenError={() => <></>} whenLoading={<></>} whenNotStarted={<></>}
+					whenReceived={() => <ErrorBoundary fallback={<LoadingErrorMessages errorTextKeys={["UnknownError"]} />}><Outlet /></ErrorBoundary>}
+				/>
 			</RequireServerAndUser>
 
 			<ResetModalOnLocationChange />
@@ -69,6 +80,12 @@ const App: React.FC<{ basePath: string }> = (props) => {
 
 						{ path: "/Person/:personId", element: <Person /> },
 
+						{ path: "/Playlists/:libraryId", element: <ItemListView itemKind="Playlist" paramName="libraryId" /> },
+						{ path: "/Playlist/:playlistId", element: <PlaylistView /> },
+
+						{ path: "/AudioBooks/:libraryId", element: <ItemListView itemKind="AudioBook" paramName="libraryId" /> },
+						{ path: "/Books/:libraryId", element: <ItemListView itemKind="Book" paramName="libraryId" /> },
+
 						{ path: "/Shows/:libraryId/:optionsName", element: <ItemListView itemKind="Series" paramName="libraryId" /> },
 						{ path: "/Shows/:libraryId", element: <ItemListView itemKind="Series" paramName="libraryId" /> },
 						{ path: "/Show/:showId", element: <Show /> },
@@ -78,8 +95,12 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ path: "/Music/Album/:albumId", element: <MusicAlbum /> },
 						{ path: "/Music/Artist/:artistId", element: <MusicArtist /> },
 
-						{ path: "/Music/Songs/:libraryId/:optionsName", element: <ItemListView itemKind="Audio" paramName="libraryId" /> },
-						{ path: "/Music/Songs/:libraryId", element: <ItemListView itemKind="Audio" paramName="libraryId" /> },
+						{ path: "/MusicVideos/:libraryId/:optionsName", element: <ItemListView itemKind="MusicVideo" paramName="libraryId" /> },
+						{ path: "/MusicVideos/:libraryId", element: <ItemListView itemKind="MusicVideo" paramName="libraryId" /> },
+						{ path: "/MusicVideo/:musicVideoId", element: <MusicVideo /> },
+
+						{ path: "/Music/Songs/:libraryId/:optionsName", element: <SongListView /> },
+						{ path: "/Music/Songs/:libraryId", element: <SongListView /> },
 						{ path: "/Music/Albums/:libraryId/:optionsName", element: <ItemListView itemKind="MusicAlbum" paramName="libraryId" /> },
 						{ path: "/Music/Albums/:libraryId", element: <ItemListView itemKind="MusicAlbum" paramName="libraryId" /> },
 						{ path: "/Music/Artists/:libraryId/:optionsName", element: <ItemListView itemKind="MusicArtist" paramName="libraryId" /> },
@@ -116,8 +137,8 @@ const App: React.FC<{ basePath: string }> = (props) => {
 				{ path: "*", element: <NotFound /> },
 			], { basename: props.basePath })}
 		/>
-	);
-};
+	)
+}
 
  /* Pass in the DOM element to render inside of into the initialize function and watch react do it's thing. */
 declare global { interface Window { initialize?: (element: Element, basePath: string) => void; } }

@@ -11,7 +11,7 @@ export interface TranslationRequest {
 	KeyProps?: string[];
 }
 
-class TranslationService {
+export class TranslationService {
 	constructor() {
 		this.CurrentCulture = new Observable<string>(this.DefaultLanguage());
 		this.Translations = new Receiver("Failed to load translations");
@@ -78,6 +78,10 @@ export function useTranslatedText(request: TranslationRequest|undefined): string
 
 export const TranslatedText: React.FC<{ textKey: string, textProps?: string[], formatText?: (translatedText?: string) => string, elementType?: string, layout?: StyleLayoutProps, className?: string }> = (props) => {
 	let translated = useTranslatedText({ Key: props.textKey, KeyProps: props.textProps });
+
+	if (translated === undefined) {
+		console.warn(`Missing text key: '${props.textKey}'`);
+	}
 
 	if (props.formatText !== undefined) {
 		translated = props.formatText(translated);

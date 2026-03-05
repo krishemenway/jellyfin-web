@@ -6,6 +6,8 @@ import { Button } from "Common/Button";
 import { Receiver } from "Common/Receiver";
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api/user-api";
 import { ServerService } from "Servers/ServerService";
+import { FieldLabel } from "Common/FieldLabel";
+import { Layout } from "Common/Layout";
 
 class ChangePasswordService {
 	constructor() {
@@ -38,11 +40,23 @@ class ChangePasswordService {
 
 export const ChangePassword: React.FC = () => {
 	return (
-		<Form direction="column" onSubmit={(() => ChangePasswordService.Instance.ChangePassword())}>
-			<TextField field={ChangePasswordService.Instance.Current} />
-			<TextField field={ChangePasswordService.Instance.New} />
-			<TextField field={ChangePasswordService.Instance.Confirm} />
-			<Button label="SavePassword" type="submit" />
+		<Form direction="column" onSubmit={(() => ChangePasswordService.Instance.ChangePassword())} gap="1rem">
+			<Layout direction="column" gap=".5rem">
+				<FieldLabel field={ChangePasswordService.Instance.Current} />
+				<TextField field={ChangePasswordService.Instance.Current} password px=".5em" py=".25em" />
+			</Layout>
+
+			<Layout direction="column" gap=".5rem">
+				<FieldLabel field={ChangePasswordService.Instance.New} />
+				<TextField field={ChangePasswordService.Instance.New} password px=".5em" py=".25em" />
+			</Layout>
+
+			<Layout direction="column" gap=".5rem">
+				<FieldLabel field={ChangePasswordService.Instance.Confirm} />
+				<TextField field={ChangePasswordService.Instance.Confirm} password px=".5em" py=".25em" />
+			</Layout>
+
+			<Button label="SavePassword" type="submit" px=".5em" py=".5em" justifyContent="center" />
 		</Form>
 	);
 };

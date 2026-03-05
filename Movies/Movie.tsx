@@ -29,6 +29,7 @@ import { RefreshItemAction } from "MenuActions/RefreshItemAction";
 import { CastAndCrew } from "Items/CastAndCrew";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { BackdropService } from "Common/BackdropService";
+import { PlayVideoAction } from "MenuActions/PlayVideoAction";
 
 export const Movie: React.FC = () => {
 	const movieId = useParams<{ movieId: string }>().movieId;
@@ -95,6 +96,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 					<PageTitle text={movie.Name} />
 					<ItemActionsMenu items={[movie]} actions={[
 						[ // User-based actions
+							PlayVideoAction,
 							AddToFavoritesAction,
 							MarkPlayedAction,
 							AddToCollectionAction,

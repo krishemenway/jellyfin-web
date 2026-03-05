@@ -6,11 +6,12 @@ export enum ResponsiveBreakpoint {
 	Mobile = 1,
 	Tablet = 2,
 	Desktop = 3,
+	Wide = 4,
 }
 
 const Context = React.createContext(ResponsiveBreakpoint.Desktop);
 
-export function useBreakpoint(): ResponsiveBreakpoint {
+function useBreakpoint(): ResponsiveBreakpoint {
 	return React.useContext(Context);
 }
 
@@ -21,7 +22,12 @@ export function useBreakpointValue<T>(valuesByBreakpoint: Record<ResponsiveBreak
 
 export function useCalculatedBreakpoint(): [ResponsiveBreakpoint, React.Provider<ResponsiveBreakpoint>] {
 	const isTablet = useMediaQuery("(min-width: 40em) and (max-width: 69.9999999em)");
-	const isDesktop = useMediaQuery("(min-width: 70em)", true);
+	const isDesktop = useMediaQuery("(min-width: 70em) and (max-width: 119.999999em)");
+	const isWide = useMediaQuery("(min-width: 120em)", true);
+
+	if (isWide) {
+		return [ResponsiveBreakpoint.Wide, Context.Provider];
+	}
 
 	if (isDesktop) {
 		return [ResponsiveBreakpoint.Desktop, Context.Provider];
@@ -52,7 +58,7 @@ export const useGlobalStyles = createUseStyles({
 		[`html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del,
 		dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label,
 		legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed,  figure, figcaption, footer, header, hgroup,
-		menu, nav, output, ruby, section, summary, time, mark, audio, video, button, text, tspan, input`]: {
+		menu, nav, output, ruby, section, summary, time, mark, audio, video, button, text, tspan, input, textarea`]: {
 			color: "var(--PrimaryTextColor)",
 			fill: "var(--PrimaryTextColor)",
 			borderWidth: "1px",
@@ -79,6 +85,9 @@ export const useGlobalStyles = createUseStyles({
 		"body": {
 			width: "100%",
 			height: "100%",
+		},
+		"hr": {
+			color: "var(--PanelBorderColor)"
 		},
 		"ol, ul": {
 			listStyle: "none",
@@ -111,6 +120,9 @@ export const useBackgroundStyles = createUseStyles({
 	},
 	dashed: {
 		border: "1px dashed var(--PanelBorderColor)",
+	},
+	oddRow: {
+		background: "var(--TableOddRowBackgroundColor)",
 	},
 	button: {
 		cursor: "pointer",

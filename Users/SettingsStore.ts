@@ -49,20 +49,29 @@ export class SettingsStore {
 		this.SaveSettingsResult = new Receiver("UnknownError");
 	}
 
-	public LoadSettings(id?: string): () => void {
+	public LoadSettings(id?: string, onLoaded?: (settings: Settings) => void): () => void {
 		if (id === undefined) {
 			throw new Error("Cannot load settings for missing id");
 		}
 
 		this.Settings.Start((a) => getDisplayPreferencesApi(ServerService.Instance.CurrentApi).getDisplayPreferences({ client: "emby", userId: ServerService.Instance.CurrentUserId.Value, displayPreferencesId: id }, { signal: a.signal }).then((response) => {
-			return new Settings(id, response.data);
+			const settings = new Settings(id, response.data);
+			Nullable.TryExecute(onLoaded, (f) => f(settings));
+			return settings;
 		}));
 
 		return () => this.Settings.ResetIfLoading();
 	}
 
-	public SaveSettings(settings: DisplayPreferencesDto): void {
-		this.SaveSettingsResult.Start((abort) => getDisplayPreferencesApi(ServerService.Instance.CurrentApi).updateDisplayPreferences({ client: "emby", userId: ServerService.Instance.CurrentUserId.Value, displayPreferencesId: settings.Id!, displayPreferencesDto: settings }, { signal: abort.signal }).then((response) => response.status === 200));
+	public SaveSettings(settings: DisplayPreferencesDto, onSuccess: () => void): void {
+		const request = {
+			client: "emby",
+			userId: ServerService.Instance.CurrentUserId.Value,
+			displayPreferencesId: settings.Id!,
+			displayPreferencesDto: settings
+		};
+
+		this.SaveSettingsResult.Start((abort) => getDisplayPreferencesApi(ServerService.Instance.CurrentApi).updateDisplayPreferences(request, { signal: abort.signal }).then((response) => { onSuccess(); return response.status === 200; }));
 	}
 
 	public Settings: Receiver<Settings>;

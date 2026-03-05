@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { PageTitle } from "Common/PageTitle";
 import { Loading } from "Common/Loading";
-import { ResponsiveBreakpoint, useBreakpoint } from "AppStyles";
+import { ResponsiveBreakpoint, useBreakpointValue } from "AppStyles";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
 import { ItemService } from "Items/ItemsService";
@@ -14,8 +14,10 @@ import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ImageShape } from "Items/ItemImage";
 
+const genresPerRowConfig = { [ResponsiveBreakpoint.Wide]: 9, [ResponsiveBreakpoint.Desktop]: 9, [ResponsiveBreakpoint.Tablet]: 6, [ResponsiveBreakpoint.Mobile]: 2 };
+
 export const Genre: React.FC = () => {
-	const breakpoint = useBreakpoint();
+	const genresPerRow = useBreakpointValue(genresPerRowConfig);
 	const genre = useParams().genre;
 
 	if (!Nullable.HasValue(genre)) {
@@ -25,7 +27,6 @@ export const Genre: React.FC = () => {
 	const studioData = ItemService.Instance.FindOrCreateItemData(genre);
 
 	React.useEffect(() => studioData.LoadChildrenWithAbort(false, { recursive: true, genres: [ genre ] }), [genre]);
-	
 
 	return (
 		<PageWithNavigation icon="Genre">
@@ -44,7 +45,7 @@ export const Genre: React.FC = () => {
 								<ItemsGridItem
 									key={item.Id ?? index.toString()}
 									item={item}
-									itemsPerRow={breakpoint === ResponsiveBreakpoint.Desktop ? 9 : breakpoint === ResponsiveBreakpoint.Tablet ? 6 : 2}
+									itemsPerRow={genresPerRow}
 									shape={ImageShape.Portrait}
 								/>
 							)}

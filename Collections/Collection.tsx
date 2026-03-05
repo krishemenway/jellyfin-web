@@ -13,11 +13,13 @@ import { PageTitle } from "Common/PageTitle";
 import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ImageShape } from "Items/ItemImage";
-import { ResponsiveBreakpoint, useBreakpoint } from "AppStyles";
+import { ResponsiveBreakpoint, useBreakpointValue } from "AppStyles";
+
+const collectionsPerRowConfig = { [ResponsiveBreakpoint.Wide]: 9, [ResponsiveBreakpoint.Desktop]: 9, [ResponsiveBreakpoint.Tablet]: 6, [ResponsiveBreakpoint.Mobile]: 2 };
 
 export const Collection: React.FC = () => {
 	const collectionId = useParams().collectionId;
-	const breakpoint = useBreakpoint();
+	const collectionsPerRow = useBreakpointValue(collectionsPerRowConfig);
 	
 	if (!Nullable.HasValue(collectionId) || collectionId.length === 0) {
 		return <PageWithNavigation icon={<CollectionIcon />}><NotFound /></PageWithNavigation>;
@@ -46,7 +48,7 @@ export const Collection: React.FC = () => {
 								<ItemsGridItem
 									key={item.Id ?? index.toString()}
 									item={item}
-									itemsPerRow={breakpoint === ResponsiveBreakpoint.Desktop ? 9 : breakpoint === ResponsiveBreakpoint.Tablet ? 6 : 2}
+									itemsPerRow={collectionsPerRow}
 									shape={ImageShape.Portrait}
 								/>
 							)}

@@ -7,7 +7,7 @@ import { useObservable } from "@residualeffect/rereactor";
 import { FieldLabel } from "Common/FieldLabel";
 import { ListOf } from "Common/ListOf";
 import { Button } from "Common/Button";
-import { TextField } from "Common/TextField";
+import { MultiLineField, TextField } from "Common/TextField";
 import { FieldError } from "Common/FieldError";
 import { Form } from "Common/Form";
 import { ItemEditorService } from "Items/ItemEditorService";
@@ -84,7 +84,7 @@ const ItemEditor: React.FC = () => {
 
 			<Layout direction="column" gap=".25em">
 				<FieldLabel field={item.Overview} />
-				<TextField field={item.Overview} px=".5em" py=".5em" />
+				<MultiLineField field={item.Overview} px=".5em" py=".5em" />
 				<FieldError field={item.Overview} showErrors={showErrors} />
 			</Layout>
 

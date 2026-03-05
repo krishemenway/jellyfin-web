@@ -4,4 +4,5 @@ import { FolderIcon } from "Collections/FolderIcon";
 
 export const FolderService: BaseItemKindService = {
 	findIcon: (props) => <FolderIcon {...props} />,
+	listUrl: (library) => `/Folders/${library.Id}`,
 };

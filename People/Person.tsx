@@ -53,7 +53,7 @@ export const Person: React.FC = () => {
 	React.useEffect(() => personData.LoadChildrenWithAbort(false, { ...BaseCreditRequestData, ...{ personIds: [ personId ] }}, CreditSortOrder), [personData]);
 
 	return (
-		<PageWithNavigation icon="Person" key={personId}>
+		<PageWithNavigation icon="Person" key={personId} matchHeight>
 			<Loading
 				receivers={[personData.Item, personData.Children, LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}

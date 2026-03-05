@@ -11,6 +11,8 @@ import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 
 export class ItemListViewOptions {
 	constructor(itemKindService: BaseItemKindService|null, data?: ItemViewOptionsData) {
+		this.Key = (ItemListViewOptions._lastOptionsKey++).toString();
+		this.IsUnsaved = !Nullable.HasValue(data);
 		this.Label = new EditableField("Filter", Nullable.Value(data, "", (d) => d.Label));
 
 		this.ItemKindService = itemKindService;
@@ -63,6 +65,8 @@ export class ItemListViewOptions {
 		};
 	}
 
+	public Key: string;
+	public IsUnsaved: boolean;
 	public Label: EditableField;
 	public ItemKindService: BaseItemKindService|null;
 
@@ -73,6 +77,8 @@ export class ItemListViewOptions {
 
 	public FilterFunc: Computed<(item: BaseItemDto) => boolean>;
 	public SortByFunc: Computed<(a: BaseItemDto, b: BaseItemDto) => number>;
+
+	private static _lastOptionsKey: number = 1;
 }
 
 export interface ItemViewOptionFilterData {

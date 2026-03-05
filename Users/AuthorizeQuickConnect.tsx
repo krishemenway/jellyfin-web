@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useObservable } from "@residualeffect/rereactor";
 import { Button } from "Common/Button";
 import { FieldError } from "Common/FieldError";
@@ -6,17 +7,15 @@ import { Form } from "Common/Form";
 import { Layout } from "Common/Layout";
 import { useDataOrNull, useError, useIsBusy } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
-import { Receiver } from "Common/Receiver";
 import { RequestError } from "Common/RequestError";
 import { TextField } from "Common/TextField";
 import { TranslatedText } from "Common/TranslatedText";
-import * as React from "react";
 import { QuickConnectService } from "Users/QuickConnect";
 
 export const AuthorizeQuickConnect: React.FC<{ open: boolean; onClose: () => void; }> = ({ open, onClose }) => {
 	const showErrors = useObservable(QuickConnectService.Instance.ShowErrors);
-	const isBusy = useIsBusy(QuickConnectService.Instance.AuthorizeResult as Receiver<unknown>);
-	const submitError = useError(QuickConnectService.Instance.AuthorizeResult as Receiver<unknown>);
+	const isBusy = useIsBusy(QuickConnectService.Instance.AuthorizeResult);
+	const submitError = useError(QuickConnectService.Instance.AuthorizeResult);
 	const isSuccessful = useDataOrNull(QuickConnectService.Instance.AuthorizeResult);
 
 	React.useEffect(() => QuickConnectService.Instance.ResetFormOnClosed(), [open]);

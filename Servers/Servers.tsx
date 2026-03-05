@@ -12,6 +12,7 @@ import { DeleteIcon } from "CommonIcons/DeleteIcon";
 
 export const Servers: React.FC<{ open: boolean; onClosed: () => void; }> = ({ open, onClosed }) => {
 	const background = useBackgroundStyles();
+	const current = useObservable(ServerService.Instance.CurrentServer);
 	const servers = useObservable(ServerService.Instance.Servers);
 	React.useEffect(() => { ServerService.Instance.AttemptSetupOfCurrentDomainAsServer(); }, []);
 
@@ -29,7 +30,7 @@ export const Servers: React.FC<{ open: boolean; onClosed: () => void; }> = ({ op
 							<Button
 								transparent px="1em" py="1em" textAlign="start" width="80%" gap="1em"
 								type="button" onClick={() => { ServerService.Instance.SelectServerConnection(server); onClosed(); }}
-								selected={server === ServerService.Instance.CurrentServer}
+								selected={server === current}
 								children={server.Name} icon={<ServerIcon />}
 							/>
 
@@ -37,7 +38,7 @@ export const Servers: React.FC<{ open: boolean; onClosed: () => void; }> = ({ op
 								type="button" onClick={() => { ServerService.Instance.Remove(server); }}
 								direction="column" alignItems="center" justifyContent="center" transparent
 								position="absolute" top={0} bottom={0} right={0} width="20%"
-								selected={server === ServerService.Instance.CurrentServer}
+								selected={server === current}
 								icon={<DeleteIcon />}
 							/>
 						</Layout>

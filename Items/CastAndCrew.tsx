@@ -5,7 +5,7 @@ import { SortByNumber, SortByObjects } from "Common/Sort";
 import { ListOf } from "Common/ListOf";
 import { LinkToPerson } from "People/LinkToPerson";
 import { Layout, StyleLayoutProps } from "Common/Layout";
-import { Nullable } from "Common/MissingJavascriptFunctions";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { TranslatedText } from "Common/TranslatedText";
 
 export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; className?: string; linkProps?: StyleLayoutProps }&StyleLayoutProps> = (props) => {
@@ -17,20 +17,20 @@ export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; className?: st
 		<ListOf
 			direction="row"
 			items={orderedCastAndCrew}
-			forEachItem={((person) => <CastAndCrewCredit key={"" + person.Id + (person.Role ?? person.Type)} person={person} {...props.linkProps} />)}
+			forEachItem={((person) => <CastAndCrewCredit key={person.Id + Linq.Coalesce([person.Role, person.Type?.toString()], "Unknown", (s) => Nullable.StringHasValue(s))} person={person} {...props.linkProps} />)}
 			{...props}
 		/>
 	);
 };
 
 const CastAndCrewCredit: React.FC<{ person: BaseItemPerson; }&StyleLayoutProps> = (props) => {
-	const itemsPerRow = useBreakpointValue({ [ResponsiveBreakpoint.Mobile]: 1, [ResponsiveBreakpoint.Tablet]: 3, [ResponsiveBreakpoint.Desktop]: 6 });
+	const itemsPerRow = useBreakpointValue({ [ResponsiveBreakpoint.Mobile]: 1, [ResponsiveBreakpoint.Tablet]: 3, [ResponsiveBreakpoint.Desktop]: 6, [ResponsiveBreakpoint.Wide]: 7 });
 
 	return (
 		<LinkToPerson id={props.person.Id} direction="column" width={{ itemsPerRow: itemsPerRow }} {...props}>
 			<Layout direction="row" fontSize="1em">{props.person.Name}</Layout>
 			<Layout direction="row" fontSize=".8em">
-				{Nullable.HasValue(props.person.Role) ? props.person.Role : <TranslatedText textKey={props.person.Type!} />}
+				{Nullable.StringHasValue(props.person.Role) ? props.person.Role : <TranslatedText textKey={props.person.Type!} />}
 			</Layout>
 		</LinkToPerson>
 	);

@@ -1,4 +1,4 @@
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemKind, CollectionType } from "@jellyfin/sdk/lib/generated-client/models";
 import { AudioBookService } from "Books/AudioBookService";
 import { BookService } from "Books/BookService";
 import { AggregateFolderService } from "Collections/AggregateFolderService";
@@ -9,7 +9,6 @@ import { GenreService } from "Genres/GenreService";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 import { BasePluginFolderService } from "Items/BasePluginFolderService";
 import { UserRootFolderService } from "Items/UserRootFolderService";
-import { UserViewService } from "Items/UserViewService";
 import { YearService } from "Items/YearService";
 import { ChannelFolderItemService } from "Shows/ChannelFolderItemService";
 import { ChannelService } from "Shows/ChannelService";
@@ -42,6 +41,14 @@ export class BaseItemKindServiceFactory {
 		}
 
 		return this._servicesByKind[kind] ?? null;
+	}
+
+	public static FindOrNullByCollectionType(collectionType?: CollectionType): BaseItemKindService|null {
+		if (collectionType === undefined) {
+			return null;
+		}
+
+		return this._servicesByCollection[collectionType] ?? null;
 	}
 
 	private static _servicesByKind: Record<BaseItemKind, BaseItemKindService> = {
@@ -79,8 +86,24 @@ export class BaseItemKindServiceFactory {
 		"TvChannel": LiveTVChannelService,
 		"TvProgram": LiveTVProgramService,
 		"UserRootFolder": UserRootFolderService,
-		"UserView": UserViewService,
+		"UserView": CollectionFolderService,
 		"Video": VideoService,
 		"Year": YearService,
+	};
+
+	private static _servicesByCollection: Record<CollectionType, BaseItemKindService> = {
+		"boxsets": BoxSetService,
+		"music": AudioService,
+		"musicvideos": MusicVideoService,
+		"movies": MovieService,
+		"photos": PhotoService,
+		"tvshows": ShowService,
+		"trailers": TrailerService,
+		"homevideos": RecordingService,
+		"books": BookService,
+		"playlists": PlaylistService,
+		"folders": FolderService,
+		"livetv": LiveTVChannelService,
+		"unknown": FolderService,
 	};
 }

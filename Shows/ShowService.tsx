@@ -27,6 +27,7 @@ import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYea
 export const ShowService: BaseItemKindService = {
 	findIcon: (props) => <ShowIcon {...props} />,
 	findUrl: (item) => `/Show/${item.Id}`,
+	listUrl: (library) => `/Shows/${library.Id}`,
 	listActions: [
 		[
 			ManageLibraryAction,

@@ -20,7 +20,7 @@ export interface BaseLoadingComponentProps {
  * @param receiver Receiver to observe for state changes.
  * @returns If the receiver is busy loading data.
  */
-export function useIsBusy(receiver: Receiver<unknown>): boolean {
+export function useIsBusy<T>(receiver: Receiver<T>): boolean {
 	return useObservable(receiver.IsBusy);
 }
 
@@ -29,7 +29,7 @@ export function useIsBusy(receiver: Receiver<unknown>): boolean {
  * @param receiver Receiver to observe for state changes.
  * @returns If the receiver is busy loading data.
  */
-export function useError(receiver: Receiver<unknown>): string|undefined {
+export function useError<T>(receiver: Receiver<T>): string|undefined {
 	return useObservable(receiver.Data).ErrorMessage;
 }
 

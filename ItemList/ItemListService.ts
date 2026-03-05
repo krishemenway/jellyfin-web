@@ -3,7 +3,7 @@ import { getItemsApi } from "@jellyfin/sdk/lib/utils/api";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { ItemListViewOptions, ItemViewOptionsData } from "ItemList/ItemListViewOptions";
-import { Observable } from "@residualeffect/reactor";
+import { Observable, ObservableArray } from "@residualeffect/reactor";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
@@ -25,6 +25,7 @@ export class ItemListService {
 		this.ItemKind = itemKind;
 		this.List = new Receiver("UnknownError");
 		this.ListOptions = new Observable(null);
+		this.ExistingOptions = new ObservableArray([]);
 		this.DefaultLoadItems = (a, id) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: id, fields: ["DateCreated", "Genres", "Tags", "SortName", "Studios"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((response) => response.data.Items ?? []);
 	}
 
@@ -55,21 +56,33 @@ export class ItemListService {
 	}
 
 	public LoadItemListViewOptionsOrNew(context: string, settings: Settings, itemKind: BaseItemKindService|null, optionsName?: string): void {
+		this.ExistingOptions.Value = settings.AllKeys().filter((k) => k.startsWith(`ViewOption-${context}`)).map((k) => new ItemListViewOptions(itemKind, settings.ReadAsJson(k)));
+
 		if (Nullable.HasValue(optionsName)) {
-			this.ListOptions.Value = new ItemListViewOptions(itemKind, settings.ReadAsJson(`ViewOption-${context}-${optionsName}`));
+			this.ListOptions.Value = this.ExistingOptions.Value.filter((o) => o.Label.Current.Value == optionsName)[0] ?? new ItemListViewOptions(itemKind);
 		} else {
 			this.ListOptions.Value = new ItemListViewOptions(itemKind);
 		}
 	}
 
-	public SaveViewOptions(context: string, settings: Settings, listOptions: ItemListViewOptions): void {
-		SettingsStore.Instance.SaveSettings(settings.CreateSaveRequest(`ViewOption-${context}-${listOptions.Label.Current.Value}`, listOptions.CreateSaveRequest()));
+	public SaveViewOptions(context: string, settings: Settings, listOptions: ItemListViewOptions, onSuccess: (newLabel: string|null) => void): void {
+		SettingsStore.Instance.SaveSettings(settings.CreateSaveRequest(`ViewOption-${context}-${listOptions.Label.Current.Value}`, listOptions.CreateSaveRequest()), () => {
+			SettingsStore.Instance.LoadSettings(settings.Id, () => {
+				if (!this.ExistingOptions.Value.includes(listOptions)) {
+					listOptions.Label.OnSaved();
+					this.ExistingOptions.push(listOptions);
+				}
+
+				onSuccess(listOptions.IsUnsaved ? listOptions.Label.Current.Value : null);
+			});
+		});
 	}
 
 	public LibraryId: string;
 	public ItemKind: BaseItemKind;
 	public List: Receiver<ItemListWithStats>;
 	public ListOptions: Observable<ItemListViewOptions|null>;
+	public ExistingOptions: ObservableArray<ItemListViewOptions>;
 	private DefaultLoadItems: (a: AbortController, id: string) => Promise<BaseItemDto[]>;
 }
 

@@ -19,5 +19,5 @@ export const PageTitle: React.FC<{ text: string|TranslationRequest|undefined|nul
 		return <></>;
 	}
 
-	return <Layout direction="row" fontSize="1.5em" elementType="h1">{text}</Layout>;
+	return <Layout direction="row" fontSize="1.75em" elementType="h1">{text}</Layout>;
 };

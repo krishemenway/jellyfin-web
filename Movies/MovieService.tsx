@@ -29,6 +29,7 @@ export const MovieService: BaseItemKindService = {
 	primaryShape: ImageShape.Portrait,
 	searchResultName: (item) => `${item.Name} (${item.ProductionYear})`,
 	findIcon: (props) => <MovieIcon {...props} />,
+	listUrl: (library) => `/Movies/${library.Id}`,
 	listActions: [
 		[
 			ManageLibraryAction,

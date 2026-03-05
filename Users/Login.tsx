@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Button } from "Common/Button";
-import { Checkbox } from "Common/Checkbox";
+import { ToggleSwitch } from "Common/ToggleSwitch";
 import { TranslatedText } from "Common/TranslatedText";
 import { TextField } from "Common/TextField";
 import { useBackgroundStyles } from "AppStyles";
@@ -15,7 +15,7 @@ import { useObservable } from "@residualeffect/rereactor";
 import { FieldLabel } from "Common/FieldLabel";
 import { Form } from "Common/Form";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { ServerService } from "Servers/ServerService";
+import { ServerConnection } from "Servers/ServerService";
 import { ChangeServerButton } from "Servers/ChangeServerButton";
 import { QuickConnectService } from "./QuickConnect";
 
@@ -85,7 +85,7 @@ const SignInWithCredentials: React.FC = () => {
 				</Layout>
 
 				<Layout direction="row" gap=".5em" alignItems="center">
-					<Checkbox field={LoginService.Instance.RememberMe} />
+					<ToggleSwitch field={LoginService.Instance.RememberMe} />
 					<FieldLabel field={LoginService.Instance.RememberMe} />
 				</Layout>
 
@@ -116,7 +116,7 @@ const SignInWithCredentials: React.FC = () => {
 	);
 };
 
-export const Login: React.FC<StyleLayoutProps> = (props) => {
+export const Login: React.FC<{ server: ServerConnection; }&StyleLayoutProps> = (props) => {
 	const background = useBackgroundStyles();
 
 	React.useEffect(() => QuickConnectService.Instance.LoadQuickConnectEnabled(), []);
@@ -124,7 +124,7 @@ export const Login: React.FC<StyleLayoutProps> = (props) => {
 	return (
 		<Layout direction="column" gap="1em" alignItems="center" py="2em" {...props}>
 			<JellyfinIcon size="2em" />
-			<Layout direction="column" fontSize="1.5em">{ServerService.Instance.CurrentServer.Name}</Layout>
+			<Layout direction="column" fontSize="1.5em">{props.server.Name}</Layout>
 			<SignInWithCredentials />
 			<Loading
 				receivers={[QuickConnectService.Instance.QuickConnectEnabled]}

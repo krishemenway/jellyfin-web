@@ -2,7 +2,7 @@ import * as React from "react";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { Layout } from "Common/Layout";
 import { ChangePassword } from "Users/ChangePassword";
-import { TranslatedText } from "Common/TranslatedText";
+import { ChangeTheme } from "Users/ChangeTheme";
 import { SettingsIcon } from "Users/SettingsIcon";
 import { PageTitle } from "Common/PageTitle";
 
@@ -13,8 +13,8 @@ export const Settings: React.FC = () => {
 
 			<Layout direction="column">
 				<Layout direction="row" gap="1em">
-					<TranslatedText textKey="LabelCurrentPassword" elementType="div" layout={{ alignSelf: "end" }} />
 					<ChangePassword />
+					<ChangeTheme />
 				</Layout>
 			</Layout>
 		</PageWithNavigation>

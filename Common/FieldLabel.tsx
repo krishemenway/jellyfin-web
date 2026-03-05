@@ -2,17 +2,15 @@ import * as React from "react";
 import { EditableField } from "Common/EditableField";
 import { TranslatedText } from "Common/TranslatedText";
 
-interface FieldLabelProps {
+interface FieldLabelProps<T> {
 	className?: string;
-	field: EditableField;
+	field: EditableField<T>;
 }
 
-const ForwardedFieldLabel: React.ForwardRefRenderFunction<HTMLLabelElement, FieldLabelProps> = (props, ref) => {
+export function FieldLabel<T>(props: FieldLabelProps<T>) {
 	return (
-		<label htmlFor={props.field.FieldId} className={props.className} ref={ref}>
+		<label htmlFor={props.field.FieldId} className={props.className}>
 			<TranslatedText textKey={props.field.FieldId} />
 		</label>
 	);
-};
-
-export const FieldLabel = React.forwardRef(ForwardedFieldLabel);
+}

@@ -4,4 +4,5 @@ import { RecordingIcon } from "Movies/RecordingIcon";
 
 export const RecordingService: BaseItemKindService = {
 	findIcon: (props) => <RecordingIcon {...props} />,
+	listUrl: (library) => `/HomeVideos/${library.Id}`,
 };

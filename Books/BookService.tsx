@@ -4,4 +4,5 @@ import { BookIcon } from "Books/BookIcon";
 
 export const BookService: BaseItemKindService = {
 	findIcon: (props) => <BookIcon {...props} />,
+	listUrl: (library) => `/Books/${library.Id}`,
 };

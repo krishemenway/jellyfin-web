@@ -5,6 +5,7 @@ import { Receiver } from "Common/Receiver";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SystemInfo } from "@jellyfin/sdk/lib/generated-client/models";
+import { DeviceService } from "Device/DeviceService";
 
 interface JellyfinCredentials {
 	Servers: ServerConnection[]
@@ -34,35 +35,23 @@ enum ConnectionMode {
 export class ServerService {
 	constructor() {
 		this.Servers = new ObservableArray(this.LoadServersFromLocalStorage());
+		this.CurrentServer = new Observable(this.Servers.Value[0] ?? null);
 		this.TryAddServerHost = new EditableField("LabelServerHost", "", (current) => !Nullable.StringHasValue(current) ? "ValueIsRequiredMessage" : undefined);
 		this.TryAddServerResult = new Receiver("UnknownError");
 		this.TryAddServerErrorMessagesShown = new Observable(false);
 		this.ServerInfo = new Receiver("UnknownError");
-		this.CurrentUserId = new Computed(() => this.CurrentServer.UserId ?? "");
+		this.CurrentUserId = new Computed(() => this.CurrentServer.Value?.UserId ?? "");
 		this._apis = {};
 	}
 
-	public get DeviceId() {
-		return this._deviceId ?? (this._deviceId = this.FindOrGenerateDeviceId());
-	}
-
-	public get DeviceName() {
-		return "Web Browser"; // TODO check out the browser.js file and cry
-	}
-
-	public get CurrentApi() {
-		const currentServer = this.CurrentServer;
-		const existingApiOrUndefined = this._apis[currentServer.Id];
-
-		if (existingApiOrUndefined !== undefined) {
-			return existingApiOrUndefined;
+	public get CurrentApi(): Api {
+		if (!Nullable.HasValue(this.CurrentServer.Value)) {
+			throw new Error("Missing Api");
 		}
 
-		return this.ResetApiForCurrentServer();
-	}
-
-	public get CurrentServer(): ServerConnection {
-		return this.Servers.Value[0];
+		return Nullable.HasValue(this._apis[this.CurrentServer.Value.Id])
+			? this._apis[this.CurrentServer.Value.Id]
+			: this.ResetApiForCurrentServer(this.CurrentServer.Value);
 	}
 
 	public Remove(server: ServerConnection): void {
@@ -93,17 +82,21 @@ export class ServerService {
 	}
 
 	public SelectServerConnection(connection: ServerConnection): void {
-		this.Servers.remove(connection);
-		this.Servers.unshift(connection);
+		this.CurrentServer.Value = connection;
 		this.SetServersToLocalStorage();
-		this.ResetApiForCurrentServer();
+		this.ResetApiForCurrentServer(connection);
 
 		this.ServerInfo.Reset();
 		this.LoadServerInfoWithAbort();
 	}
 
 	public SetAccessTokenForServer(accessToken: string|null, userId: string|null): void {
-		const connection = this.CurrentServer;
+		const connection = this.CurrentServer.Value;
+
+		if (connection === null) {
+			throw new Error("Connect not available for token");
+		}
+
 		connection.AccessToken = accessToken;
 		connection.UserId = userId;
 		connection.DateLastAccessed = new Date().getTime();
@@ -127,23 +120,27 @@ export class ServerService {
 	}
 
 	private CheckSystemInfoForHost(host: string, onSuccess?: () => void, abort?: AbortController): Promise<boolean> {
-		return getSystemApi(this.CreateJellyfin().createApi(host)).getPublicSystemInfo({ signal: abort?.signal })
+		const hostWithProtocol = this.EnsureProtocolForHost(host);
+		return getSystemApi(this.CreateJellyfin().createApi(hostWithProtocol)).getPublicSystemInfo({ signal: abort?.signal })
 			.then((response) => {
 				if (Nullable.HasValue(response.data.Id)) {
-					this.Servers.unshift({
+					const connection: ServerConnection = {
 						Id: response.data.Id,
 						Name: response.data.ServerName!,
 						DateLastAccessed: new Date().getTime(),
-						ManualAddress: host,
+						ManualAddress: hostWithProtocol,
 						LastConnectionMode: ConnectionMode.Manual,
 						LocalAddress: response.data.LocalAddress!,
 						Version: response.data.Version!,
 						AccessToken: null,
 						ExchangeToken: null,
 						UserId: null,
-					});
+					};
+
+					this.Servers.unshift(connection);
+					this.CurrentServer.Value = connection;
 					this.SetServersToLocalStorage();
-					this.ResetApiForCurrentServer();
+					this.ResetApiForCurrentServer(connection);
 					this.TryAddServerErrorMessagesShown.Value = false;
 					Nullable.TryExecute(onSuccess, (f) => f());
 					return true;
@@ -153,8 +150,8 @@ export class ServerService {
 			});
 	}
 
-	private ResetApiForCurrentServer(): Api {
-		return this._apis[this.CurrentServer.Id] = this.CreateJellyfin().createApi(this.CurrentServer.ManualAddress, this.CurrentServer.AccessToken ?? undefined);
+	private ResetApiForCurrentServer(server: ServerConnection): Api {
+		return this._apis[server.Id] = this.CreateJellyfin().createApi(server.ManualAddress, server.AccessToken ?? undefined);
 	}
 
 	private SetServersToLocalStorage(): void {
@@ -164,7 +161,7 @@ export class ServerService {
 	private CreateJellyfin(): Jellyfin {
 		return new Jellyfin({
 			clientInfo: { name: 'Jellyfin Web Upgrayed', version: '0.0.1', },
-			deviceInfo: { name: this.DeviceName, id: this.DeviceId },
+			deviceInfo: { name: DeviceService.Instance.DeviceName, id: DeviceService.Instance.DeviceId },
 		});
 	}
 
@@ -178,24 +175,20 @@ export class ServerService {
 		return (JSON.parse(credentials) as JellyfinCredentials).Servers ?? [];
 	}
 
-	private FindOrGenerateDeviceId(): string {
-		const localStorageDeviceId = window.localStorage.getItem(this._deviceKey);
-
-		if (localStorageDeviceId !== null) {
-			return localStorageDeviceId;
+	private EnsureProtocolForHost(host: string): string {
+		if (host.startsWith("http://")) {
+			return host;
 		}
 
-		const keys = [];
+		if (host.startsWith("https://")) {
+			return host;
+		}
 
-		keys.push(navigator.userAgent);
-		keys.push(new Date().getTime());
-
-		const deviceId = btoa(keys.join('|')).replaceAll('=', '1');
-		window.localStorage.setItem(this._deviceKey, deviceId);
-		return deviceId;
+		return `http://${host}`;
 	}
 
 	public Servers: ObservableArray<ServerConnection>;
+	public CurrentServer: Observable<ServerConnection|null>;
 	public ServerInfo: Receiver<SystemInfo>;
 	public CurrentUserId: Computed<string>;
 
@@ -204,8 +197,6 @@ export class ServerService {
 	public TryAddServerErrorMessagesShown: Observable<boolean>;
 
 	private _apis: Record<string, Api>;
-	private _deviceId: string|undefined;
-	private _deviceKey = "_deviceId2";
 
 	static get Instance(): ServerService {
 		return this._instance ?? (this._instance = new ServerService());

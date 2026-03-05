@@ -1,6 +1,6 @@
 import { getUserApi } from "@jellyfin/sdk/lib/utils/api";
 import { AuthenticationResult, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { EditableField } from "Common/EditableField";
+import { EditableField, IEditableField } from "Common/EditableField";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { Observable } from "@residualeffect/reactor";
@@ -12,7 +12,7 @@ export class LoginService {
 		this.UserName = new EditableField("LabelUser", "");
 		this.Password = new EditableField("LabelPassword", "");
 
-		this.RememberMe = new EditableField("RememberMe", "false");
+		this.RememberMe = new EditableField("RememberMe", false);
 
 		this.ShowForgotPassword = new Observable(false);
 
@@ -70,7 +70,7 @@ export class LoginService {
 		
 	}
 
-	private get AllFields(): EditableField[] {
+	private get AllFields(): IEditableField[] {
 		return [
 			this.UserName,
 			this.Password,
@@ -80,7 +80,7 @@ export class LoginService {
 
 	public UserName: EditableField;
 	public Password: EditableField;
-	public RememberMe: EditableField;
+	public RememberMe: EditableField<boolean>;
 
 	public ShowForgotPassword: Observable<boolean>;
 

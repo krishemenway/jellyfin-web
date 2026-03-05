@@ -1,4 +1,13 @@
 export class Linq {
+	public static GroupBy<TKey extends string|number, TValue>(array: TValue[], keyFunc: (arrayValue: TValue) => TKey): Record<TKey, TValue[]> {
+		return array.reduce((grouped, current) => {
+			const key = keyFunc(current);
+			grouped[key] = grouped[key] ?? [];
+			grouped[key].push(current);
+			return grouped;
+		}, {} as Record<TKey, TValue[]>);
+	}
+
 	public static Distinct<T>(array: T[]): T[] {
 		return array.filter((value, index) => array.indexOf(value) === index);
 	}
@@ -38,8 +47,8 @@ export class Linq {
 		}, null as T|null);
 	}
 
-	public static Coalesce<T>(values: (T|undefined|null)[], defaultValue: T): T {
-		return values.find((v) => Nullable.HasValue(v)) ?? defaultValue;
+	public static Coalesce<T>(values: (T|undefined|null)[], defaultValue: T, hasValueFunc?: (value: T|undefined|null) => boolean): T {
+		return values.find((v) => (hasValueFunc ?? Nullable.HasValue)(v)) ?? defaultValue;
 	}
 }
 

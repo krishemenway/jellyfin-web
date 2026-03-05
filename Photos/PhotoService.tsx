@@ -4,4 +4,5 @@ import { PhotoIcon } from "Photos/PhotoIcon";
 
 export const PhotoService: BaseItemKindService = {
 	findIcon: (props) => <PhotoIcon {...props} />,
+	listUrl: (library) => `/Photos/${library.Id}`,
 };

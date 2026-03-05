@@ -24,9 +24,12 @@ import { SaveIcon } from "CommonIcons/SaveIcon";
 import { TextField } from "Common/TextField";
 import { FieldLabel } from "Common/FieldLabel";
 import { ItemListService } from "ItemList/ItemListService";
-import { Settings } from "Users/SettingsStore";
+import { Settings, SettingsStore } from "Users/SettingsStore";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { LinkToItem } from "Items/LinkToItem";
+import { LinkToItem, useUrlToItem as urlToItem } from "Items/LinkToItem";
+import { useIsBusy } from "Common/Loading";
+import { LoadingIcon } from "Common/LoadingIcon";
+import { useNavigate } from "react-router-dom";
 
 export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
@@ -199,30 +202,54 @@ const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilt
 	);
 };
 
-const SaveOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings; listOptions: ItemListViewOptions; onClosed: () => void }> = (props) => {
+const SaveOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings; listOptions: ItemListViewOptions; library: BaseItemDto; onClosed: () => void }> = (props) => {
+	const navigate = useNavigate();
+	const isBusy = useIsBusy(SettingsStore.Instance.SaveSettingsResult);
+
 	return (
-		<Form direction="column" py="1em" px="1em" gap="1em" onSubmit={() => { props.itemList.SaveViewOptions(props.itemList.LibraryId, props.settings, props.listOptions); props.onClosed(); }}>
+		<Form direction="column" py="1em" px="1em" gap="1em" onSubmit={() => { props.itemList.SaveViewOptions(props.itemList.LibraryId, props.settings, props.listOptions, (newFilterLabelOrNull) => { props.onClosed(); Nullable.TryExecute(newFilterLabelOrNull, (label) => navigate(urlToItem(props.library, `/${label}`))) }); }}>
 			<Layout direction="column" gap=".5em">
 				<FieldLabel field={props.listOptions.Label} />
 				<TextField field={props.listOptions.Label} py=".25em" px=".5em" placeholder={{ Key: "New" }} />
 			</Layout>
 
-			<Button type="submit" justifyContent="center" py=".5em"><TranslatedText textKey="Save" /></Button>
+			<Button type="submit" justifyContent="center" py=".5em">
+				{isBusy ? <LoadingIcon /> : <TranslatedText textKey="Save" />}
+			</Button>
 		</Form>
 	);
 };
 
 const PickOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings; library: BaseItemDto; onClosed: () => void }> = (props) => {
-	const contextForOptions = `ViewOption-${props.itemList.LibraryId}-`;
-	const existingListOptions = React.useMemo(() => props.settings.AllKeys().filter((k) => k.startsWith(contextForOptions)).map((k) => k.replace(contextForOptions, "")), [props.itemList, props.settings]);
+	const itemFilterOptions = useObservable(props.itemList.ExistingOptions);
 
 	return (
-		<Layout direction="column" py="1em" px="1em" gap="1em">
+		<Layout direction="column" py="1em" px="1em" gap="1em" minWidth="16rem">
 			<ListOf
 				direction="column"
-				items={existingListOptions}
-				forEachItem={(option) => <LinkToItem key={option} direction="column" item={props.library} afterUrl={`/${option}`}>{option}</LinkToItem>}
+				items={itemFilterOptions}
+				forEachItem={(option) => <PickOptionsLink key={option.Key} itemListViewOptions={option} library={props.library} />}
 			/>
+
+			<LinkToItem
+				direction="column" item={props.library}
+				px=".5em" py=".5em">
+				<TranslatedText textKey="New" />
+			</LinkToItem>
 		</Layout>
+	);
+};
+
+const PickOptionsLink: React.FC<{ itemListViewOptions: ItemListViewOptions; library: BaseItemDto }> = (props) => {
+	const label = useObservable(props.itemListViewOptions.Label.Current);
+
+	return (
+		<LinkToItem
+			key={label}
+			direction="column" item={props.library}
+			afterUrl={`/${label}`}
+			px=".5em" py=".5em">
+			{label}
+		</LinkToItem>
 	);
 };

@@ -9,6 +9,7 @@ export interface BaseItemKindService {
 	primaryShape?: ImageShape;
 	findIcon?: (iconProps: IconProps, collectionType?: CollectionType) => JSX.Element;
 	findUrl?: (item: BaseItemDto) => string;
+	listUrl?: (libraryItem: BaseItemDto) => string;
 
 	filterOptions?: ItemFilterType[];
 	sortOptions?: ItemSortOption[];

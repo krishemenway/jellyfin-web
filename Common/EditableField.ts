@@ -1,7 +1,17 @@
 import { Computed, Observable } from "@residualeffect/reactor";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 
-export class EditableField<T = string> {
+export interface IEditableField {
+	FieldId: string;
+
+	HasChanged: Computed<boolean>;
+	ErrorMessage: Computed<string|undefined>;
+
+	CanMakeRequest(): boolean;
+	Revert(): void;
+}
+
+export class EditableField<T = string> implements IEditableField {
 	constructor(fieldId: string, defaultValue: T, canMakeRequestFunc?: (current: T) => string|undefined, beforeChange?: (newValue: T) => T) {
 		this.FieldId = fieldId;
 		this.CanMakeRequestFunc = canMakeRequestFunc ?? (() => undefined);
@@ -13,7 +23,7 @@ export class EditableField<T = string> {
 		this.HasChanged = new Computed(() => this.Current.Value !== this.Saved.Value);
 		this.ServerErrorMessage = new Observable(undefined);
 
-		this.ErrorMessage = new Computed<string|undefined>(() => Linq.Coalesce([this.CanMakeRequestFunc(this.Current.Value)], this.ServerErrorMessage.Value));
+		this.ErrorMessage = new Computed<string|undefined>(() => Linq.Coalesce([this.CanMakeRequestFunc(this.Current.Value), this.ServerErrorMessage.Value], "", m => Nullable.StringHasValue(m)));
 	}
 
 	public CanMakeRequest(): boolean {

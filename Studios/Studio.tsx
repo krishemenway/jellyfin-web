@@ -11,11 +11,13 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { PageTitle } from "Common/PageTitle";
 import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
-import { ResponsiveBreakpoint, useBreakpoint } from "AppStyles";
+import { ResponsiveBreakpoint, useBreakpointValue } from "AppStyles";
 import { ImageShape } from "Items/ItemImage";
 
+const studiosPerRowConfig = { [ResponsiveBreakpoint.Wide]: 9, [ResponsiveBreakpoint.Desktop]: 9, [ResponsiveBreakpoint.Tablet]: 6, [ResponsiveBreakpoint.Mobile]: 2 };
+
 export const Studio: React.FC = () => {
-	const breakpoint = useBreakpoint();
+	const studiosPerRow = useBreakpointValue(studiosPerRowConfig);
 	const studioId = useParams().studioId;
 
 	if (!Nullable.HasValue(studioId)) {
@@ -45,7 +47,7 @@ export const Studio: React.FC = () => {
 								<ItemsGridItem
 									key={item.Id ?? index.toString()}
 									item={item}
-									itemsPerRow={breakpoint === ResponsiveBreakpoint.Desktop ? 9 : breakpoint === ResponsiveBreakpoint.Tablet ? 6 : 2}
+									itemsPerRow={studiosPerRow}
 									shape={ImageShape.Portrait}
 								/>
 							)}

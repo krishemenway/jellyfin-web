@@ -7,6 +7,7 @@ import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
 export const BoxSetService: BaseItemKindService = {
 	findIcon: (props) => <CollectionIcon {...props} />,
 	findUrl: (item) => `/Collection/${item.Id}`,
+	listUrl: (library) => `/Collections/${library.Id}`,
 	sortOptions: [
 		SortByName,
 		SortByDateCreated,

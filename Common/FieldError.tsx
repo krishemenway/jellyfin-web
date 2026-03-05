@@ -5,13 +5,13 @@ import { useObservable } from "@residualeffect/rereactor";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { useBackgroundStyles } from "AppStyles";
 
-interface FieldLabelProps {
+interface FieldLabelProps<T> {
 	className?: string;
-	field: EditableField;
+	field: EditableField<T>;
 	showErrors: boolean;
 }
 
-export const FieldError: React.FC<FieldLabelProps> = (props) => {
+export function FieldError<T>(props: FieldLabelProps<T>): JSX.Element {
 	const background = useBackgroundStyles();
 	const errorTextKey = useObservable(props.field.ErrorMessage);
 
@@ -20,4 +20,4 @@ export const FieldError: React.FC<FieldLabelProps> = (props) => {
 	}
 
 	return <TranslatedText textKey={errorTextKey} className={background.error} elementType="p" />;
-};
+}

@@ -4,4 +4,5 @@ import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
 
 export const LiveTVChannelService: BaseItemKindService = {
 	findIcon: (props) => <QuestionMarkIcon {...props} />,
+	listUrl: (library) => `/LiveTV/${library.Id}`,
 };

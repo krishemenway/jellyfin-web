@@ -1,7 +1,7 @@
-import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api";
-import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
-import { DateTime, Nullable, NumberLimits } from "Common/MissingJavascriptFunctions";
+import { Observable } from "@residualeffect/reactor";
+import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByNumber } from "Common/Sort";
 import { ItemService } from "Items/ItemsService";
 import { MediaPlayerService } from "MediaPlayer/MediaPlayerService";
@@ -9,213 +9,142 @@ import { MediaPlayerType } from "MediaPlayer/MediaPlayerType";
 import { MediaPlayState } from "MediaPlayer/MediaPlayState";
 import { MediaPlaylistItem } from "MediaPlayer/MediaPlaylistItem";
 import { ServerService } from "Servers/ServerService";
+import { MediaPlayerPlaylist } from "MediaPlayer/MediaPlayerPlaylist";
 
-export type AddPlaylistItemType = "ArtistName"|"AlbumId"|"PlaylistId"|"AudioId";
-
-interface PlayItem {
-	PlaylistItem: MediaPlaylistItem;
-	Audio: HTMLAudioElement;
-	TimeUpdateFunc: (evt: Event) => void;
-	LoadedDataFunc: () => void;
-	EndedFunc: () => void;
-}
+export type MusicPlayerDropActionType = "MovePlaylistItem"|"AudioId"|"AlbumId-SongList"|"ArtistName-SongList"|"AudioId-SongList";
 
 export class MusicPlayerService {
 	constructor() {
-		this.Current = new Observable(undefined);
+		this.AudioElement = new Audio();
 		this.CurrentProgress = new Observable(0);
-		this.Playlist = new ObservableArray([]);
-		this.Repeat = new Observable(false);
-		this.Shuffle = new Observable(false);
-		this.State = new Observable(MediaPlayState.Stopped);
-		this.HasPrevious = new Computed(() => this.Shuffle.Value || this.Repeat.Value || this.CurrentIndex() > 0);
-		this.HasNext = new Computed(() => this.Shuffle.Value || this.Repeat.Value || this.CurrentIndex() < this.Playlist.length - 1);
+		this.Playlist = new MediaPlayerPlaylist();
 		this.PlaySessionId = (new Date().getTime() + 1).toString();
+		this.State = new Observable(MediaPlayState.Stopped);
+
+		this.AudioElement.addEventListener("timeupdate", (evt: Event) => this.OnTimeUpdate(evt));
+		this.AudioElement.addEventListener("loadeddata", () => { this.Play(); });
+		this.AudioElement.addEventListener("ended", () => this.Playlist.GoNext());
+
+		this.Playlist.Current.Subscribe((newItem) => {
+			if (newItem === undefined) {
+				this.Unload();
+			} else {
+				this.Load(newItem);
+			}
+		})
 	}
 
-	public AddFromId(addType: AddPlaylistItemType, typeId: string, library: BaseItemDto, addAfterIndex?: number): void {
-		const audioList = ItemService.Instance.FindOrCreateItemList(library.Id!, "Audio").List;
+	public HandleDrop(dataTransfer: DataTransfer, afterIndex?: number): void {
+		const addType = dataTransfer.getData("AddType") as MusicPlayerDropActionType;
+		const addTypeId = dataTransfer.getData("AddTypeId");
 		
 		switch (addType) {
-			case "PlaylistId":
-				this.MovePlaylistItem(parseInt(typeId, 10), addAfterIndex);
-				break;
-			case "AlbumId":
-				this.AddRange((audioList.Data.Value.ReceivedData?.List ?? []).filter((i) => i.AlbumId === typeId).sort(SortByNumber((i) => i.IndexNumber)), addAfterIndex);
-				break;
-			case "ArtistName":
-				this.AddRange((audioList.Data.Value.ReceivedData?.List ?? []).filter((i) => i.Artists?.includes(typeId)), addAfterIndex);
+			case "MovePlaylistItem":
+				this.Playlist.MovePlaylistItem(parseInt(addTypeId, 10), afterIndex);
 				break;
 			case "AudioId":
-				this.AddRange((audioList.Data.Value.ReceivedData?.List ?? []).filter((audio) => audio.Id === typeId), addAfterIndex);
+				this.AddItemsFromDataToPlaylist(dataTransfer, (item) => item.Id === addTypeId, SortByNumber((i) => i.IndexNumber), afterIndex);
+				break;
+			case "ArtistName-SongList":
+				this.AddItemsFromListToPlaylist(dataTransfer, "Audio", (item) => item.Artists?.includes(addTypeId) ?? false, SortByNumber((i) => i.IndexNumber), afterIndex);
+				break;
+			case "AlbumId-SongList":
+				this.AddItemsFromListToPlaylist(dataTransfer, "Audio", (item) => item.AlbumId === addTypeId, SortByNumber((i) => i.IndexNumber), afterIndex);
+				break;
+			case "AudioId-SongList":
+				this.AddItemsFromListToPlaylist(dataTransfer, "Audio", (item) => item.Id === addTypeId, SortByNumber((i) => i.IndexNumber), afterIndex);
 				break;
 		}
 	}
 
 	public ClearAndPlay(items: BaseItemDto[]): void {
-		this.Playlist.clear();
-		this.AddRange(items);
+		this.Playlist.ClearAndPlay(items);
 		MediaPlayerService.Instance.PlayerType.Value = MediaPlayerType.Music;
-	}
-
-	public AddRange(items: BaseItemDto[], addAfterIndex?: number): void {
-		const lengthBeforeAdding = this.Playlist.length;
-		const playlistItems = items.map((item) => ({ Item: item }) as MediaPlaylistItem);
-
-		this.AddRangeOfPlaylistItems(playlistItems, addAfterIndex);
-
-		if (lengthBeforeAdding === 0 && this.Playlist.length > 0) {
-			this.Load(this.Playlist.Value[0]);
-		}
-	}
-
-	public Remove(item: MediaPlaylistItem): void {
-		this.Playlist.remove(item);
-	}
-
-	public ToggleShuffle(): void {
-		this.Shuffle.Value = !this.Shuffle.Value;
-	}
-
-	public ToggleRepeat(): void {
-		this.Repeat.Value = !this.Repeat.Value;
-	}
-
-	public GoNext(): void {
-		if (this.Shuffle.Value) {
-			this.GoShuffle();
-		} else if (this.Repeat.Value) {
-			this.GoIndex(NumberLimits.NoGreaterThan(this.CurrentIndex() + 1, this.Playlist.length - 1, 0));
-		} else {
-			this.GoIndex(this.CurrentIndex() + 1);
-		}
-	}
-
-	public GoBack(): void {
-		if (this.Shuffle.Value) {
-			this.GoShuffle();
-		} else if (this.Repeat.Value) {
-			this.GoIndex(NumberLimits.NoLessThan(this.CurrentIndex() - 1, 0, this.Playlist.length - 1));
-		} else {
-			this.GoIndex(this.CurrentIndex() - 1);
-		}
-	}
-
-	public GoShuffle(): void {
-		this.GoIndex(Math.round(Math.random() * this.Playlist.AsArray().length));
-	}
-
-	public GoIndex(index: number): void {
-		Nullable.TryExecute(this.Playlist.AsArray()[index], (item) => {
-			if (this.Current.Value?.PlaylistItem !== item) {
-				this.Load(item);
-			}
-		}, () => { this.Stop(); });
 	}
 
 	public Load(playlistItem: MediaPlaylistItem): void {
 		this.Stop();
-		
-		Nullable.TryExecute(this.Current.Value, (current) => {
-			current.Audio.removeEventListener("timeupdate", current.TimeUpdateFunc);
-			current.Audio.removeEventListener("loadeddata", current.LoadedDataFunc);
-			current.Audio.removeEventListener("ended", current.EndedFunc);
-		});
-
-		const onTimeUpdate = (evt: Event) => this.OnTimeUpdate(evt);
-		const onLoaded = () => { this.Play(); };
-		const onEnded = () => this.GoNext();
-
-		const audioElement = new Audio(this.CreateAudioUrl(playlistItem.Item));
-		audioElement.addEventListener("timeupdate", onTimeUpdate);
-		audioElement.addEventListener("loadeddata", onLoaded);
-		audioElement.addEventListener("ended", onEnded);
-
 		this.CurrentProgress.Value = 0;
-		this.Current.Value = {
-			PlaylistItem: playlistItem,
-			Audio: audioElement,
-			TimeUpdateFunc: onTimeUpdate,
-			LoadedDataFunc: onLoaded,
-			EndedFunc: onEnded,
-		};
+		this.AudioElement.src = this.CreateAudioUrl(playlistItem.Item);
 	}
 
 	public Stop(): void {
-		Nullable.TryExecute(this.Current.Value, (current) => {
-			current.Audio.pause();
-			current.Audio.fastSeek(0);
-
-			getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackStopped({ playbackStopInfo: {
-				ItemId: current.PlaylistItem.Item.Id,
-				MediaSourceId: current.PlaylistItem.Item.Id,
-				PlaySessionId: this.PlaySessionId,
-				PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
-			}});
-		});
-
+		this.AudioElement.pause();
+		this.AudioElement.fastSeek(0);
 		this.State.Value = MediaPlayState.Stopped;
+
+		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackStopped({ playbackStopInfo: {
+			ItemId: this.Playlist.Current.Value?.Item.Id,
+			MediaSourceId: this.Playlist.Current.Value?.Item.Id,
+			PlaySessionId: this.PlaySessionId,
+			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
+		}});
 	}
 
 	public Pause(): void {
-		Nullable.TryExecute(this.Current.Value, (current) => {
-			current.Audio.pause();
-			this.State.Value = MediaPlayState.Paused;
-			
-			getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackProgress({ playbackProgressInfo: {
-				ItemId: current.PlaylistItem.Item.Id,
-				MediaSourceId: current.PlaylistItem.Item.Id,
-				PlaySessionId: this.PlaySessionId,
-				IsPaused: true,
-				PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
-			}});
-		});
+		this.AudioElement.pause();
+		this.State.Value = MediaPlayState.Paused;
+		
+		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackProgress({ playbackProgressInfo: {
+			ItemId: this.Playlist.Current.Value?.Item.Id,
+			MediaSourceId: this.Playlist.Current.Value?.Item.Id,
+			PlaySessionId: this.PlaySessionId,
+			IsPaused: true,
+			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
+		}});
 	}
 
 	public Play(): void {
-		Nullable.TryExecute(this.Current.Value, (current) => {
-			current.Audio.play();
-			this.State.Value = MediaPlayState.Playing;
+		this.AudioElement.play();
+		this.State.Value = MediaPlayState.Playing;
 
-			getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackStart({ playbackStartInfo: {
-				ItemId: current.PlaylistItem.Item.Id,
-				MediaSourceId: current.PlaylistItem.Item.Id,
-				PlaySessionId: this.PlaySessionId,
-				CanSeek: true,
-				IsMuted: false,
-				IsPaused: false,
-				PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
-				RepeatMode: this.Repeat.Value ? "RepeatAll" : "RepeatNone",
-			}});
-		});
+		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackStart({ playbackStartInfo: {
+			ItemId: this.Playlist.Current.Value?.Item.Id,
+			MediaSourceId: this.Playlist.Current.Value?.Item.Id,
+			PlaySessionId: this.PlaySessionId,
+			CanSeek: true,
+			IsMuted: false,
+			IsPaused: false,
+			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
+			RepeatMode: this.Playlist.Repeat.Value ? "RepeatAll" : "RepeatNone",
+		}});
 	}
 
 	public ChangeProgress(newProgress: number): void {
 		const currentState = this.State.Value;
 
-		Nullable.TryExecute(this.Current.Value, (current) => { 
-			current.Audio.fastSeek(newProgress);
+		this.AudioElement.fastSeek(newProgress);
 
-			getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackProgress({ playbackProgressInfo: {
-				ItemId: current.PlaylistItem.Item.Id,
-				MediaSourceId: current.PlaylistItem.Item.Id,
-				PlaySessionId: this.PlaySessionId,
-				IsPaused: currentState === MediaPlayState.Paused,
-				PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
-			}});
-		});
+		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackProgress({ playbackProgressInfo: {
+			ItemId: this.Playlist.Current.Value?.Item.Id,
+			MediaSourceId: this.Playlist.Current.Value?.Item.Id,
+			PlaySessionId: this.PlaySessionId,
+			IsPaused: currentState === MediaPlayState.Paused,
+			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
+		}});
 	}
 
 	public Unload(): void {
 		this.Stop();
+		this.Playlist.Reset();
+	}
+
+	private AddItemsFromDataToPlaylist(dataTransfer: DataTransfer, filterItemsFunc: (item: BaseItemDto) => boolean, sortFunc: (a: BaseItemDto, b: BaseItemDto) => number, afterIndex?: number): void {
+		Nullable.TryExecute(dataTransfer.getData("AddFromChildrenOfId"), (childrenOfId) => {
+			const childrenToSearch = ItemService.Instance.FindOrCreateItemData(childrenOfId).Children;
+			this.Playlist.AddRange((childrenToSearch.Data.Value.ReceivedData ?? []).filter(filterItemsFunc).sort(sortFunc), afterIndex);
+		});
+	}
+
+	private AddItemsFromListToPlaylist(dataTransfer: DataTransfer, kind: BaseItemKind, filterItemsFunc: (item: BaseItemDto) => boolean, sortFunc: (a: BaseItemDto, b: BaseItemDto) => number, afterIndex?: number): void {
+		Nullable.TryExecute(dataTransfer.getData("AddFromLibrary"), (libraryId) => {
+			const childrenToSearch = ItemService.Instance.FindOrCreateItemList(libraryId, kind).List;
+			this.Playlist.AddRange((childrenToSearch.Data.Value.ReceivedData?.List ?? []).filter(filterItemsFunc).sort(sortFunc), afterIndex);
+		});
 	}
 
 	private OnTimeUpdate(evt: Event): void {
 		this.CurrentProgress.Value = (evt.currentTarget as HTMLAudioElement).currentTime;
-	}
-
-	private CurrentIndex(): number {
-		return Nullable.Value(this.Current.Value, -1, (c) => this.Playlist.AsArray().indexOf(c.PlaylistItem));
 	}
 
 	private CreateAudioUrl(item: BaseItemDto): string {
@@ -239,31 +168,13 @@ export class MusicPlayerService {
 
 		return `${ServerService.Instance.CurrentApi.basePath}/Audio/${item.Id}/universal?${queryParams.toString()}`;
 	}
-	
-	private AddRangeOfPlaylistItems(items: readonly MediaPlaylistItem[], addAfterIndex?: number): void {
-		Nullable.TryExecute(addAfterIndex, (index) => {
-			this.Playlist.push(...this.Playlist.splice(index, this.Playlist.length - index, ...items));
-		}, () => {
-			this.Playlist.push(...items);
-		});
-	}
 
-	private MovePlaylistItem(atIndex: number, addAfterIndex?: number): void {
-		const itemToMove = this.Playlist.splice(atIndex, 1);
-		this.AddRangeOfPlaylistItems(itemToMove, addAfterIndex);
-	}
-
-	public Current: Observable<PlayItem|undefined>;
-	public State: Observable<MediaPlayState>;
 	public CurrentProgress: Observable<number>;
-	public Playlist: ObservableArray<MediaPlaylistItem>;
-	public Repeat: Observable<boolean>;
-	public Shuffle: Observable<boolean>;
-
-	public HasPrevious: Computed<boolean>;
-	public HasNext: Computed<boolean>;
-
+	public Playlist: MediaPlayerPlaylist;
 	public PlaySessionId: string;
+	public State: Observable<MediaPlayState>;
+
+	private AudioElement: HTMLAudioElement;
 
 	static get Instance(): MusicPlayerService {
 		return this._instance ?? (this._instance = new MusicPlayerService());

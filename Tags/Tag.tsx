@@ -10,14 +10,16 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { PageTitle } from "Common/PageTitle";
 import { Layout } from "Common/Layout";
 import { ListOf } from "Common/ListOf";
-import { ResponsiveBreakpoint, useBreakpoint } from "AppStyles";
+import { ResponsiveBreakpoint, useBreakpointValue } from "AppStyles";
 import { ImageShape } from "Items/ItemImage";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ItemService } from "Items/ItemsService";
 
+const tagsPerRowConfig = { [ResponsiveBreakpoint.Wide]: 9, [ResponsiveBreakpoint.Desktop]: 9, [ResponsiveBreakpoint.Tablet]: 6, [ResponsiveBreakpoint.Mobile]: 2 };
+
 export const Tag: React.FC = () => {
-	const breakpoint = useBreakpoint();
 	const tag = useParams().tag;
+	const tagsPerRow = useBreakpointValue(tagsPerRowConfig);
 
 	if (!Nullable.HasValue(tag) || tag.length === 0) {
 		return <PageWithNavigation icon={<TagIcon />}><NotFound /></PageWithNavigation>;
@@ -46,7 +48,7 @@ export const Tag: React.FC = () => {
 								<ItemsGridItem
 									key={item.Id ?? index.toString()}
 									item={item}
-									itemsPerRow={breakpoint === ResponsiveBreakpoint.Desktop ? 9 : breakpoint === ResponsiveBreakpoint.Tablet ? 6 : 2}
+									itemsPerRow={tagsPerRow}
 									shape={ImageShape.Portrait}
 								/>
 							)}
