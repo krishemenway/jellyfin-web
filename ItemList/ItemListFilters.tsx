@@ -22,7 +22,6 @@ import { Form } from "Common/Form";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { TextField } from "Common/TextField";
-import { FieldLabel } from "Common/FieldLabel";
 import { ItemListService } from "ItemList/ItemListService";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { Nullable } from "Common/MissingJavascriptFunctions";
@@ -30,6 +29,8 @@ import { LinkToItem, useUrlToItem as urlToItem } from "Items/LinkToItem";
 import { useIsBusy } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { useNavigate } from "react-router-dom";
+import { RadioCheckedIcon } from "CommonIcons/RadioCheckedIcon";
+import { RadioUncheckedIcon } from "CommonIcons/RadioUncheckedIcon";
 
 export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
@@ -48,7 +49,6 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 	const newFilter = useObservable(props.listOptions.NewFilter);
 	const [filterButtonRef, setFilterButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [sortButtonRef, setSortButtonRef] = React.useState<HTMLButtonElement|null>(null);
-	const [saveButtonRef, setSaveButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [loadOptionsButtonRef, setLoadOptionsButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const currentOptionLabel = useObservable(props.listOptions.Label.Current);
 
@@ -56,7 +56,6 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 		<>
 			<Layout direction="row" gap="1em" alignItems="center">
 				<Button type="button" px=".5em" py=".25em" justifyContent="center" alignItems="center" onClick={(button) => { setLoadOptionsButtonRef(button)}} icon={<LoadViewOptionsIcon />} />
-				<Button type="button" px=".5em" py=".25em" justifyContent="center" alignItems="center" onClick={(button) => { setSaveButtonRef(button)}} icon={<SaveIcon />} />
 
 				{(Nullable.StringHasValue(currentOptionLabel) && <Layout direction="column">{currentOptionLabel}</Layout>)}
 
@@ -105,10 +104,6 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 
 			<AnchoredModal anchorElement={loadOptionsButtonRef} open={loadOptionsButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => setLoadOptionsButtonRef(null)}>
 				<PickOptionsModal {...props} onClosed={() => setLoadOptionsButtonRef(null)} />
-			</AnchoredModal>
-
-			<AnchoredModal anchorElement={saveButtonRef} open={saveButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => setSaveButtonRef(null)}>
-				<SaveOptionsModal {...props} onClosed={() => setSaveButtonRef(null)} />
 			</AnchoredModal>
 		</>
 	);
@@ -202,54 +197,79 @@ const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilt
 	);
 };
 
-const SaveOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings; listOptions: ItemListViewOptions; library: BaseItemDto; onClosed: () => void }> = (props) => {
-	const navigate = useNavigate();
-	const isBusy = useIsBusy(SettingsStore.Instance.SaveSettingsResult);
-
-	return (
-		<Form direction="column" py="1em" px="1em" gap="1em" onSubmit={() => { props.itemList.SaveViewOptions(props.itemList.LibraryId, props.settings, props.listOptions, (newFilterLabelOrNull) => { props.onClosed(); Nullable.TryExecute(newFilterLabelOrNull, (label) => navigate(urlToItem(props.library, `/${label}`))) }); }}>
-			<Layout direction="column" gap=".5em">
-				<FieldLabel field={props.listOptions.Label} />
-				<TextField field={props.listOptions.Label} py=".25em" px=".5em" placeholder={{ Key: "New" }} />
-			</Layout>
-
-			<Button type="submit" justifyContent="center" py=".5em">
-				{isBusy ? <LoadingIcon /> : <TranslatedText textKey="Save" />}
-			</Button>
-		</Form>
-	);
-};
-
 const PickOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings; library: BaseItemDto; onClosed: () => void }> = (props) => {
 	const itemFilterOptions = useObservable(props.itemList.ExistingOptions);
+	const current = useObservable(props.itemList.ListOptions);
 
 	return (
 		<Layout direction="column" py="1em" px="1em" gap="1em" minWidth="16rem">
 			<ListOf
 				direction="column"
 				items={itemFilterOptions}
-				forEachItem={(option) => <PickOptionsLink key={option.Key} itemListViewOptions={option} library={props.library} />}
+				forEachItem={(option) => <PickOptionsLink key={option.Key} itemListViewOptions={option} isSelected={option === current} {...props} />}
 			/>
 
-			<LinkToItem
-				direction="column" item={props.library}
-				px=".5em" py=".5em">
-				<TranslatedText textKey="New" />
-			</LinkToItem>
+			{!current?.IsUnsaved && (
+				<LinkToItem
+					item={props.library}
+					direction="row" px=".5em" py=".5em" gap=".5rem">
+					<RadioUncheckedIcon />
+					<TranslatedText textKey="New" />
+				</LinkToItem>
+			)}
+
+			{current?.IsUnsaved && (
+				<SaveNewOptions listOptions={current} {...props} />
+			)}
 		</Layout>
 	);
 };
 
-const PickOptionsLink: React.FC<{ itemListViewOptions: ItemListViewOptions; library: BaseItemDto }> = (props) => {
+const SaveNewOptions: React.FC<{ itemList: ItemListService; settings: Settings; listOptions: ItemListViewOptions; library: BaseItemDto; onClosed: () => void }> = (props) => {
+	const navigate = useNavigate();
+	const isBusy = useIsBusy(SettingsStore.Instance.SaveSettingsResult);
+
+	return (
+		<Form
+			direction="row" gap=".5rem" alignItems="center"
+			onSubmit={() => { props.itemList.SaveViewOptions(props.itemList.LibraryId, props.settings, props.listOptions, (newFilterLabelOrNull) => { props.onClosed(); Nullable.TryExecute(newFilterLabelOrNull, (label) => navigate(urlToItem(props.library, `/${label}`))) }); }}>
+			<TextField field={props.listOptions.Label} py=".25em" px=".5em" grow placeholder={{ Key: "LabelNewName" }} />
+
+			<Button type="submit" justifyContent="center" px=".5em" py=".5em">
+				{isBusy ? <LoadingIcon /> : <SaveIcon />}
+			</Button>
+		</Form>
+	);
+};
+
+const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions: ItemListViewOptions; library: BaseItemDto; settings: Settings; isSelected: boolean }> = (props) => {
 	const label = useObservable(props.itemListViewOptions.Label.Current);
 
 	return (
-		<LinkToItem
-			key={label}
-			direction="column" item={props.library}
-			afterUrl={`/${label}`}
-			px=".5em" py=".5em">
-			{label}
-		</LinkToItem>
+		<Layout direction="row" justifyContent="space-between" gap=".5rem">
+			<LinkToItem
+				key={label} item={props.library}
+				afterUrl={`/${label}`}
+				direction="row" px=".5em" py=".5em" grow gap=".5rem" alignItems="center">
+				{props.isSelected ? <RadioCheckedIcon /> : <RadioUncheckedIcon />}
+				{label}
+			</LinkToItem>
+
+			<Button
+				type="button"
+				px=".5em" py=".5em"
+				justifyContent="center" alignItems="center"
+				onClick={() => { props.itemList.SaveViewOptions(props.itemList.LibraryId, props.settings, props.itemListViewOptions, () => { }); }}
+				icon={<SaveIcon />}
+			/>
+
+			<Button
+				type="button"
+				px=".5em" py=".5em"
+				justifyContent="center" alignItems="center"
+				onClick={() => props.itemList.RemoveViewOptions(props.itemList.LibraryId, props.settings, props.itemListViewOptions, () => { })}
+				icon={<DeleteIcon />}
+			/>
+		</Layout>
 	);
 };

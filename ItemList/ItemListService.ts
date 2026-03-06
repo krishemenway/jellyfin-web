@@ -66,7 +66,7 @@ export class ItemListService {
 	}
 
 	public SaveViewOptions(context: string, settings: Settings, listOptions: ItemListViewOptions, onSuccess: (newLabel: string|null) => void): void {
-		SettingsStore.Instance.SaveSettings(settings.CreateSaveRequest(`ViewOption-${context}-${listOptions.Label.Current.Value}`, listOptions.CreateSaveRequest()), () => {
+		SettingsStore.Instance.SaveSettings(settings.CreateSaveRequestWithChangedKey(`ViewOption-${context}-${listOptions.Label.Current.Value}`, listOptions.CreateSaveRequest()), () => {
 			SettingsStore.Instance.LoadSettings(settings.Id, () => {
 				if (!this.ExistingOptions.Value.includes(listOptions)) {
 					listOptions.Label.OnSaved();
@@ -74,6 +74,16 @@ export class ItemListService {
 				}
 
 				onSuccess(listOptions.IsUnsaved ? listOptions.Label.Current.Value : null);
+			});
+		});
+	}
+
+	public RemoveViewOptions(context: string, settings: Settings, listOptions: ItemListViewOptions, onSuccess: () => void): void {
+		const labelName = listOptions.Label.Saved.Value;
+		SettingsStore.Instance.SaveSettings(settings.CreateSaveRequestWithRemovedKey(`ViewOption-${context}-${labelName}`), () => {
+			SettingsStore.Instance.LoadSettings(settings.Id, () => {
+				this.ExistingOptions.remove(listOptions);
+				onSuccess();
 			});
 		});
 	}

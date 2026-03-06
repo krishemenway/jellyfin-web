@@ -28,7 +28,7 @@ export class Settings {
 		return Object.keys(this._fromServer.CustomPrefs ?? {});
 	}
 
-	public CreateSaveRequest<T>(key: string, value: T): DisplayPreferencesDto {
+	public CreateSaveRequestWithChangedKey<T>(key: string, value: T): DisplayPreferencesDto {
 		return {
 			Id: this.Id,
 			...this._fromServer,
@@ -37,6 +37,19 @@ export class Settings {
 				[key]: JSON.stringify(value),
 			},
 		};
+	}
+
+	public CreateSaveRequestWithRemovedKey(key: string): DisplayPreferencesDto {
+		const result = {
+			Id: this.Id,
+			...this._fromServer,
+			CustomPrefs: {
+				...this._fromServer.CustomPrefs,
+			},
+		};
+
+		delete result.CustomPrefs[key];
+		return result;
 	}
 
 	public Id: string;
@@ -58,7 +71,7 @@ export class SettingsStore {
 			const settings = new Settings(id, response.data);
 			Nullable.TryExecute(onLoaded, (f) => f(settings));
 			return settings;
-		}));
+		}), true);
 
 		return () => this.Settings.ResetIfLoading();
 	}
