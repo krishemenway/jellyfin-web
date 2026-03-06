@@ -21,7 +21,7 @@ import { LoginService } from "Users/LoginService";
 import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { PageTitle } from "Common/PageTitle";
 import { Virtuoso } from "react-virtuoso";
-import { Nullable } from "Common/MissingJavascriptFunctions";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
 import { IconForItem } from "Items/IconForItem";
@@ -100,6 +100,7 @@ export const Person: React.FC = () => {
 
 const CreditedItem: React.FC<{ creditedItem: BaseItemDto, person: BaseItemDto }> = ({ creditedItem, person }) => {
 	const creditedNameFuncForType = BaseItemKindServiceFactory.FindOrNull(creditedItem.Type)?.personCreditName ?? ((i) => i.Name);
+	const personRecord = creditedItem.People?.find(x => x.Id === person.Id);
 
 	return (
 		<LinkToItem direction="row" alignItems="center" item={creditedItem} gap=".25em" py=".5em">
@@ -107,7 +108,7 @@ const CreditedItem: React.FC<{ creditedItem: BaseItemDto, person: BaseItemDto }>
 
 			<Layout direction="column" grow gap=".25em">
 				<Layout direction="row">{creditedNameFuncForType(creditedItem)}</Layout>
-				<Layout direction="row">{creditedItem.People?.find(x => x.Id === person.Id)?.Role}</Layout>
+				<Layout direction="row">{Linq.Coalesce([personRecord?.Role, personRecord?.Type], "", (v) => Nullable.StringHasValue(v))}</Layout>
 			</Layout>
 
 			<Layout direction="column" width="5%" px="1em" alignItems="end" justifyContent="center">{creditedItem.ProductionYear}</Layout>
