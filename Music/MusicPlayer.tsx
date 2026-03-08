@@ -166,7 +166,7 @@ const CurrentPlaylist: React.FC<{ className: string; user: UserDto }> = (props) 
 					)}
 				/>
 			) : (
-				<Layout className={background.dashed} direction="column" justifyContent="center" alignItems="center" width="100%" py="5em">
+				<Layout className={background.dashed} direction="column" justifyContent="center" alignItems="center" width="100%" grow>
 					<TranslatedText textKey="AddToPlaylist" />
 				</Layout>
 			)}
