@@ -39,6 +39,7 @@ export interface LayoutWithoutChildrenProps {
 	textAlign?: Property.TextAlign;
 	textOverflow?: Property.TextOverflow;
 	whiteSpace?: Property.WhiteSpace;
+	objectFit?: Property.ObjectFit;
 
 	mx?: Property.MarginLeft,
 	my?: Property.MarginTop;
@@ -126,6 +127,7 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		textAlign: props?.textAlign,
 		textOverflow: props?.textOverflow,
 		whiteSpace: props?.whiteSpace,
+		objectFit: props?.objectFit,
 
 		marginTop: props?.my,
 		marginBottom: props?.my,
