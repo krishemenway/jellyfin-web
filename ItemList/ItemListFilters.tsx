@@ -51,6 +51,7 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 	const [sortButtonRef, setSortButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [loadOptionsButtonRef, setLoadOptionsButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const currentOptionLabel = useObservable(props.listOptions.Label.Current);
+	const confirmDelete = useObservable(props.itemList.ConfirmDeleteOptions);
 
 	return (
 		<>
@@ -102,8 +103,9 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 				<PickSortOptionModal sortOptions={props.listOptions.ItemKindService?.sortOptions ?? []} onPicked={(option, reversed) => props.listOptions.AddSort(option, reversed)} onClosed={() => setAddSortOpen(false)} />
 			</AnchoredModal>
 
-			<AnchoredModal anchorElement={loadOptionsButtonRef} open={loadOptionsButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => setLoadOptionsButtonRef(null)}>
-				<PickOptionsModal {...props} onClosed={() => setLoadOptionsButtonRef(null)} />
+			<AnchoredModal anchorElement={loadOptionsButtonRef} open={loadOptionsButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => { setLoadOptionsButtonRef(null); props.itemList.ConfirmDeleteOptions.Value = null; }}>
+				{confirmDelete === null && <PickOptionsModal {...props} onClosed={() => setLoadOptionsButtonRef(null)} />}
+				{confirmDelete !== null && <ConfirmDelete {...props} options={confirmDelete} onClosed={() => { setLoadOptionsButtonRef(null); props.itemList.ConfirmDeleteOptions.Value = null; } } />}
 			</AnchoredModal>
 		</>
 	);
@@ -267,9 +269,24 @@ const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions
 				type="button"
 				px=".5em" py=".5em"
 				justifyContent="center" alignItems="center"
-				onClick={() => props.itemList.RemoveViewOptions(props.itemList.LibraryId, props.settings, props.itemListViewOptions, () => { })}
+				onClick={() => props.itemList.ConfirmDeleteOptions.Value = props.itemListViewOptions}
 				icon={<DeleteIcon />}
 			/>
+		</Layout>
+	);
+};
+
+const ConfirmDelete: React.FC<{ itemList: ItemListService; settings: Settings; library: BaseItemDto; options: ItemListViewOptions; onClosed: () => void }> = (props) => {
+	const navigate = useNavigate();
+
+	return (
+		<Layout direction="column" px="2rem" py="2rem" maxWidth="20rem" gap="1em">
+			<TranslatedText textKey="ConfirmDeleteFilterOption" textProps={[props.options.Label.Saved.Value]} />
+
+			<Layout direction="row" gap="1rem" width="100%" justifyContent="end">
+				<Button type="button" label="ButtonCancel" onClick={() => { props.onClosed() }} px="1em" py=".5em" />
+				<Button type="button" label="ButtonRemove" onClick={() => { props.itemList.RemoveViewOptions(props.itemList.LibraryId, props.settings, props.options, () => { props.onClosed(); navigate(urlToItem(props.library)); }); }} px="1em" py=".5em" />
+			</Layout>
 		</Layout>
 	);
 };

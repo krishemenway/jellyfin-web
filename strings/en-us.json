@@ -178,6 +178,7 @@
     "ConfirmDeleteItems": "Deleting these items will delete them from both the file system and your media library. Are you sure you wish to continue?",
     "ConfirmDeleteLyrics": "Deleting these lyrics will delete them from both the file system and your media library. Are you sure you wish to continue?",
     "ConfirmDeletion": "Confirm Deletion",
+    "ConfirmDeleteFilterOption": "Are you sure you want to delete the filter {0}?",
     "ConfirmEndPlayerSession": "Would you like to shutdown Jellyfin on {0}?",
     "Connect": "Connect",
     "Console": "Console",

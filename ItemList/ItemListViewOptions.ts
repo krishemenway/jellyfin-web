@@ -19,7 +19,7 @@ export class ItemListViewOptions {
 		this.NewFilter = new Observable(undefined);
 		this.Filters = new ObservableArray(Nullable.Value(data, [], (d) => d.Filters).map((d) => {
 			const filterType = (itemKindService?.filterOptions ?? []).find((f) => f.type === d.FilterType);
-			return new EditableItemFilter(filterType, d.FilterValue);
+			return new EditableItemFilter(filterType, d.FilterValue, d.Operation);
 		}));
 
 		this.SortBy = new ObservableArray(Nullable.Value(data, [], (d) => d.Sorts).map((d) => {
@@ -60,7 +60,7 @@ export class ItemListViewOptions {
 	public CreateSaveRequest(): ItemViewOptionsData {
 		return {
 			Label: this.Label.Current.Value,
-			Filters: this.Filters.Value.map((i) => ({ FilterType: i.FilterType.type, FilterValue: i.FilterValue.Current.Value })),
+			Filters: this.Filters.Value.map((i) => ({ FilterType: i.FilterType.type, FilterValue: i.FilterValue.Current.Value, Operation: i.Operation.Current.Value.Name })),
 			Sorts: this.SortBy.Value.map((s) => ({ SortType: s.SortType, Reversed: s.Reversed }) as ItemViewOptionSortData),
 		};
 	}
@@ -84,6 +84,7 @@ export class ItemListViewOptions {
 export interface ItemViewOptionFilterData {
 	FilterType: string;
 	FilterValue: string|undefined;
+	Operation: string;
 }
 
 export interface ItemViewOptionSortData {

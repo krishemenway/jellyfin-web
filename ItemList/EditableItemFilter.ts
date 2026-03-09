@@ -7,7 +7,7 @@ import { ItemFilterType } from "ItemList/ItemFilterType";
 import { ItemViewOptionFilterData } from "ItemList/ItemListViewOptions";
 
 export class EditableItemFilter {
-	constructor(filterType?: ItemFilterType, filterValue?: string) {
+	constructor(filterType?: ItemFilterType, filterValue?: string, operationName?: string) {
 		if (filterType === undefined) {
 			throw new Error("Unexpected missing filter type.");
 		}
@@ -15,7 +15,7 @@ export class EditableItemFilter {
 		this.Key = (EditableItemFilter.EditableItemFilterId++).toString();
 		this.FilterType = filterType;
 
-		this.Operation = new EditableField("Operation", filterType.operations[0]);
+		this.Operation = new EditableField("Operation", filterType.operations.find(o => o.Name === operationName) ?? filterType.operations[0]);
 		this.FilterValue = new EditableField("Value", filterValue ?? "");
 
 		this.DisplayValue = new Computed(() => {

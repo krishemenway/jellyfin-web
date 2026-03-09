@@ -78,7 +78,7 @@ export const useGlobalStyles = createUseStyles({
 			boxSizing: "content-box",
 		},
 		"html": {
-			lineHeight: 1,
+			lineHeight: "normal",
 			background: "var(--PageBackgroundColor)",
 			height: "100%",
 		},

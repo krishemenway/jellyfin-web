@@ -26,6 +26,8 @@ export class ItemListService {
 		this.List = new Receiver("UnknownError");
 		this.ListOptions = new Observable(null);
 		this.ExistingOptions = new ObservableArray([]);
+		this.ConfirmDeleteOptions = new Observable(null);
+
 		this.DefaultLoadItems = (a, id) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: id, fields: ["DateCreated", "Genres", "Tags", "SortName", "Studios"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((response) => response.data.Items ?? []);
 	}
 
@@ -93,6 +95,8 @@ export class ItemListService {
 	public List: Receiver<ItemListWithStats>;
 	public ListOptions: Observable<ItemListViewOptions|null>;
 	public ExistingOptions: ObservableArray<ItemListViewOptions>;
+	public ConfirmDeleteOptions: Observable<ItemListViewOptions|null>;
+
 	private DefaultLoadItems: (a: AbortController, id: string) => Promise<BaseItemDto[]>;
 }
 
@@ -104,7 +108,7 @@ export const RecentlyAddedViewOptions: ItemViewOptionsData = {
 
 export const ContinueWatchingViewOptions: ItemViewOptionsData = {
 	Label: "Continue Watching",
-	Filters: [{ FilterType: "FilterByContinueWatching", FilterValue: "true" }],
+	Filters: [{ FilterType: "FilterByContinueWatching", FilterValue: "true", Operation: "IsTrue" }],
 	Sorts: [{ SortType: "DatePlayed", Reversed: true, }],
 };
 
