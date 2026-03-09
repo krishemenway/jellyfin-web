@@ -68,6 +68,12 @@ export class ItemListService {
 	}
 
 	public SaveViewOptions(context: string, settings: Settings, listOptions: ItemListViewOptions, onSuccess: (newLabel: string|null) => void): void {
+		listOptions.ShowErrors.Value = true;
+
+		if (!listOptions.Label.CanMakeRequest()) {
+			return;
+		}
+
 		SettingsStore.Instance.SaveSettings(settings.CreateSaveRequestWithChangedKey(`ViewOption-${context}-${listOptions.Label.Current.Value}`, listOptions.CreateSaveRequest()), () => {
 			SettingsStore.Instance.LoadSettings(settings.Id, () => {
 				if (!this.ExistingOptions.Value.includes(listOptions)) {
@@ -75,6 +81,7 @@ export class ItemListService {
 					this.ExistingOptions.push(listOptions);
 				}
 
+				listOptions.ShowErrors.Value = false;
 				onSuccess(listOptions.IsUnsaved ? listOptions.Label.Current.Value : null);
 			});
 		});

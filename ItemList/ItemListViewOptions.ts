@@ -6,14 +6,15 @@ import { EditableItemFilter } from "ItemList/EditableItemFilter";
 import { CreateSortFunc, ItemSortOption } from "ItemList/ItemSortOption";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 import { ItemFilterType } from "ItemList/ItemFilterType";
-import { EditableField } from "Common/EditableField";
+import { EditableField, ValueIsRequired } from "Common/EditableField";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 
 export class ItemListViewOptions {
 	constructor(itemKindService: BaseItemKindService|null, data?: ItemViewOptionsData) {
 		this.Key = (ItemListViewOptions._lastOptionsKey++).toString();
 		this.IsUnsaved = !Nullable.HasValue(data);
-		this.Label = new EditableField("Filter", Nullable.Value(data, "", (d) => d.Label));
+		this.Label = new EditableField("Filter", Nullable.Value(data, "", (d) => d.Label), (v) => ValueIsRequired(v));
+		this.ShowErrors = new Observable(false);
 
 		this.ItemKindService = itemKindService;
 		this.NewFilter = new Observable(undefined);
@@ -69,6 +70,7 @@ export class ItemListViewOptions {
 	public IsUnsaved: boolean;
 	public Label: EditableField;
 	public ItemKindService: BaseItemKindService|null;
+	public ShowErrors: Observable<boolean>;
 
 	public NewFilter: Observable<EditableItemFilter|undefined>;
 

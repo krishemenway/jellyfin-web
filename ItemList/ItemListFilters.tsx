@@ -31,6 +31,7 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { useNavigate } from "react-router-dom";
 import { RadioCheckedIcon } from "CommonIcons/RadioCheckedIcon";
 import { RadioUncheckedIcon } from "CommonIcons/RadioUncheckedIcon";
+import { FieldError } from "Common/FieldError";
 
 export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
@@ -49,14 +50,14 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 	const newFilter = useObservable(props.listOptions.NewFilter);
 	const [filterButtonRef, setFilterButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [sortButtonRef, setSortButtonRef] = React.useState<HTMLButtonElement|null>(null);
-	const [loadOptionsButtonRef, setLoadOptionsButtonRef] = React.useState<HTMLButtonElement|null>(null);
+	const [optionsListButtonRef, setOptionsListButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const currentOptionLabel = useObservable(props.listOptions.Label.Current);
 	const confirmDelete = useObservable(props.itemList.ConfirmDeleteOptions);
 
 	return (
 		<>
 			<Layout direction="row" gap="1em" alignItems="center">
-				<Button type="button" px=".5em" py=".25em" justifyContent="center" alignItems="center" onClick={(button) => { setLoadOptionsButtonRef(button)}} icon={<LoadViewOptionsIcon />} />
+				<Button type="button" px=".5em" py=".25em" justifyContent="center" alignItems="center" onClick={(button) => { setOptionsListButtonRef(button)}} icon={<LoadViewOptionsIcon />} />
 
 				{(Nullable.StringHasValue(currentOptionLabel) && <Layout direction="column">{currentOptionLabel}</Layout>)}
 
@@ -91,8 +92,8 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 				)}
 			</Layout>
 
-			<AnchoredModal anchorElement={filterButtonRef} open={addFilterOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => setAddFilterOpen(false)}>
-				<PickFilterModal filterOptions={props.listOptions.ItemKindService?.filterOptions ?? []} onPicked={(option) => props.listOptions.CreateNewFilter(option)} onClosed={() => setAddFilterOpen(false)} />
+			<AnchoredModal anchorElement={filterButtonRef} open={addFilterOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => { setAddFilterOpen(false); }}>
+				<PickFilterModal filterOptions={props.listOptions.ItemKindService?.filterOptions ?? []} onPicked={(option) => props.listOptions.CreateNewFilter(option)} onClosed={() => { setAddFilterOpen(false); }} />
 			</AnchoredModal>
 
 			<AnchoredModal anchorElement={filterButtonRef} open={newFilter !== undefined} anchorAlignment="center" opensInDirection="right" onClosed={() => props.listOptions.ClearNewFilter()}>
@@ -103,9 +104,9 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 				<PickSortOptionModal sortOptions={props.listOptions.ItemKindService?.sortOptions ?? []} onPicked={(option, reversed) => props.listOptions.AddSort(option, reversed)} onClosed={() => setAddSortOpen(false)} />
 			</AnchoredModal>
 
-			<AnchoredModal anchorElement={loadOptionsButtonRef} open={loadOptionsButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => { setLoadOptionsButtonRef(null); props.itemList.ConfirmDeleteOptions.Value = null; }}>
-				{confirmDelete === null && <PickOptionsModal {...props} onClosed={() => setLoadOptionsButtonRef(null)} />}
-				{confirmDelete !== null && <ConfirmDelete {...props} options={confirmDelete} onClosed={() => { setLoadOptionsButtonRef(null); props.itemList.ConfirmDeleteOptions.Value = null; } } />}
+			<AnchoredModal anchorElement={optionsListButtonRef} open={optionsListButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => { setOptionsListButtonRef(null); props.itemList.ConfirmDeleteOptions.Value = null; props.listOptions.ShowErrors.Value = false; }}>
+				{confirmDelete === null && <PickOptionsModal {...props} onClosed={() => setOptionsListButtonRef(null)} />}
+				{confirmDelete !== null && <ConfirmDelete {...props} options={confirmDelete} onClosed={() => { setOptionsListButtonRef(null); props.itemList.ConfirmDeleteOptions.Value = null; } } />}
 			</AnchoredModal>
 		</>
 	);
@@ -230,12 +231,17 @@ const PickOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings
 const SaveNewOptions: React.FC<{ itemList: ItemListService; settings: Settings; listOptions: ItemListViewOptions; library: BaseItemDto; onClosed: () => void }> = (props) => {
 	const navigate = useNavigate();
 	const isBusy = useIsBusy(SettingsStore.Instance.SaveSettingsResult);
+	const showErrors = useObservable(props.listOptions.ShowErrors);
 
 	return (
 		<Form
-			direction="row" gap=".5rem" alignItems="center"
+			direction="row" gap=".5rem" alignItems="start"
 			onSubmit={() => { props.itemList.SaveViewOptions(props.itemList.LibraryId, props.settings, props.listOptions, (newFilterLabelOrNull) => { props.onClosed(); Nullable.TryExecute(newFilterLabelOrNull, (label) => navigate(urlToItem(props.library, `/${label}`))) }); }}>
-			<TextField field={props.listOptions.Label} py=".25em" px=".5em" grow placeholder={{ Key: "LabelNewName" }} />
+
+			<Layout direction="column">
+				<TextField field={props.listOptions.Label} py=".25em" px=".5em" grow placeholder={{ Key: "LabelNewName" }} />
+				<FieldError field={props.listOptions.Label} showErrors={showErrors} />
+			</Layout>
 
 			<Button type="submit" justifyContent="center" px=".5em" py=".5em">
 				{isBusy ? <LoadingIcon /> : <SaveIcon />}

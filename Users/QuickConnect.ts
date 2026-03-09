@@ -1,7 +1,6 @@
 import { QuickConnectResult } from "@jellyfin/sdk/lib/generated-client/models";
 import { Observable } from "@residualeffect/reactor";
-import { EditableField } from "Common/EditableField";
-import { Nullable } from "Common/MissingJavascriptFunctions";
+import { EditableField, ValueIsRequired } from "Common/EditableField";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { LoginService } from "./LoginService";
@@ -9,7 +8,7 @@ import { getUserApi, getQuickConnectApi } from "@jellyfin/sdk/lib/utils/api";
 
 export class QuickConnectService {
 	constructor() {
-		this.QuickConnectCode = new EditableField("LabelQuickConnectCode", "", (current) => !Nullable.StringHasValue(current) ? "ValueIsRequiredMessage" : undefined);
+		this.QuickConnectCode = new EditableField("LabelQuickConnectCode", "", (v) => ValueIsRequired(v));
 		this.AuthorizeResult = new Receiver("UnknownError");
 		this.ShowErrors = new Observable(false);
 		this.QuickConnectResult = new Receiver("UnknownError");
