@@ -97,6 +97,7 @@ const ItemsGrid: React.FC<{ libraryId: string, optionsName?: string; items: Base
 					<ItemsGridItem
 						key={item.Id ?? index.toString()}
 						item={item}
+						library={library}
 						shape={itemKindService?.primaryShape ?? ImageShape.Portrait}
 						itemsPerRow={itemsPerRow}
 					/>
