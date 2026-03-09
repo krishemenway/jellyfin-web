@@ -12,6 +12,7 @@ import { FilterByProductionYear } from "ItemList/ItemFilterTypes/FilterByProduct
 import { FilterByStudio } from "ItemList/ItemFilterTypes/FilterByStudio";
 import { FilterByTag } from "ItemList/ItemFilterTypes/FilterByTag";
 import { FilterByOfficialRating } from "ItemList/ItemFilterTypes/FilterByOfficialRating";
+import { FilterByGenre } from "ItemList/ItemFilterTypes/FilterByGenre";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
 import { SortByOfficialRating } from "ItemList/ItemSortTypes/SortByOfficialRating";
@@ -37,6 +38,7 @@ export const MusicVideoService: BaseItemKindService = {
 		FilterByName,
 		FilterByHasPlayed,
 		FilterByContinueWatching,
+		FilterByGenre,
 		FilterByIsFavorite,
 		FilterByProductionYear,
 		FilterByStudio,
