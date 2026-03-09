@@ -34,7 +34,7 @@ const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
 	imageTypeLimit: 1,
 	enableTotalRecordCount: true,
 	recursive: true,
-	includeItemTypes: [ "Audio", "Movie", "Episode", "AudioBook", "Photo", "Video"],
+	includeItemTypes: [ "Audio", "Movie", "Episode", "AudioBook", "Photo", "Video", "MusicVideo"],
 };
 
 const CreditSortOrder: SortFuncs<BaseItemDto>[] = [CreateSortFunc(SortByProductionYear, true)];
