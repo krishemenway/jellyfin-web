@@ -238,7 +238,7 @@ const SaveNewOptions: React.FC<{ itemList: ItemListService; settings: Settings; 
 			direction="row" gap=".5rem" alignItems="start"
 			onSubmit={() => { props.itemList.SaveViewOptions(props.itemList.LibraryId, props.settings, props.listOptions, (newFilterLabelOrNull) => { props.onClosed(); Nullable.TryExecute(newFilterLabelOrNull, (label) => navigate(urlToItem(props.library, `/${label}`))) }); }}>
 
-			<Layout direction="column">
+			<Layout direction="column" grow>
 				<TextField field={props.listOptions.Label} py=".25em" px=".5em" grow placeholder={{ Key: "LabelNewName" }} />
 				<FieldError field={props.listOptions.Label} showErrors={showErrors} />
 			</Layout>
