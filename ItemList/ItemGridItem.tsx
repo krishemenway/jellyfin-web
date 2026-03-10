@@ -5,7 +5,7 @@ import { ImageShape, ItemImage } from "Items/ItemImage";
 import { LinkToItem } from "Items/LinkToItem";
 import { Layout } from "Common/Layout";
 
-export const ItemsGridItem: React.FC<{ item: BaseItemDto; library: BaseItemDto, imageType?: ImageType; shape: ImageShape; itemsPerRow: number }> = (props) => {
+export const ItemsGridItem: React.FC<{ item: BaseItemDto; fallback?: BaseItemDto, imageType?: ImageType; shape: ImageShape; itemsPerRow: number }> = (props) => {
 	const background = useBackgroundStyles();
 	const width = props.shape !== ImageShape.Landscape ? 220 : 330;
 	const height = props.shape !== ImageShape.Portrait ? 220 : 330;
@@ -19,7 +19,7 @@ export const ItemsGridItem: React.FC<{ item: BaseItemDto; library: BaseItemDto, 
 			justifyContent="space-between" alignItems="center"
 			width={{ itemsPerRow: props.itemsPerRow, gap: ".5em" }}
 		>
-			<ItemImage item={props.item} fallback={props.library} type={props.imageType ?? ImageType.Primary} fillWidth={width} fillHeight={height} lazy objectFit="cover" maxWidth="100%" grow />
+			<ItemImage item={props.item} fallback={props.fallback} type={props.imageType ?? ImageType.Primary} fillWidth={width} fillHeight={height} lazy objectFit="cover" maxWidth="100%" grow />
 			<Layout direction="column" py=".25em" textAlign="center">{props.item.Name}</Layout>
 		</LinkToItem>
 	);

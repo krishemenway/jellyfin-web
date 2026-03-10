@@ -81,7 +81,7 @@ const ItemsGrid: React.FC<{ libraryId: string, optionsName?: string; items: Base
 		const sortFunc = options.SortByFunc.Value;
 
 		return items.filter(filterFunc).sort(sortFunc);
-	});
+	}, [props.items, props.itemList]);
 
 	React.useEffect(() => { props.itemList.LoadItemListViewOptionsOrNew(props.libraryId, props.settings, itemKindService, props.optionsName); }, [props.settings, itemKindService, props.optionsName]);
 
@@ -97,7 +97,7 @@ const ItemsGrid: React.FC<{ libraryId: string, optionsName?: string; items: Base
 					<ItemsGridItem
 						key={item.Id ?? index.toString()}
 						item={item}
-						library={library}
+						fallback={library}
 						shape={itemKindService?.primaryShape ?? ImageShape.Portrait}
 						itemsPerRow={itemsPerRow}
 					/>
