@@ -16,8 +16,10 @@ interface SelectFieldEditorProps<TOption> extends LayoutWithoutChildrenProps {
 }
 
 export function SelectFieldEditor<TOption>(props: SelectFieldEditorProps<TOption>): JSX.Element {
+	const value = useObservable(props.field.Current);
+
 	return (
-		<select className={props.className} onChange={(evt) => { props.field.OnChange(props.allOptions.find((option) => props.getValue(option) === evt.currentTarget.value)!); }} style={ApplyLayoutStyleProps(props)}>
+		<select className={props.className} value={props.getValue(value)} onChange={(evt) => { props.field.OnChange(props.allOptions.find((option) => props.getValue(option) === evt.currentTarget.value)!); }} style={ApplyLayoutStyleProps(props)}>
 			{props.allOptions.map((option) => <option key={props.getValue(option)} value={props.getValue(option)}>{props.getLabel(option)}</option>)}
 		</select>
 	);

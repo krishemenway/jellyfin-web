@@ -19,7 +19,7 @@ import { ItemOverview } from "Items/ItemOverview";
 import { TranslatedText } from "Common/TranslatedText";
 import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
-import { PageTitle } from "Common/PageTitle";
+import { ItemPageTitle } from "ItemList/ItemPageTitle";
 import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
@@ -30,6 +30,7 @@ import { CastAndCrew } from "Items/CastAndCrew";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { BackdropService } from "Common/BackdropService";
 import { PlayVideoAction } from "MenuActions/PlayVideoAction";
+import { useItemEditor } from "Items/ItemEditorService";
 
 export const Movie: React.FC = () => {
 	const movieId = useParams<{ movieId: string }>().movieId;
@@ -55,6 +56,7 @@ export const Movie: React.FC = () => {
 
 function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JSX.Element {
 	const background = useBackgroundStyles();
+	const itemEditor = useItemEditor(movie);
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(movie), [movie]);
 
@@ -64,7 +66,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 				<Layout direction="column" gap=".5em">
 					<Layout direction="column" position="relative">
 						<ItemImage item={movie} type="Primary" />
-						<ItemRating item={movie} position="absolute" bottom=".5em" right=".5em" />
+						<ItemRating item={movie} position="absolute" bottom=".5em" right=".5em" itemEditor={itemEditor} libraryId={movie.ParentId!} />
 					</Layout>
 
 					<ItemExternalLinks
@@ -93,7 +95,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 			</Layout>
 			<Layout direction="column" grow gap="2em">
 				<Layout direction="row" justifyContent="space-between">
-					<PageTitle text={movie.Name} />
+					<ItemPageTitle item={movie} itemEditor={itemEditor} />
 					<ItemActionsMenu items={[movie]} actions={[
 						[ // User-based actions
 							PlayVideoAction,
@@ -109,7 +111,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 					]} user={user} />
 				</Layout>
 
-				<ItemOverview item={movie} />
+				<ItemOverview item={movie} itemEditor={itemEditor} />
 
 				{(movie.Tags?.length ?? 0) > 0 && (
 					<Layout direction="row" gap=".5em">
