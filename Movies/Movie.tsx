@@ -30,7 +30,11 @@ import { CastAndCrew } from "Items/CastAndCrew";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { BackdropService } from "Common/BackdropService";
 import { PlayVideoAction } from "MenuActions/PlayVideoAction";
-import { useItemEditor } from "Items/ItemEditorService";
+import { ItemEditorService, useItemEditor } from "Items/ItemEditorService";
+import { Button } from "Common/Button";
+import { SaveIcon } from "CommonIcons/SaveIcon";
+import { useObservable } from "@residualeffect/rereactor";
+import { RevertIcon } from "CommonIcons/RevertIcon";
 
 export const Movie: React.FC = () => {
 	const movieId = useParams<{ movieId: string }>().movieId;
@@ -57,68 +61,73 @@ export const Movie: React.FC = () => {
 function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JSX.Element {
 	const background = useBackgroundStyles();
 	const itemEditor = useItemEditor(movie);
+	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(movie), [movie]);
 
 	return (
-		<Layout direction="row" gap="1em" py="1em">
-			<Layout direction="column" maxWidth="20%" gap=".5em">
-				<Layout direction="column" gap=".5em">
+		<Layout direction="row" gap="1em" py="1rem">
+			<Layout direction="column" maxWidth="20%" gap=".5rem">
+				<Layout direction="column" gap=".5rem">
 					<Layout direction="column" position="relative">
 						<ItemImage item={movie} type="Primary" />
-						<ItemRating item={movie} position="absolute" bottom=".5em" right=".5em" itemEditor={itemEditor} libraryId={movie.ParentId!} />
+						<ItemRating item={movie} position="absolute" bottom=".5rem" right=".5rem" itemEditor={itemEditor} libraryId={movie.ParentId!} isEditing={isEditing} />
 					</Layout>
 
 					<ItemExternalLinks
 						item={movie}
-						direction="row" gap=".5em"
+						direction="row" gap=".5rem"
 						linkClassName={background.button}
-						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
+						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 					/>
 
 					<ItemGenres
 						item={movie}
-						direction="row" gap=".5em"
+						direction="row" gap=".5rem"
 						linkClassName={background.button}
-						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
+						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={4}
 					/>
 
 					<ItemStudios
 						item={movie}
-						direction="column" gap=".5em"
+						direction="column" gap=".5rem"
 						linkClassName={background.button}
-						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
+						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={3}
 					/>
 				</Layout>
 			</Layout>
-			<Layout direction="column" grow gap="2em">
+			<Layout direction="column" grow gap="2rem">
 				<Layout direction="row" justifyContent="space-between">
-					<ItemPageTitle item={movie} itemEditor={itemEditor} />
-					<ItemActionsMenu items={[movie]} actions={[
-						[ // User-based actions
-							PlayVideoAction,
-							AddToFavoritesAction,
-							MarkPlayedAction,
-							AddToCollectionAction,
-							AddToPlaylistAction,
-						],
-						[ // Server-based actions
-							EditItemAction,
-							RefreshItemAction,
-						]
-					]} user={user} />
+					<ItemPageTitle item={movie} itemEditor={itemEditor} isEditing={isEditing} />
+					<Layout direction="row" gap="1rem">
+						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { console.log("Revert"); }} />}
+						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { console.log("Save"); }} />}
+						<ItemActionsMenu items={[movie]} user={user} actions={[
+							[ // User-based actions
+								PlayVideoAction,
+								AddToFavoritesAction,
+								MarkPlayedAction,
+								AddToCollectionAction,
+								AddToPlaylistAction,
+							],
+							[ // Server-based actions
+								EditItemAction,
+								RefreshItemAction,
+							]
+						]} />
+					</Layout>
 				</Layout>
 
-				<ItemOverview item={movie} itemEditor={itemEditor} />
+				<ItemOverview item={movie} itemEditor={itemEditor} isEditing={isEditing} />
 
 				{(movie.Tags?.length ?? 0) > 0 && (
-					<Layout direction="row" gap=".5em">
+					<Layout direction="row" gap=".5rem">
 						<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
 						<ItemTags
 							item={movie}
-							direction="row" gap=".5em" wrap
+							direction="row" gap=".5rem" wrap
 							linkClassName={background.button}
 							linkLayout={{ px: ".25em", py: ".25em" }}
 							showMoreLimit={25}
