@@ -1,5 +1,5 @@
 import * as React from "react";
-import { MultiSelectEditor } from "Common/SelectFieldEditor";
+import { MultiSelectWithSplitEditor } from "Common/SelectFieldEditor";
 import { Layout } from "Common/Layout";
 import { ContainOperation, NotContainOperation } from "ItemList/FilterOperations/ContainOperation";
 import { ItemFilterType, ItemFilterTypeProps } from "ItemList/ItemFilterType";
@@ -12,7 +12,7 @@ const TagEditor: React.FC<ItemFilterTypeProps> = (props) => {
 
 	return (
 		<Layout direction="column">
-			<MultiSelectEditor field={props.filter.FilterValue} allOptions={props.filters.Tags ?? []} getValue={(tag) => tag} getLabel={(tag) => tag} />
+			<MultiSelectWithSplitEditor field={props.filter.FilterValue} allOptions={props.filters.Tags ?? []} getValue={(tag) => tag} getLabel={(tag) => tag} />
 		</Layout>
 	);
 };

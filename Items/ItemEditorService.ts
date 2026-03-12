@@ -10,7 +10,7 @@ import { useObservable } from "@residualeffect/rereactor";
 
 export function useItemEditor(item: BaseItemDto): EditableItem|undefined {
 	const editableItem = useObservable(ItemEditorService.Instance.CurrentEditableItem);
-	React.useEffect(() => { ItemEditorService.Instance.CurrentEditableItem.Value = new EditableItem(item); }, [item]);
+	React.useEffect(() => ItemEditorService.Instance.Load(item), [item]);
 
 	return editableItem;
 }
@@ -26,6 +26,7 @@ export class ItemEditorService {
 	public Load(item: BaseItemDto): void {
 		this.CurrentEditableItem.Value = new EditableItem(item);
 		this.ShowErrors.Value = false;
+		this.IsEditing.Value = false;
 	}
 
 	public Save(): void {
@@ -36,8 +37,23 @@ export class ItemEditorService {
 				return;
 			}
 
-			this.SaveResult.Start((a) => getItemUpdateApi(ServerService.Instance.CurrentApi).updateItem({ itemId: editableItem.From.Id!, baseItemDto: editableItem.CreateUpdateRequest(), }, { signal: a.signal }).then((response) => response.status === 200));
+			this.SaveResult.Start((a) => getItemUpdateApi(ServerService.Instance.CurrentApi).updateItem({ itemId: editableItem.From.Id!, baseItemDto: editableItem.CreateUpdateRequest(), }, { signal: a.signal }).then((response) => {
+				const wasSuccessful = response.status !== 200;
+				
+				if (wasSuccessful) {
+					this.IsEditing.Value = false;
+					this.CurrentEditableItem.Value?.OnSaved();
+				}
+
+				return wasSuccessful;
+			}));
 		});
+	}
+
+	public Cancel(): void {
+		Nullable.TryExecute(this.CurrentEditableItem.Value, (item) => item.Revert());
+		this.IsEditing.Value = false;
+		this.ShowErrors.Value = false;
 	}
 
 	public CurrentEditableItem: Observable<EditableItem|undefined>;

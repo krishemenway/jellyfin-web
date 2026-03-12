@@ -35,8 +35,8 @@ export class EditableItem {
 		this.AirDays = new EditableField("AirDays", Nullable.Value(item, undefined, (i) => i.AirDays ?? undefined));
 		this.AirTime = new EditableField("AirTime", Nullable.Value(item, undefined, (i) => i.AirTime ?? undefined));
 
-		this.Tags = new EditableField("Tags", Nullable.Value(item, undefined, (i) => i.Tags ?? undefined));
-		this.Genres = new EditableField("Genres", Nullable.Value(item, undefined, (i) => i.Genres ?? undefined));
+		this.Tags = new EditableField("Tags", Nullable.Value(item, [], (i) => i.Tags ?? []));
+		this.Genres = new EditableField("Genres", Nullable.Value(item, [], (i) => i.Genres ?? []));
 
 		this.Studios = new EditableField("Studios", Nullable.Value(item, undefined, (i) => i.Studios ?? undefined));
 		this.PremiereDate = new EditableField("PremiereDate", Nullable.Value(item, undefined, (i) => i.PremiereDate ?? undefined));
@@ -57,6 +57,14 @@ export class EditableItem {
 
 		this.CanMakeRequest = new Computed(() => this.AllFields().some((f) => f.CanMakeRequest()));
 		this.HasChanged = new Computed(() => this.AllFields().some((f) => f.HasChanged.Value));
+	}
+
+	public Revert(): void {
+		this.AllFields().forEach((field) => field.Revert());
+	}
+
+	public OnSaved(): void {
+		this.AllFields().forEach((field) => field.OnSaved());
 	}
 
 	public CreateUpdateRequest(): BaseItemDto {
@@ -180,8 +188,8 @@ export class EditableItem {
 	public AirDays: EditableField<DayOfWeek[]|undefined>;
 	public AirTime: EditableField<string|undefined>;
 
-	public Genres: EditableField<string[]|undefined>;
-	public Tags: EditableField<string[]|undefined>;
+	public Genres: EditableField<string[]>;
+	public Tags: EditableField<string[]>;
 
 	public PremiereDate: EditableField<string|undefined>;
 	public ProductionYear: EditableField<number|undefined>;

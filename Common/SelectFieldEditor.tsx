@@ -34,6 +34,7 @@ export function AutoCompleteFieldEditor<TOption>(props: SelectFieldEditorProps<T
 
 	return (
 		<Select
+			className={props.className}
 			options={allOptions}
 			value={selectedOption}
 			onChange={(newValue) => props.field.OnChange(props.allOptions.find((o) => props.getValue(o) === (newValue as SingleValue<{ value: string; label: string }>)?.value)!)}
@@ -47,8 +48,42 @@ export function AutoCompleteFieldEditor<TOption>(props: SelectFieldEditorProps<T
 	);
 };
 
+interface MultiSelectEditorProps<TOption> extends LayoutWithoutChildrenProps {
+	className?: string;
+	field: EditableField<TOption[]>;
+	allOptions: TOption[];
+	getValue: (value: TOption) => string;
+	getLabel: (value: TOption) => React.ReactNode;
+}
+
+export function MultiSelectEditor(props: MultiSelectEditorProps<string>): JSX.Element {
+	const theme = useObservable(ThemeService.Instance.CurrentTheme);
+	const currentValues = useObservable(props.field.Current);
+
+	const allOptions = props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) }));
+	const selectedOptions = allOptions.filter((o) => currentValues.includes(o.value));
+
+	return (
+		<Select
+			className={props.className}
+			isMulti={true}
+			options={allOptions}
+			value={selectedOptions}
+			onChange={(newValue) => props.field.OnChange(newValue.map((v) => v.value))}
+			components={{ MenuList: MenuList }}
+			styles={{
+				container: (base) => ({ ...base, width: "100%" }),
+				multiValueLabel: (base) => ({ ...base, color: "inherit", padding: ".5em" }),
+				multiValue: (base) => ({ ...base, backgroundColor: theme.AlternateBackgroundColor, color: theme.PrimaryTextColor }),
+				menu: (base) => ({ ...base, backgroundColor: theme.PanelBackgroundColor }),
+				option: (base, p) => ({ ...base, backgroundColor: (p.isSelected ? (p.isFocused ? theme.ButtonSelected.Hover : theme.ButtonSelected.Idle) : p.isFocused ? theme.Button.Hover : theme.Button.Idle).BackgroundColor }),
+			}}
+		/>
+	);
+};
+
 const SplitCharacter = "|";
-export function MultiSelectEditor(props: SelectFieldEditorProps<string>): JSX.Element {
+export function MultiSelectWithSplitEditor(props: SelectFieldEditorProps<string>): JSX.Element {
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 	const currentValues = useObservable(props.field.Current).split(SplitCharacter);
 
@@ -57,6 +92,7 @@ export function MultiSelectEditor(props: SelectFieldEditorProps<string>): JSX.El
 
 	return (
 		<Select
+			className={props.className}
 			isMulti={true}
 			options={allOptions}
 			value={selectedOptions}
@@ -73,7 +109,7 @@ export function MultiSelectEditor(props: SelectFieldEditorProps<string>): JSX.El
 	);
 };
 
-export const MenuList = ({ children, maxHeight }: MenuListProps<{ value: string; label: React.ReactNode }>) => {
+const MenuList = ({ children, maxHeight }: MenuListProps<{ value: string; label: React.ReactNode }>) => {
 	const ref = React.useRef<VirtuosoHandle>(null);
 
 	if (!Array.isArray(children)) {

@@ -102,8 +102,8 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 				<Layout direction="row" justifyContent="space-between">
 					<ItemPageTitle item={movie} itemEditor={itemEditor} isEditing={isEditing} />
 					<Layout direction="row" gap="1rem">
-						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { console.log("Revert"); }} />}
-						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { console.log("Save"); }} />}
+						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
+						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
 						<ItemActionsMenu items={[movie]} user={user} actions={[
 							[ // User-based actions
 								PlayVideoAction,
@@ -127,6 +127,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 						<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
 						<ItemTags
 							item={movie}
+							isEditing={isEditing} itemEditor={itemEditor} libraryId={movie.ParentId!}
 							direction="row" gap=".5rem" wrap
 							linkClassName={background.button}
 							linkLayout={{ px: ".25em", py: ".25em" }}
