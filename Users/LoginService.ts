@@ -4,7 +4,7 @@ import { EditableField, IEditableField } from "Common/EditableField";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { Observable } from "@residualeffect/reactor";
-import { QuickConnectService } from "./QuickConnect";
+import { QuickConnectService } from "Users/QuickConnect";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export class LoginService {

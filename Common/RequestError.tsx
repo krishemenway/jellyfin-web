@@ -1,7 +1,7 @@
 import * as React from "react";
 import { TranslatedText } from "Common/TranslatedText";
 import { useBackgroundStyles } from "AppStyles";
-import { Nullable } from "./MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 interface RequestErrorProps {
 	className?: string;

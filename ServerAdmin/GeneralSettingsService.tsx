@@ -17,7 +17,7 @@ import { useObservable } from "@residualeffect/rereactor";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
-import { LocalizationOptionsStore } from "./LocalizationOptionsStore";
+import { LocalizationOptionsStore } from "ServerAdmin/LocalizationOptionsStore";
 import { Linq } from "Common/MissingJavascriptFunctions";
 import { ToggleSwitch } from "Common/ToggleSwitch";
 

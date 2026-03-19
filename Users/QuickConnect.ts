@@ -3,7 +3,7 @@ import { Observable } from "@residualeffect/reactor";
 import { EditableField, ValueIsRequired } from "Common/EditableField";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
-import { LoginService } from "./LoginService";
+import { LoginService } from "Users/LoginService";
 import { getUserApi, getQuickConnectApi } from "@jellyfin/sdk/lib/utils/api";
 
 export class QuickConnectService {

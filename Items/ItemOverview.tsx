@@ -3,7 +3,7 @@ import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models"
 import { Layout } from "Common/Layout"
 import { Nullable } from "Common/MissingJavascriptFunctions"
 import { MultiLineField } from "Common/TextField";
-import { EditableItem } from "./EditableItem";
+import { EditableItem } from "Items/EditableItem";
 
 export const ItemOverview: React.FC<{ item: BaseItemDto; itemEditor?: EditableItem; isEditing: boolean; }> = (props) => {
 	if (props.isEditing && Nullable.HasValue(props.itemEditor)) {

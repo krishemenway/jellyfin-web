@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Layout, StyleLayoutProps, StyleLayoutPropsWithRequiredDirection } from "Common/Layout";
 import { Button } from "Common/Button";
-import { Nullable } from "./MissingJavascriptFunctions";
-import { TranslatedText } from "./TranslatedText";
+import { Nullable } from "Common/MissingJavascriptFunctions";
+import { TranslatedText } from "Common/TranslatedText";
 
 export interface BaseListProps extends StyleLayoutPropsWithRequiredDirection {
 	showMoreLimit?: number;

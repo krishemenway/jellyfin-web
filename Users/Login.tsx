@@ -17,7 +17,7 @@ import { Form } from "Common/Form";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ServerConnection } from "Servers/ServerService";
 import { ChangeServerButton } from "Servers/ChangeServerButton";
-import { QuickConnectService } from "./QuickConnect";
+import { QuickConnectService } from "Users/QuickConnect";
 
 const SignInWithQuickConnect: React.FC = () => {
 	React.useEffect(() => { return () => QuickConnectService.Instance.Dispose(); }, []);
