@@ -28,7 +28,6 @@ import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
-import { PageTitle } from "Common/PageTitle";
 import { EditItemAction } from "MenuActions/EditItemAction";
 import { RefreshItemAction } from "MenuActions/RefreshItemAction";
 import { CastAndCrew } from "Items/CastAndCrew";
@@ -37,6 +36,13 @@ import { PlayIcon } from "MediaPlayer/PlayIcon";
 import { VideoPlayerService } from "Videos/VideoPlayerService";
 import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
 import { PlayVideoAction } from "MenuActions/PlayVideoAction";
+import { useObservable } from "@residualeffect/rereactor";
+import { ItemEditorService, useItemEditor } from "Items/ItemEditorService";
+import { ItemPageTitle } from "Items/ItemPageTitle";
+import { EditableItem } from "Items/EditableItem";
+import { RevertIcon } from "CommonIcons/RevertIcon";
+import { SaveIcon } from "CommonIcons/SaveIcon";
+import { AggregateItemDuration, ItemDuration } from "Items/ItemDuration";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
@@ -64,6 +70,8 @@ export const Show: React.FC = () => {
 
 const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; seasonId?: string; episodeId?: string; }> = ({ show, children, user, episodeId }) => {
 	const background = useBackgroundStyles();
+	const itemEditor = useItemEditor(show);
+	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 	const seasons = React.useMemo(() => children.filter((i) => i.Type === "Season").sort(sortSeasons), [children]);
 	const allEpisodes = React.useMemo(() => children.filter((i) => i.Type === "Episode"), [children]);
 	const selectedEpisode = Nullable.Value(episodeId, undefined, (e) => allEpisodes.find((i) => i.Id === e));
@@ -75,7 +83,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 			<Layout direction="column" maxWidth="20%" gap=".5em">
 				<Layout direction="column" position="relative">
 					<ItemImage item={show} type="Primary" />
-					<ItemRating item={show} position="absolute" bottom=".5em" right=".5em" />
+					<ItemRating item={show} position="absolute" bottom=".5em" right=".5em" libraryId={show.ParentId!} isEditing={isEditing} itemEditor={itemEditor} />
 				</Layout>
 
 				<ItemStudios
@@ -102,40 +110,52 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 				/>
 			</Layout>
 
-			{Nullable.Value(selectedEpisode, <ShowDetails show={show} user={user} seasons={seasons} allEpisodes={allEpisodes} />, (episode) => (
-				<EpisodeDetails episode={episode} user={user} />
-			))}
+			{Nullable.Value(selectedEpisode,
+				<ShowDetails show={show} user={user} seasons={seasons} allEpisodes={allEpisodes} isEditing={isEditing} itemEditor={itemEditor} />,
+				(episode) => (<EpisodeDetails episode={episode} show={show} user={user} isEditing={isEditing} />))}
 		</Layout>
 	);
 };
 
-const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto; allEpisodes: BaseItemDto[] }> = ({ show, seasons, user, allEpisodes }) => {
+const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto; allEpisodes: BaseItemDto[]; isEditing: boolean; itemEditor?: EditableItem }> = ({ show, seasons, user, allEpisodes, isEditing, itemEditor }) => {
 	const background = useBackgroundStyles();
+
 	return (
-		<Layout direction="column" grow gap="1.5em">
+		<Layout direction="column" grow gap="1.5rem">
 			<Layout direction="row" justifyContent="space-between">
-				<PageTitle text={show.Name} />
-				<ItemActionsMenu items={[show]} user={user} actions={[
-					[ // User-based actions
-						AddToFavoritesAction,
-						MarkPlayedAction,
-						AddToCollectionAction,
-						AddToPlaylistAction,
-					],
-					[ // Server-based actions
-						EditItemAction,
-						RefreshItemAction,
-					]
-				]} />
+				<ItemPageTitle item={show} isEditing={isEditing} itemEditor={itemEditor} />
+				<Layout direction="row" gap="1rem">
+					{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
+					{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
+
+					<ItemActionsMenu items={[show]} user={user} actions={[
+						[ // User-based actions
+							AddToFavoritesAction,
+							MarkPlayedAction,
+							AddToCollectionAction,
+							AddToPlaylistAction,
+						],
+						[ // Server-based actions
+							EditItemAction,
+							RefreshItemAction,
+						]
+					]} />
+				</Layout>
 			</Layout>
 
-			<ItemOverview item={show} />
+			<Layout direction="row" gap="1rem">
+				<TranslatedText textKey="LabelDuration" />
+				<AggregateItemDuration items={allEpisodes} />
+			</Layout>
+
+			<ItemOverview item={show} isEditing={isEditing} itemEditor={itemEditor} />
 
 			{(show.Tags?.length ?? 0) > 0 && (
 				<Layout direction="row" gap=".5em">
 					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
 					<ItemTags
 						item={show}
+						isEditing={isEditing} itemEditor={itemEditor} libraryId={show.ParentId!}
 						direction="row" gap=".5em" wrap
 						linkClassName={background.button}
 						linkLayout={{ px: ".25em", py: ".25em" }}
@@ -144,7 +164,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 				</Layout>
 			)}
 
-			<CastAndCrewSection show={show} />
+			<CastAndCrewSection item={show} itemEditor={itemEditor} isEditing={isEditing} startOpen={false} />
 
 			<ListOf
 				items={seasons}
@@ -155,15 +175,18 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 	)
 };
 
-const EpisodeDetails: React.FC<{ episode: BaseItemDto; user: UserDto; }> = ({ episode, user }) => {
+const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: UserDto; isEditing: boolean; }> = ({ episode, show, user, isEditing }) => {
+	const itemEditor = useItemEditor(episode);
 	const background = useBackgroundStyles();
 	return (
 		<Layout direction="column" grow gap="1.5em">
 			<Layout direction="column" gap=".5em">
 				<Layout direction="row" justifyContent="space-between">
-					<PageTitle text={episode.SeriesName} />
+					<ItemPageTitle item={episode} itemEditor={itemEditor} isEditing={isEditing} />
 					<Layout direction="row" gap=".5em">
-						<Button type="button" icon={<PlayIcon />} alignItems="center" px=".5em" py=".5em" onClick={() => VideoPlayerService.Instance.ClearAndPlay([episode])} />
+						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
+						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
+						{!isEditing && <Button type="button" icon={<PlayIcon />} alignItems="center" px=".5em" py=".5em" onClick={() => VideoPlayerService.Instance.ClearAndPlay([episode])} />}
 						<ItemActionsMenu items={[episode]} user={user} actions={[
 							[ // User-based actions
 								PlayVideoAction,
@@ -182,13 +205,19 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; user: UserDto; }> = ({ ep
 				<Layout direction="row" fontSize="1.3em" elementType="h2" className="show-name">{episode.SeasonName} <TranslatedText textKey="Episode" /> {episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}</Layout>
 			</Layout>
 
-			<ItemOverview item={episode} />
+			<Layout direction="row" gap="1rem">
+				<TranslatedText textKey="LabelDuration" />
+				<ItemDuration item={episode} />
+			</Layout>
+
+			<ItemOverview item={episode} isEditing={isEditing} />
 
 			{(episode.Tags?.length ?? 0) > 0 && (
 				<Layout direction="row" gap=".5em">
 					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
 					<ItemTags
 						item={episode}
+						isEditing={isEditing} itemEditor={itemEditor} libraryId={show.ParentId!}
 						direction="row" gap=".5em" wrap
 						linkClassName={background.button}
 						linkLayout={{ px: ".25em", py: ".25em" }}
@@ -197,18 +226,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; user: UserDto; }> = ({ ep
 				</Layout>
 			)}
 
-			{(episode.People?.length ?? 0) > 0 && (
-				<Layout direction="column" minWidth="100%">
-					<Layout direction="row" fontSize="1.5em" py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
-
-					<CastAndCrew
-						itemWithPeople={episode}
-						className={background.panel}
-						direction="row" wrap px=".5em" py="1em"
-						linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
-					/>
-				</Layout>
-			)}
+			<CastAndCrewSection item={episode} itemEditor={itemEditor} isEditing={isEditing} startOpen />
 		</Layout>
 	);
 };
@@ -230,7 +248,7 @@ const SeasonForShow: React.FC<{ season: BaseItemDto; allEpisodes: BaseItemDto[];
 			</Button>
 
 			<Collapsible open={seasonOpen}>
-				<ItemsRow items={episodes} itemName={(item) => `${item.IndexNumber}. ${item.Name}`} />
+				<ItemsRow items={episodes} itemName={(item) => `${item.IndexNumber}. ${item.Name}`} fallbackItem={season} />
 			</Collapsible>
 		</Layout>
 	);
@@ -244,11 +262,11 @@ const ProductionYearRangeForEpisodes: React.FC<{ episodes: BaseItemDto[] }> = (p
 	return <>({earliest !== newest ? `${earliest} - ${newest}` : earliest})</>;
 };
 
-const CastAndCrewSection: React.FC<{ show: BaseItemDto }> = (props) => {
-	const [open, setOpen] = React.useState(false);
+const CastAndCrewSection: React.FC<{ item: BaseItemDto; itemEditor?: EditableItem; isEditing: boolean; startOpen: boolean; }> = (props) => {
+	const [open, setOpen] = React.useState(props.startOpen);
 	const background = useBackgroundStyles();
 
-	if (!Nullable.HasValue(props.show.People) || props.show.People.length === 0 ) {
+	if (!Nullable.HasValue(props.item.People) || props.item.People.length === 0 ) {
 		return <></>;
 	}
 
@@ -259,7 +277,7 @@ const CastAndCrewSection: React.FC<{ show: BaseItemDto }> = (props) => {
 			<Collapsible open={open}>
 				<CastAndCrew
 					className={background.panel}
-					itemWithPeople={props.show}
+					itemWithPeople={props.item}
 					direction="row" wrap
 					linkProps={{ px: ".5em", py: ".5em", gap: ".25em" }}
 				/>

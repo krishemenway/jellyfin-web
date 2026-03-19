@@ -19,7 +19,7 @@ import { ItemOverview } from "Items/ItemOverview";
 import { TranslatedText } from "Common/TranslatedText";
 import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
-import { ItemPageTitle } from "ItemList/ItemPageTitle";
+import { ItemPageTitle } from "Items/ItemPageTitle";
 import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";

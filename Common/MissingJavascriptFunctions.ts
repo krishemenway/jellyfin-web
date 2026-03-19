@@ -97,7 +97,7 @@ export class DateTime {
 		const parts = [];
 
 		if (!Nullable.HasValue(ticks)) {
-			return "00:00";
+			return "";
 		}
 
 		let hours = ticks / DateTime.TicksPerHour;
