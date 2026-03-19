@@ -29,8 +29,8 @@ export function AutoCompleteFieldEditor<TOption>(props: SelectFieldEditorProps<T
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 	const current = useObservable(props.field.Current);
 
-	const allOptions = props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) }));
-	const selectedOption = Nullable.Value(current, undefined, (c) => allOptions.find((o) => o.value === props.getValue(c)));
+	const allOptions = React.useMemo(() => props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) })), [props.allOptions]);
+	const selectedOption = React.useMemo(() => Nullable.Value(current, undefined, (c) => allOptions.find((o) => o.value === props.getValue(c))), [allOptions, current]);
 
 	return (
 		<Select
@@ -60,8 +60,8 @@ export function MultiSelectEditor(props: MultiSelectEditorProps<string>): JSX.El
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 	const currentValues = useObservable(props.field.Current);
 
-	const allOptions = props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) }));
-	const selectedOptions = allOptions.filter((o) => currentValues.includes(o.value));
+	const allOptions = React.useMemo(() => props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) })), [props.allOptions]);
+	const selectedOptions = React.useMemo(() => allOptions.filter((o) => currentValues.includes(o.value)), [allOptions, currentValues]);
 
 	return (
 		<Select
@@ -87,8 +87,8 @@ export function MultiSelectWithSplitEditor(props: SelectFieldEditorProps<string>
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 	const currentValues = useObservable(props.field.Current).split(SplitCharacter);
 
-	const allOptions = props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) }));
-	const selectedOptions = allOptions.filter((o) => currentValues.includes(o.value));
+	const allOptions = React.useMemo(() => props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) })), [props.allOptions]);
+	const selectedOptions = React.useMemo(() => allOptions.filter((o) => currentValues.includes(o.value)), [allOptions, currentValues]);
 
 	return (
 		<Select
