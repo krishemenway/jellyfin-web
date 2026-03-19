@@ -9,7 +9,7 @@ export function useUrlToItem(item: BaseItemDto, afterUrl?: string): string {
 	return findUrlForItemFuncOrDefault(item) + (afterUrl ?? "");
 }
 
-export const LinkToItem: React.FC<{ item: BaseItemDto; afterUrl?: string; className?: string; children: React.ReactNode }&StyleLayoutPropsWithRequiredDirection> = (props) => {
+export const LinkToItem: React.FC<{ item: BaseItemDto; afterUrl?: string; className?: string; children: React.ReactNode; onClick?: () => void; }&StyleLayoutPropsWithRequiredDirection> = (props) => {
 	const url = useUrlToItem(props.item, props.afterUrl);
 	return <HyperLink to={url} {...props} />;
 };

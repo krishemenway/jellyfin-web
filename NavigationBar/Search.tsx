@@ -61,13 +61,15 @@ const LoadedSearchResults: React.FC<{ results: SearchResults }> = (props) => {
 
 	return (
 		<Layout direction="row" grow>
-			<Layout direction="column" fontSize="1.25em">
-				<Button transparent px=".5em" py=".5em" direction="row" key="All" type="button" selected={selectedType === undefined} onClick={() => props.results.SelectedType.Value = undefined} icon={<InfinityIcon />} />
+			{props.results.AllTypes.length > 1 && (
+				<Layout direction="column" fontSize="1.25em">
+					<Button transparent px=".5em" py=".5em" direction="row" key="All" type="button" selected={selectedType === undefined} onClick={() => props.results.SelectedType.Value = undefined} icon={<InfinityIcon />} />
 
-				{props.results.AllTypes.map((type) => (
-					<Button transparent px=".5em" py=".5em" direction="row" key={type} type="button" selected={selectedType === type} onClick={() => props.results.SelectedType.Value = type} icon={<IconForItemKind itemKind={type} />} />
-				))}
-			</Layout>
+					{props.results.AllTypes.map((type) => (
+						<Button transparent px=".5em" py=".5em" direction="row" key={type} type="button" selected={selectedType === type} onClick={() => props.results.SelectedType.Value = type} icon={<IconForItemKind itemKind={type} />} />
+					))}
+				</Layout>
+			)}
 
 			<Layout direction="column" grow>
 				<Virtuoso
@@ -85,7 +87,7 @@ const SearchResult: React.FC<{ item: BaseItemDto }> = (props) => {
 	const searchResultNameFunc = BaseItemKindServiceFactory.FindOrNull(props.item.Type)?.searchResultName ?? ((item) => item.Name);
 
 	return (
-		<LinkToItem item={props.item} direction="row" alignItems="center" gap="1em" px=".5em" py=".5em" justifyContent="space-between">
+		<LinkToItem item={props.item} direction="row" alignItems="center" gap="1em" px=".5em" py=".5em" justifyContent="space-between" onClick={() => { SearchService.Instance.Clear(); }}>
 			<Layout direction="column">{searchResultNameFunc(props.item)}</Layout>
 			<Layout direction="column"><IconForItemKind itemKind={props.item.Type} /></Layout>
 		</LinkToItem>
