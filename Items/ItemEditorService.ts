@@ -8,7 +8,7 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 import { Receiver } from "Common/Receiver";
 import { useObservable } from "@residualeffect/rereactor";
 
-export function useItemEditor(item: BaseItemDto): EditableItem|undefined {
+export function useEditableItem(item: BaseItemDto): EditableItem|undefined {
 	const editableItem = useObservable(ItemEditorService.Instance.CurrentEditableItem);
 	React.useEffect(() => ItemEditorService.Instance.Load(item), [item]);
 

@@ -3,12 +3,12 @@ import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models"
 import { Layout } from "Common/Layout"
 import { Nullable } from "Common/MissingJavascriptFunctions"
 import { MultiLineField } from "Common/TextField";
-import { EditableItem } from "Items/EditableItem";
+import { EditableItemProps } from "Items/EditableItemProps";
 
-export const ItemOverview: React.FC<{ item: BaseItemDto; itemEditor?: EditableItem; isEditing: boolean; }> = (props) => {
-	if (props.isEditing && Nullable.HasValue(props.itemEditor)) {
+export const ItemOverview: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {
+	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
 		return (
-			<MultiLineField field={props.itemEditor.Overview} px=".25em" py=".25em" />
+			<MultiLineField field={props.editableItem.Overview} px=".25em" py=".25em" />
 		);
 	}
 

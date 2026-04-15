@@ -25,7 +25,7 @@ import { ItemGenres } from "Items/ItemGenres";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
 import { DragIcon } from "CommonIcons/DragIcon";
-import { ItemEditorService, useItemEditor } from "Items/ItemEditorService";
+import { ItemEditorService, useEditableItem } from "Items/ItemEditorService";
 import { useObservable } from "@residualeffect/rereactor";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { RevertIcon } from "CommonIcons/RevertIcon";
@@ -64,7 +64,7 @@ export const MusicAlbum: React.FC = () => {
 
 const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[]; user: UserDto }> = ({ album, allSongs, user }) => {
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
-	const itemEditor = useItemEditor(album);
+	const editableItem = useEditableItem(album);
 	const background = useBackgroundStyles();
 
 	return (
@@ -73,7 +73,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 				<Layout direction="column" maxWidth="33.333%" gap=".5em">
 					<Layout direction="column" position="relative">
 						<ItemImage item={album} type="Primary" />
-						<ItemRating item={album} position="absolute" bottom=".5em" right=".5em" isEditing={isEditing} libraryId={album.ParentId!} itemEditor={itemEditor} />
+						<ItemRating item={album} position="absolute" bottom=".5em" right=".5em" isEditing={isEditing} libraryId={album.ParentId!} editableItem={editableItem} />
 					</Layout>
 
 					<ItemStudios
@@ -102,7 +102,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 
 				<Layout direction="column" maxWidth="100em" grow gap="1em">
 					<Layout direction="row" justifyContent="space-between" gap="2em">
-						<ItemPageTitle item={album} isEditing={isEditing} itemEditor={itemEditor} />
+						<ItemPageTitle item={album} isEditing={isEditing} editableItem={editableItem} />
 						
 						<Layout direction="row" gap="1rem">
 							{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
@@ -125,7 +125,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 					</Layout>
 
 					<Layout direction="column" gap="1em" maxWidth="95%">
-						<ItemOverview item={album} itemEditor={itemEditor} isEditing={isEditing} />
+						<ItemOverview item={album} editableItem={editableItem} isEditing={isEditing} />
 
 						{(album.Tags?.length ?? 0) > 0 && (
 							<Layout direction="row" gap=".5em">
@@ -136,7 +136,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 									linkClassName={background.button}
 									linkLayout={{ px: ".25em", py: ".25em" }}
 									showMoreLimit={25}
-									isEditing={isEditing} libraryId={album.ParentId!} itemEditor={itemEditor}
+									isEditing={isEditing} libraryId={album.ParentId!} editableItem={editableItem}
 								/>
 							</Layout>
 						)}

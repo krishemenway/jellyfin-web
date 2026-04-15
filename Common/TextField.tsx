@@ -8,7 +8,12 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 
 interface TextFieldProps extends BaseInputFieldProps {
 	field: EditableField;
+	password?: boolean;
 	multiLine?: boolean;
+}
+
+interface NumberFieldProps extends BaseInputFieldProps {
+	field: EditableField<number|undefined|null>;
 }
 
 interface InputFieldProps extends BaseInputFieldProps {
@@ -19,23 +24,28 @@ interface InputFieldProps extends BaseInputFieldProps {
 
 interface BaseInputFieldProps extends LayoutWithoutChildrenProps {
 	className?: string;
+	type?: React.HTMLInputTypeAttribute;
 
 	disabled?: boolean;
-	password?: boolean;
 
 	placeholder?: TranslationRequest;
 
 	onBlur?: () => void;
 }
 
+const ForwardedNumberField: React.ForwardRefRenderFunction<HTMLInputElement, NumberFieldProps> = (props, ref) => {
+	const currentValue = useObservable(props.field.Current);
+	return <InputField {...props} id={props.field.FieldId} type="number" value={currentValue?.toString() ?? ""} onChange={(newValue) => props.field.OnChange(parseFloat(newValue))} ref={ref} />;
+};
+
 const ForwardedTextField: React.ForwardRefRenderFunction<HTMLInputElement, TextFieldProps> = (props, ref) => {
 	const currentValue = useObservable(props.field.Current);
-	return <InputField {...props} id={props.field.FieldId} value={currentValue} onChange={(newValue) => props.field.OnChange(newValue)} ref={ref} />;
+	return <InputField {...props} id={props.field.FieldId} type={props.password ? "password" : "text"} value={currentValue ?? ""} onChange={(newValue) => props.field.OnChange(newValue)} ref={ref} />;
 };
 
 const ForwardedMultiLineField: React.ForwardRefRenderFunction<HTMLTextAreaElement, TextFieldProps> = (props, ref) => {
 	const currentValue = useObservable(props.field.Current);
-	return <TextAreaField {...props} id={props.field.FieldId} value={currentValue} onChange={(newValue) => props.field.OnChange(newValue)} ref={ref} />;
+	return <TextAreaField {...props} id={props.field.FieldId} value={currentValue ?? ""} onChange={(newValue) => props.field.OnChange(newValue)} ref={ref} />;
 };
 
 const ForwardedInputField: React.ForwardRefRenderFunction<HTMLInputElement, InputFieldProps> = (props, ref) => {
@@ -44,7 +54,7 @@ const ForwardedInputField: React.ForwardRefRenderFunction<HTMLInputElement, Inpu
 
 	return (
 		<input
-			type={props.password === true ? "password" : "text"}
+			type={props.type}
 			ref={ref}
 			id={props.id}
 			className={props.className ?? background.field}
@@ -79,6 +89,7 @@ const ForwardedTextAreaField: React.ForwardRefRenderFunction<HTMLTextAreaElement
 	);
 };
 
+export const NumberField = React.forwardRef(ForwardedNumberField);
 export const InputField = React.forwardRef(ForwardedInputField);
 export const TextAreaField = React.forwardRef(ForwardedTextAreaField);
 export const TextField = React.forwardRef(ForwardedTextField);

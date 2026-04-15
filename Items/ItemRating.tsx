@@ -4,12 +4,12 @@ import { Layout, StyleLayoutProps } from "Common/Layout";
 import { useBackgroundStyles } from "AppStyles";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { SelectFieldEditor } from "Common/SelectFieldEditor";
-import { EditableItem } from "Items/EditableItem";
+import { EditableItemProps } from "Items/EditableItemProps";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { ItemFilterService } from "Items/ItemFilterService";
 import { Loading } from "Common/Loading";
 
-export const ItemRating: React.FC<{ item: BaseItemDto; libraryId: string; itemEditor?: EditableItem; isEditing: boolean }&StyleLayoutProps> = (props) => {
+export const ItemRating: React.FC<{ item: BaseItemDto; libraryId: string; }&EditableItemProps&StyleLayoutProps> = (props) => {
 	const background = useBackgroundStyles();
 	const combined = {...{fontSize: "1.5em", px: ".25em", py: ".25em" } as StyleLayoutProps, ...props as StyleLayoutProps};
 	const rating = Linq.Coalesce([props.item.CustomRating, props.item.OfficialRating], "", (r) => Nullable.StringHasValue(r));
@@ -25,10 +25,10 @@ export const ItemRating: React.FC<{ item: BaseItemDto; libraryId: string; itemEd
 					whenLoading={<LoadingIcon alignSelf="center" size="1em" />}
 					whenNotStarted={<LoadingIcon alignSelf="center" size="1em" />}
 					whenReceived={(filters) => 
-						Nullable.HasValue(props.itemEditor?.OfficialRating) ? (
+						Nullable.HasValue(props.editableItem?.OfficialRating) ? (
 							<SelectFieldEditor
 								allOptions={filters.OfficialRatings ?? []}
-								field={props.itemEditor.OfficialRating}
+								field={props.editableItem.OfficialRating}
 								getLabel={(v) => v}
 								getValue={(v) => v ?? ""}
 							/>

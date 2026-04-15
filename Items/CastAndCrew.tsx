@@ -7,11 +7,24 @@ import { LinkToPerson } from "People/LinkToPerson";
 import { Layout, StyleLayoutProps } from "Common/Layout";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { TranslatedText } from "Common/TranslatedText";
+import { EditableItemProps } from "Items/EditableItemProps";
+import { useObservable } from "@residualeffect/rereactor";
+import { EditablePersonCredit } from "Items/EditablePersonCredit";
+import { EditableItem } from "./EditableItem";
+import { TextField } from "Common/TextField";
+import { SelectFieldEditor } from "Common/SelectFieldEditor";
+import { DeleteIcon } from "CommonIcons/DeleteIcon";
+import { Button } from "Common/Button";
+import { AddIcon } from "CommonIcons/AddIcon";
 
-export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; className?: string; linkProps?: StyleLayoutProps }&StyleLayoutProps> = (props) => {
+export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; className?: string; linkProps?: StyleLayoutProps; }&EditableItemProps&StyleLayoutProps> = (props) => {
 	const orderedCastAndCrew = React.useMemo(() => SortByObjects(props.itemWithPeople.People ?? [], [
 		{ LabelKey: "", Reversed: false, SortType: "PriorityOrder", Sort: SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"]) },
 	]), [props.itemWithPeople.People]);
+
+	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
+		return <EditableCastAndCrew {...props} editableItem={props.editableItem} />;
+	}
 
 	return (
 		<ListOf
@@ -20,6 +33,56 @@ export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; className?: st
 			forEachItem={((person) => <CastAndCrewCredit key={person.Id + Linq.Coalesce([person.Role, person.Type?.toString()], "Unknown", (s) => Nullable.StringHasValue(s))} person={person} {...props.linkProps} />)}
 			{...props}
 		/>
+	);
+};
+
+const EditableCastAndCrew: React.FC<{ className?: string; editableItem: EditableItem }&StyleLayoutProps> = (props) => {
+	const people = useObservable(props.editableItem.People);
+
+	return (
+		<ListOf
+			direction="row"
+			items={people}
+			forEachItem={((person) => <EditPersonCredit key={person.Key} person={person} onDelete={() => { props.editableItem.People.remove(person); }} />)}
+			afterItems={(
+				<Button
+					type="button"
+					onClick={() => { props.editableItem.People.push(new EditablePersonCredit(undefined))}}
+					icon={<AddIcon />}
+					label={{ Key: "HeaderCastAndCrew" }}
+					px=".5em" gap=".5rem" alignItems="center"
+				/>
+			)}
+			{...props}
+		/>
+	);
+}
+
+const EditPersonCredit: React.FC<{ person: EditablePersonCredit; onDelete: () => void; }&StyleLayoutProps> = (props) => {
+	const itemsPerRow = useBreakpointValue({ [ResponsiveBreakpoint.Mobile]: 1, [ResponsiveBreakpoint.Tablet]: 2, [ResponsiveBreakpoint.Desktop]: 5, [ResponsiveBreakpoint.Wide]: 5 });
+	const selectedType = useObservable(props.person.Type.Current);
+
+	return (
+		<Layout direction="row" width={{ itemsPerRow: itemsPerRow }} justifyContent="space-between" px=".5rem" py=".5rem" gap=".5rem">
+			<Layout direction="column" grow>
+				<TextField field={props.person.Name} />
+				<Layout direction="row" grow>
+					<SelectFieldEditor
+						allOptions={[PersonKind.Actor, PersonKind.Director, PersonKind.Writer, PersonKind.GuestStar, PersonKind.Producer]}
+						field={props.person.Type}
+						getValue={(k) => k}
+						getLabel={(p) => p.toString()}
+					/>
+
+					{(selectedType === "Actor" || selectedType === "GuestStar") && (
+						<TextField field={props.person.Role} grow />
+					)}
+				</Layout>
+			</Layout>
+			<Layout direction="column">
+				<Button type="button" icon={<DeleteIcon />} onClick={() => { props.onDelete(); }} px=".75em" py=".75em" />
+			</Layout>
+		</Layout>
 	);
 };
 

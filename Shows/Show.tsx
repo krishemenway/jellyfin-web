@@ -37,12 +37,14 @@ import { VideoPlayerService } from "Videos/VideoPlayerService";
 import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
 import { PlayVideoAction } from "MenuActions/PlayVideoAction";
 import { useObservable } from "@residualeffect/rereactor";
-import { ItemEditorService, useItemEditor } from "Items/ItemEditorService";
+import { ItemEditorService, useEditableItem } from "Items/ItemEditorService";
 import { ItemPageTitle } from "Items/ItemPageTitle";
-import { EditableItem } from "Items/EditableItem";
 import { RevertIcon } from "CommonIcons/RevertIcon";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { AggregateItemDuration, ItemDuration } from "Items/ItemDuration";
+import { EditableItemProps } from "Items/EditableItemProps";
+import { NumberField, TextField } from "Common/TextField";
+import { FieldLabel } from "Common/FieldLabel";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
@@ -62,19 +64,20 @@ export const Show: React.FC = () => {
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(show, children, user) => <LoadedShow show={show} children={children} user={user} seasonId={routeParams.seasonId} episodeId={routeParams.episodeId} />}
+				whenReceived={(show, children, user) => !Nullable.StringHasValue(routeParams.episodeId)
+					? <LoadedShow show={show} children={children} user={user} />
+					: <LoadedEpisode show={show} children={children} user={user} seasonId={routeParams.seasonId} episodeId={routeParams.episodeId} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; seasonId?: string; episodeId?: string; }> = ({ show, children, user, episodeId }) => {
+const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; }> = ({ show, children, user }) => {
 	const background = useBackgroundStyles();
-	const itemEditor = useItemEditor(show);
+	const editableItem = useEditableItem(show);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 	const seasons = React.useMemo(() => children.filter((i) => i.Type === "Season").sort(sortSeasons), [children]);
 	const allEpisodes = React.useMemo(() => children.filter((i) => i.Type === "Episode"), [children]);
-	const selectedEpisode = Nullable.Value(episodeId, undefined, (e) => allEpisodes.find((i) => i.Id === e));
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(show), [show]);
 
@@ -83,7 +86,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 			<Layout direction="column" maxWidth="20%" gap=".5em">
 				<Layout direction="column" position="relative">
 					<ItemImage item={show} type="Primary" />
-					<ItemRating item={show} position="absolute" bottom=".5em" right=".5em" libraryId={show.ParentId!} isEditing={isEditing} itemEditor={itemEditor} />
+					<ItemRating item={show} position="absolute" bottom=".5em" right=".5em" libraryId={show.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 				</Layout>
 
 				<ItemStudios
@@ -110,20 +113,69 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 				/>
 			</Layout>
 
-			{Nullable.Value(selectedEpisode,
-				<ShowDetails show={show} user={user} seasons={seasons} allEpisodes={allEpisodes} isEditing={isEditing} itemEditor={itemEditor} />,
-				(episode) => (<EpisodeDetails episode={episode} show={show} user={user} isEditing={isEditing} />))}
+			<ShowDetails show={show} user={user} seasons={seasons} allEpisodes={allEpisodes} isEditing={isEditing} editableItem={editableItem} />
 		</Layout>
 	);
 };
 
-const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto; allEpisodes: BaseItemDto[]; isEditing: boolean; itemEditor?: EditableItem }> = ({ show, seasons, user, allEpisodes, isEditing, itemEditor }) => {
+const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; seasonId?: string; episodeId?: string; }> = ({ show, children, user, episodeId }) => {
+	const background = useBackgroundStyles();
+	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
+	const allEpisodes = React.useMemo(() => children.filter((i) => i.Type === "Episode"), [children]);
+	const selectedEpisode = Nullable.Value(episodeId, undefined, (e) => allEpisodes.find((i) => i.Id === e));
+
+	if (!Nullable.HasValue(selectedEpisode)) {
+		throw new Error("Missing");
+	}
+
+	const editableItem = useEditableItem(selectedEpisode);
+
+	React.useEffect(() => BackdropService.Instance.SetWithDispose(selectedEpisode), [selectedEpisode]);
+
+	return (
+		<Layout direction="row" gap="1em" py="1em">
+			<Layout direction="column" maxWidth="20%" gap=".5em">
+				<Layout direction="column" position="relative">
+					<ItemImage item={selectedEpisode} type="Primary" />
+					<ItemRating item={selectedEpisode} position="absolute" bottom=".5em" right=".5em" libraryId={show.ParentId!} isEditing={isEditing} editableItem={editableItem} />
+				</Layout>
+
+				<ItemStudios
+					item={selectedEpisode}
+					direction="row" gap=".5em"
+					linkClassName={background.button}
+					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+					showMoreLimit={3}
+				/>
+
+				<ItemExternalLinks
+					item={selectedEpisode}
+					direction="row" gap=".5em"
+					linkClassName={background.button}
+					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+				/>
+
+				<ItemGenres
+					item={selectedEpisode}
+					direction="row" gap=".5em"
+					linkClassName={background.button}
+					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+					showMoreLimit={4}
+				/>
+			</Layout>
+
+			{Nullable.Value(selectedEpisode, undefined, (episode) => <EpisodeDetails episode={episode} show={show} user={user} isEditing={isEditing} />)}
+		</Layout>
+	);
+};
+
+const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto; allEpisodes: BaseItemDto[] }&EditableItemProps> = ({ show, seasons, user, allEpisodes, isEditing, editableItem }) => {
 	const background = useBackgroundStyles();
 
 	return (
 		<Layout direction="column" grow gap="1.5rem">
 			<Layout direction="row" justifyContent="space-between">
-				<ItemPageTitle item={show} isEditing={isEditing} itemEditor={itemEditor} />
+				<ItemPageTitle item={show} isEditing={isEditing} editableItem={editableItem} />
 				<Layout direction="row" gap="1rem">
 					{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 					{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
@@ -148,14 +200,14 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 				<AggregateItemDuration items={allEpisodes} />
 			</Layout>
 
-			<ItemOverview item={show} isEditing={isEditing} itemEditor={itemEditor} />
+			<ItemOverview item={show} isEditing={isEditing} editableItem={editableItem} />
 
 			{(show.Tags?.length ?? 0) > 0 && (
 				<Layout direction="row" gap=".5em">
 					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
 					<ItemTags
 						item={show}
-						isEditing={isEditing} itemEditor={itemEditor} libraryId={show.ParentId!}
+						isEditing={isEditing} editableItem={editableItem} libraryId={show.ParentId!}
 						direction="row" gap=".5em" wrap
 						linkClassName={background.button}
 						linkLayout={{ px: ".25em", py: ".25em" }}
@@ -164,7 +216,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 				</Layout>
 			)}
 
-			<CastAndCrewSection item={show} itemEditor={itemEditor} isEditing={isEditing} startOpen={false} />
+			<CastAndCrewSection item={show} editableItem={editableItem} isEditing={isEditing} startOpen={false} />
 
 			<ListOf
 				items={seasons}
@@ -175,14 +227,14 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 	)
 };
 
-const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: UserDto; isEditing: boolean; }> = ({ episode, show, user, isEditing }) => {
-	const itemEditor = useItemEditor(episode);
+const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: UserDto; }&EditableItemProps> = ({ episode, show, user, isEditing }) => {
+	const editableEpisode = useEditableItem(episode);
 	const background = useBackgroundStyles();
 	return (
 		<Layout direction="column" grow gap="1.5em">
 			<Layout direction="column" gap=".5em">
 				<Layout direction="row" justifyContent="space-between">
-					<ItemPageTitle item={episode} itemEditor={itemEditor} isEditing={isEditing} />
+					<ItemPageTitle item={show} editableItem={undefined} isEditing={false} />
 					<Layout direction="row" gap=".5em">
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
@@ -202,7 +254,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 						]} />
 					</Layout>
 				</Layout>
-				<Layout direction="row" fontSize="1.3em" elementType="h2" className="show-name">{episode.SeasonName} <TranslatedText textKey="Episode" /> {episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}</Layout>
+				<EpisodeTitle episode={episode} isEditing={isEditing} editableItem={editableEpisode} />
 			</Layout>
 
 			<Layout direction="row" gap="1rem">
@@ -210,14 +262,14 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 				<ItemDuration item={episode} />
 			</Layout>
 
-			<ItemOverview item={episode} isEditing={isEditing} />
+			<ItemOverview item={episode} editableItem={editableEpisode} isEditing={isEditing} />
 
 			{(episode.Tags?.length ?? 0) > 0 && (
 				<Layout direction="row" gap=".5em">
 					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
 					<ItemTags
 						item={episode}
-						isEditing={isEditing} itemEditor={itemEditor} libraryId={show.ParentId!}
+						isEditing={isEditing} editableItem={editableEpisode} libraryId={show.ParentId!}
 						direction="row" gap=".5em" wrap
 						linkClassName={background.button}
 						linkLayout={{ px: ".25em", py: ".25em" }}
@@ -226,10 +278,30 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 				</Layout>
 			)}
 
-			<CastAndCrewSection item={episode} itemEditor={itemEditor} isEditing={isEditing} startOpen />
+			<CastAndCrewSection item={episode} editableItem={editableEpisode} isEditing={isEditing} startOpen />
 		</Layout>
 	);
 };
+
+const EpisodeTitle: React.FC<{ episode: BaseItemDto; }&EditableItemProps> = ({ editableItem, episode, isEditing }) => {
+	if (isEditing && Nullable.HasValue(editableItem)) {
+		return (
+			<Layout direction="row" fontSize="1.3em" elementType="h2" gap=".5rem" alignItems="center">
+				<FieldLabel field={editableItem.ParentIndexNumber} textKey="LabelSeasonNumber" />
+				<NumberField field={editableItem.ParentIndexNumber} width="3rem" textAlign="center" />
+
+				<FieldLabel field={editableItem.IndexNumber} textKey="LabelEpisodeNumber" />
+				<NumberField field={editableItem.IndexNumber} width="3rem" textAlign="center" />
+
+				<TextField field={editableItem.Name} grow px=".5em" py=".5em" />
+			</Layout>
+		);
+	}
+
+	return (
+		<Layout direction="row" fontSize="1.3em" elementType="h2">{episode.SeasonName} <TranslatedText textKey="Episode" /> {episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}</Layout>
+	);
+}
 
 const SeasonForShow: React.FC<{ season: BaseItemDto; allEpisodes: BaseItemDto[]; }> = ({ season, allEpisodes }) => {
 	const [seasonOpen, setSeasonOpen] = React.useState(season.IndexNumber === 1);
@@ -262,7 +334,7 @@ const ProductionYearRangeForEpisodes: React.FC<{ episodes: BaseItemDto[] }> = (p
 	return <>({earliest !== newest ? `${earliest} - ${newest}` : earliest})</>;
 };
 
-const CastAndCrewSection: React.FC<{ item: BaseItemDto; itemEditor?: EditableItem; isEditing: boolean; startOpen: boolean; }> = (props) => {
+const CastAndCrewSection: React.FC<{ item: BaseItemDto; startOpen: boolean; }&EditableItemProps> = (props) => {
 	const [open, setOpen] = React.useState(props.startOpen);
 	const background = useBackgroundStyles();
 
@@ -280,6 +352,8 @@ const CastAndCrewSection: React.FC<{ item: BaseItemDto; itemEditor?: EditableIte
 					itemWithPeople={props.item}
 					direction="row" wrap
 					linkProps={{ px: ".5em", py: ".5em", gap: ".25em" }}
+					editableItem={props.editableItem}
+					isEditing={props.isEditing}
 				/>
 			</Collapsible>
 		</Layout>

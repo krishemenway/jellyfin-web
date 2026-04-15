@@ -5,12 +5,13 @@ import { TranslatedText } from "Common/TranslatedText";
 interface FieldLabelProps<T> {
 	className?: string;
 	field: EditableField<T>;
+	textKey?: string;
 }
 
 export function FieldLabel<T>(props: FieldLabelProps<T>) {
 	return (
 		<label htmlFor={props.field.FieldId} className={props.className}>
-			<TranslatedText textKey={props.field.FieldId} />
+			<TranslatedText textKey={props.textKey ?? props.field.FieldId} />
 		</label>
 	);
 }

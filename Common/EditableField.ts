@@ -9,13 +9,14 @@ export interface IEditableField {
 
 	CanMakeRequest(): boolean;
 	Revert(): void;
+	OnSaved(): void;
 }
 
-export function ValueIsRequired(value: string|undefined): string|undefined {
+export function ValueIsRequired(value: string|undefined|null): string|undefined {
 	return !Nullable.StringHasValue(value) ? "ValueIsRequiredMessage" : undefined;
 }
 
-export class EditableField<T = string> implements IEditableField {
+export class EditableField<T = string|undefined|null> implements IEditableField {
 	constructor(fieldId: string, defaultValue: T, canMakeRequestFunc?: (current: T) => string|undefined, beforeChange?: (newValue: T) => T) {
 		this.FieldId = fieldId;
 		this.CanMakeRequestFunc = canMakeRequestFunc ?? (() => undefined);

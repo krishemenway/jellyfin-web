@@ -30,7 +30,7 @@ import { CastAndCrew } from "Items/CastAndCrew";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { BackdropService } from "Common/BackdropService";
 import { PlayVideoAction } from "MenuActions/PlayVideoAction";
-import { ItemEditorService, useItemEditor } from "Items/ItemEditorService";
+import { ItemEditorService, useEditableItem } from "Items/ItemEditorService";
 import { Button } from "Common/Button";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { useObservable } from "@residualeffect/rereactor";
@@ -60,7 +60,7 @@ export const Movie: React.FC = () => {
 
 function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JSX.Element {
 	const background = useBackgroundStyles();
-	const itemEditor = useItemEditor(movie);
+	const editableItem = useEditableItem(movie);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(movie), [movie]);
@@ -71,7 +71,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 				<Layout direction="column" gap=".5rem">
 					<Layout direction="column" position="relative">
 						<ItemImage item={movie} type="Primary" />
-						<ItemRating item={movie} position="absolute" bottom=".5rem" right=".5rem" itemEditor={itemEditor} libraryId={movie.ParentId!} isEditing={isEditing} />
+						<ItemRating item={movie} position="absolute" bottom=".5rem" right=".5rem" editableItem={editableItem} libraryId={movie.ParentId!} isEditing={isEditing} />
 					</Layout>
 
 					<ItemExternalLinks
@@ -100,7 +100,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 			</Layout>
 			<Layout direction="column" grow gap="2rem">
 				<Layout direction="row" justifyContent="space-between">
-					<ItemPageTitle item={movie} itemEditor={itemEditor} isEditing={isEditing} />
+					<ItemPageTitle item={movie} editableItem={editableItem} isEditing={isEditing} />
 					<Layout direction="row" gap="1rem">
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
@@ -120,14 +120,14 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 					</Layout>
 				</Layout>
 
-				<ItemOverview item={movie} itemEditor={itemEditor} isEditing={isEditing} />
+				<ItemOverview item={movie} editableItem={editableItem} isEditing={isEditing} />
 
 				{(movie.Tags?.length ?? 0) > 0 && (
 					<Layout direction="row" gap=".5rem">
 						<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
 						<ItemTags
 							item={movie}
-							isEditing={isEditing} itemEditor={itemEditor} libraryId={movie.ParentId!}
+							isEditing={isEditing} editableItem={editableItem} libraryId={movie.ParentId!}
 							direction="row" gap=".5rem" wrap
 							linkClassName={background.button}
 							linkLayout={{ px: ".25em", py: ".25em" }}
@@ -145,6 +145,8 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 							className={background.panel}
 							direction="row" wrap px=".5em" py="1em"
 							linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
+							editableItem={editableItem}
+							isEditing={isEditing}
 						/>
 					</Layout>
 				)}

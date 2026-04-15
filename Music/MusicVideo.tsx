@@ -33,6 +33,8 @@ import { PlayVideoAction } from "MenuActions/PlayVideoAction";
 import { Button } from "Common/Button";
 import { PlayIcon } from "MediaPlayer/PlayIcon";
 import { VideoPlayerService } from "Videos/VideoPlayerService";
+import { ItemEditorService, useEditableItem } from "Items/ItemEditorService";
+import { useObservable } from "@residualeffect/rereactor";
 
 export const MusicVideo: React.FC = () => {
 	const routeParams = useParams<{ musicVideoId: string }>();
@@ -60,6 +62,8 @@ export const MusicVideo: React.FC = () => {
 
 function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: BaseItemDto }): JSX.Element {
 	const background = useBackgroundStyles();
+	const editableItem = useEditableItem(musicVideo);
+	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(musicVideo), [musicVideo]);
 
@@ -69,7 +73,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 				<Layout direction="column" gap=".5em">
 					<Layout direction="column" position="relative">
 						<ItemImage item={musicVideo} type="Primary" />
-						<ItemRating item={musicVideo} position="absolute" bottom=".5em" right=".5em" />
+						<ItemRating item={musicVideo} position="absolute" bottom=".5em" right=".5em" isEditing={isEditing} editableItem={editableItem} libraryId={musicVideo.ParentId!} />
 					</Layout>
 
 					<ItemExternalLinks
@@ -115,7 +119,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 					]} user={user} />
 				</Layout>
 
-				<ItemOverview item={musicVideo} />
+				<ItemOverview item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
 
 				{(musicVideo.Tags?.length ?? 0) > 0 && (
 					<Layout direction="row" gap=".5em">
@@ -126,6 +130,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 							linkClassName={background.button}
 							linkLayout={{ px: ".25em", py: ".25em" }}
 							showMoreLimit={25}
+							isEditing={isEditing} editableItem={editableItem} libraryId={musicVideo.ParentId!}
 						/>
 					</Layout>
 				)}
@@ -139,6 +144,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 							className={background.panel}
 							direction="row" wrap px=".5em" py="1em"
 							linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
+							isEditing={isEditing} editableItem={editableItem}
 						/>
 					</Layout>
 				)}

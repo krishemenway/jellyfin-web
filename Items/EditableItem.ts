@@ -1,59 +1,61 @@
-import { BaseItemDto, BaseItemPerson, DayOfWeek, MetadataField, NameGuidPair, Video3DFormat } from "@jellyfin/sdk/lib/generated-client/models";
-import { Computed } from "@residualeffect/reactor";
-import { EditableField } from "Common/EditableField";
+import { BaseItemDto, DayOfWeek, MetadataField, NameGuidPair, Video3DFormat } from "@jellyfin/sdk/lib/generated-client/models";
+import { Computed, ObservableArray } from "@residualeffect/reactor";
+import { EditableField, IEditableField } from "Common/EditableField";
 import { Nullable } from "Common/MissingJavascriptFunctions";
+import { EditablePersonCredit } from "Items/EditablePersonCredit";
 
 export class EditableItem {
 	constructor(item: BaseItemDto) {
 		this.From = item;
 
-		this.Name = new EditableField("Name", Nullable.Value(item, "", (i) => i.Name ?? ""));
-		this.OriginalTitle = new EditableField("LabelOriginalTitle", Nullable.Value(item, "", (i) => i.OriginalTitle ?? ""));
-		this.ForcedSortName = new EditableField("LabelSortName", Nullable.Value(item, "", (i) => i.ForcedSortName ?? ""));
+		this.Name = new EditableField("Name", Nullable.Value(item, undefined, (i) => i.Name));
+		this.OriginalTitle = new EditableField("LabelOriginalTitle", Nullable.Value(item, undefined, (i) => i.OriginalTitle));
+		this.ForcedSortName = new EditableField("LabelSortName", Nullable.Value(item, undefined, (i) => i.ForcedSortName));
 
-		this.Overview = new EditableField("LabelOverview", Nullable.Value(item, "", (i) => i.Overview ?? ""));
+		this.Overview = new EditableField("LabelOverview", Nullable.Value(item, undefined, (i) => i.Overview));
 
-		this.CommunityRating = new EditableField("LabelCommunityRating", Nullable.Value(item, undefined, (i) => i.CommunityRating ?? undefined));
-		this.CriticRating = new EditableField("LabelCriticRating", Nullable.Value(item, undefined, (i) => i.CriticRating ?? undefined));
-		this.OfficialRating = new EditableField("LabelParentalRating", Nullable.Value(item, undefined, (i) => i.OfficialRating ?? undefined));
+		this.CommunityRating = new EditableField("LabelCommunityRating", Nullable.Value(item, undefined, (i) => i.CommunityRating));
+		this.CriticRating = new EditableField("LabelCriticRating", Nullable.Value(item, undefined, (i) => i.CriticRating));
+		this.OfficialRating = new EditableField("LabelParentalRating", Nullable.Value(item, undefined, (i) => i.OfficialRating));
 
-		this.IndexNumber = new EditableField("IndexNumber", Nullable.Value(item, undefined, (i) => i.IndexNumber ?? undefined));
-		this.ParentIndexNumber = new EditableField("ParentIndexNumber", Nullable.Value(item, undefined, (i) => i.ParentIndexNumber ?? undefined));
+		this.IndexNumber = new EditableField("IndexNumber", Nullable.Value(item, undefined, (i) => i.IndexNumber));
+		this.ParentIndexNumber = new EditableField("ParentIndexNumber", Nullable.Value(item, undefined, (i) => i.ParentIndexNumber));
 
-		this.AirsBeforeSeasonNumber = new EditableField("AirsBeforeSeasonNumber", Nullable.Value(item, undefined, (i) => i.AirsBeforeSeasonNumber ?? undefined));
-		this.AirsAfterSeasonNumber = new EditableField("AirsAfterSeasonNumber", Nullable.Value(item, undefined, (i) => i.AirsAfterSeasonNumber ?? undefined));
-		this.AirsBeforeEpisodeNumber = new EditableField("AirsBeforeEpisodeNumber", Nullable.Value(item, undefined, (i) => i.AirsBeforeEpisodeNumber ?? undefined));
+		this.AirsBeforeSeasonNumber = new EditableField("AirsBeforeSeasonNumber", Nullable.Value(item, undefined, (i) => i.AirsBeforeSeasonNumber));
+		this.AirsAfterSeasonNumber = new EditableField("AirsAfterSeasonNumber", Nullable.Value(item, undefined, (i) => i.AirsAfterSeasonNumber));
+		this.AirsBeforeEpisodeNumber = new EditableField("AirsBeforeEpisodeNumber", Nullable.Value(item, undefined, (i) => i.AirsBeforeEpisodeNumber));
+		this.SeasonName = new EditableField("SeasonName", Nullable.Value(item, undefined, (i) => i.SeasonName));
 
-		this.DisplayOrder = new EditableField("DisplayOrder", Nullable.Value(item, undefined, (i) => i.DisplayOrder ?? undefined));
+		this.DisplayOrder = new EditableField("DisplayOrder", Nullable.Value(item, undefined, (i) => i.DisplayOrder));
 
-		this.Album = new EditableField("Album", Nullable.Value(item, undefined, (i) => i.Album ?? undefined));
-		this.AlbumArtists = new EditableField("AlbumArtists", Nullable.Value(item, undefined, (i) => i.AlbumArtists ?? undefined));
-		this.ArtistItems = new EditableField("ArtistItems", Nullable.Value(item, undefined, (i) => i.ArtistItems ?? undefined));
+		this.Album = new EditableField("Album", Nullable.Value(item, undefined, (i) => i.Album));
+		this.AlbumArtists = new EditableField("AlbumArtists", Nullable.Value(item, undefined, (i) => i.AlbumArtists));
+		this.ArtistItems = new EditableField("ArtistItems", Nullable.Value(item, undefined, (i) => i.ArtistItems));
 
-		this.Status = new EditableField("Status", Nullable.Value(item, undefined, (i) => i.Status ?? undefined));
+		this.Status = new EditableField("Status", Nullable.Value(item, undefined, (i) => i.Status));
 
-		this.AirDays = new EditableField("AirDays", Nullable.Value(item, undefined, (i) => i.AirDays ?? undefined));
-		this.AirTime = new EditableField("AirTime", Nullable.Value(item, undefined, (i) => i.AirTime ?? undefined));
+		this.AirDays = new EditableField("AirDays", Nullable.Value(item, undefined, (i) => i.AirDays));
+		this.AirTime = new EditableField("AirTime", Nullable.Value(item, undefined, (i) => i.AirTime));
 
 		this.Tags = new EditableField("Tags", Nullable.Value(item, [], (i) => i.Tags ?? []));
 		this.Genres = new EditableField("Genres", Nullable.Value(item, [], (i) => i.Genres ?? []));
+		this.People = new ObservableArray(Nullable.Value(item, [], i => (i.People ?? []).map(c => new EditablePersonCredit(c))));
 
-		this.Studios = new EditableField("Studios", Nullable.Value(item, undefined, (i) => i.Studios ?? undefined));
-		this.PremiereDate = new EditableField("PremiereDate", Nullable.Value(item, undefined, (i) => i.PremiereDate ?? undefined));
-		this.DateCreated = new EditableField("DateCreated", Nullable.Value(item, undefined, (i) => i.DateCreated ?? undefined));
-		this.EndDate = new EditableField("EndDate", Nullable.Value(item, undefined, (i) => i.EndDate ?? undefined));
-		this.ProductionYear = new EditableField("ProductionYear", Nullable.Value(item, undefined, (i) => i.ProductionYear ?? undefined));
-		this.Height = new EditableField("Height", Nullable.Value(item, undefined, (i) => i.Height ?? undefined));
-		this.AspectRatio = new EditableField("AspectRatio", Nullable.Value(item, undefined, (i) => i.AspectRatio ?? undefined));
-		this.Video3DFormat = new EditableField("Video3DFormat", Nullable.Value(item, undefined, (i) => i.Video3DFormat ?? undefined));
-		this.CustomRating = new EditableField("CustomRating", Nullable.Value(item, undefined, (i) => i.CustomRating ?? undefined));
-		this.People = new EditableField("People", Nullable.Value(item, undefined, (i) => i.People ?? undefined));
-		this.LockData = new EditableField("LockData", Nullable.Value(item, undefined, (i) => i.LockData ?? undefined));
-		this.LockedFields = new EditableField("LockedFields", Nullable.Value(item, undefined, (i) => i.LockedFields ?? undefined));
-		this.ProviderIds = new EditableField("ProviderIds", Nullable.Value(item, undefined, (i) => i.ProviderIds ?? undefined));
-		this.PreferredMetadataLanguage = new EditableField("PreferredMetadataLanguage", Nullable.Value(item, undefined, (i) => i.PreferredMetadataLanguage ?? undefined));
-		this.PreferredMetadataCountryCode = new EditableField("PreferredMetadataCountryCode", Nullable.Value(item, undefined, (i) => i.PreferredMetadataCountryCode ?? undefined));
-		this.Taglines = new EditableField("Taglines", Nullable.Value(item, undefined, (i) => i.Taglines ?? undefined));
+		this.Studios = new EditableField("Studios", Nullable.Value(item, undefined, (i) => i.Studios));
+		this.PremiereDate = new EditableField("PremiereDate", Nullable.Value(item, undefined, (i) => i.PremiereDate));
+		this.DateCreated = new EditableField("DateCreated", Nullable.Value(item, undefined, (i) => i.DateCreated));
+		this.EndDate = new EditableField("EndDate", Nullable.Value(item, undefined, (i) => i.EndDate));
+		this.ProductionYear = new EditableField("ProductionYear", Nullable.Value(item, undefined, (i) => i.ProductionYear));
+		this.Height = new EditableField("Height", Nullable.Value(item, undefined, (i) => i.Height));
+		this.AspectRatio = new EditableField("AspectRatio", Nullable.Value(item, undefined, (i) => i.AspectRatio));
+		this.Video3DFormat = new EditableField("Video3DFormat", Nullable.Value(item, undefined, (i) => i.Video3DFormat));
+		this.CustomRating = new EditableField("CustomRating", Nullable.Value(item, undefined, (i) => i.CustomRating));
+		this.LockData = new EditableField("LockData", Nullable.Value(item, undefined, (i) => i.LockData));
+		this.LockedFields = new EditableField("LockedFields", Nullable.Value(item, undefined, (i) => i.LockedFields));
+		this.ProviderIds = new EditableField("ProviderIds", Nullable.Value(item, undefined, (i) => i.ProviderIds));
+		this.PreferredMetadataLanguage = new EditableField("PreferredMetadataLanguage", Nullable.Value(item, undefined, (i) => i.PreferredMetadataLanguage));
+		this.PreferredMetadataCountryCode = new EditableField("PreferredMetadataCountryCode", Nullable.Value(item, undefined, (i) => i.PreferredMetadataCountryCode));
+		this.Taglines = new EditableField("Taglines", Nullable.Value(item, undefined, (i) => i.Taglines));
 
 		this.CanMakeRequest = new Computed(() => this.AllFields().some((f) => f.CanMakeRequest()));
 		this.HasChanged = new Computed(() => this.AllFields().some((f) => f.HasChanged.Value));
@@ -99,19 +101,19 @@ export class EditableItem {
 			AspectRatio: this.AspectRatio.Current.Value,
 			Video3DFormat: this.Video3DFormat.Current.Value,
 			CustomRating: this.CustomRating.Current.Value,
-			People: this.People.Current.Value,
+			People: this.People.Value.map((pc) => pc.CreateRequest()),
 			LockData: this.LockData.Current.Value,
 			LockedFields: this.LockedFields.Current.Value,
 			ProviderIds: this.ProviderIds.Current.Value,
 			PreferredMetadataLanguage: this.PreferredMetadataLanguage.Current.Value,
 			PreferredMetadataCountryCode: this.PreferredMetadataCountryCode.Current.Value,
 			Taglines: this.Taglines.Current.Value,
+			SeasonName: this.SeasonName.Current.Value,
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private AllFields(): EditableField<any>[] {
-		return [
+	private AllFields(): IEditableField[] {
+		const allFields = [
 			this.Name,
 			this.OriginalTitle,
 			this.ForcedSortName,
@@ -142,14 +144,18 @@ export class EditableItem {
 			this.AspectRatio,
 			this.Video3DFormat,
 			this.CustomRating,
-			this.People,
 			this.LockData,
 			this.LockedFields,
 			this.ProviderIds,
 			this.PreferredMetadataLanguage,
 			this.PreferredMetadataCountryCode,
 			this.Taglines,
-		];
+			this.SeasonName,
+		] as IEditableField[];
+
+		this.People.Value.forEach((pc) => allFields.push(...pc.AllFields()));
+
+		return allFields;
 	}
 
 	public HasChanged: Computed<boolean>;
@@ -162,52 +168,53 @@ export class EditableItem {
 	public ForcedSortName: EditableField;
 
 	public Overview: EditableField;
-	public Taglines: EditableField<string[]|undefined>;
+	public Taglines: EditableField<string[]|undefined|null>;
 
-	public CommunityRating: EditableField<number|undefined>;
-	public CriticRating: EditableField<number|undefined>;
-	public OfficialRating: EditableField<string|undefined>;
-	public CustomRating: EditableField<string|undefined>;
+	public CommunityRating: EditableField<number|undefined|null>;
+	public CriticRating: EditableField<number|undefined|null>;
+	public OfficialRating: EditableField;
+	public CustomRating: EditableField;
 
-	public IndexNumber: EditableField<number|undefined>;
-	public ParentIndexNumber: EditableField<number|undefined>;
+	public IndexNumber: EditableField<number|undefined|null>;
+	public ParentIndexNumber: EditableField<number|undefined|null>;
 
-	public AirsBeforeSeasonNumber: EditableField<number|undefined>;
-	public AirsAfterSeasonNumber: EditableField<number|undefined>;
-	public AirsBeforeEpisodeNumber: EditableField<number|undefined>;
-	public DisplayOrder: EditableField<string|undefined>;
+	public AirsBeforeSeasonNumber: EditableField<number|undefined|null>;
+	public AirsAfterSeasonNumber: EditableField<number|undefined|null>;
+	public AirsBeforeEpisodeNumber: EditableField<number|undefined|null>;
+	public SeasonName: EditableField;
+	public DisplayOrder: EditableField;
 
-	public Album: EditableField<string|undefined>;
-	public AlbumArtists: EditableField<NameGuidPair[]|undefined>;
-	public ArtistItems: EditableField<NameGuidPair[]|undefined>;
+	public Album: EditableField;
+	public AlbumArtists: EditableField<NameGuidPair[]|undefined|null>;
+	public ArtistItems: EditableField<NameGuidPair[]|undefined|null>;
 
-	public Studios: EditableField<NameGuidPair[]|undefined>;
+	public Studios: EditableField<NameGuidPair[]|undefined|null>;
 
-	public Status: EditableField<string|undefined>;
+	public Status: EditableField;
 
-	public AirDays: EditableField<DayOfWeek[]|undefined>;
-	public AirTime: EditableField<string|undefined>;
+	public AirDays: EditableField<DayOfWeek[]|undefined|null>;
+	public AirTime: EditableField;
 
 	public Genres: EditableField<string[]>;
 	public Tags: EditableField<string[]>;
 
-	public PremiereDate: EditableField<string|undefined>;
-	public ProductionYear: EditableField<number|undefined>;
+	public PremiereDate: EditableField;
+	public ProductionYear: EditableField<number|undefined|null>;
 
-	public DateCreated: EditableField<string|undefined>;
-	public EndDate: EditableField<string|undefined>;
+	public DateCreated: EditableField;
+	public EndDate: EditableField;
 
-	public Height: EditableField<number|undefined>;
-	public AspectRatio: EditableField<string|undefined>;
+	public Height: EditableField<number|undefined|null>;
+	public AspectRatio: EditableField;
 	public Video3DFormat: EditableField<Video3DFormat|undefined>;
 
-	public People: EditableField<BaseItemPerson[]|undefined>;
+	public People: ObservableArray<EditablePersonCredit>;
 
-	public LockData: EditableField<boolean|undefined>;
-	public LockedFields: EditableField<MetadataField[]|undefined>;
+	public LockData: EditableField<boolean|undefined|null>;
+	public LockedFields: EditableField<MetadataField[]|undefined|null>;
 
-	public ProviderIds: EditableField<Record<string, string|null>|undefined>;
+	public ProviderIds: EditableField<Record<string, string|null>|undefined|null>;
 
-	public PreferredMetadataLanguage: EditableField<string|undefined>;
-	public PreferredMetadataCountryCode: EditableField<string|undefined>;
+	public PreferredMetadataLanguage: EditableField;
+	public PreferredMetadataCountryCode: EditableField;
 }
