@@ -46,7 +46,7 @@ export class EditableItemFilter {
 	public Key: string;
 	public FilterType: ItemFilterType;
 	public Operation: EditableField<FilterOperation>;
-	public FilterValue: EditableField;
+	public FilterValue: EditableField<string>;
 	public DisplayValue: Computed<string[]>;
 
 	private static EditableItemFilterId: number = 0;

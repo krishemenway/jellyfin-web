@@ -60,7 +60,7 @@ export const Movie: React.FC = () => {
 
 function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JSX.Element {
 	const background = useBackgroundStyles();
-	const editableItem = useEditableItem(movie);
+	const editableItem = useEditableItem(movie, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(movie), [movie]);
@@ -79,6 +79,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 						direction="row" gap=".5rem"
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
+						editableItem={editableItem} isEditing={isEditing}
 					/>
 
 					<ItemGenres
@@ -87,6 +88,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={4}
+						editableItem={editableItem} isEditing={isEditing} libraryId={movie.ParentId!}
 					/>
 
 					<ItemStudios

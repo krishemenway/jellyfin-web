@@ -68,7 +68,7 @@ export class ItemListViewOptions {
 
 	public Key: string;
 	public IsUnsaved: boolean;
-	public Label: EditableField;
+	public Label: EditableField<string>;
 	public ItemKindService: BaseItemKindService|null;
 	public ShowErrors: Observable<boolean>;
 

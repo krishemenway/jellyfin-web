@@ -25,9 +25,9 @@ class ChangePasswordService {
 		});
 	}
 
-	public Current: EditableField;
-	public New: EditableField;
-	public Confirm: EditableField;
+	public Current: EditableField<string>;
+	public New: EditableField<string>;
+	public Confirm: EditableField<string>;
 
 	public ChangePasswordResult: Receiver<boolean>;
 

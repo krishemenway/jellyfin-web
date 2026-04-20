@@ -64,7 +64,7 @@ export const MusicAlbum: React.FC = () => {
 
 const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[]; user: UserDto }> = ({ album, allSongs, user }) => {
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
-	const editableItem = useEditableItem(album);
+	const editableItem = useEditableItem(album, user);
 	const background = useBackgroundStyles();
 
 	return (
@@ -89,6 +89,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 						direction="row" gap=".5em"
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+						editableItem={editableItem} isEditing={isEditing}
 					/>
 
 					<ItemGenres
@@ -97,6 +98,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 						showMoreLimit={4}
+						editableItem={editableItem} isEditing={isEditing}
 					/>
 				</Layout>
 

@@ -14,7 +14,7 @@ import { ItemImage } from "Items/ItemImage";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemTags } from "Items/ItemTags";
 import { ItemRating } from "Items/ItemRating";
-import { useBackgroundStyles } from "AppStyles";
+import { ResponsiveBreakpoint, useBackgroundStyles, useBreakpointValue } from "AppStyles";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { Collapsible } from "Common/Collapsible";
 import { Button } from "Common/Button";
@@ -74,7 +74,8 @@ export const Show: React.FC = () => {
 
 const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; }> = ({ show, children, user }) => {
 	const background = useBackgroundStyles();
-	const editableItem = useEditableItem(show);
+	const leftPanelItemsPerRow = useBreakpointValue({ [ResponsiveBreakpoint.Mobile]: 1, [ResponsiveBreakpoint.Tablet]: 1, [ResponsiveBreakpoint.Desktop]: 3, [ResponsiveBreakpoint.Wide]: 3 });
+	const editableItem = useEditableItem(show, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 	const seasons = React.useMemo(() => children.filter((i) => i.Type === "Season").sort(sortSeasons), [children]);
 	const allEpisodes = React.useMemo(() => children.filter((i) => i.Type === "Episode"), [children]);
@@ -93,23 +94,25 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 					item={show}
 					direction="row" gap=".5em"
 					linkClassName={background.button}
-					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+					linkLayout={{ direction: "column", width: { itemsPerRow: leftPanelItemsPerRow }, py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					showMoreLimit={3}
 				/>
 
 				<ItemExternalLinks
 					item={show}
 					direction="row" gap=".5em"
-					linkClassName={background.button}
-					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+					linkClassName={background.button} wrap
+					linkLayout={{ direction: "column", width: { itemsPerRow: leftPanelItemsPerRow }, py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+					editableItem={editableItem} isEditing={isEditing}
 				/>
 
 				<ItemGenres
 					item={show}
 					direction="row" gap=".5em"
 					linkClassName={background.button}
-					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+					linkLayout={{ direction: "column", width: { itemsPerRow: leftPanelItemsPerRow }, py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					showMoreLimit={4}
+					editableItem={editableItem} isEditing={isEditing} libraryId={show.ParentId!}
 				/>
 			</Layout>
 
@@ -128,7 +131,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 		throw new Error("Missing");
 	}
 
-	const editableItem = useEditableItem(selectedEpisode);
+	const editableItem = useEditableItem(selectedEpisode, user);
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(selectedEpisode), [selectedEpisode]);
 
@@ -153,6 +156,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 					direction="row" gap=".5em"
 					linkClassName={background.button}
 					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
+					editableItem={editableItem} isEditing={isEditing}
 				/>
 
 				<ItemGenres
@@ -161,6 +165,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 					linkClassName={background.button}
 					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					showMoreLimit={4}
+					editableItem={editableItem} isEditing={isEditing} libraryId={show.ParentId!}
 				/>
 			</Layout>
 
@@ -228,7 +233,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 };
 
 const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: UserDto; }&EditableItemProps> = ({ episode, show, user, isEditing }) => {
-	const editableEpisode = useEditableItem(episode);
+	const editableEpisode = useEditableItem(episode, user);
 	const background = useBackgroundStyles();
 	return (
 		<Layout direction="column" grow gap="1.5em">

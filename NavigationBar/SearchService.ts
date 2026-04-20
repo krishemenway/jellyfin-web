@@ -88,7 +88,7 @@ export class SearchService {
 		this.Results.Reset();
 	}
 
-	public SearchTermField: EditableField;
+	public SearchTermField: EditableField<string>;
 	public ThrottledSearchTerm: Observable<string>;
 
 	public Results: Receiver<SearchResults>;

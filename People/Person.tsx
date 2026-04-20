@@ -69,6 +69,7 @@ export const Person: React.FC = () => {
 								direction="row" gap=".5em"
 								linkClassName={background.button}
 								linkLayout={{ direction: "row", width: "100%", py: ".5em", justifyContent: "center", grow: 1 }}
+								isEditing={false}
 							/>
 						</Layout>
 
@@ -146,7 +147,7 @@ const PersonDetails: React.FC<{ person: BaseItemDto }> = (props) => {
 				</Layout>
 			)}
 
-			<ItemOverview item={props.person} />
+			<ItemOverview item={props.person} isEditing={false} />
 		</Layout>
 	);
 };

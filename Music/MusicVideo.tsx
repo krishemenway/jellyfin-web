@@ -62,7 +62,7 @@ export const MusicVideo: React.FC = () => {
 
 function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: BaseItemDto }): JSX.Element {
 	const background = useBackgroundStyles();
-	const editableItem = useEditableItem(musicVideo);
+	const editableItem = useEditableItem(musicVideo, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(musicVideo), [musicVideo]);
@@ -81,6 +81,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 						direction="row" gap=".5em"
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
+						editableItem={editableItem} isEditing={isEditing}
 					/>
 
 					<ItemGenres
@@ -89,6 +90,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={4}
+						editableItem={editableItem} isEditing={isEditing}
 					/>
 
 					<ItemStudios

@@ -7,7 +7,7 @@ import { TranslationRequest, useTranslatedText } from "Common/TranslatedText";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 
 interface TextFieldProps extends BaseInputFieldProps {
-	field: EditableField;
+	field: EditableField<string|undefined|null> | EditableField<string> | EditableField<string|undefined>;
 	password?: boolean;
 	multiLine?: boolean;
 }

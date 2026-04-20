@@ -7,10 +7,10 @@ export class EditablePersonCredit {
 		this.Key = (EditablePersonCredit.LastId++).toString();
 		this.From = personCredit;
 
-		this.Id = new EditableField("Id", Nullable.Value(this.From, "", p => p.Id ?? ""), (c) => ValueIsRequired(c));
-		this.Name = new EditableField("Name", Nullable.Value(this.From, null, p => p.Name), (c) => ValueIsRequired(c));
-		this.Type = new EditableField("Type", Nullable.Value(this.From, PersonKind.Unknown, p => p.Type ?? PersonKind.Unknown), (c) => ValueIsRequired(c));
-		this.Role = new EditableField("Role", Nullable.Value(this.From, null, p => p.Role), (c) => ValueIsRequired(c));
+		this.Id = new EditableField("Id", this.From?.Id ?? "", (newId) => ValueIsRequired(newId));
+		this.Name = new EditableField("Name", this.From?.Name ?? "", (newName) => ValueIsRequired(newName));
+		this.Type = new EditableField("Type", this.From?.Type ?? PersonKind.Unknown, (c) => ValueIsRequired(c));
+		this.Role = new EditableField("Role", this.From?.Role ?? "", (newRole) => ValueIsRequired(newRole));
 	}
 
 	public AllFields(): IEditableField[] {
@@ -33,8 +33,8 @@ export class EditablePersonCredit {
 
 	public Key: string;
 	public Id: EditableField<string>;
-	public Name: EditableField;
-	public Role: EditableField;
+	public Name: EditableField<string>;
+	public Role: EditableField<string>;
 	public Type: EditableField<PersonKind>;
 
 	public From: BaseItemPerson|undefined;

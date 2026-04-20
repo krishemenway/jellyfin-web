@@ -16,10 +16,10 @@ export function ValueIsRequired(value: string|undefined|null): string|undefined 
 	return !Nullable.StringHasValue(value) ? "ValueIsRequiredMessage" : undefined;
 }
 
-export class EditableField<T = string|undefined|null> implements IEditableField {
-	constructor(fieldId: string, defaultValue: T, canMakeRequestFunc?: (current: T) => string|undefined, beforeChange?: (newValue: T) => T) {
+export class EditableField<T> implements IEditableField {
+	constructor(fieldId: string, defaultValue: T, getRequestBlockingErrorFunc?: (current: T) => string|undefined, beforeChange?: (newValue: T) => T) {
 		this.FieldId = fieldId;
-		this.CanMakeRequestFunc = canMakeRequestFunc ?? (() => undefined);
+		this.GetRequestBlockingErrorFunc = getRequestBlockingErrorFunc ?? (() => undefined);
 		this.BeforeChange = beforeChange ?? ((newValue) => newValue);
 
 		this.Saved = new Observable(defaultValue);
@@ -28,11 +28,11 @@ export class EditableField<T = string|undefined|null> implements IEditableField 
 		this.HasChanged = new Computed(() => this.Current.Value !== this.Saved.Value);
 		this.ServerErrorMessage = new Observable(undefined);
 
-		this.ErrorMessage = new Computed<string|undefined>(() => Linq.Coalesce([this.CanMakeRequestFunc(this.Current.Value), this.ServerErrorMessage.Value], "", m => Nullable.StringHasValue(m)));
+		this.ErrorMessage = new Computed<string|undefined>(() => Linq.Coalesce([this.GetRequestBlockingErrorFunc(this.Current.Value), this.ServerErrorMessage.Value], "", m => Nullable.StringHasValue(m)));
 	}
 
 	public CanMakeRequest(): boolean {
-		return !Nullable.StringHasValue(this.CanMakeRequestFunc(this.Current.Value));
+		return !Nullable.StringHasValue(this.GetRequestBlockingErrorFunc(this.Current.Value));
 	}
 
 	public OnChange(newValue: T) {
@@ -64,5 +64,5 @@ export class EditableField<T = string|undefined|null> implements IEditableField 
 
 	public ErrorMessage: Computed<string|undefined>;
 
-	private CanMakeRequestFunc: (current: T) => string|undefined;
+	private GetRequestBlockingErrorFunc: (current: T) => string|undefined;
 }

@@ -192,7 +192,7 @@ export class ServerService {
 	public ServerInfo: Receiver<SystemInfo>;
 	public CurrentUserId: Computed<string>;
 
-	public TryAddServerHost: EditableField;
+	public TryAddServerHost: EditableField<string>;
 	public TryAddServerResult: Receiver<boolean>;
 	public TryAddServerErrorMessagesShown: Observable<boolean>;
 

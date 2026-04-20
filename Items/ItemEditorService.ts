@@ -3,12 +3,16 @@ import { Observable } from "@residualeffect/reactor";
 import { EditableItem } from "Items/EditableItem";
 import { getItemUpdateApi } from "@jellyfin/sdk/lib/utils/api";
 import { ServerService } from "Servers/ServerService";
-import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, MetadataEditorInfo, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { Receiver } from "Common/Receiver";
 import { useObservable } from "@residualeffect/rereactor";
 
-export function useEditableItem(item: BaseItemDto): EditableItem|undefined {
+export function useEditableItem(item: BaseItemDto, user: UserDto): EditableItem|undefined {
+	if (!user.Policy?.IsAdministrator) {
+		return undefined;
+	}
+
 	const editableItem = useObservable(ItemEditorService.Instance.CurrentEditableItem);
 	React.useEffect(() => ItemEditorService.Instance.Load(item), [item]);
 
@@ -21,12 +25,14 @@ export class ItemEditorService {
 		this.SaveResult = new Receiver("UnknownError");
 		this.ShowErrors = new Observable(false);
 		this.IsEditing = new Observable(false);
+		this.MetadataInfo = new Receiver("UnknownError");
 	}
 
 	public Load(item: BaseItemDto): void {
 		this.CurrentEditableItem.Value = new EditableItem(item);
 		this.ShowErrors.Value = false;
 		this.IsEditing.Value = false;
+		this.MetadataInfo.Start((a) => getItemUpdateApi(ServerService.Instance.CurrentApi).getMetadataEditorInfo({ itemId: item.Id! }, { signal: a.signal }).then(response => response.data));
 	}
 
 	public Save(): void {
@@ -60,6 +66,7 @@ export class ItemEditorService {
 	public SaveResult: Receiver<boolean>;
 	public ShowErrors: Observable<boolean>;
 	public IsEditing: Observable<boolean>;
+	public MetadataInfo: Receiver<MetadataEditorInfo>;
 
 	static get Instance(): ItemEditorService {
 		return this._instance ?? (this._instance = new ItemEditorService());

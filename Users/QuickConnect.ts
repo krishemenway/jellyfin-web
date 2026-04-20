@@ -93,7 +93,7 @@ export class QuickConnectService {
 		}
 	}
 
-	public QuickConnectCode: EditableField;
+	public QuickConnectCode: EditableField<string>;
 	public AuthorizeResult: Receiver<boolean>;
 	public ShowErrors: Observable<boolean>;
 	public QuickConnectResult: Receiver<QuickConnectResult>;

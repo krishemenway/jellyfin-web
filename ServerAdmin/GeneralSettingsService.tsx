@@ -94,17 +94,17 @@ class EditableGeneralSettings {
 	public ShowErrors: Observable<boolean>;
 	public CanSave: Computed<boolean>;
 
-	public ServerName: EditableField;
+	public ServerName: EditableField<string>;
 
-	public CachePath: EditableField;
-	public MetadataPath: EditableField;
+	public CachePath: EditableField<string>;
+	public MetadataPath: EditableField<string>;
 
 	public PreferredDisplayLanguage: EditableField<LocalizationOption>;
 
 	public QuickConnectAvailable: EditableField<boolean>;
 
-	public LibraryScanFanoutConcurrency: EditableField;
-	public ParallelImageEncodingLimit: EditableField;
+	public LibraryScanFanoutConcurrency: EditableField<string>;
+	public ParallelImageEncodingLimit: EditableField<string>;
 
 	private _allEditableFields: IEditableField[];
 	private _originalConfig: ServerConfiguration;

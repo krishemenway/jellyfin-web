@@ -78,8 +78,8 @@ export class LoginService {
 		];
 	}
 
-	public UserName: EditableField;
-	public Password: EditableField;
+	public UserName: EditableField<string>;
+	public Password: EditableField<string>;
 	public RememberMe: EditableField<boolean>;
 
 	public ShowForgotPassword: Observable<boolean>;

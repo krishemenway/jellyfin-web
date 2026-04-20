@@ -3,6 +3,7 @@ import { Computed, ObservableArray } from "@residualeffect/reactor";
 import { EditableField, IEditableField } from "Common/EditableField";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { EditablePersonCredit } from "Items/EditablePersonCredit";
+import { EditableItemProvider } from "./EditableItemProvider";
 
 export class EditableItem {
 	constructor(item: BaseItemDto) {
@@ -40,6 +41,7 @@ export class EditableItem {
 		this.Tags = new EditableField("Tags", Nullable.Value(item, [], (i) => i.Tags ?? []));
 		this.Genres = new EditableField("Genres", Nullable.Value(item, [], (i) => i.Genres ?? []));
 		this.People = new ObservableArray(Nullable.Value(item, [], i => (i.People ?? []).map(c => new EditablePersonCredit(c))));
+		this.ProviderIds = new ObservableArray(Nullable.Value(item, [], (i) => Object.keys(i.ProviderIds ?? {}).map(key => new EditableItemProvider(key, i.ProviderIds![key]))));
 
 		this.Studios = new EditableField("Studios", Nullable.Value(item, undefined, (i) => i.Studios));
 		this.PremiereDate = new EditableField("PremiereDate", Nullable.Value(item, undefined, (i) => i.PremiereDate));
@@ -52,7 +54,6 @@ export class EditableItem {
 		this.CustomRating = new EditableField("CustomRating", Nullable.Value(item, undefined, (i) => i.CustomRating));
 		this.LockData = new EditableField("LockData", Nullable.Value(item, undefined, (i) => i.LockData));
 		this.LockedFields = new EditableField("LockedFields", Nullable.Value(item, undefined, (i) => i.LockedFields));
-		this.ProviderIds = new EditableField("ProviderIds", Nullable.Value(item, undefined, (i) => i.ProviderIds));
 		this.PreferredMetadataLanguage = new EditableField("PreferredMetadataLanguage", Nullable.Value(item, undefined, (i) => i.PreferredMetadataLanguage));
 		this.PreferredMetadataCountryCode = new EditableField("PreferredMetadataCountryCode", Nullable.Value(item, undefined, (i) => i.PreferredMetadataCountryCode));
 		this.Taglines = new EditableField("Taglines", Nullable.Value(item, undefined, (i) => i.Taglines));
@@ -71,89 +72,89 @@ export class EditableItem {
 
 	public CreateUpdateRequest(): BaseItemDto {
 		return {
-			Name: this.Name.Current.Value,
-			OriginalTitle: this.OriginalTitle.Current.Value,
-			ForcedSortName: this.ForcedSortName.Current.Value,
-			Overview: this.Overview.Current.Value,
-			CommunityRating: this.CommunityRating.Current.Value,
-			CriticRating: this.CriticRating.Current.Value,
-			OfficialRating: this.OfficialRating.Current.Value,
-			IndexNumber: this.IndexNumber.Current.Value,
-			ParentIndexNumber: this.ParentIndexNumber.Current.Value,
-			AirsBeforeSeasonNumber: this.AirsBeforeSeasonNumber.Current.Value,
+			AirDays: this.AirDays.Current.Value,
 			AirsAfterSeasonNumber: this.AirsAfterSeasonNumber.Current.Value,
 			AirsBeforeEpisodeNumber: this.AirsBeforeEpisodeNumber.Current.Value,
-			DisplayOrder: this.DisplayOrder.Current.Value,
+			AirsBeforeSeasonNumber: this.AirsBeforeSeasonNumber.Current.Value,
+			AirTime: this.AirTime.Current.Value,
 			Album: this.Album.Current.Value,
 			AlbumArtists: this.AlbumArtists.Current.Value,
 			ArtistItems: this.ArtistItems.Current.Value,
-			Status: this.Status.Current.Value,
-			AirDays: this.AirDays.Current.Value,
-			AirTime: this.AirTime.Current.Value,
-			Genres: this.Genres.Current.Value,
-			Tags: this.Tags.Current.Value,
-			Studios: this.Studios.Current.Value,
-			PremiereDate: this.PremiereDate.Current.Value,
-			DateCreated: this.DateCreated.Current.Value,
-			EndDate: this.EndDate.Current.Value,
-			ProductionYear: this.ProductionYear.Current.Value,
-			Height: this.Height.Current.Value,
 			AspectRatio: this.AspectRatio.Current.Value,
-			Video3DFormat: this.Video3DFormat.Current.Value,
+			CommunityRating: this.CommunityRating.Current.Value,
+			CriticRating: this.CriticRating.Current.Value,
 			CustomRating: this.CustomRating.Current.Value,
-			People: this.People.Value.map((pc) => pc.CreateRequest()),
+			DateCreated: this.DateCreated.Current.Value,
+			DisplayOrder: this.DisplayOrder.Current.Value,
+			EndDate: this.EndDate.Current.Value,
+			ForcedSortName: this.ForcedSortName.Current.Value,
+			Genres: this.Genres.Current.Value,
+			Height: this.Height.Current.Value,
+			IndexNumber: this.IndexNumber.Current.Value,
 			LockData: this.LockData.Current.Value,
 			LockedFields: this.LockedFields.Current.Value,
-			ProviderIds: this.ProviderIds.Current.Value,
-			PreferredMetadataLanguage: this.PreferredMetadataLanguage.Current.Value,
+			Name: this.Name.Current.Value,
+			OfficialRating: this.OfficialRating.Current.Value,
+			OriginalTitle: this.OriginalTitle.Current.Value,
+			Overview: this.Overview.Current.Value,
+			ParentIndexNumber: this.ParentIndexNumber.Current.Value,
+			People: this.People.Value.map((pc) => pc.CreateRequest()),
 			PreferredMetadataCountryCode: this.PreferredMetadataCountryCode.Current.Value,
-			Taglines: this.Taglines.Current.Value,
+			PreferredMetadataLanguage: this.PreferredMetadataLanguage.Current.Value,
+			PremiereDate: this.PremiereDate.Current.Value,
+			ProductionYear: this.ProductionYear.Current.Value,
+			ProviderIds: this.ProviderIds.Value.reduce((all, current) => { all[current.Key] = current.Value.Current.Value ?? null; return all; }, {} as { [key: string]: string|null }),
 			SeasonName: this.SeasonName.Current.Value,
+			Status: this.Status.Current.Value,
+			Studios: this.Studios.Current.Value,
+			Taglines: this.Taglines.Current.Value,
+			Tags: this.Tags.Current.Value,
+			Video3DFormat: this.Video3DFormat.Current.Value,
 		};
 	}
 
 	private AllFields(): IEditableField[] {
 		const allFields = [
-			this.Name,
-			this.OriginalTitle,
-			this.ForcedSortName,
-			this.Overview,
-			this.CommunityRating,
-			this.CriticRating,
-			this.OfficialRating,
-			this.IndexNumber,
-			this.ParentIndexNumber,
-			this.AirsBeforeSeasonNumber,
+			this.AirDays,
 			this.AirsAfterSeasonNumber,
 			this.AirsBeforeEpisodeNumber,
-			this.DisplayOrder,
+			this.AirsBeforeSeasonNumber,
+			this.AirTime,
 			this.Album,
 			this.AlbumArtists,
 			this.ArtistItems,
-			this.Status,
-			this.AirDays,
-			this.AirTime,
-			this.Genres,
-			this.Tags,
-			this.Studios,
-			this.PremiereDate,
-			this.DateCreated,
-			this.EndDate,
-			this.ProductionYear,
-			this.Height,
 			this.AspectRatio,
-			this.Video3DFormat,
+			this.CommunityRating,
+			this.CriticRating,
 			this.CustomRating,
+			this.DateCreated,
+			this.DisplayOrder,
+			this.EndDate,
+			this.ForcedSortName,
+			this.Genres,
+			this.Height,
+			this.IndexNumber,
 			this.LockData,
 			this.LockedFields,
-			this.ProviderIds,
-			this.PreferredMetadataLanguage,
+			this.Name,
+			this.OfficialRating,
+			this.OriginalTitle,
+			this.Overview,
+			this.ParentIndexNumber,
 			this.PreferredMetadataCountryCode,
-			this.Taglines,
+			this.PreferredMetadataLanguage,
+			this.PremiereDate,
+			this.ProductionYear,
 			this.SeasonName,
+			this.Status,
+			this.Studios,
+			this.Taglines,
+			this.Tags,
+			this.Video3DFormat,
 		] as IEditableField[];
 
-		this.People.Value.forEach((pc) => allFields.push(...pc.AllFields()));
+		this.People.Value.forEach((personField) => allFields.push(...personField.AllFields()));
+		this.ProviderIds.Value.forEach((providerField) => allFields.push(...providerField.AllFields()));
 
 		return allFields;
 	}
@@ -163,17 +164,17 @@ export class EditableItem {
 
 	public From: BaseItemDto;
 
-	public Name: EditableField;
-	public OriginalTitle: EditableField;
-	public ForcedSortName: EditableField;
+	public Name: EditableField<string|undefined|null>;
+	public OriginalTitle: EditableField<string|undefined|null>;
+	public ForcedSortName: EditableField<string|undefined|null>;
 
-	public Overview: EditableField;
+	public Overview: EditableField<string|undefined|null>;
 	public Taglines: EditableField<string[]|undefined|null>;
 
 	public CommunityRating: EditableField<number|undefined|null>;
 	public CriticRating: EditableField<number|undefined|null>;
-	public OfficialRating: EditableField;
-	public CustomRating: EditableField;
+	public OfficialRating: EditableField<string|undefined|null>;;
+	public CustomRating: EditableField<string|undefined|null>;;
 
 	public IndexNumber: EditableField<number|undefined|null>;
 	public ParentIndexNumber: EditableField<number|undefined|null>;
@@ -181,40 +182,39 @@ export class EditableItem {
 	public AirsBeforeSeasonNumber: EditableField<number|undefined|null>;
 	public AirsAfterSeasonNumber: EditableField<number|undefined|null>;
 	public AirsBeforeEpisodeNumber: EditableField<number|undefined|null>;
-	public SeasonName: EditableField;
-	public DisplayOrder: EditableField;
+	public SeasonName: EditableField<string|undefined|null>;;
+	public DisplayOrder: EditableField<string|undefined|null>;;
 
-	public Album: EditableField;
+	public Album: EditableField<string|undefined|null>;;
 	public AlbumArtists: EditableField<NameGuidPair[]|undefined|null>;
 	public ArtistItems: EditableField<NameGuidPair[]|undefined|null>;
 
 	public Studios: EditableField<NameGuidPair[]|undefined|null>;
 
-	public Status: EditableField;
+	public Status: EditableField<string|undefined|null>;;
 
 	public AirDays: EditableField<DayOfWeek[]|undefined|null>;
-	public AirTime: EditableField;
+	public AirTime: EditableField<string|undefined|null>;;
 
 	public Genres: EditableField<string[]>;
 	public Tags: EditableField<string[]>;
 
-	public PremiereDate: EditableField;
+	public PremiereDate: EditableField<string|undefined|null>;;
 	public ProductionYear: EditableField<number|undefined|null>;
 
-	public DateCreated: EditableField;
-	public EndDate: EditableField;
+	public DateCreated: EditableField<string|undefined|null>;;
+	public EndDate: EditableField<string|undefined|null>;;
 
 	public Height: EditableField<number|undefined|null>;
-	public AspectRatio: EditableField;
+	public AspectRatio: EditableField<string|undefined|null>;;
 	public Video3DFormat: EditableField<Video3DFormat|undefined>;
 
 	public People: ObservableArray<EditablePersonCredit>;
+	public ProviderIds: ObservableArray<EditableItemProvider>;
 
 	public LockData: EditableField<boolean|undefined|null>;
 	public LockedFields: EditableField<MetadataField[]|undefined|null>;
 
-	public ProviderIds: EditableField<Record<string, string|null>|undefined|null>;
-
-	public PreferredMetadataLanguage: EditableField;
-	public PreferredMetadataCountryCode: EditableField;
+	public PreferredMetadataLanguage: EditableField<string|undefined|null>;;
+	public PreferredMetadataCountryCode: EditableField<string|undefined|null>;;
 }
