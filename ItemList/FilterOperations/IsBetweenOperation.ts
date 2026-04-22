@@ -11,7 +11,7 @@ export const IsBetweenOperation: FilterOperation = {
 
 		if (typeof value === "number" && Array.isArray(filterValue)) {
 			const [greaterThan, lessThan] = filterValue;
-			return value > parseFloat(greaterThan) && value < parseFloat(lessThan);
+			return value >= parseFloat(greaterThan) && value <= parseFloat(lessThan);
 		}
 
 		throw new Error(`Value not supported ('${value}') with filter value ('${filterValue}')`);
@@ -28,7 +28,7 @@ export const IsNotBetweenOperation: FilterOperation = {
 
 		if (typeof value === "number" && Array.isArray(filterValue)) {
 			const [greaterThan, lessThan] = filterValue;
-			return value < parseFloat(greaterThan) && value > parseFloat(lessThan);
+			return value <= parseFloat(greaterThan) && value >= parseFloat(lessThan);
 		}
 
 		throw new Error(`Value not supported ('${value}') with filter value ('${filterValue}')`);
