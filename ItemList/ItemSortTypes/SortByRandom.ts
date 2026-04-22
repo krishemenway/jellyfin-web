@@ -4,6 +4,7 @@ import { ItemSortOption } from "ItemList/ItemSortOption";
 export const SortByRandom: ItemSortOption = {
 	labelKey: 'OptionRandom',
 	field: "Random",
+	getContent: (i) => FindOrCreateRandomValue(i.Id).toString(),
 	sortFunc: SortByNumber((i) => FindOrCreateRandomValue(i.Id)),
 };
 

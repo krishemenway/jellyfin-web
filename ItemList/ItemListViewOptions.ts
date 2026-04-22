@@ -10,8 +10,8 @@ import { EditableField, ValueIsRequired } from "Common/EditableField";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 
 export class ItemListViewOptions {
-	constructor(itemKindService: BaseItemKindService|null, data?: ItemViewOptionsData) {
-		this.Key = (ItemListViewOptions._lastOptionsKey++).toString();
+	constructor(itemKindService: BaseItemKindService|null, key?: string, data?: ItemViewOptionsData) {
+		this.Key = key ?? self.crypto.randomUUID();
 		this.IsUnsaved = !Nullable.HasValue(data);
 		this.Label = new EditableField("Filter", Nullable.Value(data, "", (d) => d.Label), (v) => ValueIsRequired(v));
 		this.ShowErrors = new Observable(false);
@@ -79,8 +79,6 @@ export class ItemListViewOptions {
 
 	public FilterFunc: Computed<(item: BaseItemDto) => boolean>;
 	public SortByFunc: Computed<(a: BaseItemDto, b: BaseItemDto) => number>;
-
-	private static _lastOptionsKey: number = 1;
 }
 
 export interface ItemViewOptionFilterData {

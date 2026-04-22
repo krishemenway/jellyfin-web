@@ -40,6 +40,8 @@ export interface ItemListFiltersProps {
 	library: BaseItemDto;
 	settings: Settings;
 	filters: QueryFiltersLegacy;
+	total: number;
+	remaining: number;
 }
 
 export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
@@ -84,6 +86,8 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 						/>
 					</Layout>
 				)}
+
+				<Layout direction="row">{props.total === props.remaining ? props.total : `${props.total} - ${props.total - props.remaining} = ${props.remaining}`}</Layout>
 
 				<Layout direction="column" grow></Layout>
 
@@ -236,7 +240,7 @@ const SaveNewOptions: React.FC<{ itemList: ItemListService; settings: Settings; 
 	return (
 		<Form
 			direction="row" gap=".5rem" alignItems="start"
-			onSubmit={() => { props.itemList.SaveViewOptions(props.itemList.LibraryId, props.settings, props.listOptions, (newFilterLabelOrNull) => { props.onClosed(); Nullable.TryExecute(newFilterLabelOrNull, (label) => navigate(urlToItem(props.library, `/${label}`))) }); }}>
+			onSubmit={() => { props.itemList.SaveViewOptions(props.settings, props.listOptions, (newFilterLabelOrNull) => { props.onClosed(); Nullable.TryExecute(newFilterLabelOrNull, (label) => navigate(urlToItem(props.library, `/${label}`))) }); }}>
 
 			<Layout direction="column" grow>
 				<TextField field={props.listOptions.Label} py=".25em" px=".5em" grow placeholder={{ Key: "LabelNewName" }} />
@@ -267,7 +271,7 @@ const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions
 				type="button"
 				px=".5em" py=".5em"
 				justifyContent="center" alignItems="center"
-				onClick={() => { props.itemList.SaveViewOptions(props.itemList.LibraryId, props.settings, props.itemListViewOptions, () => { }); }}
+				onClick={() => { props.itemList.SaveViewOptions(props.settings, props.itemListViewOptions, () => { }); }}
 				icon={<SaveIcon />}
 			/>
 
@@ -291,7 +295,7 @@ const ConfirmDelete: React.FC<{ itemList: ItemListService; settings: Settings; l
 
 			<Layout direction="row" gap="1rem" width="100%" justifyContent="end">
 				<Button type="button" label="ButtonCancel" onClick={() => { props.onClosed() }} px="1em" py=".5em" />
-				<Button type="button" label="ButtonRemove" onClick={() => { props.itemList.RemoveViewOptions(props.itemList.LibraryId, props.settings, props.options, () => { props.onClosed(); navigate(urlToItem(props.library)); }); }} px="1em" py=".5em" />
+				<Button type="button" label="ButtonRemove" onClick={() => { props.itemList.RemoveViewOptions(props.settings, props.options, () => { props.onClosed(); navigate(urlToItem(props.library)); }); }} px="1em" py=".5em" />
 			</Layout>
 		</Layout>
 	);

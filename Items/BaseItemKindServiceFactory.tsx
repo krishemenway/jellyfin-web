@@ -35,6 +35,14 @@ import { ShowService } from "Shows/ShowService";
 import { StudioService } from "Studios/StudioService";
 
 export class BaseItemKindServiceFactory {
+	public static FindOrThrow(kind?: BaseItemKind): BaseItemKindService {
+		if (kind === undefined) {
+			throw new Error(`Missing Service for type ${kind}`);
+		}
+
+		return this._servicesByKind[kind] ?? null;
+	}
+
 	public static FindOrNull(kind?: BaseItemKind): BaseItemKindService|null {
 		if (kind === undefined) {
 			return null;

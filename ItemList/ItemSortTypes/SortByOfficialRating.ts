@@ -5,6 +5,7 @@ import { ItemSortOption } from "ItemList/ItemSortOption";
 export const SortByOfficialRating: ItemSortOption = {
 	labelKey: 'OptionParentalRating',
 	field: "OfficialRating",
+	getContent: (i) => i.OfficialRating,
 	sortFunc: SortByNumber((i) => GetOrder(i.OfficialRating)),
 };
 

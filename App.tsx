@@ -23,6 +23,8 @@ import { PlaylistView } from "Playlists/PlaylistView";
 import { Settings } from "Users/Settings";
 import { RequireServerAndUser } from "Users/RequireServerAndUser";
 
+import { AudioBook } from "Books/AudioBook";
+import { Book } from "Books/Book";
 import { Show } from "Shows/Show";
 import { Movie } from "Movies/Movie";
 import { MusicAlbum } from "Music/MusicAlbum";
@@ -31,7 +33,6 @@ import { MusicArtist } from "Music/MusicArtist";
 import { Collection } from "Collections/Collection";
 
 import { Studio } from "Studios/Studio";
-import { Studios } from "Studios/Studios";
 
 import { Tag } from "Tags/Tag";
 import { Tags } from "Tags/Tags";
@@ -83,7 +84,8 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ path: "/Playlists/:libraryId", element: <ItemListView itemKind="Playlist" paramName="libraryId" /> },
 						{ path: "/Playlist/:playlistId", element: <PlaylistView /> },
 
-						{ path: "/AudioBooks/:libraryId", element: <ItemListView itemKind="AudioBook" paramName="libraryId" /> },
+						{ path: "/Book/:bookId", element: <Book /> },
+						{ path: "/AudioBook/:audioBookId", element: <AudioBook /> },
 						{ path: "/Books/:libraryId", element: <ItemListView itemKind="Book" paramName="libraryId" /> },
 
 						{ path: "/Shows/:libraryId/:optionsName", element: <ItemListView itemKind="Series" paramName="libraryId" /> },
@@ -114,7 +116,6 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ path: "/Movies/:libraryId", element: <ItemListView itemKind="Movie" paramName="libraryId" /> },
 						{ path: "/Movie/:movieId", element: <Movie /> },
 
-						{ path: "/Studios", element: <Studios /> },
 						{ path: "/Studio/:studioId", element: <Studio /> },
 
 						{ path: "/Collections/:collectionsId/:optionsName", element: <ItemListView itemKind="BoxSet" paramName="collectionsId" /> },

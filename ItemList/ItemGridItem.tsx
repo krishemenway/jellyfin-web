@@ -4,8 +4,10 @@ import { useBackgroundStyles } from "AppStyles";
 import { ImageShape, ItemImage } from "Items/ItemImage";
 import { LinkToItem } from "Items/LinkToItem";
 import { Layout } from "Common/Layout";
+import { SortFuncs } from "Common/Sort";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
-export const ItemsGridItem: React.FC<{ item: BaseItemDto; fallback?: BaseItemDto, imageType?: ImageType; shape: ImageShape; itemsPerRow: number }> = (props) => {
+export const ItemsGridItem: React.FC<{ item: BaseItemDto; fallback?: BaseItemDto, imageType?: ImageType; shape: ImageShape; itemsPerRow: number; additionalFields?: readonly SortFuncs<BaseItemDto>[]; }> = (props) => {
 	const background = useBackgroundStyles();
 
 	return (
@@ -18,7 +20,13 @@ export const ItemsGridItem: React.FC<{ item: BaseItemDto; fallback?: BaseItemDto
 			width={{ itemsPerRow: props.itemsPerRow, gap: ".5em" }}
 		>
 			<ItemImage item={props.item} fallback={props.fallback} type={props.imageType ?? ImageType.Primary} lazy objectFit="cover" maxWidth="100%" grow />
-			<Layout direction="column" py=".25em" textAlign="center">{props.item.Name}</Layout>
+			<GridItemField item={props.item} getContent={(i) => i.Name} />
+			{(props.additionalFields ?? []).map((s) => <GridItemField key={`${props.item.Id + s.LabelKey}`} item={props.item} getContent={s.GetContent} />)}
 		</LinkToItem>
 	);
+};
+
+const GridItemField: React.FC<{ item: BaseItemDto; getContent: (item: BaseItemDto) => string|undefined|null; }> = (props) => {
+	const content = React.useMemo(() => props.getContent(props.item), [props.item, props.getContent]);
+	return <Layout direction="column" py=".25em" textAlign="center">{Nullable.StringHasValue(content) ? content : "-"}</Layout>;
 };

@@ -23,6 +23,8 @@ import { PageTitle } from "Common/PageTitle";
 import { ItemFilterService } from "Items/ItemFilterService";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ServerService } from "Servers/ServerService";
+import { ItemListViewOptions } from "./ItemListViewOptions";
+import { BaseItemKindService } from "Items/BaseItemKindService";
 
 export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = (props) => {
 	const routeParams = useParams();
@@ -49,7 +51,7 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenReceived={(items, settings, user, filters, libraries) => (
-					<ItemsGrid
+					<LoadedItemsListView
 						libraryId={libraryId} optionsName={optionsName} itemList={itemList}
 						items={items.List} settings={settings}
 						user={user} libraries={libraries}
@@ -63,33 +65,41 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 
 const itemsPerRowConfig = { [ResponsiveBreakpoint.Desktop] : 7, [ResponsiveBreakpoint.Tablet]: 6, [ResponsiveBreakpoint.Mobile]: 2, [ResponsiveBreakpoint.Wide]: 9 };
 
-const ItemsGrid: React.FC<{ libraryId: string, optionsName?: string; items: BaseItemDto[]; itemList: ItemListService; itemKind: BaseItemKind; settings: Settings; user: UserDto; libraries: BaseItemDto[]; filters: QueryFiltersLegacy }> = (props) => {
-	const itemsPerRow = useBreakpointValue(itemsPerRowConfig);
-	const itemKindService = BaseItemKindServiceFactory.FindOrNull(props.itemKind);
+const LoadedItemsListView: React.FC<{ libraryId: string, optionsName?: string; items: BaseItemDto[]; itemList: ItemListService; itemKind: BaseItemKind; settings: Settings; user: UserDto; libraries: BaseItemDto[]; filters: QueryFiltersLegacy }> = (props) => {
+	const itemKindService = BaseItemKindServiceFactory.FindOrThrow(props.itemKind);
 	const listOptions = useObservable(props.itemList.ListOptions);
 	const library = Linq.Single(props.libraries, (l) => l.Id === props.libraryId);
 
-	const filteredAndSortedItems = useComputed(() => {
-		const items = props.items.filter((i) => i.Type === props.itemKind);
-		const options = props.itemList.ListOptions.Value;
-
-		if (options === null) {
-			return items;
-		}
-
-		const filterFunc = options.FilterFunc.Value;
-		const sortFunc = options.SortByFunc.Value;
-
-		return items.filter(filterFunc).sort(sortFunc);
-	}, [props.items, props.itemList]);
-
-	React.useEffect(() => { props.itemList.LoadItemListViewOptionsOrNew(props.libraryId, props.settings, itemKindService, props.optionsName); }, [props.settings, itemKindService, props.optionsName]);
+	React.useEffect(() => { props.itemList.LoadItemListViewOptionsOrNew(props.settings, itemKindService, props.optionsName); }, [props.settings, itemKindService, props.optionsName]);
 
 	return (
 		<Layout direction="column" gap="1em" py="1em">
 			<PageTitle text={library?.Name} suppressOnScreen />
-			{listOptions && <ItemListFilters library={library} user={props.user} listOptions={listOptions} filters={props.filters} itemList={props.itemList} settings={props.settings} />}
+			{listOptions && <ItemsViewWithOptions {...props} listOptions={listOptions} itemKindService={itemKindService} library={library} />}
+		</Layout>
+	);
+};
 
+const ItemsViewWithOptions: React.FC<{ library: BaseItemDto; items: BaseItemDto[]; listOptions: ItemListViewOptions; itemList: ItemListService; itemKind: BaseItemKind; itemKindService: BaseItemKindService; settings: Settings; user: UserDto; filters: QueryFiltersLegacy }> = (props) => {
+	const sorts = useObservable(props.listOptions.SortBy);
+	const itemsPerRow = useBreakpointValue(itemsPerRowConfig);
+	const filteredAndSortedItems = useComputed(() => {
+		const listTypes = props.itemKindService.listTypes ?? [props.itemKind];
+		const items = props.items.filter((i) => listTypes.indexOf(i.Type!) > -1);
+
+		if (props.listOptions === null) {
+			return items;
+		}
+
+		const filterFunc = props.listOptions.FilterFunc.Value;
+		const sortFunc = props.listOptions.SortByFunc.Value;
+
+		return items.filter(filterFunc).sort(sortFunc);
+	}, [props.items, props.listOptions, props.itemKindService]);
+
+	return (
+		<>
+			<ItemListFilters library={props.library} user={props.user} listOptions={props.listOptions} filters={props.filters} itemList={props.itemList} settings={props.settings} total={props.items.length} remaining={filteredAndSortedItems.length} />
 			<ListOf
 				items={filteredAndSortedItems}
 				direction="row" wrap gap=".5em"
@@ -97,12 +107,13 @@ const ItemsGrid: React.FC<{ libraryId: string, optionsName?: string; items: Base
 					<ItemsGridItem
 						key={item.Id ?? index.toString()}
 						item={item}
-						fallback={library}
-						shape={itemKindService?.primaryShape ?? ImageShape.Portrait}
+						fallback={props.library}
+						shape={props.itemKindService.primaryShape ?? ImageShape.Portrait}
 						itemsPerRow={itemsPerRow}
+						additionalFields={sorts}
 					/>
 				)}
 			/>
-		</Layout>
-	);
-};
+		</>
+	)
+}

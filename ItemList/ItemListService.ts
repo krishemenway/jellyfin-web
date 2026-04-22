@@ -57,8 +57,8 @@ export class ItemListService {
 		return () => this.List.ResetIfLoading();
 	}
 
-	public LoadItemListViewOptionsOrNew(context: string, settings: Settings, itemKind: BaseItemKindService|null, optionsName?: string): void {
-		this.ExistingOptions.Value = settings.AllKeys().filter((k) => k.startsWith(`ViewOption-${context}`)).map((k) => new ItemListViewOptions(itemKind, settings.ReadAsJson(k)));
+	public LoadItemListViewOptionsOrNew(settings: Settings, itemKind: BaseItemKindService|null, optionsName?: string): void {
+		this.ExistingOptions.Value = settings.AllKeys().filter((k) => k.startsWith(`ViewOption-`)).map((key) => new ItemListViewOptions(itemKind, key, settings.ReadAsJson(key)));
 
 		if (Nullable.HasValue(optionsName)) {
 			this.ListOptions.Value = this.ExistingOptions.Value.filter((o) => o.Label.Current.Value == optionsName)[0] ?? new ItemListViewOptions(itemKind);
@@ -67,14 +67,10 @@ export class ItemListService {
 		}
 	}
 
-	public SaveViewOptions(context: string, settings: Settings, listOptions: ItemListViewOptions, onSuccess: (newLabel: string|null) => void): void {
+	public SaveViewOptions(settings: Settings, listOptions: ItemListViewOptions, onSuccess: (newLabel: string|null) => void): void {
 		listOptions.ShowErrors.Value = true;
 
-		if (!listOptions.Label.CanMakeRequest()) {
-			return;
-		}
-
-		SettingsStore.Instance.SaveSettings(settings.CreateSaveRequestWithChangedKey(`ViewOption-${context}-${listOptions.Label.Current.Value}`, listOptions.CreateSaveRequest()), () => {
+		SettingsStore.Instance.SaveSettings(settings.CreateSaveRequestWithChangedKey(`ViewOption-${listOptions.Key}`, listOptions.CreateSaveRequest()), () => {
 			SettingsStore.Instance.LoadSettings(settings.Id, () => {
 				if (!this.ExistingOptions.Value.includes(listOptions)) {
 					listOptions.Label.OnSaved();
@@ -87,9 +83,8 @@ export class ItemListService {
 		});
 	}
 
-	public RemoveViewOptions(context: string, settings: Settings, listOptions: ItemListViewOptions, onSuccess: () => void): void {
-		const labelName = listOptions.Label.Saved.Value;
-		SettingsStore.Instance.SaveSettings(settings.CreateSaveRequestWithRemovedKey(`ViewOption-${context}-${labelName}`), () => {
+	public RemoveViewOptions(settings: Settings, listOptions: ItemListViewOptions, onSuccess: () => void): void {
+		SettingsStore.Instance.SaveSettings(settings.CreateSaveRequestWithRemovedKey(listOptions.Key), () => {
 			SettingsStore.Instance.LoadSettings(settings.Id, () => {
 				this.ExistingOptions.remove(listOptions);
 				onSuccess();
