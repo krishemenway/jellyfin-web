@@ -43,19 +43,23 @@ export class ItemListViewOptions {
 
 	public ClearNewFilter(): void {
 		this.NewFilter.Value = undefined;
+		this.ShowErrors.Value = false;
 	}
 
 	public AddSort(sortFunc: ItemSortOption, reversed: boolean): void {
 		this.SortBy.unshift(CreateSortFunc(sortFunc, reversed));
 	}
 
-	public AddNewFilter(): void {
-		if (this.NewFilter.Value === undefined) {
-			throw new Error("Cannot add new filter until it's configured.");
-		}
+	public AddNewFilter(onAddedSuccessfully: () => void): void {
+		const newFilter = this.NewFilter.Value!;
 
-		this.Filters.push(this.NewFilter.Value);
-		this.ClearNewFilter();
+		if (newFilter.AllFields.every((f) => f.CanMakeRequest())) {
+			this.Filters.push(newFilter);
+			this.ClearNewFilter();
+			onAddedSuccessfully();
+		} else {
+			this.ShowErrors.Value = true;
+		}
 	}
 
 	public CreateSaveRequest(): ItemViewOptionsData {

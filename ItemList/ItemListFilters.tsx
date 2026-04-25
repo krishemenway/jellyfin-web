@@ -186,15 +186,17 @@ const PickFilterModal: React.FC<{ filterOptions: ItemFilterType[]; onPicked: (op
 const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilter: EditableItemFilter; filters: QueryFiltersLegacy; libraryId: string; onClosed: () => void; }> = (props) => {
 	const operation = useObservable(props.newFilter.Operation.Current);
 	const FilterTypeEditor = props.newFilter.FilterType.editor;
+	const showErrors = useObservable(props.listOptions.ShowErrors);
 
 	return (
-		<Form py="1em" px="1em" gap="1em" direction="column" onSubmit={() => { props.listOptions.AddNewFilter(); props.onClosed(); }} minWidth="20em" maxWidth="26em">
+		<Form py="1em" px="1em" gap="1em" direction="column" onSubmit={() => { props.listOptions.AddNewFilter(() => props.onClosed()); }} minWidth="20em" maxWidth="26em">
 			<Layout direction="row" alignItems="center" justifyContent="center" gap="1em">
 				<Layout direction="column" fontSize="1.2em"><TranslatedText textKey={props.newFilter.FilterType.labelKey} /></Layout>
 				<AutoCompleteFieldEditor field={props.newFilter.Operation} allOptions={props.newFilter.FilterType.operations} getValue={(o) => o.Name} getLabel={(o) => <TranslatedText textKey={o.Name} />} grow />
 			</Layout>
 
 			<FilterTypeEditor {...props} filter={props.newFilter} currentOperation={operation} />
+			<FieldError field={props.newFilter.FilterValue} showErrors={showErrors} />
 
 			<Layout direction="row" gap="1em">
 				<Button type="button" justifyContent="center" py=".25em" onClick={() => { props.onClosed(); }} grow><TranslatedText textKey="ButtonCancel" /></Button>
