@@ -12,7 +12,6 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemListView } from "ItemList/ItemListView";
 
 import { ServerDashboard } from "ServerAdmin/ServerDashboard";
-import { MetadataEditor } from "ServerAdmin/MetadataEditor";
 import { Icons } from "ServerAdmin/Icons";
 
 import { Home } from "Home/Home";
@@ -129,7 +128,6 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ path: "/Genres", element: <Genres /> },
 
 						{ path: "/Dashboard", element: <ServerDashboard /> },
-						{ path: "/Metadata", element: <MetadataEditor /> },
 						{ path: "/Icons", element: <Icons /> },
 
 						{ index: true, element: <Home /> },
