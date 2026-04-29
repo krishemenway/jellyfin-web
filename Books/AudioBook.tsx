@@ -97,6 +97,7 @@ function LoadedAudioBook({ user, audioBook }: { user: UserDto, audioBook: BaseIt
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={3}
+						editableItem={editableItem} isEditing={isEditing} libraryId={audioBook.ParentId!}
 					/>
 				</Layout>
 			</Layout>
@@ -124,34 +125,30 @@ function LoadedAudioBook({ user, audioBook }: { user: UserDto, audioBook: BaseIt
 
 				<ItemOverview item={audioBook} editableItem={editableItem} isEditing={isEditing} />
 
-				{(audioBook.Tags?.length ?? 0) > 0 && (
-					<Layout direction="row" gap=".5rem">
-						<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
-						<ItemTags
-							item={audioBook}
-							isEditing={isEditing} editableItem={editableItem} libraryId={audioBook.ParentId!}
-							direction="row" gap=".5rem" wrap
-							linkClassName={background.button}
-							linkLayout={{ px: ".25em", py: ".25em" }}
-							showMoreLimit={25}
-						/>
-					</Layout>
-				)}
+				<Layout direction="row" gap=".5rem">
+					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
+					<ItemTags
+						item={audioBook}
+						isEditing={isEditing} editableItem={editableItem} libraryId={audioBook.ParentId!}
+						direction="row" gap=".5rem" wrap
+						linkClassName={background.button}
+						linkLayout={{ px: ".25em", py: ".25em" }}
+						showMoreLimit={25}
+					/>
+				</Layout>
 
-				{(audioBook.People?.length ?? 0) > 0 && (
-					<Layout direction="column" minWidth="100%">
-						<Layout direction="row" fontSize="1.5em" py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
+				<Layout direction="column" minWidth="100%">
+					<Layout direction="row" fontSize="1.5em" py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
 
-						<CastAndCrew
-							itemWithPeople={audioBook}
-							className={background.panel}
-							direction="row" wrap px=".5em" py="1em"
-							linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
-							editableItem={editableItem}
-							isEditing={isEditing}
-						/>
-					</Layout>
-				)}
+					<CastAndCrew
+						itemWithPeople={audioBook}
+						className={background.panel}
+						direction="row" wrap px=".5em" py="1em"
+						linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
+						editableItem={editableItem}
+						isEditing={isEditing}
+					/>
+				</Layout>
 			</Layout>
 		</Layout>
 	)

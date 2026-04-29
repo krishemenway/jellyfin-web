@@ -1,4 +1,4 @@
-import { BaseItemDto, BaseItemKind, CollectionType } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemKind, CollectionType, PersonKind } from "@jellyfin/sdk/lib/generated-client/models";
 import { IconProps } from "Common/IconProps";
 import { ItemMenuAction } from "Items/ItemMenuAction";
 import { ItemFilterType } from "ItemList/ItemFilterType";
@@ -10,6 +10,8 @@ export interface BaseItemKindService {
 	findIcon?: (iconProps: IconProps, collectionType?: CollectionType) => JSX.Element;
 	findUrl?: (item: BaseItemDto) => string;
 	listUrl?: (libraryItem: BaseItemDto) => string;
+
+	relevantPersonKinds?: PersonKind[];
 
 	filterOptions?: ItemFilterType[];
 	sortOptions?: ItemSortOption[];

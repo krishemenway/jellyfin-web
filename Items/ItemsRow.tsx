@@ -2,7 +2,7 @@ import * as React from "react";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { LinkToItem } from "Items/LinkToItem";
 import { ItemImage } from "Items/ItemImage";
-import { useBackgroundStyles, useBreakpointValue, ResponsiveBreakpoint } from "AppStyles";
+import { useBackgroundStyles, useBreakpointValue, Breakpoint } from "AppStyles";
 import { Layout } from "Common/Layout";
 
 interface ItemsRowProps {
@@ -11,7 +11,7 @@ interface ItemsRowProps {
 	itemName: (item: BaseItemDto) => React.ReactNode;
 }
 
-const itemsPerRowConfig = { [ResponsiveBreakpoint.Mobile]: 2, [ResponsiveBreakpoint.Tablet]: 3, [ResponsiveBreakpoint.Desktop]: 5, [ResponsiveBreakpoint.Wide]: 7 };
+const itemsPerRowConfig = { [Breakpoint.Mobile]: 2, [Breakpoint.Tablet]: 3, [Breakpoint.Desktop]: 5, [Breakpoint.Wide]: 7 };
 
 export const ItemsRow: React.FC<ItemsRowProps> = (props) => {
 	const background = useBackgroundStyles();

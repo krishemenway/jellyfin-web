@@ -2,38 +2,38 @@ import * as React from "react";
 import { createUseStyles } from "react-jss";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 
-export enum ResponsiveBreakpoint {
+export enum Breakpoint {
 	Mobile = 1,
 	Tablet = 2,
 	Desktop = 3,
 	Wide = 4,
 }
 
-const Context = React.createContext(ResponsiveBreakpoint.Desktop);
+const Context = React.createContext(Breakpoint.Desktop);
 
-function useBreakpoint(): ResponsiveBreakpoint {
+function useBreakpoint(): Breakpoint {
 	return React.useContext(Context);
 }
 
-export function useBreakpointValue<T>(valuesByBreakpoint: Record<ResponsiveBreakpoint, T>) {
+export function useBreakpointValue<T>(valuesByBreakpoint: Record<Breakpoint, T>) {
 	const breakpoint = useBreakpoint();
 	return valuesByBreakpoint[breakpoint];
 }
 
-export function useCalculatedBreakpoint(): [ResponsiveBreakpoint, React.Provider<ResponsiveBreakpoint>] {
+export function useCalculatedBreakpoint(): [Breakpoint, React.Provider<Breakpoint>] {
 	const isTablet = useMediaQuery("(min-width: 40em) and (max-width: 69.9999999em)");
 	const isDesktop = useMediaQuery("(min-width: 70em) and (max-width: 119.999999em)");
 	const isWide = useMediaQuery("(min-width: 120em)", true);
 
 	if (isWide) {
-		return [ResponsiveBreakpoint.Wide, Context.Provider];
+		return [Breakpoint.Wide, Context.Provider];
 	}
 
 	if (isDesktop) {
-		return [ResponsiveBreakpoint.Desktop, Context.Provider];
+		return [Breakpoint.Desktop, Context.Provider];
 	}
 
-	return isTablet ? [ResponsiveBreakpoint.Tablet, Context.Provider] : [ResponsiveBreakpoint.Mobile, Context.Provider];
+	return isTablet ? [Breakpoint.Tablet, Context.Provider] : [Breakpoint.Mobile, Context.Provider];
 }
 
 function useMediaQuery(query: string, defaultValue?: boolean): boolean {

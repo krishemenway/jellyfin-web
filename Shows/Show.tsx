@@ -14,7 +14,7 @@ import { ItemImage } from "Items/ItemImage";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemTags } from "Items/ItemTags";
 import { ItemRating } from "Items/ItemRating";
-import { ResponsiveBreakpoint, useBackgroundStyles, useBreakpointValue } from "AppStyles";
+import { Breakpoint, useBackgroundStyles, useBreakpointValue } from "AppStyles";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { Collapsible } from "Common/Collapsible";
 import { Button } from "Common/Button";
@@ -74,7 +74,7 @@ export const Show: React.FC = () => {
 
 const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; }> = ({ show, children, user }) => {
 	const background = useBackgroundStyles();
-	const leftPanelItemsPerRow = useBreakpointValue({ [ResponsiveBreakpoint.Mobile]: 1, [ResponsiveBreakpoint.Tablet]: 1, [ResponsiveBreakpoint.Desktop]: 3, [ResponsiveBreakpoint.Wide]: 3 });
+	const leftPanelItemsPerRow = useBreakpointValue({ [Breakpoint.Mobile]: 1, [Breakpoint.Tablet]: 1, [Breakpoint.Desktop]: 3, [Breakpoint.Wide]: 3 });
 	const editableItem = useEditableItem(show, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 	const seasons = React.useMemo(() => children.filter((i) => i.Type === "Season").sort(sortSeasons), [children]);
@@ -96,6 +96,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 					linkClassName={background.button}
 					linkLayout={{ direction: "column", width: { itemsPerRow: leftPanelItemsPerRow }, py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					showMoreLimit={3}
+					editableItem={editableItem} isEditing={isEditing} libraryId={show.ParentId!}
 				/>
 
 				<ItemExternalLinks
@@ -149,6 +150,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 					linkClassName={background.button}
 					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					showMoreLimit={3}
+					editableItem={editableItem} isEditing={isEditing} libraryId={show.ParentId!}
 				/>
 
 				<ItemExternalLinks
@@ -207,19 +209,17 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 
 			<ItemOverview item={show} isEditing={isEditing} editableItem={editableItem} />
 
-			{(show.Tags?.length ?? 0) > 0 && (
-				<Layout direction="row" gap=".5em">
-					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
-					<ItemTags
-						item={show}
-						isEditing={isEditing} editableItem={editableItem} libraryId={show.ParentId!}
-						direction="row" gap=".5em" wrap
-						linkClassName={background.button}
-						linkLayout={{ px: ".25em", py: ".25em" }}
-						showMoreLimit={25}
-					/>
-				</Layout>
-			)}
+			<Layout direction="row" gap=".5em">
+				<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
+				<ItemTags
+					item={show}
+					isEditing={isEditing} editableItem={editableItem} libraryId={show.ParentId!}
+					direction="row" gap=".5em" wrap
+					linkClassName={background.button}
+					linkLayout={{ px: ".25em", py: ".25em" }}
+					showMoreLimit={25}
+				/>
+			</Layout>
 
 			<CastAndCrewSection item={show} editableItem={editableItem} isEditing={isEditing} startOpen={false} />
 
@@ -269,19 +269,17 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 
 			<ItemOverview item={episode} editableItem={editableEpisode} isEditing={isEditing} />
 
-			{(episode.Tags?.length ?? 0) > 0 && (
-				<Layout direction="row" gap=".5em">
-					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
-					<ItemTags
-						item={episode}
-						isEditing={isEditing} editableItem={editableEpisode} libraryId={show.ParentId!}
-						direction="row" gap=".5em" wrap
-						linkClassName={background.button}
-						linkLayout={{ px: ".25em", py: ".25em" }}
-						showMoreLimit={25}
-					/>
-				</Layout>
-			)}
+			<Layout direction="row" gap=".5em">
+				<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
+				<ItemTags
+					item={episode}
+					isEditing={isEditing} editableItem={editableEpisode} libraryId={show.ParentId!}
+					direction="row" gap=".5em" wrap
+					linkClassName={background.button}
+					linkLayout={{ px: ".25em", py: ".25em" }}
+					showMoreLimit={25}
+				/>
+			</Layout>
 
 			<CastAndCrewSection item={episode} editableItem={editableEpisode} isEditing={isEditing} startOpen />
 		</Layout>

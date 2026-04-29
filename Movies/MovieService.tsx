@@ -28,6 +28,7 @@ import { FilterByOfficialRating } from "ItemList/ItemFilterTypes/FilterByOfficia
 export const MovieService: BaseItemKindService = {
 	primaryShape: ImageShape.Portrait,
 	searchResultName: (item) => `${item.Name} (${item.ProductionYear})`,
+	relevantPersonKinds: ["Actor", "Director", "Writer", "Producer", "Editor"],
 	findIcon: (props) => <MovieIcon {...props} />,
 	listUrl: (library) => `/Movies/${library.Id}`,
 	listActions: [

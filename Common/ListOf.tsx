@@ -15,8 +15,6 @@ export interface BaseListProps extends StyleLayoutPropsWithRequiredDirection {
 export interface ListPropsOf<TItem> extends BaseListProps {
 	items: readonly TItem[];
 	forEachItem: (item: TItem, index: number) => React.ReactNode;
-	afterItems?: React.ReactNode;
-	beforeItems?: React.ReactNode;
 }
 
 export function ListOf<TItem>(props: ListPropsOf<TItem>): React.ReactNode {
@@ -28,9 +26,7 @@ export function ListOf<TItem>(props: ListPropsOf<TItem>): React.ReactNode {
 
 	return (
 		<Layout {...props}>
-			{props.beforeItems}
 			{props.items.map((item, index) => props.forEachItem(item, index)).slice(0, showMore ? undefined : props.showMoreLimit)}
-			{props.afterItems}
 			{Nullable.Value(props.showMoreLimit, <></>, (limit) => !showMore && props.items.length > limit && <Button {...props.showMoreButtonStyles} type="button" onClick={() => { setShowMore(true); }}>+{props.items.length - limit} <TranslatedText textKey="ButtonMore" /></Button>)}
 		</Layout>
 	);

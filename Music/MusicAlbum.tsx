@@ -82,6 +82,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 						showMoreLimit={3}
+						isEditing={isEditing} libraryId={album.ParentId!} editableItem={editableItem}
 					/>
 
 					<ItemExternalLinks
@@ -98,7 +99,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 						showMoreLimit={4}
-						editableItem={editableItem} isEditing={isEditing}
+						isEditing={isEditing} libraryId={album.ParentId!} editableItem={editableItem}
 					/>
 				</Layout>
 
@@ -129,20 +130,17 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 					<Layout direction="column" gap="1em" maxWidth="95%">
 						<ItemOverview item={album} editableItem={editableItem} isEditing={isEditing} />
 
-						{(album.Tags?.length ?? 0) > 0 && (
-							<Layout direction="row" gap=".5em">
-								<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
-								<ItemTags
-									item={album}
-									direction="row" gap=".5em" wrap
-									linkClassName={background.button}
-									linkLayout={{ px: ".25em", py: ".25em" }}
-									showMoreLimit={25}
-									isEditing={isEditing} libraryId={album.ParentId!} editableItem={editableItem}
-								/>
-							</Layout>
-						)}
-
+						<Layout direction="row" gap=".5em">
+							<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
+							<ItemTags
+								item={album}
+								direction="row" gap=".5em" wrap
+								linkClassName={background.button}
+								linkLayout={{ px: ".25em", py: ".25em" }}
+								showMoreLimit={25}
+								isEditing={isEditing} libraryId={album.ParentId!} editableItem={editableItem}
+							/>
+						</Layout>
 						<AlbumSongsWithPossibleDiscs albumId={album.Id!} allSongs={allSongs} />
 					</Layout>
 				</Layout>

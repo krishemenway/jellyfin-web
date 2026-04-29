@@ -13,9 +13,9 @@ import { PageTitle } from "Common/PageTitle";
 import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ImageShape } from "Items/ItemImage";
-import { ResponsiveBreakpoint, useBreakpointValue } from "AppStyles";
+import { Breakpoint, useBreakpointValue } from "AppStyles";
 
-const collectionsPerRowConfig = { [ResponsiveBreakpoint.Wide]: 9, [ResponsiveBreakpoint.Desktop]: 9, [ResponsiveBreakpoint.Tablet]: 6, [ResponsiveBreakpoint.Mobile]: 2 };
+const collectionsPerRowConfig = { [Breakpoint.Wide]: 9, [Breakpoint.Desktop]: 9, [Breakpoint.Tablet]: 6, [Breakpoint.Mobile]: 2 };
 
 export const Collection: React.FC = () => {
 	const collectionId = useParams().collectionId;

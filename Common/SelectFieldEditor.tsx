@@ -56,10 +56,11 @@ interface MultiSelectEditorProps<TOption> extends LayoutWithoutChildrenProps {
 	getLabel: (value: TOption) => React.ReactNode;
 }
 
-export function MultiSelectEditor(props: MultiSelectEditorProps<string>): JSX.Element {
+export function MultiSelectEditor<TOption>(props: MultiSelectEditorProps<TOption>): JSX.Element {
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
-	const currentValues = useObservable(props.field.Current);
+	const currentValues = useObservable(props.field.Current).map((cv) => props.getValue(cv));
 
+	const allOptionsByValue = React.useMemo(() => props.allOptions.reduce((all, o) => { all[props.getValue(o)] = o; return all; }, {} as Record<string, TOption>), [props.allOptions])
 	const allOptions = React.useMemo(() => props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) })), [props.allOptions]);
 	const selectedOptions = React.useMemo(() => allOptions.filter((o) => currentValues.includes(o.value)), [allOptions, currentValues]);
 
@@ -69,7 +70,7 @@ export function MultiSelectEditor(props: MultiSelectEditorProps<string>): JSX.El
 			isMulti={true}
 			options={allOptions}
 			value={selectedOptions}
-			onChange={(newValue) => props.field.OnChange(newValue.map((v) => v.value))}
+			onChange={(newValue) => props.field.OnChange(newValue.map((nv) => allOptionsByValue[nv.value]))}
 			components={{ MenuList: MenuList }}
 			styles={{
 				container: (base) => ({ ...base, width: "100%" }),

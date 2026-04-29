@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BaseItemDto, BaseItemPerson, PersonKind } from "@jellyfin/sdk/lib/generated-client/models";
-import { ResponsiveBreakpoint, useBreakpointValue } from "AppStyles";
+import { Breakpoint, useBreakpointValue } from "AppStyles";
 import { SortByNumber, SortByObjects } from "Common/Sort";
 import { ListOf } from "Common/ListOf";
 import { LinkToPerson } from "People/LinkToPerson";
@@ -16,78 +16,77 @@ import { SelectFieldEditor } from "Common/SelectFieldEditor";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { Button } from "Common/Button";
 import { AddIcon } from "CommonIcons/AddIcon";
+import { ItemEditorService } from "Items/ItemEditorService";
+import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; className?: string; linkProps?: StyleLayoutProps; }&EditableItemProps&StyleLayoutProps> = (props) => {
+	const relevantPersonKinds = BaseItemKindServiceFactory.FindOrThrow(props.itemWithPeople.Type).relevantPersonKinds ?? [];
 	const orderedCastAndCrew = React.useMemo(() => SortByObjects(props.itemWithPeople.People ?? [], [
-		{ LabelKey: "", Reversed: false, SortType: "PriorityOrder", Sort: SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"]) },
+		{ LabelKey: "", Reversed: false, SortType: "PriorityOrder", Sort: SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"]), GetContent: () => "" },
 	]), [props.itemWithPeople.People]);
 
 	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
-		return <EditableCastAndCrew {...props} editableItem={props.editableItem} />;
+		return <EditableCastAndCrew {...props} editableItem={props.editableItem} relevantPersonKinds={relevantPersonKinds} />;
 	}
 
 	return (
 		<ListOf
 			direction="row"
 			items={orderedCastAndCrew}
+			emptyListView={Nullable.HasValue(props.editableItem) ? <Button type="button" onClick={() => { ItemEditorService.Instance.IsEditing.Value = true; props.editableItem!.People.push(new EditablePersonCredit({ Type: relevantPersonKinds[0] })); }} icon={<AddIcon />} px=".5em" alignItems="center" label="Add" /> : <Layout direction="row"><TranslatedText textKey="MessageNothingHere" /></Layout>}
 			forEachItem={((person) => <CastAndCrewCredit key={person.Id + Linq.Coalesce([person.Role, person.Type?.toString()], "Unknown", (s) => Nullable.StringHasValue(s))} person={person} {...props.linkProps} />)}
 			{...props}
 		/>
 	);
 };
 
-const EditableCastAndCrew: React.FC<{ className?: string; editableItem: EditableItem }&StyleLayoutProps> = (props) => {
+const EditableCastAndCrew: React.FC<{ className?: string; editableItem: EditableItem; relevantPersonKinds: PersonKind[] }&StyleLayoutProps> = (props) => {
 	const people = useObservable(props.editableItem.People);
 
 	return (
-		<ListOf
-			direction="row"
-			items={people}
-			forEachItem={((person) => <EditPersonCredit key={person.Key} person={person} onDelete={() => { props.editableItem.People.remove(person); }} />)}
-			afterItems={(
-				<Button
-					type="button"
-					onClick={() => { props.editableItem.People.push(new EditablePersonCredit(undefined))}}
-					icon={<AddIcon />}
-					label={{ Key: "HeaderCastAndCrew" }}
-					px=".5em" gap=".5rem" alignItems="center"
-				/>
-			)}
-			{...props}
-		/>
+		<Layout direction="row" wrap gap=".25rem">
+			{people.map((person) => (
+				<EditPersonCredit key={person.Key} person={person} onDelete={() => { props.editableItem.People.remove(person); }} relevantPersonKinds={props.relevantPersonKinds} />
+			))}
+
+			<Button
+				type="button"
+				onClick={() => { props.editableItem.People.push(new EditablePersonCredit({ Type: props.relevantPersonKinds[0]  }))}}
+				icon={<AddIcon />}
+				label={{ Key: "HeaderCastAndCrew" }}
+				px=".5em" gap=".5rem" alignItems="center"
+			/>
+		</Layout>
 	);
 }
 
-const EditPersonCredit: React.FC<{ person: EditablePersonCredit; onDelete: () => void; }&StyleLayoutProps> = (props) => {
-	const itemsPerRow = useBreakpointValue({ [ResponsiveBreakpoint.Mobile]: 1, [ResponsiveBreakpoint.Tablet]: 2, [ResponsiveBreakpoint.Desktop]: 5, [ResponsiveBreakpoint.Wide]: 5 });
-	const selectedType = useObservable(props.person.Type.Current);
+const EditPersonCredit: React.FC<{ person: EditablePersonCredit; onDelete: () => void; relevantPersonKinds: PersonKind[] }&StyleLayoutProps> = (props) => {
+	const itemsPerRow = useBreakpointValue({ [Breakpoint.Mobile]: 1, [Breakpoint.Tablet]: 2, [Breakpoint.Desktop]: 3, [Breakpoint.Wide]: 5 });
 
 	return (
-		<Layout direction="row" width={{ itemsPerRow: itemsPerRow }} justifyContent="space-between" px=".5rem" py=".5rem" gap=".5rem">
-			<Layout direction="column" grow>
-				<TextField field={props.person.Name} />
-				<Layout direction="row" grow>
-					<SelectFieldEditor
-						allOptions={[PersonKind.Actor, PersonKind.Director, PersonKind.Writer, PersonKind.GuestStar, PersonKind.Producer]}
-						field={props.person.Type}
-						getValue={(k) => k}
-						getLabel={(p) => p.toString()}
-					/>
-
-					{(selectedType === "Actor" || selectedType === "GuestStar") && (
-						<TextField field={props.person.Role} grow />
-					)}
-				</Layout>
+		<Layout direction="column" width={{ itemsPerRow: itemsPerRow, gap: ".25rem" }} gap=".25rem">
+			<Layout direction="row" gap=".25rem">
+				<TextField field={props.person.Name} width="100%" minWidth="50px" px=".25em" />
+				<Button type="button" onClick={props.onDelete} icon={<DeleteIcon />} px=".25em" py=".25em" />
 			</Layout>
-			<Layout direction="column">
-				<Button type="button" icon={<DeleteIcon />} onClick={() => { props.onDelete(); }} px=".75em" py=".75em" />
+
+			<Layout direction="row" gap=".25rem">
+				<SelectFieldEditor
+					allOptions={props.relevantPersonKinds}
+					field={props.person.Type}
+					getValue={(k) => k}
+					getLabel={(p) => p.toString()}
+				/>
+
+				<Layout direction="row" grow><TextField field={props.person.Role} width="100%" /></Layout>
 			</Layout>
 		</Layout>
 	);
 };
 
+const itemsPerRowConfig: Record<Breakpoint, number> = { [Breakpoint.Mobile]: 1, [Breakpoint.Tablet]: 3, [Breakpoint.Desktop]: 6, [Breakpoint.Wide]: 7 };
 const CastAndCrewCredit: React.FC<{ person: BaseItemPerson; }&StyleLayoutProps> = (props) => {
-	const itemsPerRow = useBreakpointValue({ [ResponsiveBreakpoint.Mobile]: 1, [ResponsiveBreakpoint.Tablet]: 3, [ResponsiveBreakpoint.Desktop]: 6, [ResponsiveBreakpoint.Wide]: 7 });
+	const itemsPerRow = useBreakpointValue(itemsPerRowConfig);
 
 	return (
 		<LinkToPerson id={props.person.Id} direction="column" width={{ itemsPerRow: itemsPerRow }} {...props}>

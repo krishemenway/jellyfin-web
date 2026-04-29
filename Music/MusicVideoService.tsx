@@ -27,6 +27,7 @@ import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 export const MusicVideoService: BaseItemKindService = {
 	findIcon: (props) => <MusicVideoIcon {...props} />,
 	listUrl: (library) => `/MusicVideos/${library.Id}`,
+	relevantPersonKinds: ["Actor", "Director", "Writer", "Producer", "Composer", "Editor"],
 	listActions: [
 		[
 			ManageLibraryAction,

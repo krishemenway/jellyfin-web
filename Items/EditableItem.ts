@@ -1,4 +1,4 @@
-import { BaseItemDto, DayOfWeek, MetadataField, NameGuidPair, Video3DFormat } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemKind, DayOfWeek, MetadataField, NameGuidPair, PersonKind, Video3DFormat } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed, ObservableArray } from "@residualeffect/reactor";
 import { EditableField, IEditableField } from "Common/EditableField";
 import { Nullable } from "Common/MissingJavascriptFunctions";
@@ -43,7 +43,7 @@ export class EditableItem {
 		this.People = new ObservableArray(Nullable.Value(item, [], i => (i.People ?? []).map(c => new EditablePersonCredit(c))));
 		this.ProviderIds = new ObservableArray(Nullable.Value(item, [], (i) => Object.keys(i.ProviderIds ?? {}).map(key => new EditableItemProvider(key, i.ProviderIds![key]))));
 
-		this.Studios = new EditableField("Studios", Nullable.Value(item, undefined, (i) => i.Studios));
+		this.Studios = new EditableField("Studios", Nullable.Value(item, [], (i) => i.Studios ?? []));
 		this.PremiereDate = new EditableField("PremiereDate", Nullable.Value(item, undefined, (i) => i.PremiereDate));
 		this.DateCreated = new EditableField("DateCreated", Nullable.Value(item, undefined, (i) => i.DateCreated));
 		this.EndDate = new EditableField("EndDate", Nullable.Value(item, undefined, (i) => i.EndDate));
@@ -189,7 +189,7 @@ export class EditableItem {
 	public AlbumArtists: EditableField<NameGuidPair[]|undefined|null>;
 	public ArtistItems: EditableField<NameGuidPair[]|undefined|null>;
 
-	public Studios: EditableField<NameGuidPair[]|undefined|null>;
+	public Studios: EditableField<NameGuidPair[]>;
 
 	public Status: EditableField<string|undefined|null>;;
 

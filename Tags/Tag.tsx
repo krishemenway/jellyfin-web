@@ -10,12 +10,12 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { PageTitle } from "Common/PageTitle";
 import { Layout } from "Common/Layout";
 import { ListOf } from "Common/ListOf";
-import { ResponsiveBreakpoint, useBreakpointValue } from "AppStyles";
+import { Breakpoint, useBreakpointValue } from "AppStyles";
 import { ImageShape } from "Items/ItemImage";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ItemService } from "Items/ItemsService";
 
-const tagsPerRowConfig = { [ResponsiveBreakpoint.Wide]: 9, [ResponsiveBreakpoint.Desktop]: 9, [ResponsiveBreakpoint.Tablet]: 6, [ResponsiveBreakpoint.Mobile]: 2 };
+const tagsPerRowConfig = { [Breakpoint.Wide]: 9, [Breakpoint.Desktop]: 9, [Breakpoint.Tablet]: 6, [Breakpoint.Mobile]: 2 };
 
 export const Tag: React.FC = () => {
 	const tag = useParams().tag;

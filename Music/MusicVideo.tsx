@@ -17,7 +17,7 @@ import { ItemRating } from "Items/ItemRating";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { ItemGenres } from "Items/ItemGenres";
 import { ItemStudios } from "Items/ItemStudios";
-import { PageTitle } from "Common/PageTitle";
+import { ItemPageTitle } from "Items/ItemPageTitle";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
@@ -35,6 +35,8 @@ import { PlayIcon } from "MediaPlayer/PlayIcon";
 import { VideoPlayerService } from "Videos/VideoPlayerService";
 import { ItemEditorService, useEditableItem } from "Items/ItemEditorService";
 import { useObservable } from "@residualeffect/rereactor";
+import { RevertIcon } from "CommonIcons/RevertIcon";
+import { SaveIcon } from "CommonIcons/SaveIcon";
 
 export const MusicVideo: React.FC = () => {
 	const routeParams = useParams<{ musicVideoId: string }>();
@@ -90,7 +92,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={4}
-						editableItem={editableItem} isEditing={isEditing}
+						editableItem={editableItem} isEditing={isEditing} libraryId={musicVideo.ParentId!}
 					/>
 
 					<ItemStudios
@@ -99,57 +101,58 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={3}
+						editableItem={editableItem} isEditing={isEditing} libraryId={musicVideo.ParentId!}
 					/>
 				</Layout>
 			</Layout>
 			<Layout direction="column" grow gap="2em">
 				<Layout direction="row" justifyContent="space-between">
-					<PageTitle text={musicVideo.Name} />
-					<Button type="button" icon={<PlayIcon />} alignItems="center" px=".5em" py=".5em" onClick={() => VideoPlayerService.Instance.ClearAndPlay([musicVideo])} />
-					<ItemActionsMenu items={[musicVideo]} actions={[
-						[ // User-based actions
-							PlayVideoAction,
-							AddToFavoritesAction,
-							MarkPlayedAction,
-							AddToCollectionAction,
-							AddToPlaylistAction,
-						],
-						[ // Server-based actions
-							EditItemAction,
-							RefreshItemAction,
-						]
-					]} user={user} />
+					<ItemPageTitle item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
+					<Layout direction="row" gap="1rem">
+						{!isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<PlayIcon />} onClick={() => { VideoPlayerService.Instance.ClearAndPlay([musicVideo]) }} />}
+						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
+						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
+						<ItemActionsMenu items={[musicVideo]} actions={[
+							[ // User-based actions
+								PlayVideoAction,
+								AddToFavoritesAction,
+								MarkPlayedAction,
+								AddToCollectionAction,
+								AddToPlaylistAction,
+							],
+							[ // Server-based actions
+								EditItemAction,
+								RefreshItemAction,
+							]
+						]} user={user} />
+					</Layout>
 				</Layout>
 
 				<ItemOverview item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
 
-				{(musicVideo.Tags?.length ?? 0) > 0 && (
-					<Layout direction="row" gap=".5em">
-						<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
-						<ItemTags
-							item={musicVideo}
-							direction="row" gap=".5em" wrap
-							linkClassName={background.button}
-							linkLayout={{ px: ".25em", py: ".25em" }}
-							showMoreLimit={25}
-							isEditing={isEditing} editableItem={editableItem} libraryId={musicVideo.ParentId!}
-						/>
-					</Layout>
-				)}
+				<Layout direction="row" gap=".5em">
+					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
+					<ItemTags
+						item={musicVideo}
+						direction="row" gap=".5em" wrap
+						linkClassName={background.button}
+						linkLayout={{ px: ".25em", py: ".25em" }}
+						showMoreLimit={25}
+						isEditing={isEditing} editableItem={editableItem} libraryId={musicVideo.ParentId!}
+					/>
+				</Layout>
 
-				{(musicVideo.People?.length ?? 0) > 0 && (
-					<Layout direction="column" minWidth="100%">
-						<Layout direction="row" fontSize="1.5em" py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
+				<Layout direction="column" minWidth="100%">
+					<Layout direction="row" fontSize="1.5em" py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
 
-						<CastAndCrew
-							itemWithPeople={musicVideo}
-							className={background.panel}
-							direction="row" wrap px=".5em" py="1em"
-							linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
-							isEditing={isEditing} editableItem={editableItem}
-						/>
-					</Layout>
-				)}
+					<CastAndCrew
+						itemWithPeople={musicVideo}
+						className={background.panel}
+						direction="row" wrap px=".5em" py="1em"
+						linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
+						isEditing={isEditing} editableItem={editableItem}
+					/>
+				</Layout>
 			</Layout>
 		</Layout>
 	)
