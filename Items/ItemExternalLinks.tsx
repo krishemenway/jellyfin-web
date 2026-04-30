@@ -16,7 +16,7 @@ import { SelectFieldEditor } from "Common/SelectFieldEditor";
 import { EditableField } from "Common/EditableField";
 import { EditableItemProvider } from "./EditableItemProvider";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
-import { Breakpoint, useBreakpointValue } from "AppStyles";
+import { useBreakpointValues } from "AppStyles";
 import { AddIcon } from "CommonIcons/AddIcon";
 
 export const ItemExternalLinks: React.FC<{ item: BaseItemDto, linkLayout?: StyleLayoutProps, linkClassName?: string }&EditableItemProps&BaseListProps> = (props) => {
@@ -41,14 +41,13 @@ export const ItemExternalLinks: React.FC<{ item: BaseItemDto, linkLayout?: Style
 	);
 };
 
-const itemsPerRowConfig: Record<Breakpoint, number> = { [Breakpoint.Mobile]: 1, [Breakpoint.Tablet]: 1, [Breakpoint.Desktop]: 1, [Breakpoint.Wide]: 2 };
 const ExternalProviderEditors: React.FC<{ metadataInfo: MetadataEditorInfo; linkLayout?: StyleLayoutProps }&EditableItemProps&BaseListProps> = (props) => {
 	const editableItemProviders = useObservable(props.editableItem!.ProviderIds);
 	const getName = (key: string) => props.metadataInfo.ExternalIdInfos?.find(i => i.Key === key)?.Name;
 	const editableItemProviderKeys = editableItemProviders.map(p => p.Key);
 	const remainingProviders = props.metadataInfo.ExternalIdInfos?.filter((info) => editableItemProviderKeys.indexOf(info.Key ?? "") === -1) ?? [];
 	const [selectNewProviderField, _] = React.useState(new EditableField<ExternalIdInfo|undefined>("AddProviderOptions", remainingProviders[0]));
-	const itemPerRow = useBreakpointValue(itemsPerRowConfig);
+	const itemPerRow = useBreakpointValues(1, 1, 1, 2);
 
 	React.useEffect(() => {
 		selectNewProviderField.OnChange(remainingProviders[0]);
@@ -68,15 +67,16 @@ const ExternalProviderEditors: React.FC<{ metadataInfo: MetadataEditorInfo; link
 				</Layout>
 			))}
 
-			<Layout direction="row" width={{ itemsPerRow: itemPerRow, gap: ".25rem" }}>
+			<Layout direction="row" width={{ itemsPerRow: itemPerRow, gap: ".25rem" }} gap=".25rem" py=".5rem">
 				<SelectFieldEditor
 					field={selectNewProviderField}
 					allOptions={remainingProviders}
 					getLabel={(i) => i?.Name}
 					getValue={(i) => i?.Key ?? ""}
+					grow
 				/>
 
-				<Button type="button" onClick={() => { props.editableItem?.ProviderIds.push(new EditableItemProvider(selectNewProviderField.Current.Value?.Key!, "")); }} icon={<AddIcon />} alignItems="center" />
+				<Button type="button" px=".25em" onClick={() => { props.editableItem?.ProviderIds.push(new EditableItemProvider(selectNewProviderField.Current.Value?.Key!, "")); }} icon={<AddIcon />} alignItems="center" />
 			</Layout>
 		</Layout>
 	);

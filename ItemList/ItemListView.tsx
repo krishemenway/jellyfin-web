@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseItemDto, BaseItemKind, QueryFiltersLegacy, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { useComputed, useObservable } from "@residualeffect/rereactor";
-import { Breakpoint, useBreakpointValue } from "AppStyles";
+import { useBreakpointValues } from "AppStyles";
 import { Layout } from "Common/Layout";
 import { ListOf } from "Common/ListOf";
 import { Loading } from "Common/Loading";
@@ -63,8 +63,6 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 	);
 };
 
-const itemsPerRowConfig = { [Breakpoint.Desktop] : 7, [Breakpoint.Tablet]: 6, [Breakpoint.Mobile]: 2, [Breakpoint.Wide]: 9 };
-
 const LoadedItemsListView: React.FC<{ libraryId: string, optionsName?: string; items: BaseItemDto[]; itemList: ItemListService; itemKind: BaseItemKind; settings: Settings; user: UserDto; libraries: BaseItemDto[]; filters: QueryFiltersLegacy }> = (props) => {
 	const itemKindService = BaseItemKindServiceFactory.FindOrThrow(props.itemKind);
 	const listOptions = useObservable(props.itemList.ListOptions);
@@ -82,7 +80,7 @@ const LoadedItemsListView: React.FC<{ libraryId: string, optionsName?: string; i
 
 const ItemsViewWithOptions: React.FC<{ library: BaseItemDto; items: BaseItemDto[]; listOptions: ItemListViewOptions; itemList: ItemListService; itemKind: BaseItemKind; itemKindService: BaseItemKindService; settings: Settings; user: UserDto; filters: QueryFiltersLegacy }> = (props) => {
 	const sorts = useObservable(props.listOptions.SortBy);
-	const itemsPerRow = useBreakpointValue(itemsPerRowConfig);
+	const itemsPerRow = useBreakpointValues(2, 6, 7, 9);
 	const filteredAndSortedItems = useComputed(() => {
 		const listTypes = props.itemKindService.listTypes ?? [props.itemKind];
 		const items = props.items.filter((i) => listTypes.indexOf(i.Type!) > -1);

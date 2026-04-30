@@ -11,13 +11,11 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { PageTitle } from "Common/PageTitle";
 import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
-import { Breakpoint, useBreakpointValue } from "AppStyles";
+import { useBreakpointValues } from "AppStyles";
 import { ImageShape } from "Items/ItemImage";
 
-const studiosPerRowConfig = { [Breakpoint.Wide]: 9, [Breakpoint.Desktop]: 9, [Breakpoint.Tablet]: 6, [Breakpoint.Mobile]: 2 };
-
 export const Studio: React.FC = () => {
-	const studiosPerRow = useBreakpointValue(studiosPerRowConfig);
+	const studiosPerRow = useBreakpointValues(2, 6, 9, 9);
 	const studioId = useParams().studioId;
 
 	if (!Nullable.HasValue(studioId)) {

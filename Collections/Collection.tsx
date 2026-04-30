@@ -13,13 +13,11 @@ import { PageTitle } from "Common/PageTitle";
 import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ImageShape } from "Items/ItemImage";
-import { Breakpoint, useBreakpointValue } from "AppStyles";
-
-const collectionsPerRowConfig = { [Breakpoint.Wide]: 9, [Breakpoint.Desktop]: 9, [Breakpoint.Tablet]: 6, [Breakpoint.Mobile]: 2 };
+import { useBreakpointValues } from "AppStyles";
 
 export const Collection: React.FC = () => {
 	const collectionId = useParams().collectionId;
-	const collectionsPerRow = useBreakpointValue(collectionsPerRowConfig);
+	const collectionsPerRow = useBreakpointValues(2, 6, 9, 9);
 	
 	if (!Nullable.HasValue(collectionId) || collectionId.length === 0) {
 		return <PageWithNavigation icon={<CollectionIcon />}><NotFound /></PageWithNavigation>;

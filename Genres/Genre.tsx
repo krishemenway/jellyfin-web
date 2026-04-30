@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { PageTitle } from "Common/PageTitle";
 import { Loading } from "Common/Loading";
-import { Breakpoint, useBreakpointValue } from "AppStyles";
+import { useBreakpointValues } from "AppStyles";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
 import { ItemService } from "Items/ItemsService";
@@ -14,10 +14,8 @@ import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ImageShape } from "Items/ItemImage";
 
-const genresPerRowConfig = { [Breakpoint.Wide]: 9, [Breakpoint.Desktop]: 9, [Breakpoint.Tablet]: 6, [Breakpoint.Mobile]: 2 };
-
 export const Genre: React.FC = () => {
-	const genresPerRow = useBreakpointValue(genresPerRowConfig);
+	const genresPerRow = useBreakpointValues(2, 6, 9, 9);
 	const genre = useParams().genre;
 
 	if (!Nullable.HasValue(genre)) {

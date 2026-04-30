@@ -20,6 +20,11 @@ export function useBreakpointValue<T>(valuesByBreakpoint: Record<Breakpoint, T>)
 	return valuesByBreakpoint[breakpoint];
 }
 
+export function useBreakpointValues<T>(mobile: T, tablet: T, desktop: T, wide: T) {
+	const valuesByBreakpoint = React.useMemo(() => ({ [Breakpoint.Mobile]: mobile, [Breakpoint.Tablet]: tablet, [Breakpoint.Desktop]: desktop, [Breakpoint.Wide]: wide }), [mobile, tablet, desktop, wide]);
+	return useBreakpointValue(valuesByBreakpoint);
+}
+
 export function useCalculatedBreakpoint(): [Breakpoint, React.Provider<Breakpoint>] {
 	const isTablet = useMediaQuery("(min-width: 40em) and (max-width: 69.9999999em)");
 	const isDesktop = useMediaQuery("(min-width: 70em) and (max-width: 119.999999em)");

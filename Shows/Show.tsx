@@ -14,7 +14,7 @@ import { ItemImage } from "Items/ItemImage";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemTags } from "Items/ItemTags";
 import { ItemRating } from "Items/ItemRating";
-import { Breakpoint, useBackgroundStyles, useBreakpointValue } from "AppStyles";
+import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { Collapsible } from "Common/Collapsible";
 import { Button } from "Common/Button";
@@ -74,7 +74,7 @@ export const Show: React.FC = () => {
 
 const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; }> = ({ show, children, user }) => {
 	const background = useBackgroundStyles();
-	const leftPanelItemsPerRow = useBreakpointValue({ [Breakpoint.Mobile]: 1, [Breakpoint.Tablet]: 1, [Breakpoint.Desktop]: 3, [Breakpoint.Wide]: 3 });
+	const leftPanelItemsPerRow = useBreakpointValues(1, 1, 3, 3);
 	const editableItem = useEditableItem(show, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 	const seasons = React.useMemo(() => children.filter((i) => i.Type === "Season").sort(sortSeasons), [children]);
