@@ -10,7 +10,7 @@ import { TranslatedText } from "Common/TranslatedText";
 import { EditableItemProps } from "Items/EditableItemProps";
 import { useObservable } from "@residualeffect/rereactor";
 import { EditablePersonCredit } from "Items/EditablePersonCredit";
-import { EditableItem } from "./EditableItem";
+import { EditableItem } from "Items/EditableItem";
 import { TextField } from "Common/TextField";
 import { SelectFieldEditor } from "Common/SelectFieldEditor";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";

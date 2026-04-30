@@ -3,7 +3,7 @@ import { Computed, ObservableArray } from "@residualeffect/reactor";
 import { EditableField, IEditableField } from "Common/EditableField";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { EditablePersonCredit } from "Items/EditablePersonCredit";
-import { EditableItemProvider } from "./EditableItemProvider";
+import { EditableItemProvider } from "Items/EditableItemProvider";
 
 export class EditableItem {
 	constructor(item: BaseItemDto) {

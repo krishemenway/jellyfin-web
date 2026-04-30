@@ -3,7 +3,7 @@ import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { StyleLayoutProps } from "Common/Layout";
 import { ListOf, BaseListProps } from "Common/ListOf";
 import { HyperLink } from "Common/HyperLink";
-import { EditableItemProps } from "./EditableItemProps";
+import { EditableItemProps } from "Items/EditableItemProps";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { MultiSelectEditor } from "Common/SelectFieldEditor";
 import { LoadingIcon } from "Common/LoadingIcon";

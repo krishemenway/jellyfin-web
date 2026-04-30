@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { ApplyLayoutStyleProps, StyleLayoutPropsWithRequiredDirection } from "Common/Layout";
 import { useBackgroundStyles } from "AppStyles";
-import { Nullable } from "./MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export const HyperLink: React.FC<{ to: string, className?: string; children?: React.ReactNode; onClick?: () => void }&StyleLayoutPropsWithRequiredDirection> = (props) => {
 	const background = useBackgroundStyles();

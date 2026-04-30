@@ -23,7 +23,7 @@ import { PageTitle } from "Common/PageTitle";
 import { ItemFilterService } from "Items/ItemFilterService";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ServerService } from "Servers/ServerService";
-import { ItemListViewOptions } from "./ItemListViewOptions";
+import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 
 export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = (props) => {
