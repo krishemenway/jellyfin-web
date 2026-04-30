@@ -43,6 +43,7 @@ const EditItemGenres: React.FC<{ linkLayout?: StyleLayoutProps }&EditableItemPro
 					allOptions={(filters.Genres ?? [])}
 					getLabel={(v) => v}
 					getValue={(v) => v}
+					createNew={(v) => v}
 				/>
 			)}
 		/>

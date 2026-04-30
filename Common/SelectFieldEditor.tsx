@@ -1,5 +1,6 @@
 import * as React from "react";
 import Select, { MenuListProps, SingleValue } from "react-select";
+import CreatableSelect from "react-select/creatable";
 import { useObservable } from "@residualeffect/rereactor";
 import { ApplyLayoutStyleProps, LayoutWithoutChildrenProps } from "Common/Layout";
 import { ThemeService } from "Themes/ThemeService";
@@ -54,33 +55,60 @@ interface MultiSelectEditorProps<TOption> extends LayoutWithoutChildrenProps {
 	allOptions: TOption[];
 	getValue: (value: TOption) => string;
 	getLabel: (value: TOption) => React.ReactNode;
+	createNew?: (value: string) => TOption;
 }
 
 export function MultiSelectEditor<TOption>(props: MultiSelectEditorProps<TOption>): JSX.Element {
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
-	const currentValues = useObservable(props.field.Current).map((cv) => props.getValue(cv));
+	const currentValues = useObservable(props.field.Current);
 
 	const allOptionsByValue = React.useMemo(() => props.allOptions.reduce((all, o) => { all[props.getValue(o)] = o; return all; }, {} as Record<string, TOption>), [props.allOptions])
 	const allOptions = React.useMemo(() => props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) })), [props.allOptions]);
-	const selectedOptions = React.useMemo(() => allOptions.filter((o) => currentValues.includes(o.value)), [allOptions, currentValues]);
+	const selectedOptions = React.useMemo(() => currentValues.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) })), [currentValues]);
 
-	return (
-		<Select
-			className={props.className}
-			isMulti={true}
-			options={allOptions}
-			value={selectedOptions}
-			onChange={(newValue) => props.field.OnChange(newValue.map((nv) => allOptionsByValue[nv.value]))}
-			components={{ MenuList: MenuList }}
-			styles={{
-				container: (base) => ({ ...base, width: "100%" }),
-				multiValueLabel: (base) => ({ ...base, color: "inherit", padding: ".5em" }),
-				multiValue: (base) => ({ ...base, backgroundColor: theme.AlternateBackgroundColor, color: theme.PrimaryTextColor }),
-				menu: (base) => ({ ...base, backgroundColor: theme.PanelBackgroundColor }),
-				option: (base, p) => ({ ...base, backgroundColor: (p.isSelected ? (p.isFocused ? theme.ButtonSelected.Hover : theme.ButtonSelected.Idle) : p.isFocused ? theme.Button.Hover : theme.Button.Idle).BackgroundColor }),
-			}}
-		/>
-	);
+	if (Nullable.HasValue(props.createNew)) {
+		return (
+			<CreatableSelect
+				id={props.field.FieldId}
+				className={props.className}
+				isMulti={true}
+				isSearchable={true}
+				isClearable={false}
+				options={allOptions}
+				value={selectedOptions}
+				onChange={(newValue) => props.field.OnChange(newValue.map((nv) => allOptionsByValue[nv.value] ?? props.createNew!(nv.value)))}
+				components={{ MenuList: MenuList }}
+				styles={{
+					container: (base) => ({ ...base, width: "100%" }),
+					multiValueLabel: (base) => ({ ...base, color: "inherit", padding: ".5em" }),
+					multiValue: (base) => ({ ...base, backgroundColor: theme.AlternateBackgroundColor, color: theme.PrimaryTextColor }),
+					menu: (base) => ({ ...base, backgroundColor: theme.PanelBackgroundColor }),
+					option: (base, p) => ({ ...base, backgroundColor: (p.isSelected ? (p.isFocused ? theme.ButtonSelected.Hover : theme.ButtonSelected.Idle) : p.isFocused ? theme.Button.Hover : theme.Button.Idle).BackgroundColor }),
+				}}
+			/>
+		);
+	} else {
+		return (
+			<Select
+				id={props.field.FieldId}
+				className={props.className}
+				isMulti={true}
+				isSearchable={true}
+				isClearable={false}
+				options={allOptions}
+				value={selectedOptions}
+				onChange={(newValue) => props.field.OnChange(newValue.map((nv) => allOptionsByValue[nv.value]))}
+				components={{ MenuList: MenuList }}
+				styles={{
+					container: (base) => ({ ...base, width: "100%" }),
+					multiValueLabel: (base) => ({ ...base, color: "inherit", padding: ".5em" }),
+					multiValue: (base) => ({ ...base, backgroundColor: theme.AlternateBackgroundColor, color: theme.PrimaryTextColor }),
+					menu: (base) => ({ ...base, backgroundColor: theme.PanelBackgroundColor }),
+					option: (base, p) => ({ ...base, backgroundColor: (p.isSelected ? (p.isFocused ? theme.ButtonSelected.Hover : theme.ButtonSelected.Idle) : p.isFocused ? theme.Button.Hover : theme.Button.Idle).BackgroundColor }),
+				}}
+			/>
+		);
+	}
 };
 
 const SplitCharacter = "|";

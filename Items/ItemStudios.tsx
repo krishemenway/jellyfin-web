@@ -46,6 +46,7 @@ const EditItemStudios: React.FC<{ linkLayout?: StyleLayoutProps }&EditableItemPr
 					allOptions={studios.List}
 					getLabel={(v) => v.Name}
 					getValue={(v) => v.Name!}
+					createNew={(v) => ({ Id: undefined, Name: v })}
 				/>
 			)}
 		/>

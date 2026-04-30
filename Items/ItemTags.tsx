@@ -27,7 +27,7 @@ export const ItemTags: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutPro
 							field={props.editableItem.Tags}
 							getLabel={(v) => v}
 							getValue={(v) => v ?? ""}
-							
+							createNew={(v) => v}
 						/>
 					) : <></>
 				}
