@@ -15,8 +15,8 @@ export class EditableItemFilter {
 		this.Key = (EditableItemFilter.EditableItemFilterId++).toString();
 		this.FilterType = filterType;
 
-		this.Operation = new EditableField("Operation", filterType.operations.find(o => o.Name === operationName) ?? filterType.operations[0]);
-		this.FilterValue = new EditableField("Value", filterValue ?? "", (value) => ValueIsRequired(value));
+		this.Operation = new EditableField(this.Key + "-Operation", filterType.operations.find(o => o.Name === operationName) ?? filterType.operations[0]);
+		this.FilterValue = new EditableField(this.Key + "-Value", filterValue ?? "", (value) => this.Operation.Current.Value.RequiresValue ? ValueIsRequired(value) : undefined);
 
 		this.AllFields = [
 			this.Operation,

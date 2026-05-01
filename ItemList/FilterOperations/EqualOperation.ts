@@ -4,6 +4,7 @@ import { FilterOperation } from "ItemList/FilterOperation";
 export const EqualOperation: FilterOperation = {
 	Name: "Equals",
 	Display: (filterValue) => typeof filterValue === "string" ? ["IsEqual", filterValue] : [],
+	RequiresValue: true,
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return false;

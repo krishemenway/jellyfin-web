@@ -4,6 +4,7 @@ import { FilterOperation } from "ItemList/FilterOperation";
 export const GreaterThanOperation: FilterOperation = {
 	Name: "GreaterThan",
 	Display: (filterValue) => typeof filterValue === "string" ? ["GreaterThanFilterDisplay", filterValue] : [],
+	RequiresValue: true,
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return true;
@@ -20,6 +21,7 @@ export const GreaterThanOperation: FilterOperation = {
 export const GreaterThanOrEqualsOperation: FilterOperation = {
 	Name: "GreaterThanOrEquals",
 	Display: (filterValue) => typeof filterValue === "string" ? ["GreaterThanOrEqualsFilterDisplay", filterValue] : [],
+	RequiresValue: true,
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return true;

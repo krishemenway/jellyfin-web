@@ -4,6 +4,7 @@ import { FilterOperation } from "ItemList/FilterOperation";
 export const IsBetweenOperation: FilterOperation = {
 	Name: "IsBetween",
 	Display: (filterValue) => ["IsBetweenFilterDisplay"].concat(filterValue),
+	RequiresValue: true,
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return false;
@@ -21,6 +22,7 @@ export const IsBetweenOperation: FilterOperation = {
 export const IsNotBetweenOperation: FilterOperation = {
 	Name: "IsNotBetween",
 	Display: (filterValue) => ["IsNotBetweenFilterDisplay"].concat(filterValue),
+	RequiresValue: true,
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return false;

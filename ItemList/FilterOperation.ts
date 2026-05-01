@@ -4,4 +4,5 @@ export interface FilterOperation {
 	Name: string;
 	Operation: FilterOperationFunc;
 	Display: (filterValue: string|string[]) => string[];
+	RequiresValue: boolean;
 }

@@ -4,6 +4,7 @@ import { FilterOperation } from "ItemList/FilterOperation";
 export const ContainOperation: FilterOperation = {
 	Name: "Contains",
 	Display: (filterValue) => typeof filterValue === "string" ? ["ContainsFilterDisplay", filterValue] : ["ContainsFilterDisplay", filterValue.join(", ")],
+	RequiresValue: true,
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return false;
@@ -34,6 +35,7 @@ export const ContainOperation: FilterOperation = {
 export const NotContainOperation: FilterOperation = {
 	Name: "NotContain",
 	Display: (filterValue) => typeof filterValue === "string" ? ["NotContainFilterDisplay", filterValue] : ["NotContainFilterDisplay", filterValue.join(", ")],
+	RequiresValue: true,
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)) {
 			return true;
