@@ -3,6 +3,7 @@ import { BaseItemKindService } from "Items/BaseItemKindService";
 import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
 
 export const LiveTVChannelService: BaseItemKindService = {
+	kind: "LiveTvChannel",
 	findIcon: (props) => <QuestionMarkIcon {...props} />,
 	listUrl: (library) => `/LiveTV/${library.Id}`,
 };

@@ -3,5 +3,6 @@ import { BaseItemKindService } from "Items/BaseItemKindService";
 import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
 
 export const UserRootFolderService: BaseItemKindService = {
+	kind: "UserRootFolder",
 	findIcon: (props) => <QuestionMarkIcon {...props} />,
 };

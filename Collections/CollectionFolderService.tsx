@@ -5,6 +5,7 @@ import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export const CollectionFolderService: BaseItemKindService = {
+	kind: "CollectionFolder",
 	sortOptions: [ ],
 	findIcon: (props, collectionType) => {
 		const itemKindService = BaseItemKindServiceFactory.FindOrNullByCollectionType(collectionType);

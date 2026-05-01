@@ -6,6 +6,8 @@ import { ItemSortOption } from "ItemList/ItemSortOption";
 import { ImageShape } from "Items/ItemImage";
 
 export interface BaseItemKindService {
+	kind: BaseItemKind;
+
 	primaryShape?: ImageShape;
 	findIcon?: (iconProps: IconProps, collectionType?: CollectionType) => JSX.Element;
 	findUrl?: (item: BaseItemDto) => string;

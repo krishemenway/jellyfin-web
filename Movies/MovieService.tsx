@@ -26,6 +26,7 @@ import { ManageLibraryAction } from "MenuActions/ManageLIbraryAction";
 import { FilterByOfficialRating } from "ItemList/ItemFilterTypes/FilterByOfficialRating";
 
 export const MovieService: BaseItemKindService = {
+	kind: "Movie",
 	primaryShape: ImageShape.Portrait,
 	searchResultName: (item) => `${item.Name} (${item.ProductionYear})`,
 	relevantPersonKinds: ["Actor", "Director", "Writer", "Producer", "Editor"],

@@ -3,6 +3,7 @@ import { BaseItemKindService } from "Items/BaseItemKindService";
 import { TrailerIcon } from "Movies/TrailerIcon";
 
 export const TrailerService: BaseItemKindService = {
+	kind: "Trailer",
 	findIcon: (props) => <TrailerIcon {...props} />,
 	listUrl: (library) => `/Trailers/${library.Id}`,
 };

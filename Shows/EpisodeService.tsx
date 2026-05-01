@@ -3,6 +3,7 @@ import { BaseItemKindService } from "Items/BaseItemKindService";
 import { EpisodeIcon } from "Shows/EpisodeIcon";
 
 export const EpisodeService: BaseItemKindService = {
+	kind: "Episode",
 	findIcon: (props) => <EpisodeIcon {...props} />,
 	findUrl: (item) => `/Show/${item.SeriesId}/Episode/${item.Id}`,
 	relevantPersonKinds: ["Actor", "Director", "Writer", "GuestStar", "Producer"],

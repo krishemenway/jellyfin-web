@@ -3,5 +3,6 @@ import { BaseItemKindService } from "Items/BaseItemKindService";
 import { AudioBookIcon } from "Books/AudioBookIcon";
 
 export const AudioBookService: BaseItemKindService = {
+	kind: "AudioBook",
 	findIcon: (props) => <AudioBookIcon {...props} />,
 };

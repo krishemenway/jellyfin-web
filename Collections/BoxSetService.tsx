@@ -5,6 +5,7 @@ import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
 
 export const BoxSetService: BaseItemKindService = {
+	kind: "BoxSet",
 	findIcon: (props) => <CollectionIcon {...props} />,
 	findUrl: (item) => `/Collection/${item.Id}`,
 	listUrl: (library) => `/Collections/${library.Id}`,

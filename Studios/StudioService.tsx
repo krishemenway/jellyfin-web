@@ -5,6 +5,7 @@ import { getStudiosApi } from "@jellyfin/sdk/lib/utils/api";
 import { ServerService } from "Servers/ServerService";
 
 export const StudioService: BaseItemKindService = {
+	kind: "Studio",
 	findIcon: (props) => <StudioIcon {...props} />,
 	loadList: (a, libraryId) => getStudiosApi(ServerService.Instance.CurrentApi).getStudios({ parentId: libraryId }, { signal: a.signal }).then((response) => response.data.Items ?? []),
 };

@@ -4,5 +4,6 @@ import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
 
 // TODO this likely needs moving!
 export const ChannelService: BaseItemKindService = {
+	kind: "Channel",
 	findIcon: (props) => <QuestionMarkIcon {...props} />,
 };

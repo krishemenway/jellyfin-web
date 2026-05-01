@@ -25,6 +25,7 @@ import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYear";
 
 export const ShowService: BaseItemKindService = {
+	kind: "Series",
 	findIcon: (props) => <ShowIcon {...props} />,
 	findUrl: (item) => `/Show/${item.Id}`,
 	listUrl: (library) => `/Shows/${library.Id}`,

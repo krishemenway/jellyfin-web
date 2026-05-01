@@ -25,6 +25,7 @@ import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 
 export const BookService: BaseItemKindService = {
+	kind: "Book",
 	findIcon: (props) => <BookIcon {...props} />,
 	listUrl: (library) => `/Books/${library.Id}`,
 	loadList: (a, libraryId) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: libraryId, fields: ["DateCreated"], sortBy: [ItemSortBy.SortName], recursive: true }, { signal: a.signal }).then((response) => response.data.Items ?? []),

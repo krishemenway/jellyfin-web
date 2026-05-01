@@ -3,6 +3,7 @@ import { BaseItemKindService } from "Items/BaseItemKindService";
 import { FolderIcon } from "Collections/FolderIcon";
 
 export const FolderService: BaseItemKindService = {
+	kind: "Folder",
 	findIcon: (props) => <FolderIcon {...props} />,
 	listUrl: (library) => `/Folders/${library.Id}`,
 };

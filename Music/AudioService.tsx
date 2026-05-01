@@ -34,6 +34,7 @@ function LoadMusicInBatches(abort: AbortController, libraryId: string): Promise<
 }
 
 export const AudioService: BaseItemKindService = {
+	kind: "Audio",
 	findIcon: (props) => <MusicIcon {...props} />,
 	listUrl: (library) => `/Music/Songs/${library.Id}`,
 	loadList: (a, id) => LoadMusicInBatches(a, id),

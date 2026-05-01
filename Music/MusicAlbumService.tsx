@@ -16,6 +16,7 @@ import { SortByPlayCount } from "ItemList/ItemSortTypes/SortByPlayCount";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 
 export const MusicAlbumService: BaseItemKindService = {
+	kind: "MusicAlbum",
 	primaryShape: ImageShape.Square,
 	findIcon: (props) => <MusicAlbumIcon {...props} />,
 	findUrl: (item) => `/Music/Album/${item.Id}`,
