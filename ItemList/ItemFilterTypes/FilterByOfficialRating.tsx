@@ -12,6 +12,7 @@ import { SortByNumber, SortByObjects } from "Common/Sort";
 export const LessThanRatingOperation: FilterOperation = {
 	Name: "LessThan",
 	Display: (filterValue) => typeof filterValue === "string" ? ["LessThanFilterDisplay", filterValue] : [],
+	RequiresValue: true,
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)
 			|| !Nullable.HasValue(filterValue)
@@ -29,6 +30,7 @@ export const LessThanRatingOperation: FilterOperation = {
 export const LessThanOrEqualsRatingOperation: FilterOperation = {
 	Name: "LessThanOrEquals",
 	Display: (filterValue) => typeof filterValue === "string" ? ["LessThanOrEqualsFilterDisplay", filterValue] : [],
+	RequiresValue: true,
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)
 			|| !Nullable.HasValue(filterValue)
@@ -46,6 +48,7 @@ export const LessThanOrEqualsRatingOperation: FilterOperation = {
 export const GreaterThanRatingOperation: FilterOperation = {
 	Name: "GreaterThan",
 	Display: (filterValue) => typeof filterValue === "string" ? ["GreaterThanFilterDisplay", filterValue] : [],
+	RequiresValue: true,
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)
 			|| !Nullable.HasValue(filterValue)
@@ -63,6 +66,7 @@ export const GreaterThanRatingOperation: FilterOperation = {
 export const GreaterThanOrEqualsRatingOperation: FilterOperation = {
 	Name: "GreaterThanOrEquals",
 	Display: (filterValue) => typeof filterValue === "string" ? ["GreaterThanOrEqualsFilterDisplay", filterValue] : [],
+	RequiresValue: true,
 	Operation: (value, filterValue) => {
 		if (!Nullable.HasValue(value)
 			|| !Nullable.HasValue(filterValue)
@@ -84,7 +88,7 @@ export const FilterByOfficialRating: ItemFilterType = {
 	targetField: (item) => item.OfficialRating,
 	editor: (props) => {
 		const orderedRatings = React.useMemo(() => SortByObjects(props.filters.OfficialRatings ?? [], [
-			{ LabelKey: "", Reversed: false, SortType: "SortOrder", Sort: SortByNumber(rating => GetOrder(rating)) },
+			{ LabelKey: "", Reversed: false, SortType: "SortOrder", Sort: SortByNumber(rating => GetOrder(rating)), GetContent: (r) => r },
 		]), [props.filters.OfficialRatings]);
 
 		if (props.currentOperation === EmptyOperation || props.currentOperation === NotEmptyOperation) {
