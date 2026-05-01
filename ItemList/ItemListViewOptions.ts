@@ -1,4 +1,4 @@
-import { BaseItemDto, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemKind, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByObjectsFunc, SortFuncs } from "Common/Sort";
@@ -10,8 +10,9 @@ import { EditableField, ValueIsRequired } from "Common/EditableField";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 
 export class ItemListViewOptions {
-	constructor(itemKindService: BaseItemKindService|null, key?: string, data?: ItemViewOptionsData) {
+	constructor(itemKindService: BaseItemKindService, libraryId: string, key?: string, data?: ItemViewOptionsData) {
 		this.Key = key ?? self.crypto.randomUUID();
+		this.LibraryId = libraryId;
 		this.IsUnsaved = !Nullable.HasValue(data);
 		this.Label = new EditableField("Filter", Nullable.Value(data, "", (d) => d.Label), (v) => ValueIsRequired(v));
 		this.ShowErrors = new Observable(false);
@@ -65,15 +66,21 @@ export class ItemListViewOptions {
 	public CreateSaveRequest(): ItemViewOptionsData {
 		return {
 			Label: this.Label.Current.Value,
+			Kind: this.ItemKindService.kind,
 			Filters: this.Filters.Value.map((i) => ({ FilterType: i.FilterType.type, FilterValue: i.FilterValue.Current.Value, Operation: i.Operation.Current.Value.Name })),
 			Sorts: this.SortBy.Value.map((s) => ({ SortType: s.SortType, Reversed: s.Reversed }) as ItemViewOptionSortData),
 		};
 	}
 
+	public BuildStorageKey(): string {
+		return `ViewOption|${this.LibraryId}|${this.Key}`;
+	}
+
 	public Key: string;
+	public LibraryId: string;
 	public IsUnsaved: boolean;
 	public Label: EditableField<string>;
-	public ItemKindService: BaseItemKindService|null;
+	public ItemKindService: BaseItemKindService;
 	public ShowErrors: Observable<boolean>;
 
 	public NewFilter: Observable<EditableItemFilter|undefined>;
@@ -97,6 +104,7 @@ export interface ItemViewOptionSortData {
 }
 
 export interface ItemViewOptionsData {
+	Kind: BaseItemKind;
 	Label: string;
 	Filters: ItemViewOptionFilterData[];
 	Sorts: ItemViewOptionSortData[];

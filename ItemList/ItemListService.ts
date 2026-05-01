@@ -2,7 +2,7 @@ import { BaseItemDto, BaseItemKind, ItemSortBy } from "@jellyfin/sdk/lib/generat
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
-import { ItemListViewOptions, ItemViewOptionsData } from "ItemList/ItemListViewOptions";
+import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { Observable, ObservableArray } from "@residualeffect/reactor";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { BaseItemKindService } from "Items/BaseItemKindService";
@@ -57,35 +57,35 @@ export class ItemListService {
 		return () => this.List.ResetIfLoading();
 	}
 
-	public LoadItemListViewOptionsOrNew(settings: Settings, itemKind: BaseItemKindService|null, optionsName?: string): void {
-		this.ExistingOptions.Value = settings.AllKeys().filter((k) => k.startsWith(`ViewOption-`)).map((key) => new ItemListViewOptions(itemKind, key, settings.ReadAsJson(key)));
+	public LoadItemListViewOptionsOrNew(settings: Settings, itemKind: BaseItemKindService, viewOptionsKey?: string): void {
+		this.ExistingOptions.Value = settings.AllKeys().filter((k) => k.startsWith(`ViewOption|${this.LibraryId}`)).map((key) => new ItemListViewOptions(itemKind, this.LibraryId, key.split("|")[2], settings.ReadAsJson(key)));
 
-		if (Nullable.HasValue(optionsName)) {
-			this.ListOptions.Value = this.ExistingOptions.Value.filter((o) => o.Label.Current.Value == optionsName)[0] ?? new ItemListViewOptions(itemKind);
+		if (Nullable.HasValue(viewOptionsKey)) {
+			this.ListOptions.Value = this.ExistingOptions.Value.filter((o) => o.Key == viewOptionsKey)[0] ?? new ItemListViewOptions(itemKind, this.LibraryId);
 		} else {
-			this.ListOptions.Value = new ItemListViewOptions(itemKind);
+			this.ListOptions.Value = new ItemListViewOptions(itemKind, this.LibraryId);
 		}
 	}
 
-	public SaveViewOptions(settings: Settings, listOptions: ItemListViewOptions, onSuccess: (newLabel: string|null) => void): void {
+	public SaveViewOptions(settings: Settings, listOptions: ItemListViewOptions, onSuccess: (viewOptionsKey: string|null) => void): void {
 		listOptions.ShowErrors.Value = true;
 
-		SettingsStore.Instance.SaveSettings(settings.CreateSaveRequestWithChangedKey(`ViewOption-${listOptions.Key}`, listOptions.CreateSaveRequest()), () => {
-			SettingsStore.Instance.LoadSettings(settings.Id, () => {
+		SettingsStore.Instance.SaveSettings("usersettings", settings.CreateSaveRequestWithChangedKey(listOptions.BuildStorageKey(), listOptions.CreateSaveRequest()), () => {
+			SettingsStore.Instance.LoadSettings("usersettings", () => {
 				if (!this.ExistingOptions.Value.includes(listOptions)) {
 					listOptions.Label.OnSaved();
 					this.ExistingOptions.push(listOptions);
 				}
 
 				listOptions.ShowErrors.Value = false;
-				onSuccess(listOptions.IsUnsaved ? listOptions.Label.Current.Value : null);
+				onSuccess(listOptions.IsUnsaved ? listOptions.Key : null);
 			});
 		});
 	}
 
 	public RemoveViewOptions(settings: Settings, listOptions: ItemListViewOptions, onSuccess: () => void): void {
-		SettingsStore.Instance.SaveSettings(settings.CreateSaveRequestWithRemovedKey(listOptions.Key), () => {
-			SettingsStore.Instance.LoadSettings(settings.Id, () => {
+		SettingsStore.Instance.SaveSettings("usersettings", settings.CreateSaveRequestWithRemovedKey(listOptions.Key), () => {
+			SettingsStore.Instance.LoadSettings("usersettings", () => {
 				this.ExistingOptions.remove(listOptions);
 				onSuccess();
 			});
@@ -101,20 +101,3 @@ export class ItemListService {
 
 	private DefaultLoadItems: (a: AbortController, id: string) => Promise<BaseItemDto[]>;
 }
-
-export const RecentlyAddedViewOptions: ItemViewOptionsData = {
-	Label: "Recently Added",
-	Filters: [],
-	Sorts: [{ SortType: "DateLastContentAdded", Reversed: true, }],
-};
-
-export const ContinueWatchingViewOptions: ItemViewOptionsData = {
-	Label: "Continue Watching",
-	Filters: [{ FilterType: "FilterByContinueWatching", FilterValue: "true", Operation: "IsTrue" }],
-	Sorts: [{ SortType: "DatePlayed", Reversed: true, }],
-};
-
-export const PresetViewOptions: ItemViewOptionsData[] = [
-	RecentlyAddedViewOptions,
-	ContinueWatchingViewOptions,
-];

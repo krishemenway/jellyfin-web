@@ -87,7 +87,7 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ path: "/AudioBook/:audioBookId", element: <AudioBook /> },
 						{ path: "/Books/:libraryId", element: <ItemListView itemKind="Book" paramName="libraryId" /> },
 
-						{ path: "/Shows/:libraryId/:optionsName", element: <ItemListView itemKind="Series" paramName="libraryId" /> },
+						{ path: "/Shows/:libraryId/:viewOptionsKey", element: <ItemListView itemKind="Series" paramName="libraryId" /> },
 						{ path: "/Shows/:libraryId", element: <ItemListView itemKind="Series" paramName="libraryId" /> },
 						{ path: "/Show/:showId", element: <Show /> },
 						{ path: "/Show/:showId/Season/:seasonId", element: <Show /> },
@@ -96,28 +96,28 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ path: "/Music/Album/:albumId", element: <MusicAlbum /> },
 						{ path: "/Music/Artist/:artistId", element: <MusicArtist /> },
 
-						{ path: "/MusicVideos/:libraryId/:optionsName", element: <ItemListView itemKind="MusicVideo" paramName="libraryId" /> },
+						{ path: "/MusicVideos/:libraryId/:viewOptionsKey", element: <ItemListView itemKind="MusicVideo" paramName="libraryId" /> },
 						{ path: "/MusicVideos/:libraryId", element: <ItemListView itemKind="MusicVideo" paramName="libraryId" /> },
 						{ path: "/MusicVideo/:musicVideoId", element: <MusicVideo /> },
 
-						{ path: "/Music/Songs/:libraryId/:optionsName", element: <SongListView /> },
+						{ path: "/Music/Songs/:libraryId/:viewOptionsKey", element: <SongListView /> },
 						{ path: "/Music/Songs/:libraryId", element: <SongListView /> },
-						{ path: "/Music/Albums/:libraryId/:optionsName", element: <ItemListView itemKind="MusicAlbum" paramName="libraryId" /> },
+						{ path: "/Music/Albums/:libraryId/:viewOptionsKey", element: <ItemListView itemKind="MusicAlbum" paramName="libraryId" /> },
 						{ path: "/Music/Albums/:libraryId", element: <ItemListView itemKind="MusicAlbum" paramName="libraryId" /> },
-						{ path: "/Music/Artists/:libraryId/:optionsName", element: <ItemListView itemKind="MusicArtist" paramName="libraryId" /> },
+						{ path: "/Music/Artists/:libraryId/:viewOptionsKey", element: <ItemListView itemKind="MusicArtist" paramName="libraryId" /> },
 						{ path: "/Music/Artists/:libraryId", element: <ItemListView itemKind="MusicArtist" paramName="libraryId" /> },
 
-						{ path: "/Photo/Albums/:libraryId/:optionsName", element: <ItemListView itemKind="PhotoAlbum" paramName="libraryId" /> },
+						{ path: "/Photo/Albums/:libraryId/:viewOptionsKey", element: <ItemListView itemKind="PhotoAlbum" paramName="libraryId" /> },
 						{ path: "/Photo/Albums/:libraryId", element: <ItemListView itemKind="PhotoAlbum" paramName="libraryId" /> },
 						{ path: "/Photo/Album/:albumId", element: <PhotoAlbum /> },
 
-						{ path: "/Movies/:libraryId/:optionsName", element: <ItemListView itemKind="Movie" paramName="libraryId" /> },
+						{ path: "/Movies/:libraryId/:viewOptionsKey", element: <ItemListView itemKind="Movie" paramName="libraryId" /> },
 						{ path: "/Movies/:libraryId", element: <ItemListView itemKind="Movie" paramName="libraryId" /> },
 						{ path: "/Movie/:movieId", element: <Movie /> },
 
 						{ path: "/Studio/:studioId", element: <Studio /> },
 
-						{ path: "/Collections/:collectionsId/:optionsName", element: <ItemListView itemKind="BoxSet" paramName="collectionsId" /> },
+						{ path: "/Collections/:collectionsId/:viewOptionsKey", element: <ItemListView itemKind="BoxSet" paramName="collectionsId" /> },
 						{ path: "/Collections/:collectionsId", element: <ItemListView itemKind="BoxSet" paramName="collectionsId" /> },
 						{ path: "/Collection/:collectionId", element: <Collection /> },
 

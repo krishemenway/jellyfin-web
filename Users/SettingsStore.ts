@@ -20,6 +20,16 @@ export class Settings {
 		return JSON.parse(value);
 	}
 
+	public ReadAsJsonOrThrow<T>(key: string): T {
+		const value = this.ReadAsJson<T>(key);
+
+		if (!Nullable.HasValue(value)) {
+			throw new Error(`Expected key ${key} but was missing`);
+		}
+
+		return value;
+	}
+
 	public Read(key: string): string|null {
 		return Nullable.Value(this._fromServer.CustomPrefs, "", preferences => preferences[key]);
 	}
@@ -58,8 +68,12 @@ export class Settings {
 
 export class SettingsStore {
 	constructor() {
-		this.Settings = new Receiver("UnknownError");
+		this.SettingsById = {};
 		this.SaveSettingsResult = new Receiver("UnknownError");
+	}
+
+	public ReceiverFor(id: string): Receiver<Settings> {
+		return this.SettingsById[id] ?? (this.SettingsById[id] = new Receiver<Settings>("UnknownError"));
 	}
 
 	public LoadSettings(id?: string, onLoaded?: (settings: Settings) => void): () => void {
@@ -67,27 +81,27 @@ export class SettingsStore {
 			throw new Error("Cannot load settings for missing id");
 		}
 
-		this.Settings.Start((a) => getDisplayPreferencesApi(ServerService.Instance.CurrentApi).getDisplayPreferences({ client: "emby", userId: ServerService.Instance.CurrentUserId.Value, displayPreferencesId: id }, { signal: a.signal }).then((response) => {
+		this.ReceiverFor(id).Start((a) => getDisplayPreferencesApi(ServerService.Instance.CurrentApi).getDisplayPreferences({ client: "emby", userId: ServerService.Instance.CurrentUserId.Value, displayPreferencesId: id }, { signal: a.signal }).then((response) => {
 			const settings = new Settings(id, response.data);
 			Nullable.TryExecute(onLoaded, (f) => f(settings));
 			return settings;
 		}), true);
 
-		return () => this.Settings.ResetIfLoading();
+		return () => this.ReceiverFor(id).ResetIfLoading();
 	}
 
-	public SaveSettings(settings: DisplayPreferencesDto, onSuccess: () => void): void {
+	public SaveSettings(id: string, settings: DisplayPreferencesDto, onSuccess: () => void): void {
 		const request = {
 			client: "emby",
 			userId: ServerService.Instance.CurrentUserId.Value,
-			displayPreferencesId: settings.Id!,
+			displayPreferencesId: id,
 			displayPreferencesDto: settings
 		};
 
 		this.SaveSettingsResult.Start((abort) => getDisplayPreferencesApi(ServerService.Instance.CurrentApi).updateDisplayPreferences(request, { signal: abort.signal }).then((response) => { onSuccess(); return response.status === 200; }));
 	}
 
-	public Settings: Receiver<Settings>;
+	public SettingsById: Record<string, Receiver<Settings>>;
 	public SaveSettingsResult: Receiver<boolean>;
 
 	static get Instance(): SettingsStore {

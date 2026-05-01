@@ -37,13 +37,13 @@ export const SongListView: React.FC = () => {
 	React.useEffect(() => artistList.LoadWithAbort(), [artistList]);
 	React.useEffect(() => albumList.LoadWithAbort([{ Key: "AlbumCountByArtistId", GetKeysForItem: (i) => i.AlbumArtists?.map((a) => a.Id) ?? [] }]), [albumList]);
 	React.useEffect(() => songList.LoadWithAbort([{ Key: "SongCountByArtistId", GetKeysForItem: (i) => i.Artists?.map((a) => a) ?? [] }, { Key: "SongCountByAlbumId", GetKeysForItem: (i) => [i.AlbumId] }]), [songList]);
-	React.useEffect(() => SettingsStore.Instance.LoadSettings(libraryId), [libraryId]);
+	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
 	React.useEffect(() => UserViewStore.Instance.LoadUserViewsWithAbort(userId), [userId]);
 
 	return (
 		<PageWithNavigation icon="Audio" matchHeight>
 			<Loading
-				receivers={[SettingsStore.Instance.Settings, LoginService.Instance.User, UserViewStore.Instance.FindOrCreateForUser(userId)]}
+				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), LoginService.Instance.User, UserViewStore.Instance.FindOrCreateForUser(userId)]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
@@ -177,7 +177,7 @@ const LoadedItems: React.FC<{ addType: MusicPlayerDropActionType, libraryId: str
 	};
 
 	const filteredItems = React.useMemo(() => props.items.filter((i) => Nullable.Value(props.filters, true, (f) => f.length === 0 || f.some((filter) => filter(i) || props.selectedKeys.includes(props.getSelectedKey(i))))), [props.items, props.filters, props.selectedKeys, props.getSelectedKey]);
-	const sortedItems = React.useMemo(() => SortByObjects(filteredItems, [{ SortType: sortField.name, LabelKey: sortField.name, Sort: sortField.getSortFunc(props.stats ?? []), Reversed: sortReversed }]), [filteredItems, sortField, sortReversed]);
+	const sortedItems = React.useMemo(() => SortByObjects(filteredItems, [{ SortType: sortField.name, LabelKey: sortField.name, Sort: sortField.getSortFunc(props.stats ?? []), Reversed: sortReversed, GetContent: () => "" }]), [filteredItems, sortField, sortReversed]);
 
 	return (
 		<TableVirtuoso

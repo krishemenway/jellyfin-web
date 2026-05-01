@@ -30,7 +30,7 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 	const routeParams = useParams();
 	const userId = useObservable(ServerService.Instance.CurrentUserId);
 	const libraryId = routeParams[props.paramName];
-	const optionsName = routeParams.optionsName;
+	const viewOptionsKey = routeParams.viewOptionsKey;
 
 	if (!Nullable.HasValue(libraryId)) {
 		return <PageWithNavigation icon={props.itemKind}><NotFound /></PageWithNavigation>;
@@ -39,20 +39,20 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 	const itemList = ItemService.Instance.FindOrCreateItemList(libraryId, props.itemKind);
 
 	React.useEffect(() => itemList.LoadWithAbort(), [itemList]);
-	React.useEffect(() => SettingsStore.Instance.LoadSettings(libraryId), [libraryId]);
+	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
 	React.useEffect(() => ItemFilterService.Instance.LoadFiltersWithAbort([libraryId]), [libraryId]);
 	React.useEffect(() => UserViewStore.Instance.LoadUserViewsWithAbort(userId), [userId]);
 
 	return (
 		<PageWithNavigation icon={props.itemKind}>
 			<Loading
-				receivers={[itemList.List, SettingsStore.Instance.Settings, LoginService.Instance.User, ItemFilterService.Instance.FindOrCreateFiltersReceiver([libraryId]), UserViewStore.Instance.FindOrCreateForUser(userId)]}
+				receivers={[itemList.List, SettingsStore.Instance.ReceiverFor("usersettings"), LoginService.Instance.User, ItemFilterService.Instance.FindOrCreateFiltersReceiver([libraryId]), UserViewStore.Instance.FindOrCreateForUser(userId)]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenReceived={(items, settings, user, filters, libraries) => (
 					<LoadedItemsListView
-						libraryId={libraryId} optionsName={optionsName} itemList={itemList}
+						libraryId={libraryId} viewOptionsKey={viewOptionsKey} itemList={itemList}
 						items={items.List} settings={settings}
 						user={user} libraries={libraries}
 						itemKind={props.itemKind} filters={filters}
@@ -63,12 +63,12 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 	);
 };
 
-const LoadedItemsListView: React.FC<{ libraryId: string, optionsName?: string; items: BaseItemDto[]; itemList: ItemListService; itemKind: BaseItemKind; settings: Settings; user: UserDto; libraries: BaseItemDto[]; filters: QueryFiltersLegacy }> = (props) => {
+const LoadedItemsListView: React.FC<{ libraryId: string, viewOptionsKey?: string; items: BaseItemDto[]; itemList: ItemListService; itemKind: BaseItemKind; settings: Settings; user: UserDto; libraries: BaseItemDto[]; filters: QueryFiltersLegacy }> = (props) => {
 	const itemKindService = BaseItemKindServiceFactory.FindOrThrow(props.itemKind);
 	const listOptions = useObservable(props.itemList.ListOptions);
 	const library = Linq.Single(props.libraries, (l) => l.Id === props.libraryId);
 
-	React.useEffect(() => { props.itemList.LoadItemListViewOptionsOrNew(props.settings, itemKindService, props.optionsName); }, [props.settings, itemKindService, props.optionsName]);
+	React.useEffect(() => { props.itemList.LoadItemListViewOptionsOrNew(props.settings, itemKindService, props.viewOptionsKey); }, [props.settings, itemKindService, props.viewOptionsKey]);
 
 	return (
 		<Layout direction="column" gap="1em" py="1em">

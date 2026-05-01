@@ -2,12 +2,155 @@ import * as React from "react";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { HomeIcon } from "Home/HomeIcon";
 import { PageTitle } from "Common/PageTitle";
+import { Settings, SettingsStore } from "Users/SettingsStore";
+import { Loading } from "Common/Loading";
+import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
+import { LoadingIcon } from "Common/LoadingIcon";
+import { Layout } from "Common/Layout";
+import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
+import { ItemService } from "Items/ItemsService";
+import { ListOf } from "Common/ListOf";
+import { useBreakpointValues } from "AppStyles";
+import { ItemsGridItem } from "ItemList/ItemGridItem";
+import { ImageShape } from "Items/ItemImage";
+import { useComputed, useObservable } from "@residualeffect/rereactor/lib";
+import { BaseItemDto } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
+import { HyperLink } from "Common/HyperLink";
+import { TranslatedText } from "Common/TranslatedText";
+import { UserViewStore } from "Users/UserViewStore";
+import { ServerService } from "Servers/ServerService";
+import { EditIcon } from "CommonIcons/EditIcon";
+import { Button } from "Common/Button";
+import { SaveIcon } from "CommonIcons/SaveIcon";
+import { EditableField } from "Common/EditableField";
+import { RevertIcon } from "CommonIcons/RevertIcon";
+import { AddIcon } from "CommonIcons/AddIcon";
+import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
+import { DeleteIcon } from "CommonIcons/DeleteIcon";
+import { HomeViewOptions } from "Home/HomeViewOptions";
 
 export const Home: React.FC = () => {
+	const userId = useObservable(ServerService.Instance.CurrentUserId);
+
+	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
+
 	return (
 		<PageWithNavigation icon={<HomeIcon />}>
 			<PageTitle text={({ Key: "Home" })} suppressOnScreen />
-			This is where home stuff will go. Eventually. Good god.
+			<Loading
+				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), UserViewStore.Instance.FindOrCreateForUser(userId)]}
+				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
+				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
+				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
+				whenReceived={(settings, libraries) => <HomeWithSettings settings={settings} libraries={libraries} />}
+			/>
 		</PageWithNavigation>
 	);
+};
+
+const HomeWithSettings: React.FC<{ settings: Settings; libraries: BaseItemDto[] }> = ({ settings, libraries }) => {
+	const itemsPerRow = useBreakpointValues(2, 4, 6, 8);
+	const homeViewOptions = React.useMemo(() => new HomeViewOptions(settings), [settings, libraries]);
+	const isEditing = useObservable(homeViewOptions.IsEditing);
+	const current = useObservable(homeViewOptions.ViewOptions);
+
+	return (
+		<Layout direction="column" py="1rem" gap="1rem" alignItems="center">
+			{current.map((config) => <HomeSection key={config.Key} viewOptions={config} itemsPerRow={itemsPerRow} libraries={libraries} isEditing={isEditing} />)}
+			{!isEditing && <Button type="button" onClick={() => { homeViewOptions.IsEditing.Value = true; }} label="Edit" icon={<EditIcon />} justifyContent="center" alignItems="center" width="50%" gap=".5em" py=".25rem" />}
+			{isEditing && (
+				<>
+					<AddHomeSectionButton homeViewOptions={homeViewOptions} />
+
+					<Layout direction="row" width="50%" gap=".5rem" alignItems="center" justifyContent="center">
+						<Button type="button" onClick={() => { homeViewOptions.ViewOptionsKeys.Revert(); homeViewOptions.IsEditing.Value = false; }} icon={<RevertIcon />} px="4em" py=".25rem" />
+						<Button type="button" onClick={() => { homeViewOptions.Save(); }} icon={<SaveIcon />} px="4em" py=".25rem" />
+					</Layout>
+				</>
+			)}
+		</Layout>
+	);
+};
+
+const AddHomeSectionButton: React.FC<{ homeViewOptions: HomeViewOptions }> = ({ homeViewOptions }) => {
+	const allOptions = useObservable(homeViewOptions.AllViewOptions);
+	const field = React.useMemo(() => new EditableField<ItemListViewOptions>("AddHomeSection", allOptions[0]), [homeViewOptions]);
+
+	return (
+		<Layout direction="row" gap="1rem" width="50%">
+			<AutoCompleteFieldEditor
+				allOptions={allOptions}
+				field={field}
+				getLabel={(o) => o?.Label.Current.Value}
+				getValue={(o) => o?.Key!}
+			/>
+
+			<Button
+				label="Add" icon={<AddIcon />}
+				alignItems="center" justifyContent="center" px="3em" py=".25em" gap=".5em"
+				type="button" onClick={() => { homeViewOptions.ViewOptionsKeys.OnChange(homeViewOptions.ViewOptionsKeys.Current.Value.concat([field.Current.Value.BuildStorageKey()])); }}
+			/>
+		</Layout>
+	)
+}
+
+const HomeSection: React.FC<{ viewOptions: ItemListViewOptions; itemsPerRow: number; libraries: BaseItemDto[]; isEditing: boolean; }> = ({ viewOptions, itemsPerRow, libraries, isEditing }) => {
+	const label = useObservable(viewOptions.Label.Current);
+
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemList(viewOptions.LibraryId, viewOptions.ItemKindService.kind).LoadWithAbort(), [viewOptions]);
+
+	return (
+		<Loading
+			receivers={[ItemService.Instance.FindOrCreateItemList(viewOptions.LibraryId, viewOptions.ItemKindService.kind).List]}
+			whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
+			whenLoading={<Layout direction="column"><Layout direction="row" fontSize="1.3em">{label}</Layout><LoadingIcon alignSelf="center" size="4em" my="2rem" /></Layout>}
+			whenNotStarted={<Layout direction="column"><Layout direction="row" fontSize="1.3em">{label}</Layout><LoadingIcon alignSelf="center" size="4em" my="2rem" /></Layout>}
+			whenReceived={(itemWithStats) => <HomeSectionWithLoadedItems label={label} itemsFromList={itemWithStats.List} itemsPerRow={itemsPerRow} libraries={libraries} viewOptions={viewOptions} isEditing={isEditing} />}
+		/>
+	);
+};
+
+const HomeSectionWithLoadedItems: React.FC<{ label: string; itemsFromList: BaseItemDto[]; viewOptions: ItemListViewOptions; itemsPerRow: number; libraries: BaseItemDto[]; isEditing: boolean; }> = ({ label, itemsFromList, viewOptions, itemsPerRow, libraries, isEditing }) => {
+	const listUrl = viewOptions.ItemKindService.listUrl && viewOptions.ItemKindService.listUrl(libraries.find((l) => l.Id === viewOptions.LibraryId)!) + "/" + viewOptions.Key;
+	const filteredAndSortedItems = useComputed(() => {
+		const listTypes = viewOptions.ItemKindService.listTypes ?? [viewOptions.ItemKindService.kind];
+		const items = itemsFromList.filter((i) => listTypes.indexOf(i.Type!) > -1);
+
+		const filterFunc = viewOptions.FilterFunc.Value;
+		const sortFunc = viewOptions.SortByFunc.Value;
+
+		return items.filter(filterFunc).sort(sortFunc);
+	}, [itemsFromList, viewOptions]);
+
+	return (
+		<Layout direction="column" gap=".25rem">
+			<Layout direction="row" justifyContent="space-between">
+				<Layout direction="row" fontSize="1.3em" alignItems="end">{label}</Layout>
+				{isEditing && <Button type="button" onClick={() => { }} icon={<DeleteIcon />} px=".25em" py=".25em" />}
+				{!isEditing && <ShowMoreLibraryLink filteredItems={filteredAndSortedItems} itemsPerRow={itemsPerRow} listUrl={listUrl!} />}
+			</Layout>
+
+			<ListOf
+				items={filteredAndSortedItems}
+				direction="row" wrap gap=".5em"
+				showMoreLimit={itemsPerRow} showMoreButtonStyles={{ display: "none" }}
+				forEachItem={(item, index) => (
+					<ItemsGridItem
+						key={item.Id ?? index.toString()}
+						item={item}
+						itemsPerRow={itemsPerRow}
+						shape={ImageShape.Portrait}
+					/>
+				)}
+			/>
+		</Layout>
+	);
+};
+
+const ShowMoreLibraryLink: React.FC<{ filteredItems: BaseItemDto[]; itemsPerRow: number; listUrl: string; }> = ({ filteredItems: allItems, itemsPerRow, listUrl }) => {
+	if (allItems.length <= itemsPerRow) {
+		return <></>;
+	}
+
+	return <HyperLink to={listUrl!} direction="row" px=".5em" py=".5em"><TranslatedText textKey="ShowMore" /></HyperLink>;
 };

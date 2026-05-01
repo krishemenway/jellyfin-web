@@ -263,7 +263,7 @@ const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions
 		<Layout direction="row" justifyContent="space-between" gap=".5rem">
 			<LinkToItem
 				key={label} item={props.library}
-				afterUrl={`/${label}`}
+				afterUrl={`/${props.itemListViewOptions.Key}`}
 				direction="row" px=".5em" py=".5em" grow gap=".5rem" alignItems="center">
 				{props.isSelected ? <RadioCheckedIcon /> : <RadioUncheckedIcon />}
 				{label}
