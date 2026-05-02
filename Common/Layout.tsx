@@ -64,6 +64,7 @@ export interface LayoutWithoutChildrenProps {
 	height?: Property.Height;
 
 	backgroundUrl?: string;
+	backgroundImage?: string;
 	backgroundColor?: Property.BackgroundColor;
 	backgroundRepeat?: Property.BackgroundRepeat;
 	backgroundSize?: Property.BackgroundSize;
@@ -150,7 +151,7 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		height: props?.height,
 
 		backgroundColor: props?.backgroundColor,
-		backgroundImage: Nullable.Value(props?.backgroundUrl, undefined, (u) => `url('${u}')`),
+		backgroundImage: props?.backgroundImage ?? Nullable.Value(props?.backgroundUrl, undefined, (u) => `url('${u}')`),
 		backgroundRepeat: props?.backgroundRepeat,
 		backgroundSize: props?.backgroundSize,
 	};
