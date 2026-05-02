@@ -6,14 +6,13 @@ import { EditIcon } from "CommonIcons/EditIcon";
 import { HyperLink } from "Common/HyperLink";
 import { JellyfinIcon } from "CommonIcons/JellyfinIcon";
 import { Layout, StyleLayoutProps } from "Common/Layout";
-import { ListOf } from "Common/ListOf";
 import { Loading } from "Common/Loading";
 import { AnchoredModal, CenteredModal } from "Common/Modal";
 import { TranslatedText } from "Common/TranslatedText";
 import { IconForItem } from "Items/IconForItem";
 import { MenuIcon } from "NavigationBar/MenuIcon";
 import { Search } from "NavigationBar/Search";
-import { DashboardIcon } from "ServerAdmin/DashboardIcon";
+import { ServerIcon } from "Servers/ServerIcon";
 import { ServerService } from "Servers/ServerService";
 import { AuthorizeQuickConnect } from "Users/AuthorizeQuickConnect";
 import { LoginService } from "Users/LoginService";
@@ -92,7 +91,7 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[]; server: SystemI
 									direction="column" alignItems="center"
 									px=".5em" py=".5em" gap=".5em" width={{ itemsPerRow: 3 }}
 								>
-									<Layout direction="row" justifyContent="center"><DashboardIcon size="1.5em" /></Layout>
+									<Layout direction="row" justifyContent="center"><ServerIcon size="1.5em" /></Layout>
 									<Layout direction="row" justifyContent="center"><TranslatedText textKey="TabServer" /></Layout>
 								</HyperLink>
 							)}
