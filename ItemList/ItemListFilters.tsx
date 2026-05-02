@@ -269,21 +269,26 @@ const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions
 				{label}
 			</LinkToItem>
 
-			<Button
-				type="button"
-				px=".5em" py=".5em"
-				justifyContent="center" alignItems="center"
-				onClick={() => { props.itemList.SaveViewOptions(props.settings, props.itemListViewOptions, () => { }); }}
-				icon={<SaveIcon />}
-			/>
+			{props.itemListViewOptions.CanSave && (
+				<>
+					<Button
+						type="button"
+						px=".5em" py=".5em"
+						justifyContent="center" alignItems="center"
+						onClick={() => { props.itemList.SaveViewOptions(props.settings, props.itemListViewOptions, () => { }); }}
+						icon={<SaveIcon />}
+					/>
 
-			<Button
-				type="button"
-				px=".5em" py=".5em"
-				justifyContent="center" alignItems="center"
-				onClick={() => props.itemList.ConfirmDeleteOptions.Value = props.itemListViewOptions}
-				icon={<DeleteIcon />}
-			/>
+					<Button
+						type="button"
+						px=".5em" py=".5em"
+						justifyContent="center" alignItems="center"
+						onClick={() => props.itemList.ConfirmDeleteOptions.Value = props.itemListViewOptions}
+						icon={<DeleteIcon />}
+					/>
+				</>
+			)}
+
 		</Layout>
 	);
 };

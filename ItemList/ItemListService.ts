@@ -58,7 +58,9 @@ export class ItemListService {
 	}
 
 	public LoadItemListViewOptionsOrNew(settings: Settings, itemKind: BaseItemKindService, viewOptionsKey?: string): void {
-		this.ExistingOptions.Value = settings.AllKeys().filter((k) => k.startsWith(`ViewOption|${this.LibraryId}`)).map((key) => new ItemListViewOptions(itemKind, this.LibraryId, key.split("|")[2], settings.ReadAsJson(key)));
+		this.ExistingOptions.Value = settings.AllKeys().filter((k) => k.startsWith(`ViewOption|${this.LibraryId}`)).map((key) => new ItemListViewOptions(itemKind, this.LibraryId, key.split("|")[2], settings.ReadAsJson(key))).concat([
+			ItemListViewOptions.CreateRecentlyAdded(itemKind, this.LibraryId),
+		]);
 
 		if (Nullable.HasValue(viewOptionsKey)) {
 			this.ListOptions.Value = this.ExistingOptions.Value.filter((o) => o.Key == viewOptionsKey)[0] ?? new ItemListViewOptions(itemKind, this.LibraryId);

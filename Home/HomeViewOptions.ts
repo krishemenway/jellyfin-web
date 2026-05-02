@@ -3,14 +3,16 @@ import { Computed, Observable } from "node_modules/@residualeffect/reactor/lib";
 import { ItemListViewOptions, ItemViewOptionsData } from "ItemList/ItemListViewOptions";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { EditableField } from "Common/EditableField";
+import { BaseItemDto } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export class HomeViewOptions {
-	constructor(settings: Settings) {
+	constructor(settings: Settings, libraries: BaseItemDto[]) {
 		this.Settings = settings;
 		this.IsEditing = new Observable(false);
 		this.ViewOptionsKeys = new EditableField("ViewOptionsForHome", settings.ReadAsJson<string[]>("ViewOptionHomeConfigurations") ?? []);
-		this.ViewOptions = new Computed(() => this.LoadHomeOptions(settings));
-		this.AllViewOptions = new Computed(() => this.Settings.AllKeys().filter((k) => k.startsWith(`ViewOption|`)).map((k) => this.LoadForKey(k, settings)));
+		this.AllViewOptions = new Computed(() => this.Settings.AllKeys().filter((k) => k.startsWith(`ViewOption|`)).map((k) => this.LoadForKey(k, settings)).concat(this.CreateAllBuiltInOptions(libraries)));
+		this.ViewOptions = new Computed(() => this.LoadHomeOptions());
 	}
 
 	public Save(): void {
@@ -22,13 +24,27 @@ export class HomeViewOptions {
 		});
 	}
 
-	public LoadHomeOptions(settings: Settings): ItemListViewOptions[] {
-		return this.ViewOptionsKeys.Current.Value.map((key) => this.LoadForKey(key, settings));
+	private CreateAllBuiltInOptions(libraries: BaseItemDto[]): ItemListViewOptions[] {
+		return libraries.reduce((all, library) => {
+			const serviceForLibrary = BaseItemKindServiceFactory.FindOrThrowByCollectionType(library.CollectionType)!;
+			all.push(ItemListViewOptions.CreateRecentlyAdded(serviceForLibrary, library.Id!));
+			return all;
+		}, [] as ItemListViewOptions[]);
+	}
+
+	public LoadHomeOptions(): ItemListViewOptions[] {
+		const allOptions = this.AllViewOptions.Value;
+		return this.ViewOptionsKeys.Current.Value.map((key) => allOptions.find((o) => o.BuildStorageKey() === key)).filter((o) => Nullable.HasValue(o));
 	}
 
 	private LoadForKey(key: string, settings: Settings): ItemListViewOptions {
 		const keyParts = key.split("|");
-		const viewOptionsData = settings.ReadAsJsonOrThrow<ItemViewOptionsData>(key);
+		const viewOptionsData = settings.ReadAsJson<ItemViewOptionsData>(key);
+
+		if (!Nullable.HasValue(viewOptionsData)) {
+			throw new Error(`Unable to find ${key}`);
+		}
+
 		return new ItemListViewOptions(BaseItemKindServiceFactory.FindOrThrow(viewOptionsData?.Kind), keyParts[1], keyParts[2], viewOptionsData);
 	}
 

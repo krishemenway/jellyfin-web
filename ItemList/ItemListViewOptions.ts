@@ -10,10 +10,11 @@ import { EditableField, ValueIsRequired } from "Common/EditableField";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 
 export class ItemListViewOptions {
-	constructor(itemKindService: BaseItemKindService, libraryId: string, key?: string, data?: ItemViewOptionsData) {
+	constructor(itemKindService: BaseItemKindService, libraryId: string, key?: string, data?: ItemViewOptionsData, canSave?: boolean) {
 		this.Key = key ?? self.crypto.randomUUID();
 		this.LibraryId = libraryId;
 		this.IsUnsaved = !Nullable.HasValue(data);
+		this.CanSave = canSave ?? true;
 		this.Label = new EditableField("Filter", Nullable.Value(data, "", (d) => d.Label), (v) => ValueIsRequired(v));
 		this.ShowErrors = new Observable(false);
 
@@ -28,7 +29,7 @@ export class ItemListViewOptions {
 			const sort = (itemKindService?.sortOptions ?? []).find((s) => s.field === d.SortType);
 
 			if (sort === undefined) {
-				throw new Error("Missing sort type");
+				throw new Error(`Missing sort type ${d.SortType} from service ${itemKindService.kind}`);
 			}
 
 			return CreateSortFunc(sort, d.Reversed);
@@ -63,6 +64,10 @@ export class ItemListViewOptions {
 		}
 	}
 
+	public static CreateRecentlyAdded(service: BaseItemKindService, libraryId: string): ItemListViewOptions {
+		return new ItemListViewOptions(service, libraryId, `RecentlyAdded-${libraryId}`, { Filters: [], Kind: service.kind, Label: "Recently Added", Sorts: [{ Reversed: true, SortType: "DateCreated" }] }, false);
+	}
+
 	public CreateSaveRequest(): ItemViewOptionsData {
 		return {
 			Label: this.Label.Current.Value,
@@ -79,6 +84,7 @@ export class ItemListViewOptions {
 	public Key: string;
 	public LibraryId: string;
 	public IsUnsaved: boolean;
+	public CanSave: boolean;
 	public Label: EditableField<string>;
 	public ItemKindService: BaseItemKindService;
 	public ShowErrors: Observable<boolean>;

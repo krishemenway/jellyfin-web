@@ -33,14 +33,17 @@ import { EpisodeService } from "Shows/EpisodeService";
 import { SeasonService } from "Shows/SeasonService";
 import { ShowService } from "Shows/ShowService";
 import { StudioService } from "Studios/StudioService";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export class BaseItemKindServiceFactory {
 	public static FindOrThrow(kind?: BaseItemKind): BaseItemKindService {
-		if (kind === undefined) {
+		const result = BaseItemKindServiceFactory.FindOrNull(kind);
+
+		if (!Nullable.HasValue(result)) {
 			throw new Error(`Missing Service for type ${kind}`);
 		}
 
-		return this._servicesByKind[kind] ?? null;
+		return result;
 	}
 
 	public static FindOrNull(kind?: BaseItemKind): BaseItemKindService|null {
@@ -57,6 +60,16 @@ export class BaseItemKindServiceFactory {
 		}
 
 		return this._servicesByCollection[collectionType] ?? null;
+	}
+
+	public static FindOrThrowByCollectionType(collectionType?: CollectionType): BaseItemKindService|null {
+		const result = BaseItemKindServiceFactory.FindOrNullByCollectionType(collectionType);
+
+		if (!Nullable.HasValue(result)) {
+			throw new Error(`Missing Service for collection type ${collectionType}`);
+		}
+
+		return result;
 	}
 
 	private static _servicesByKind: Record<BaseItemKind, BaseItemKindService> = {

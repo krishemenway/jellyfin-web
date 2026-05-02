@@ -50,38 +50,40 @@ export const Home: React.FC = () => {
 
 const HomeWithSettings: React.FC<{ settings: Settings; libraries: BaseItemDto[] }> = ({ settings, libraries }) => {
 	const itemsPerRow = useBreakpointValues(2, 4, 6, 8);
-	const homeViewOptions = React.useMemo(() => new HomeViewOptions(settings), [settings, libraries]);
+	const homeViewOptions = React.useMemo(() => new HomeViewOptions(settings, libraries), [settings, libraries]);
 	const isEditing = useObservable(homeViewOptions.IsEditing);
 	const current = useObservable(homeViewOptions.ViewOptions);
 
 	return (
 		<Layout direction="column" py="1rem" gap="1rem" alignItems="center">
-			{current.map((config) => <HomeSection key={config.Key} viewOptions={config} itemsPerRow={itemsPerRow} libraries={libraries} isEditing={isEditing} />)}
+			{current.map((config, sectionIndex) => <HomeSection key={config.Key} viewOptions={config} itemsPerRow={itemsPerRow} libraries={libraries} isEditing={isEditing} onDeleted={() => { homeViewOptions.ViewOptionsKeys.OnChange(homeViewOptions.ViewOptionsKeys.Current.Value.filter((o, i) => sectionIndex !== i)); }} />)}
 			{!isEditing && <Button type="button" onClick={() => { homeViewOptions.IsEditing.Value = true; }} label="Edit" icon={<EditIcon />} justifyContent="center" alignItems="center" width="50%" gap=".5em" py=".25rem" />}
 			{isEditing && (
-				<>
-					<AddHomeSectionButton homeViewOptions={homeViewOptions} />
+				<Layout direction="column" minHeight="6rem" width="50%" gap="1rem" alignItems="center">
+					<Layout direction="row" gap="1rem" width="50%">
+						<AddHomeSectionButton homeViewOptions={homeViewOptions} libraries={libraries} />
+					</Layout>
 
 					<Layout direction="row" width="50%" gap=".5rem" alignItems="center" justifyContent="center">
 						<Button type="button" onClick={() => { homeViewOptions.ViewOptionsKeys.Revert(); homeViewOptions.IsEditing.Value = false; }} icon={<RevertIcon />} px="4em" py=".25rem" />
 						<Button type="button" onClick={() => { homeViewOptions.Save(); }} icon={<SaveIcon />} px="4em" py=".25rem" />
 					</Layout>
-				</>
+				</Layout>
 			)}
 		</Layout>
 	);
 };
 
-const AddHomeSectionButton: React.FC<{ homeViewOptions: HomeViewOptions }> = ({ homeViewOptions }) => {
+const AddHomeSectionButton: React.FC<{ homeViewOptions: HomeViewOptions; libraries: BaseItemDto[] }> = ({ homeViewOptions, libraries }) => {
 	const allOptions = useObservable(homeViewOptions.AllViewOptions);
 	const field = React.useMemo(() => new EditableField<ItemListViewOptions>("AddHomeSection", allOptions[0]), [homeViewOptions]);
 
 	return (
-		<Layout direction="row" gap="1rem" width="50%">
+		<>
 			<AutoCompleteFieldEditor
 				allOptions={allOptions}
 				field={field}
-				getLabel={(o) => o?.Label.Current.Value}
+				getLabel={(o) => `${libraries.find((l) => l.Id === o?.LibraryId)?.Name} - ${o?.Label.Current.Value}`}
 				getValue={(o) => o?.Key!}
 			/>
 
@@ -90,11 +92,11 @@ const AddHomeSectionButton: React.FC<{ homeViewOptions: HomeViewOptions }> = ({ 
 				alignItems="center" justifyContent="center" px="3em" py=".25em" gap=".5em"
 				type="button" onClick={() => { homeViewOptions.ViewOptionsKeys.OnChange(homeViewOptions.ViewOptionsKeys.Current.Value.concat([field.Current.Value.BuildStorageKey()])); }}
 			/>
-		</Layout>
+		</>
 	)
 }
 
-const HomeSection: React.FC<{ viewOptions: ItemListViewOptions; itemsPerRow: number; libraries: BaseItemDto[]; isEditing: boolean; }> = ({ viewOptions, itemsPerRow, libraries, isEditing }) => {
+const HomeSection: React.FC<{ viewOptions: ItemListViewOptions; itemsPerRow: number; libraries: BaseItemDto[]; isEditing: boolean; onDeleted: () => void; }> = ({ viewOptions, itemsPerRow, libraries, isEditing, onDeleted }) => {
 	const label = useObservable(viewOptions.Label.Current);
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemList(viewOptions.LibraryId, viewOptions.ItemKindService.kind).LoadWithAbort(), [viewOptions]);
@@ -105,12 +107,12 @@ const HomeSection: React.FC<{ viewOptions: ItemListViewOptions; itemsPerRow: num
 			whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 			whenLoading={<Layout direction="column"><Layout direction="row" fontSize="1.3em">{label}</Layout><LoadingIcon alignSelf="center" size="4em" my="2rem" /></Layout>}
 			whenNotStarted={<Layout direction="column"><Layout direction="row" fontSize="1.3em">{label}</Layout><LoadingIcon alignSelf="center" size="4em" my="2rem" /></Layout>}
-			whenReceived={(itemWithStats) => <HomeSectionWithLoadedItems label={label} itemsFromList={itemWithStats.List} itemsPerRow={itemsPerRow} libraries={libraries} viewOptions={viewOptions} isEditing={isEditing} />}
+			whenReceived={(itemWithStats) => <HomeSectionWithLoadedItems label={label} itemsFromList={itemWithStats.List} itemsPerRow={itemsPerRow} libraries={libraries} viewOptions={viewOptions} isEditing={isEditing} onDeleted={onDeleted} />}
 		/>
 	);
 };
 
-const HomeSectionWithLoadedItems: React.FC<{ label: string; itemsFromList: BaseItemDto[]; viewOptions: ItemListViewOptions; itemsPerRow: number; libraries: BaseItemDto[]; isEditing: boolean; }> = ({ label, itemsFromList, viewOptions, itemsPerRow, libraries, isEditing }) => {
+const HomeSectionWithLoadedItems: React.FC<{ label: string; itemsFromList: BaseItemDto[]; viewOptions: ItemListViewOptions; itemsPerRow: number; libraries: BaseItemDto[]; isEditing: boolean; onDeleted: () => void; }> = ({ label, itemsFromList, viewOptions, itemsPerRow, libraries, isEditing, onDeleted }) => {
 	const listUrl = viewOptions.ItemKindService.listUrl && viewOptions.ItemKindService.listUrl(libraries.find((l) => l.Id === viewOptions.LibraryId)!) + "/" + viewOptions.Key;
 	const filteredAndSortedItems = useComputed(() => {
 		const listTypes = viewOptions.ItemKindService.listTypes ?? [viewOptions.ItemKindService.kind];
@@ -126,7 +128,7 @@ const HomeSectionWithLoadedItems: React.FC<{ label: string; itemsFromList: BaseI
 		<Layout direction="column" gap=".25rem">
 			<Layout direction="row" justifyContent="space-between">
 				<Layout direction="row" fontSize="1.3em" alignItems="end">{label}</Layout>
-				{isEditing && <Button type="button" onClick={() => { }} icon={<DeleteIcon />} px=".25em" py=".25em" />}
+				{isEditing && <Button type="button" onClick={onDeleted} icon={<DeleteIcon />} px=".25em" py=".25em" />}
 				{!isEditing && <ShowMoreLibraryLink filteredItems={filteredAndSortedItems} itemsPerRow={itemsPerRow} listUrl={listUrl!} />}
 			</Layout>
 

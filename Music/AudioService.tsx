@@ -6,8 +6,9 @@ import { ServerService } from "Servers/ServerService";
 import { ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models/item-sort-by";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Nullable } from "Common/MissingJavascriptFunctions";
+import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
 
-const BatchSize = 500;
+const BatchSize = 1000;
 function LoadMusicInBatches(abort: AbortController, libraryId: string): Promise<BaseItemDto[]> {
 	return new Promise((onResolved, onFailure) => {
 		const allItems: BaseItemDto[] = [];
@@ -38,4 +39,7 @@ export const AudioService: BaseItemKindService = {
 	findIcon: (props) => <MusicIcon {...props} />,
 	listUrl: (library) => `/Music/Songs/${library.Id}`,
 	loadList: (a, id) => LoadMusicInBatches(a, id),
+	sortOptions: [
+		SortByDateCreated,
+	],
 };
