@@ -102,7 +102,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 				</Layout>
 			</Layout>
 			<Layout direction="column" grow gap="2rem">
-				<Layout direction="row" justifyContent="space-between">
+				<Layout direction="row" justifyContent="space-between" gap="1rem">
 					<ItemPageTitle item={movie} editableItem={editableItem} isEditing={isEditing} />
 					<Layout direction="row" gap="1rem">
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
@@ -125,17 +125,14 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 
 				<ItemOverview item={movie} editableItem={editableItem} isEditing={isEditing} />
 
-				<Layout direction="row" gap=".5rem">
-					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
-					<ItemTags
-						item={movie}
-						isEditing={isEditing} editableItem={editableItem} libraryId={movie.ParentId!}
-						direction="row" gap=".5rem" wrap
-						linkClassName={background.button}
-						linkLayout={{ px: ".25em", py: ".25em" }}
-						showMoreLimit={25}
-					/>
-				</Layout>
+				<ItemTags
+					item={movie}
+					isEditing={isEditing} editableItem={editableItem} libraryId={movie.ParentId!}
+					direction="row" gap=".5rem" wrap
+					linkClassName={background.button}
+					linkLayout={{ px: ".25em", py: ".25em" }}
+					showMoreLimit={25}
+				/>
 
 				<Layout direction="column" minWidth="100%">
 					<Layout direction="row" fontSize="1.5em" py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>

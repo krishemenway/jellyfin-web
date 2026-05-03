@@ -92,7 +92,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 
 				<ItemStudios
 					item={show}
-					direction="row" gap=".5em"
+					direction="row" gap=".5em" wrap
 					linkClassName={background.button}
 					linkLayout={{ direction: "column", width: { itemsPerRow: leftPanelItemsPerRow }, py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					showMoreLimit={3}
@@ -101,15 +101,15 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 
 				<ItemExternalLinks
 					item={show}
-					direction="row" gap=".5em"
-					linkClassName={background.button} wrap
+					direction="row" gap=".5em" wrap
+					linkClassName={background.button}
 					linkLayout={{ direction: "column", width: { itemsPerRow: leftPanelItemsPerRow }, py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					editableItem={editableItem} isEditing={isEditing}
 				/>
 
 				<ItemGenres
 					item={show}
-					direction="row" gap=".5em"
+					direction="row" gap=".5em" wrap
 					linkClassName={background.button}
 					linkLayout={{ direction: "column", width: { itemsPerRow: leftPanelItemsPerRow }, py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					showMoreLimit={4}
@@ -146,7 +146,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 
 				<ItemStudios
 					item={selectedEpisode}
-					direction="row" gap=".5em"
+					direction="row" gap=".5em" wrap
 					linkClassName={background.button}
 					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					showMoreLimit={3}
@@ -155,7 +155,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 
 				<ItemExternalLinks
 					item={selectedEpisode}
-					direction="row" gap=".5em"
+					direction="row" gap=".5em" wrap
 					linkClassName={background.button}
 					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					editableItem={editableItem} isEditing={isEditing}
@@ -163,7 +163,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 
 				<ItemGenres
 					item={selectedEpisode}
-					direction="row" gap=".5em"
+					direction="row" gap=".5em" wrap
 					linkClassName={background.button}
 					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					showMoreLimit={4}
@@ -181,7 +181,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 
 	return (
 		<Layout direction="column" grow gap="1.5rem">
-			<Layout direction="row" justifyContent="space-between">
+			<Layout direction="row" justifyContent="space-between" gap="1rem">
 				<ItemPageTitle item={show} isEditing={isEditing} editableItem={editableItem} />
 				<Layout direction="row" gap="1rem">
 					{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
@@ -209,17 +209,14 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 
 			<ItemOverview item={show} isEditing={isEditing} editableItem={editableItem} />
 
-			<Layout direction="row" gap=".5em">
-				<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
-				<ItemTags
-					item={show}
-					isEditing={isEditing} editableItem={editableItem} libraryId={show.ParentId!}
-					direction="row" gap=".5em" wrap
-					linkClassName={background.button}
-					linkLayout={{ px: ".25em", py: ".25em" }}
-					showMoreLimit={25}
-				/>
-			</Layout>
+			<ItemTags
+				item={show}
+				isEditing={isEditing} editableItem={editableItem} libraryId={show.ParentId!}
+				direction="row" gap=".5em" wrap
+				linkClassName={background.button}
+				linkLayout={{ px: ".25em", py: ".25em" }}
+				showMoreLimit={25}
+			/>
 
 			<CastAndCrewSection item={show} editableItem={editableItem} isEditing={isEditing} startOpen={false} />
 
@@ -238,7 +235,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 	return (
 		<Layout direction="column" grow gap="1.5em">
 			<Layout direction="column" gap=".5em">
-				<Layout direction="row" justifyContent="space-between">
+				<Layout direction="row" justifyContent="space-between" gap="1rem">
 					<ItemPageTitle item={show} editableItem={undefined} isEditing={false} />
 					<Layout direction="row" gap=".5em">
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
@@ -269,17 +266,14 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 
 			<ItemOverview item={episode} editableItem={editableEpisode} isEditing={isEditing} />
 
-			<Layout direction="row" gap=".5em">
-				<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
-				<ItemTags
-					item={episode}
-					isEditing={isEditing} editableItem={editableEpisode} libraryId={show.ParentId!}
-					direction="row" gap=".5em" wrap
-					linkClassName={background.button}
-					linkLayout={{ px: ".25em", py: ".25em" }}
-					showMoreLimit={25}
-				/>
-			</Layout>
+			<ItemTags
+				item={episode}
+				isEditing={isEditing} editableItem={editableEpisode} libraryId={show.ParentId!}
+				direction="row" gap=".5em" wrap
+				linkClassName={background.button}
+				linkLayout={{ px: ".25em", py: ".25em" }}
+				showMoreLimit={25}
+			/>
 
 			<CastAndCrewSection item={episode} editableItem={editableEpisode} isEditing={isEditing} startOpen />
 		</Layout>

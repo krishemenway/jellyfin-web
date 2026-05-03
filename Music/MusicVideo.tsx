@@ -37,6 +37,12 @@ import { ItemEditorService, useEditableItem } from "Items/ItemEditorService";
 import { useObservable } from "@residualeffect/rereactor";
 import { RevertIcon } from "CommonIcons/RevertIcon";
 import { SaveIcon } from "CommonIcons/SaveIcon";
+import { EditableItemProps } from "Items/EditableItemProps";
+import { TextField } from "Common/TextField";
+import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
+import { HyperLink } from "Common/HyperLink";
+import { FieldLabel } from "Common/FieldLabel";
+import { MultiSelectEditor } from "Common/SelectFieldEditor";
 
 export const MusicVideo: React.FC = () => {
 	const routeParams = useParams<{ musicVideoId: string }>();
@@ -47,7 +53,6 @@ export const MusicVideo: React.FC = () => {
 	}
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(musicVideoId).LoadItemWithAbort(), [musicVideoId]);
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(musicVideoId).LoadChildrenWithAbort(true, { recursive: true }), [musicVideoId]);
 
 	return (
 		<PageWithNavigation icon="Series">
@@ -105,8 +110,8 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 					/>
 				</Layout>
 			</Layout>
-			<Layout direction="column" grow gap="2em">
-				<Layout direction="row" justifyContent="space-between">
+			<Layout direction="column" grow gap="1rem">
+				<Layout direction="row" justifyContent="space-between" gap="1rem">
 					<ItemPageTitle item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
 					<Layout direction="row" gap="1rem">
 						{!isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<PlayIcon />} onClick={() => { VideoPlayerService.Instance.ClearAndPlay([musicVideo]) }} />}
@@ -128,19 +133,21 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 					</Layout>
 				</Layout>
 
+				<Layout direction="row" alignItems="center" gap="1rem">
+					<AlbumName item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
+					<Artists item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
+				</Layout>
+
 				<ItemOverview item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
 
-				<Layout direction="row" gap=".5em">
-					<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
-					<ItemTags
-						item={musicVideo}
-						direction="row" gap=".5em" wrap
-						linkClassName={background.button}
-						linkLayout={{ px: ".25em", py: ".25em" }}
-						showMoreLimit={25}
-						isEditing={isEditing} editableItem={editableItem} libraryId={musicVideo.ParentId!}
-					/>
-				</Layout>
+				<ItemTags
+					item={musicVideo}
+					direction="row" gap=".5em" wrap
+					linkClassName={background.button}
+					linkLayout={{ px: ".25em", py: ".25em" }}
+					showMoreLimit={25}
+					isEditing={isEditing} editableItem={editableItem} libraryId={musicVideo.ParentId!}
+				/>
 
 				<Layout direction="column" minWidth="100%">
 					<Layout direction="row" fontSize="1.5em" py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
@@ -156,4 +163,70 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 			</Layout>
 		</Layout>
 	)
-}
+};
+
+const AlbumName: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {
+	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
+		return (
+			<>
+				<FieldLabel field={props.editableItem.Album} />
+				<TextField field={props.editableItem.Album} py=".5em" px=".25em" />
+			</>
+		);
+	}
+
+	if (Nullable.HasValue(props.item.AlbumId)) {
+		return (
+			<>
+				<Layout direction="row"><TranslatedText textKey="Album" /></Layout>
+				<HyperLink to={BaseItemKindServiceFactory.FindOrNull("MusicAlbum")?.findUrl!({ Id: props.item.AlbumId })!} direction="row" px=".5em" py=".25em">{props.item.Album}</HyperLink>
+			</>
+		);
+	}
+
+	if (Nullable.HasValue(props.item.Album)) {
+		return (
+			<>
+				<Layout direction="row"><TranslatedText textKey="Album" /></Layout>
+				<Layout direction="row" px=".5em" py=".25em">{props.item.Album}</Layout>
+			</>
+		);
+	}
+
+	return undefined;
+};
+
+const Artists: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {
+	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
+		return (
+			<>
+				<FieldLabel field={props.editableItem.ArtistItems} />
+				<MultiSelectEditor field={props.editableItem.ArtistItems} allOptions={[]} createNew={(v) => ({ Id: undefined, Name: v })} getLabel={(l) => l.Name} getValue={(l) => l.Name!} />
+			</>
+		);
+	}
+
+	if (Nullable.HasValue(props.item.ArtistItems) && props.item.ArtistItems.length > 0) {
+		return (
+			<>
+				<Layout direction="row"><TranslatedText textKey="Artists" /></Layout>
+				{props.item.ArtistItems.map((ai) => (
+					<HyperLink key={ai.Name} to={BaseItemKindServiceFactory.FindOrNull("MusicAlbum")?.findUrl!({ Id: ai.Id })!} direction="row" px=".5em" py=".25em">{ai.Name}</HyperLink>
+				))}
+			</>
+		);
+	}
+
+	if (Nullable.HasValue(props.item.Artists) && props.item.Artists.length > 0) {
+		return (
+			<>
+				<Layout direction="row"><TranslatedText textKey="Artists" /></Layout>
+				{props.item.Artists.map((artist) => (
+					<Layout key={artist} direction="row" px=".5em" py=".25em">{artist}</Layout>
+				))}
+			</>
+		);
+	}
+
+	return undefined;
+};

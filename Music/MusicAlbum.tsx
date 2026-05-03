@@ -104,7 +104,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 				</Layout>
 
 				<Layout direction="column" maxWidth="100em" grow gap="1em">
-					<Layout direction="row" justifyContent="space-between" gap="2em">
+					<Layout direction="row" justifyContent="space-between" gap="1rem">
 						<ItemPageTitle item={album} isEditing={isEditing} editableItem={editableItem} />
 						
 						<Layout direction="row" gap="1rem">
@@ -130,17 +130,15 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 					<Layout direction="column" gap="1em" maxWidth="95%">
 						<ItemOverview item={album} editableItem={editableItem} isEditing={isEditing} />
 
-						<Layout direction="row" gap=".5em">
-							<TranslatedText textKey="Tags" formatText={(t) => `${t}:`} elementType="div" layout={{ px: ".25em", py: ".25em" }} />
-							<ItemTags
-								item={album}
-								direction="row" gap=".5em" wrap
-								linkClassName={background.button}
-								linkLayout={{ px: ".25em", py: ".25em" }}
-								showMoreLimit={25}
-								isEditing={isEditing} libraryId={album.ParentId!} editableItem={editableItem}
-							/>
-						</Layout>
+						<ItemTags
+							item={album}
+							direction="row" gap=".5em" wrap
+							linkClassName={background.button}
+							linkLayout={{ px: ".25em", py: ".25em" }}
+							showMoreLimit={25}
+							isEditing={isEditing} libraryId={album.ParentId!} editableItem={editableItem}
+						/>
+
 						<AlbumSongsWithPossibleDiscs albumId={album.Id!} allSongs={allSongs} />
 					</Layout>
 				</Layout>

@@ -31,7 +31,7 @@ export class EditableItem {
 
 		this.Album = new EditableField("Album", Nullable.Value(item, undefined, (i) => i.Album));
 		this.AlbumArtists = new EditableField("AlbumArtists", Nullable.Value(item, undefined, (i) => i.AlbumArtists));
-		this.ArtistItems = new EditableField("ArtistItems", Nullable.Value(item, undefined, (i) => i.ArtistItems));
+		this.ArtistItems = new EditableField("Artists", Nullable.Value(item, [], (i) => i.ArtistItems ?? []));
 
 		this.Status = new EditableField("Status", Nullable.Value(item, undefined, (i) => i.Status));
 
@@ -187,7 +187,7 @@ export class EditableItem {
 
 	public Album: EditableField<string|undefined|null>;;
 	public AlbumArtists: EditableField<NameGuidPair[]|undefined|null>;
-	public ArtistItems: EditableField<NameGuidPair[]|undefined|null>;
+	public ArtistItems: EditableField<NameGuidPair[]>;
 
 	public Studios: EditableField<NameGuidPair[]>;
 

@@ -13,6 +13,6 @@ export const ItemPageTitle: React.FC<{ item: BaseItemDto; }&EditableItemProps> =
 	React.useEffect(() => { document.title = props.item.Name + Nullable.Value(server, "", (s) => ` | ${s.ServerName}`); }, [props.item, server]);
 
 	return props.isEditing && Nullable.HasValue(props.editableItem)
-		? <TextField field={props.editableItem.Name} fontSize="1.75rem" />
+		? <TextField field={props.editableItem.Name} fontSize="1.75rem" grow px=".25em" />
 		: <Layout direction="row" fontSize="1.75rem" elementType="h1">{props.item.Name}</Layout>;
 };
