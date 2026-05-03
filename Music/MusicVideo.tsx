@@ -43,6 +43,7 @@ import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { HyperLink } from "Common/HyperLink";
 import { FieldLabel } from "Common/FieldLabel";
 import { MultiSelectEditor } from "Common/SelectFieldEditor";
+import { ItemPremiereDate } from "Items/ItemPremiereDate";
 
 export const MusicVideo: React.FC = () => {
 	const routeParams = useParams<{ musicVideoId: string }>();
@@ -138,6 +139,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 					<Artists item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
 				</Layout>
 
+				<ItemPremiereDate item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
 				<ItemOverview item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
 
 				<ItemTags

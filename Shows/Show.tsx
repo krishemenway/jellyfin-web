@@ -45,6 +45,7 @@ import { AggregateItemDuration, ItemDuration } from "Items/ItemDuration";
 import { EditableItemProps } from "Items/EditableItemProps";
 import { NumberField, TextField } from "Common/TextField";
 import { FieldLabel } from "Common/FieldLabel";
+import { ItemPremiereDate } from "Items/ItemPremiereDate";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
@@ -264,7 +265,8 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 				<ItemDuration item={episode} />
 			</Layout>
 
-			<ItemOverview item={episode} editableItem={editableEpisode} isEditing={isEditing} />
+			<ItemPremiereDate item={episode} isEditing={isEditing} editableItem={editableEpisode} />
+			<ItemOverview item={episode} isEditing={isEditing} editableItem={editableEpisode} />
 
 			<ItemTags
 				item={episode}
@@ -275,7 +277,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 				showMoreLimit={25}
 			/>
 
-			<CastAndCrewSection item={episode} editableItem={editableEpisode} isEditing={isEditing} startOpen />
+			<CastAndCrewSection item={episode} isEditing={isEditing} editableItem={editableEpisode} startOpen />
 		</Layout>
 	);
 };

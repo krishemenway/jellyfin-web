@@ -4,6 +4,7 @@ import { EditableField, IEditableField } from "Common/EditableField";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { EditablePersonCredit } from "Items/EditablePersonCredit";
 import { EditableItemProvider } from "Items/EditableItemProvider";
+import { formatISO } from "date-fns/formatISO";
 
 export class EditableItem {
 	constructor(item: BaseItemDto) {
@@ -44,7 +45,7 @@ export class EditableItem {
 		this.ProviderIds = new ObservableArray(Nullable.Value(item, [], (i) => Object.keys(i.ProviderIds ?? {}).map(key => new EditableItemProvider(key, i.ProviderIds![key]))));
 
 		this.Studios = new EditableField("Studios", Nullable.Value(item, [], (i) => i.Studios ?? []));
-		this.PremiereDate = new EditableField("PremiereDate", Nullable.Value(item, undefined, (i) => i.PremiereDate));
+		this.PremiereDate = new EditableField("Premiere", Nullable.Value(item?.PremiereDate, "", (date) => formatISO(date, { representation: 'date' })));
 		this.DateCreated = new EditableField("DateCreated", Nullable.Value(item, undefined, (i) => i.DateCreated));
 		this.EndDate = new EditableField("EndDate", Nullable.Value(item, undefined, (i) => i.EndDate));
 		this.ProductionYear = new EditableField("ProductionYear", Nullable.Value(item, undefined, (i) => i.ProductionYear));
@@ -79,7 +80,7 @@ export class EditableItem {
 			AirTime: this.AirTime.Current.Value,
 			Album: this.Album.Current.Value,
 			AlbumArtists: this.AlbumArtists.Current.Value,
-			ArtistItems: this.ArtistItems.Current.Value,
+			Artists: this.ArtistItems.Current.Value.map((i) => i.Name).filter((i) => Nullable.HasValue(i)),
 			AspectRatio: this.AspectRatio.Current.Value,
 			CommunityRating: this.CommunityRating.Current.Value,
 			CriticRating: this.CriticRating.Current.Value,
@@ -173,8 +174,8 @@ export class EditableItem {
 
 	public CommunityRating: EditableField<number|undefined|null>;
 	public CriticRating: EditableField<number|undefined|null>;
-	public OfficialRating: EditableField<string|undefined|null>;;
-	public CustomRating: EditableField<string|undefined|null>;;
+	public OfficialRating: EditableField<string|undefined|null>;
+	public CustomRating: EditableField<string|undefined|null>;
 
 	public IndexNumber: EditableField<number|undefined|null>;
 	public ParentIndexNumber: EditableField<number|undefined|null>;
@@ -182,31 +183,31 @@ export class EditableItem {
 	public AirsBeforeSeasonNumber: EditableField<number|undefined|null>;
 	public AirsAfterSeasonNumber: EditableField<number|undefined|null>;
 	public AirsBeforeEpisodeNumber: EditableField<number|undefined|null>;
-	public SeasonName: EditableField<string|undefined|null>;;
-	public DisplayOrder: EditableField<string|undefined|null>;;
+	public SeasonName: EditableField<string|undefined|null>;
+	public DisplayOrder: EditableField<string|undefined|null>;
 
-	public Album: EditableField<string|undefined|null>;;
+	public Album: EditableField<string|undefined|null>;
 	public AlbumArtists: EditableField<NameGuidPair[]|undefined|null>;
 	public ArtistItems: EditableField<NameGuidPair[]>;
 
 	public Studios: EditableField<NameGuidPair[]>;
 
-	public Status: EditableField<string|undefined|null>;;
+	public Status: EditableField<string|undefined|null>;
 
 	public AirDays: EditableField<DayOfWeek[]|undefined|null>;
-	public AirTime: EditableField<string|undefined|null>;;
+	public AirTime: EditableField<string|undefined|null>;
 
 	public Genres: EditableField<string[]>;
 	public Tags: EditableField<string[]>;
 
-	public PremiereDate: EditableField<string|undefined|null>;;
+	public PremiereDate: EditableField<string>;
 	public ProductionYear: EditableField<number|undefined|null>;
 
-	public DateCreated: EditableField<string|undefined|null>;;
-	public EndDate: EditableField<string|undefined|null>;;
+	public DateCreated: EditableField<string|undefined|null>;
+	public EndDate: EditableField<string|undefined|null>;
 
 	public Height: EditableField<number|undefined|null>;
-	public AspectRatio: EditableField<string|undefined|null>;;
+	public AspectRatio: EditableField<string|undefined|null>;
 	public Video3DFormat: EditableField<Video3DFormat|undefined>;
 
 	public People: ObservableArray<EditablePersonCredit>;
@@ -215,6 +216,6 @@ export class EditableItem {
 	public LockData: EditableField<boolean|undefined|null>;
 	public LockedFields: EditableField<MetadataField[]|undefined|null>;
 
-	public PreferredMetadataLanguage: EditableField<string|undefined|null>;;
-	public PreferredMetadataCountryCode: EditableField<string|undefined|null>;;
+	public PreferredMetadataLanguage: EditableField<string|undefined|null>;
+	public PreferredMetadataCountryCode: EditableField<string|undefined|null>;
 }

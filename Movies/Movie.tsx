@@ -35,6 +35,7 @@ import { Button } from "Common/Button";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { useObservable } from "@residualeffect/rereactor";
 import { RevertIcon } from "CommonIcons/RevertIcon";
+import { ItemPremiereDate } from "Items/ItemPremiereDate";
 
 export const Movie: React.FC = () => {
 	const movieId = useParams<{ movieId: string }>().movieId;
@@ -123,6 +124,7 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 					</Layout>
 				</Layout>
 
+				<ItemPremiereDate item={movie} isEditing={isEditing} editableItem={editableItem} />
 				<ItemOverview item={movie} editableItem={editableItem} isEditing={isEditing} />
 
 				<ItemTags
