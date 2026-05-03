@@ -72,7 +72,6 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[]; server: SystemI
 
 					<Layout direction="column">
 						<NavigationDivider />
-						<Layout direction="row" elementType="h3" py="1em" px="1em"><TranslatedText textKey="HeaderLibraries" /></Layout>
 						<Layout direction="row" wrap>
 							{libraries.map((library) => (
 								<LinkToItem
@@ -100,8 +99,6 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[]; server: SystemI
 
 					<Layout direction="column">
 						<NavigationDivider />
-						<Layout direction="row" elementType="h3" py="1em" px="1em"><TranslatedText textKey="UserMenu" /></Layout>
-
 						<NavigationMenuItemHyperLink to="/Settings" icon={<SettingsIcon />} text={<TranslatedText textKey="Settings" />} />
 						{quickConnectEnabled && <AuthorizeQuickConnectButton onOpened={closeNavigation} />}
 						<ChangeServerButton transparent {...NavigationMenuLinkStyles} onOpened={closeNavigation} />
