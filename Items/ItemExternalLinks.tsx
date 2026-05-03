@@ -73,10 +73,11 @@ const ExternalProviderEditors: React.FC<{ metadataInfo: MetadataEditorInfo; link
 					allOptions={remainingProviders}
 					getLabel={(i) => i?.Name}
 					getValue={(i) => i?.Key ?? ""}
+					py=".5em"
 					grow
 				/>
 
-				<Button type="button" px=".25em" onClick={() => { props.editableItem?.ProviderIds.push(new EditableItemProvider(selectNewProviderField.Current.Value?.Key!, "")); }} icon={<AddIcon />} alignItems="center" />
+				<Button type="button" px=".5em" py=".5em" onClick={() => { props.editableItem?.ProviderIds.push(new EditableItemProvider(selectNewProviderField.Current.Value?.Key!, "")); }} icon={<AddIcon />} alignItems="center" />
 			</Layout>
 		</Layout>
 	);
