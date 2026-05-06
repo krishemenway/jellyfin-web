@@ -8,9 +8,9 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemService } from "Items/ItemsService";
 import { ListOf } from "Common/ListOf";
-import { ItemsRow } from "Items/ItemsRow";
+import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { ItemImage } from "Items/ItemImage";
+import { ImageShape, ItemImage } from "Items/ItemImage";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemTags } from "Items/ItemTags";
 import { ItemRating } from "Items/ItemRating";
@@ -319,11 +319,36 @@ const SeasonForShow: React.FC<{ season: BaseItemDto; allEpisodes: BaseItemDto[];
 			</Button>
 
 			<Collapsible open={seasonOpen}>
-				<ItemsRow items={episodes} itemName={(item) => `${item.IndexNumber}. ${item.Name}`} fallbackItem={season} />
+				<EpisodesInSeason episodes={episodes} season={season} />
 			</Collapsible>
 		</Layout>
 	);
 };
+
+interface EpisodesInSeasonProps {
+	episodes: BaseItemDto[];
+	season: BaseItemDto;
+}
+
+const EpisodesInSeason: React.FC<EpisodesInSeasonProps> = (props) => {
+	const background = useBackgroundStyles();
+	const itemsPerRow = useBreakpointValues(2, 3, 5, 7);
+
+	return (
+		<Layout direction="row" px=".5em" py=".5em" gap=".5em" wrap className={background.panel}>
+			{props.episodes.map((item) => (
+				<ItemsGridItem
+					item={item}
+					itemsPerRow={itemsPerRow}
+					shape={ImageShape.Landscape}
+					fallback={props.season}
+					getContent={(item) => `${item.IndexNumber}. ${item.Name}`}
+				/>
+			))}
+		</Layout>
+	);
+};
+
 
 const ProductionYearRangeForEpisodes: React.FC<{ episodes: BaseItemDto[] }> = (props) => {
 	const allYears = React.useMemo(() => props.episodes.filter((e) => Nullable.HasValue(e.ProductionYear)).map((e) => e.ProductionYear), [props.episodes]);
