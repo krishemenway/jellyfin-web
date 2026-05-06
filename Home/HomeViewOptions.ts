@@ -15,6 +15,22 @@ export class HomeViewOptions {
 		this.ViewOptions = new Computed(() => this.LoadHomeOptions());
 	}
 
+	public Remove(keyIndex: number): void {
+		this.ViewOptionsKeys.OnChange(this.ViewOptionsKeys.Current.Value.filter((o, i) => keyIndex !== i));
+	}
+
+	public Swap(keyIndexA: number, keyIndexB: number) {
+		const set = this.ViewOptionsKeys.Current.Value;
+
+		const valueA = this.ViewOptionsKeys.Current.Value[keyIndexA];
+		const valueB = this.ViewOptionsKeys.Current.Value[keyIndexB];
+
+		set[keyIndexA] = valueB;
+		set[keyIndexB] = valueA;
+
+		this.ViewOptionsKeys.OnChange(set);
+	}
+
 	public Save(): void {
 		SettingsStore.Instance.SaveSettings("usersettings", this.Settings.CreateSaveRequestWithChangedKey("ViewOptionHomeConfigurations", this.ViewOptionsKeys.Current.Value), () => {
 			SettingsStore.Instance.LoadSettings("usersettings", () => {

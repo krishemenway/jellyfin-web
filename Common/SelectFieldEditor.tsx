@@ -40,6 +40,7 @@ export function AutoCompleteFieldEditor<TOption>(props: SelectFieldEditorProps<T
 			value={selectedOption}
 			onChange={(newValue) => props.field.OnChange(props.allOptions.find((o) => props.getValue(o) === (newValue as SingleValue<{ value: string; label: string }>)?.value)!)}
 			components={{ MenuList: MenuList }}
+			menuShouldScrollIntoView
 			styles={{
 				container: (base) => ({ ...base, width: "100%" }),
 				menu: (base) => ({ ...base, backgroundColor: theme.PanelBackgroundColor }),
