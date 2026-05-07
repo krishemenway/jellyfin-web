@@ -3,13 +3,13 @@ import { EditableField, IEditableField, ValueIsRequired } from "Common/EditableF
 
 export class EditablePersonCredit {
 	constructor(personCredit?: BaseItemPerson) {
-		this.Key = (EditablePersonCredit.LastId++).toString();
+		this.Key = self.crypto.randomUUID();
 		this.From = personCredit;
 
-		this.Id = new EditableField(`Id-${this.Key}`, this.From?.Id ?? "", (newId) => ValueIsRequired(newId));
+		this.Id = new EditableField(`Id-${this.Key}`, this.From?.Id);
 		this.Name = new EditableField(`Name-${this.Key}`, this.From?.Name ?? "", (newName) => ValueIsRequired(newName));
 		this.Type = new EditableField(`Type-${this.Key}`, this.From?.Type ?? PersonKind.Unknown, (c) => ValueIsRequired(c));
-		this.Role = new EditableField(`Role-${this.Key}`, this.From?.Role ?? "", (newRole) => ValueIsRequired(newRole));
+		this.Role = new EditableField(`Role-${this.Key}`, this.From?.Role ?? undefined);
 	}
 
 	public AllFields(): IEditableField[] {
@@ -31,12 +31,10 @@ export class EditablePersonCredit {
 	}
 
 	public Key: string;
-	public Id: EditableField<string>;
+	public Id: EditableField<string|undefined>;
 	public Name: EditableField<string>;
-	public Role: EditableField<string>;
+	public Role: EditableField<string|undefined>;
 	public Type: EditableField<PersonKind>;
 
 	public From: BaseItemPerson|undefined;
-
-	private static LastId = 1;
 }

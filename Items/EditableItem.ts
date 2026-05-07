@@ -59,7 +59,7 @@ export class EditableItem {
 		this.PreferredMetadataCountryCode = new EditableField("PreferredMetadataCountryCode", Nullable.Value(item, undefined, (i) => i.PreferredMetadataCountryCode));
 		this.Taglines = new EditableField("Taglines", Nullable.Value(item, undefined, (i) => i.Taglines));
 
-		this.CanMakeRequest = new Computed(() => this.AllFields().some((f) => f.CanMakeRequest()));
+		this.CanMakeRequest = new Computed(() => this.AllFields().every((f) => f.CanMakeRequest()));
 		this.HasChanged = new Computed(() => this.AllFields().some((f) => f.HasChanged.Value));
 	}
 
