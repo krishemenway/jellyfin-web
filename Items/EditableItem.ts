@@ -48,7 +48,6 @@ export class EditableItem {
 		this.PremiereDate = new EditableField("Premiere", Nullable.Value(item?.PremiereDate, "", (date) => formatISO(date, { representation: 'date' })));
 		this.DateCreated = new EditableField("DateCreated", Nullable.Value(item, undefined, (i) => i.DateCreated));
 		this.EndDate = new EditableField("EndDate", Nullable.Value(item, undefined, (i) => i.EndDate));
-		this.ProductionYear = new EditableField("ProductionYear", Nullable.Value(item, undefined, (i) => i.ProductionYear));
 		this.Height = new EditableField("Height", Nullable.Value(item, undefined, (i) => i.Height));
 		this.AspectRatio = new EditableField("AspectRatio", Nullable.Value(item, undefined, (i) => i.AspectRatio));
 		this.Video3DFormat = new EditableField("Video3DFormat", Nullable.Value(item, undefined, (i) => i.Video3DFormat));
@@ -103,7 +102,7 @@ export class EditableItem {
 			PreferredMetadataCountryCode: this.PreferredMetadataCountryCode.Current.Value,
 			PreferredMetadataLanguage: this.PreferredMetadataLanguage.Current.Value,
 			PremiereDate: this.PremiereDate.Current.Value,
-			ProductionYear: this.ProductionYear.Current.Value,
+			ProductionYear: Nullable.StringHasValue(this.PremiereDate.Current.Value) ? parseInt(this.PremiereDate.Current.Value.slice(0, 4)) : undefined,
 			ProviderIds: this.ProviderIds.Value.reduce((all, current) => { all[current.Key] = current.Value.Current.Value ?? null; return all; }, {} as { [key: string]: string|null }),
 			SeasonName: this.SeasonName.Current.Value,
 			Status: this.Status.Current.Value,
@@ -145,7 +144,6 @@ export class EditableItem {
 			this.PreferredMetadataCountryCode,
 			this.PreferredMetadataLanguage,
 			this.PremiereDate,
-			this.ProductionYear,
 			this.SeasonName,
 			this.Status,
 			this.Studios,
@@ -201,7 +199,6 @@ export class EditableItem {
 	public Tags: EditableField<string[]>;
 
 	public PremiereDate: EditableField<string>;
-	public ProductionYear: EditableField<number|undefined|null>;
 
 	public DateCreated: EditableField<string|undefined|null>;
 	public EndDate: EditableField<string|undefined|null>;
