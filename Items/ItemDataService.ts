@@ -14,8 +14,8 @@ export class ItemDataService {
 		this.RelatedPeople = new Receiver("UnknownError");
 	}
 
-	public LoadItemWithAbort(): () => void {
-		if (this.Item.HasData.Value) {
+	public LoadItemWithAbort(forceRefresh?: boolean): () => void {
+		if (this.Item.HasData.Value && forceRefresh !== true) {
 			return () => { };
 		}
 

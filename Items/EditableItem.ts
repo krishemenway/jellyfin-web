@@ -1,7 +1,7 @@
 import { BaseItemDto, BaseItemKind, DayOfWeek, MetadataField, NameGuidPair, PersonKind, Video3DFormat } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed, ObservableArray } from "@residualeffect/reactor";
 import { EditableField, IEditableField } from "Common/EditableField";
-import { Nullable } from "Common/MissingJavascriptFunctions";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { EditablePersonCredit } from "Items/EditablePersonCredit";
 import { EditableItemProvider } from "Items/EditableItemProvider";
 import { formatISO } from "date-fns/formatISO";
@@ -32,7 +32,7 @@ export class EditableItem {
 
 		this.Album = new EditableField("Album", Nullable.Value(item, undefined, (i) => i.Album));
 		this.AlbumArtists = new EditableField("AlbumArtists", Nullable.Value(item, undefined, (i) => i.AlbumArtists));
-		this.ArtistItems = new EditableField("Artists", Nullable.Value(item, [], (i) => i.ArtistItems ?? []));
+		this.ArtistItems = new EditableField("Artists", Nullable.Value(item, [], (i) => Linq.Distinct((i.ArtistItems ?? []).map((ai) => ai.Name!).concat(i.Artists ?? []))).map((a) => ({ Id: undefined, Name: a }) as NameGuidPair));
 
 		this.Status = new EditableField("Status", Nullable.Value(item, undefined, (i) => i.Status));
 
@@ -80,7 +80,7 @@ export class EditableItem {
 			AirTime: this.AirTime.Current.Value,
 			Album: this.Album.Current.Value,
 			AlbumArtists: this.AlbumArtists.Current.Value,
-			Artists: this.ArtistItems.Current.Value.map((i) => i.Name).filter((i) => Nullable.HasValue(i)),
+			ArtistItems: this.ArtistItems.Current.Value.map((i) => ({ Id: i.Id, Name: i.Name })).filter((i) => Nullable.HasValue(i.Name)),
 			AspectRatio: this.AspectRatio.Current.Value,
 			CommunityRating: this.CommunityRating.Current.Value,
 			CriticRating: this.CriticRating.Current.Value,

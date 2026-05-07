@@ -86,7 +86,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 
 					<ItemExternalLinks
 						item={musicVideo}
-						direction="row" gap=".5em"
+						direction="row" gap=".5em" wrap
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						editableItem={editableItem} isEditing={isEditing}
@@ -94,7 +94,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 
 					<ItemGenres
 						item={musicVideo}
-						direction="row" gap=".5em"
+						direction="row" gap=".5em" wrap
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={4}
@@ -103,7 +103,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 
 					<ItemStudios
 						item={musicVideo}
-						direction="column" gap=".5em"
+						direction="column" gap=".5em" wrap
 						linkClassName={background.button}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={3}
@@ -208,22 +208,14 @@ const Artists: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {
 		);
 	}
 
-	if (Nullable.HasValue(props.item.ArtistItems) && props.item.ArtistItems.length > 0) {
+	if ((props.item.ArtistItems?.length ?? 0) > 0 || (props.item.Artists?.length ?? 0) > 0) {
 		return (
 			<>
 				<Layout direction="row"><TranslatedText textKey="Artists" /></Layout>
-				{props.item.ArtistItems.map((ai) => (
-					<HyperLink key={ai.Name} to={BaseItemKindServiceFactory.FindOrNull("MusicAlbum")?.findUrl!({ Id: ai.Id })!} direction="row" px=".5em" py=".25em">{ai.Name}</HyperLink>
+				{props.item.ArtistItems?.map((ai) => (
+					<HyperLink key={ai.Name} to={BaseItemKindServiceFactory.FindOrNull("MusicArtist")?.findUrl!({ Id: ai.Id })!} direction="row" px=".5em" py=".25em">{ai.Name}</HyperLink>
 				))}
-			</>
-		);
-	}
-
-	if (Nullable.HasValue(props.item.Artists) && props.item.Artists.length > 0) {
-		return (
-			<>
-				<Layout direction="row"><TranslatedText textKey="Artists" /></Layout>
-				{props.item.Artists.map((artist) => (
+				{props.item.Artists?.filter((artist) => !Nullable.HasValue(props.item.ArtistItems?.find((artistItem) => artistItem.Name === artist))).map((artist) => (
 					<Layout key={artist} direction="row" px=".5em" py=".25em">{artist}</Layout>
 				))}
 			</>
