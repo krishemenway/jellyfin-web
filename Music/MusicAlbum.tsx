@@ -35,6 +35,12 @@ import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { LoginService } from "Users/LoginService";
 import { MusicAlbumSongs } from "Music/MusicAlbumSongs";
 import { ItemPremiereDate } from "Items/ItemPremiereDate";
+import { EditableItemProps } from "Items/EditableItemProps";
+import { FieldLabel } from "Common/FieldLabel";
+import { MultiSelectEditor } from "Common/SelectFieldEditor";
+import { TranslatedText } from "Common/TranslatedText";
+import { HyperLink } from "Common/HyperLink";
+import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 export const MusicAlbum: React.FC = () => {
 	const routeParams = useParams<{ albumId: string; songId?: string; }>();
@@ -127,6 +133,9 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 
 					<Layout direction="column" gap="1em" maxWidth="95%">
 						<ItemOverview item={album} editableItem={editableItem} isEditing={isEditing} />
+						<Layout direction="row" alignItems="center" gap="1rem">
+							<Artists item={album} isEditing={isEditing} editableItem={editableItem} />
+						</Layout>
 						<ItemPremiereDate item={album} editableItem={editableItem} isEditing={isEditing} />
 
 						<ItemTags
@@ -144,4 +153,31 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 			</Layout>
 		</Layout>
 	);
+};
+
+const Artists: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {
+	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
+		return (
+			<>
+				<FieldLabel field={props.editableItem.ArtistItems} />
+				<MultiSelectEditor field={props.editableItem.ArtistItems} allOptions={[]} createNew={(v) => ({ Id: undefined, Name: v })} getLabel={(l) => l.Name} getValue={(l) => l.Name!} />
+			</>
+		);
+	}
+
+	if ((props.item.ArtistItems?.length ?? 0) > 0 || (props.item.Artists?.length ?? 0) > 0) {
+		return (
+			<>
+				<Layout direction="row"><TranslatedText textKey="Artists" /></Layout>
+				{props.item.ArtistItems?.map((ai) => (
+					<HyperLink key={ai.Name} to={BaseItemKindServiceFactory.FindOrNull("MusicArtist")?.findUrl!({ Id: ai.Id })!} direction="row" px=".5em" py=".25em">{ai.Name}</HyperLink>
+				))}
+				{props.item.Artists?.filter((artist) => !Nullable.HasValue(props.item.ArtistItems?.find((artistItem) => artistItem.Name === artist))).map((artist) => (
+					<Layout key={artist} direction="row" px=".5em" py=".25em">{artist}</Layout>
+				))}
+			</>
+		);
+	}
+
+	return undefined;
 };
