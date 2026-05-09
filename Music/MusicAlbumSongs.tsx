@@ -43,7 +43,7 @@ const AlbumSongs: React.FC<{ addFromChildOfId: string; discSongs: BaseItemDto[] 
 	return (
 		<ListOf
 			items={props.discSongs}
-			direction="column" className={background.panel}
+			direction="column" className={background.alternatePanel}
 			forEachItem={(song) => <AlbumSong key={song.Id} song={song} addFromChildOfId={props.addFromChildOfId} />}
 		/>
 	)
