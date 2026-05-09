@@ -111,7 +111,7 @@ const Albums: React.FC<{ artist: BaseItemDto; relatedItemsToArtist: BaseItemDto[
 			forEachItem={(item) => item.Type === "MusicAlbum" ? (
 				<Album key={item.Id} artist={artist} album={item} relatedItemsToArtist={relatedItemsToArtist} musicVideosPerRow={musicVideosPerRow} />
 			) : (
-				<ItemsGridItem item={item} itemsPerRow={musicVideosPerRow} shape={ImageShape.Landscape} />
+				<ItemsGridItem key={item.Id} item={item} itemsPerRow={musicVideosPerRow} shape={ImageShape.Landscape} />
 			)}
 		/>
 	);
