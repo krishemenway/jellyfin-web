@@ -50,6 +50,10 @@ export class Linq {
 	public static Coalesce<T>(values: (T|undefined|null)[], defaultValue: T, hasValueFunc?: (value: T|undefined|null) => boolean): T {
 		return values.find((v) => (hasValueFunc ?? Nullable.HasValue)(v)) ?? defaultValue;
 	}
+
+	public static Sequence(from: number, count: number): number[] {
+		return [...Array(count).keys()].map((v) => v + from);
+	}
 }
 
 export class Nullable {

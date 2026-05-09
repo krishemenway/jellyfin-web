@@ -10,7 +10,7 @@ import { Layout } from "Common/Layout";
 import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { ItemService } from "Items/ItemsService";
 import { ListOf } from "Common/ListOf";
-import { useBreakpointValues } from "AppStyles";
+import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ImageShape } from "Items/ItemImage";
 import { useComputed, useObservable } from "@residualeffect/rereactor/lib";
@@ -30,6 +30,7 @@ import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { HomeViewOptions } from "Home/HomeViewOptions";
 import { ArrowDownIcon } from "CommonIcons/ArrowDownIcon";
 import { ArrowUpIcon } from "CommonIcons/ArrowUpIcon";
+import { Linq } from "Common/MissingJavascriptFunctions";
 
 export const Home: React.FC = () => {
 	const userId = useObservable(ServerService.Instance.CurrentUserId);
@@ -106,8 +107,8 @@ const AddHomeSectionButton: React.FC<{ homeViewOptions: HomeViewOptions; librari
 				type="button" onClick={() => { homeViewOptions.ViewOptionsKeys.OnChange(homeViewOptions.ViewOptionsKeys.Current.Value.concat([field.Current.Value.BuildStorageKey()])); }}
 			/>
 		</>
-	)
-}
+	);
+};
 
 const HomeSection: React.FC<{ viewOptions: ItemListViewOptions; itemsPerRow: number; libraries: BaseItemDto[]; isEditing: boolean; onDeleted: () => void; onMoveUp?: () => void; onMoveDown?: () => void; }> = ({ viewOptions, itemsPerRow, libraries, isEditing, onDeleted, onMoveUp, onMoveDown }) => {
 	const label = useObservable(viewOptions.Label.Current);
@@ -118,10 +119,33 @@ const HomeSection: React.FC<{ viewOptions: ItemListViewOptions; itemsPerRow: num
 		<Loading
 			receivers={[ItemService.Instance.FindOrCreateItemList(viewOptions.LibraryId, viewOptions.ItemKindService.kind).List]}
 			whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-			whenLoading={<Layout direction="column"><Layout direction="row" fontSize="1.3em">{label}</Layout><LoadingIcon alignSelf="center" size="4em" my="2rem" /></Layout>}
-			whenNotStarted={<Layout direction="column"><Layout direction="row" fontSize="1.3em">{label}</Layout><LoadingIcon alignSelf="center" size="4em" my="2rem" /></Layout>}
+			whenLoading={<LoadingSection label={label} itemsPerRow={itemsPerRow} />}
+			whenNotStarted={<LoadingSection label={label} itemsPerRow={itemsPerRow} />}
 			whenReceived={(itemWithStats) => <HomeSectionWithLoadedItems label={label} itemsFromList={itemWithStats.List} itemsPerRow={itemsPerRow} libraries={libraries} viewOptions={viewOptions} isEditing={isEditing} onDeleted={onDeleted} onMoveDown={onMoveDown} onMoveUp={onMoveUp} />}
 		/>
+	);
+};
+
+const LoadingSection: React.FC<{ label: string; itemsPerRow: number }> = ({ label, itemsPerRow }) => {
+	const items = React.useMemo(() => Linq.Sequence(0, itemsPerRow),[itemsPerRow]);
+	const background = useBackgroundStyles();
+
+	return (
+		<Layout direction="column" gap=".25rem" width="100%">
+			<Layout direction="row" justifyContent="space-between">
+				<Layout direction="row" fontSize="1.3em" alignItems="end">{label}</Layout>
+			</Layout>
+
+			<ListOf
+				items={items}
+				direction="row" wrap gap=".5em"
+				forEachItem={(_, index) => (
+					<Layout key={index} direction="column" className={background.panel} alignItems="center" justifyContent="center" width={{ itemsPerRow: itemsPerRow, gap: ".5em" }} minHeight="15rem">
+						<LoadingIcon size="2em" />
+					</Layout>
+				)}
+			/>
+		</Layout>
 	);
 };
 
@@ -138,7 +162,7 @@ const HomeSectionWithLoadedItems: React.FC<{ label: string; itemsFromList: BaseI
 	}, [itemsFromList, viewOptions]);
 
 	return (
-		<Layout direction="column" gap=".25rem">
+		<Layout direction="column" gap=".25rem" width="100%">
 			<Layout direction="row" justifyContent="space-between">
 				<Layout direction="row" fontSize="1.3em" alignItems="end">{label}</Layout>
 				{isEditing && (
