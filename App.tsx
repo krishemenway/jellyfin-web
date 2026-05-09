@@ -12,6 +12,7 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemListView } from "ItemList/ItemListView";
 
 import { ServerDashboard } from "ServerAdmin/ServerDashboard";
+import { ManageLibrary } from "Servers/ManageLibrary";
 import { Icons } from "ServerAdmin/Icons";
 
 import { Home } from "Home/Home";
@@ -76,6 +77,7 @@ const App: React.FC<{ basePath: string }> = (props) => {
 					element: <Layout />,
 					errorElement: <LoadingErrorMessages errorTextKeys={["UnknownError"]}/>,
 					children: [
+						{ path: "/Library/:libraryId", element: <ManageLibrary /> },
 						{ path: "/Settings", element: <Settings /> },
 
 						{ path: "/Person/:personId", element: <Person /> },

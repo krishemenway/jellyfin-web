@@ -7,6 +7,7 @@ import { ItemMenuAction } from "Items/ItemMenuAction";
 import { StyleLayoutProps } from "Common/Layout";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Nullable } from "Common/MissingJavascriptFunctions";
+import { useNavigate } from "react-router-dom";
 
 export interface ItemActionProps extends StyleLayoutProps {
 	className?: string;
@@ -18,6 +19,7 @@ export interface ItemActionProps extends StyleLayoutProps {
 export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 	const [anchor, setOpenAnchor] = React.useState<HTMLElement|null>(null);
 	const closeNavigation = () => setOpenAnchor(null);
+	const navigate = useNavigate();
 
 	const filteredActions = React.useMemo(() => {
 		return props.actions
@@ -51,7 +53,7 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 							forEachItem={(action) => (
 								<Button
 									key={action.textKey}
-									type="button" onClick={() => { closeNavigation(); action.action(props.items); }}
+									type="button" onClick={() => { closeNavigation(); action.action(props.items, navigate); }}
 									direction="row" px=".5em" py=".5em" gap=".5em" alignItems="center"
 									icon={action.icon({ size: "1em" })}
 									label={action.textKey}
