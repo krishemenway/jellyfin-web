@@ -57,7 +57,7 @@ const AlbumSong: React.FC<{ song: BaseItemDto; addFromChildOfId: string; }> = (p
 			<Button
 				transparent type="button" onClick={() => MusicPlayerService.Instance.ClearAndPlay([props.song])}
 				direction="row" grow px=".25em" py=".25em" gap="4em">
-				<Layout direction="row" grow>{props.song.IndexNumber}.&nbsp;{props.song.Name}</Layout>
+				<Layout direction="row" grow textAlign="left">{props.song.IndexNumber}.&nbsp;{props.song.Name}</Layout>
 				<Layout direction="row">{DateTime.ConvertTicksToDurationString(props.song.RunTimeTicks)}</Layout>
 			</Button>
 		</Layout>
