@@ -34,6 +34,7 @@ import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { LoginService } from "Users/LoginService";
 import { MusicAlbumSongs } from "Music/MusicAlbumSongs";
+import { ItemPremiereDate } from "Items/ItemPremiereDate";
 
 export const MusicAlbum: React.FC = () => {
 	const routeParams = useParams<{ albumId: string; songId?: string; }>();
@@ -126,6 +127,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 
 					<Layout direction="column" gap="1em" maxWidth="95%">
 						<ItemOverview item={album} editableItem={editableItem} isEditing={isEditing} />
+						<ItemPremiereDate item={album} editableItem={editableItem} isEditing={isEditing} />
 
 						<ItemTags
 							item={album}
