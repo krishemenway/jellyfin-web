@@ -44,6 +44,7 @@ import { HyperLink } from "Common/HyperLink";
 import { FieldLabel } from "Common/FieldLabel";
 import { MultiSelectEditor } from "Common/SelectFieldEditor";
 import { ItemPremiereDate } from "Items/ItemPremiereDate";
+import { ItemDuration } from "Items/ItemDuration";
 
 export const MusicVideo: React.FC = () => {
 	const routeParams = useParams<{ musicVideoId: string }>();
@@ -139,7 +140,11 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 					<Artists item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
 				</Layout>
 
-				<ItemPremiereDate item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
+				<Layout direction="row" gap="1rem">
+					<ItemPremiereDate item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
+					<ItemDuration item={musicVideo} />
+				</Layout>
+
 				<ItemOverview item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
 
 				<ItemTags

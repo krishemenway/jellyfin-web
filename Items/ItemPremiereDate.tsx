@@ -23,7 +23,7 @@ export const ItemPremiereDate: React.FC<{ item: BaseItemDto; }&EditableItemProps
 	if (Nullable.HasValue(premiereDate)) {
 		return (
 			<Layout direction="row" gap=".5em" alignItems="center">
-				<Layout direction="row"><TranslatedText textKey="Premiere" /></Layout>
+				<TranslatedText textKey="Premiere" elementType="div" />
 				<Layout direction="row">{premiereDate}</Layout>
 			</Layout>
 		);

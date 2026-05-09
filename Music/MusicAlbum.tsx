@@ -41,6 +41,7 @@ import { MultiSelectEditor } from "Common/SelectFieldEditor";
 import { TranslatedText } from "Common/TranslatedText";
 import { HyperLink } from "Common/HyperLink";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
+import { ItemDuration } from "Items/ItemDuration";
 
 export const MusicAlbum: React.FC = () => {
 	const routeParams = useParams<{ albumId: string; songId?: string; }>();
@@ -132,11 +133,16 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 					</Layout>
 
 					<Layout direction="column" gap="1em" maxWidth="95%">
-						<ItemOverview item={album} editableItem={editableItem} isEditing={isEditing} />
 						<Layout direction="row" alignItems="center" gap="1rem">
 							<Artists item={album} isEditing={isEditing} editableItem={editableItem} />
 						</Layout>
-						<ItemPremiereDate item={album} editableItem={editableItem} isEditing={isEditing} />
+
+						<Layout direction="row" gap="1rem">
+							<ItemPremiereDate item={album} isEditing={isEditing} editableItem={editableItem} />
+							<ItemDuration item={album} />
+						</Layout>
+
+						<ItemOverview item={album} editableItem={editableItem} isEditing={isEditing} />
 
 						<ItemTags
 							item={album}

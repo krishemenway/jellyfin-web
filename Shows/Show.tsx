@@ -204,7 +204,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 			</Layout>
 
 			<Layout direction="row" gap="1rem">
-				<TranslatedText textKey="LabelDuration" />
+				<ItemPremiereDate item={show} isEditing={isEditing} editableItem={editableItem} />
 				<AggregateItemDuration items={allEpisodes} />
 			</Layout>
 
@@ -261,11 +261,10 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 			</Layout>
 
 			<Layout direction="row" gap="1rem">
-				<TranslatedText textKey="LabelDuration" />
+				<ItemPremiereDate item={episode} isEditing={isEditing} editableItem={editableEpisode} />
 				<ItemDuration item={episode} />
 			</Layout>
 
-			<ItemPremiereDate item={episode} isEditing={isEditing} editableItem={editableEpisode} />
 			<ItemOverview item={episode} isEditing={isEditing} editableItem={editableEpisode} />
 
 			<ItemTags
