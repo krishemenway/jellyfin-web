@@ -24,7 +24,7 @@ import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
-import { RefreshItemAction } from "MenuActions/RefreshItemAction";
+import { ItemRefreshButton } from "Items/ItemRefreshButton";
 import { ItemOverview } from "Items/ItemOverview";
 import { TranslatedText } from "Common/TranslatedText";
 import { ItemTags } from "Items/ItemTags";
@@ -118,6 +118,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 					<Layout direction="row" gap="1rem">
 						{!isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<PlayIcon />} onClick={() => { VideoPlayerService.Instance.ClearAndPlay([musicVideo]) }} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
+						{isEditing && <ItemRefreshButton item={musicVideo} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
 						<ItemActionsMenu items={[musicVideo]} actions={[
 							[ // User-based actions
@@ -129,7 +130,6 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 							],
 							[ // Server-based actions
 								EditItemAction,
-								RefreshItemAction,
 							]
 						]} user={user} />
 					</Layout>

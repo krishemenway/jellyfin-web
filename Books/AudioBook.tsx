@@ -25,7 +25,7 @@ import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
-import { RefreshItemAction } from "MenuActions/RefreshItemAction";
+import { ItemRefreshButton } from "Items/ItemRefreshButton";
 import { CastAndCrew } from "Items/CastAndCrew";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { BackdropService } from "Common/BackdropService";
@@ -106,6 +106,7 @@ function LoadedAudioBook({ user, audioBook }: { user: UserDto, audioBook: BaseIt
 					<ItemPageTitle item={audioBook} editableItem={editableItem} isEditing={isEditing} />
 					<Layout direction="row" gap="1rem">
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
+						{isEditing && <ItemRefreshButton item={audioBook} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
 						<ItemActionsMenu items={[audioBook]} user={user} actions={[
 							[ // User-based actions
@@ -117,7 +118,6 @@ function LoadedAudioBook({ user, audioBook }: { user: UserDto, audioBook: BaseIt
 							],
 							[ // Server-based actions
 								EditItemAction,
-								RefreshItemAction,
 							]
 						]} />
 					</Layout>

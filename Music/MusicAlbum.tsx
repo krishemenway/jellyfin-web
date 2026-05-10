@@ -27,7 +27,7 @@ import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { RevertIcon } from "CommonIcons/RevertIcon";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { EditItemAction } from "MenuActions/EditItemAction";
-import { RefreshItemAction } from "MenuActions/RefreshItemAction";
+import { ItemRefreshButton } from "Items/ItemRefreshButton";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
@@ -114,6 +114,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 						
 						<Layout direction="row" gap="1rem">
 							{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
+							{isEditing && <ItemRefreshButton item={album} />}
 							{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
 							<Button type="button" alignItems="center" px=".5em" py=".5em" icon={<PlayIcon />} title={{ Key: "HeaderPlayAll" }} onClick={() => MusicPlayerService.Instance.ClearAndPlay(allSongs)} />
 		
@@ -126,7 +127,6 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 								],
 								[ // Server-based actions
 									EditItemAction,
-									RefreshItemAction,
 								]
 							]} />
 						</Layout>

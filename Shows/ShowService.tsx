@@ -16,9 +16,6 @@ import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
 import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
 import { SortByCriticRating } from "ItemList/ItemSortTypes/SortByCriticRating";
-import { RefreshItemAction } from "MenuActions/RefreshItemAction";
-import { RenameLibraryAction } from "MenuActions/RenameLibraryAction";
-import { ManageLibraryAction } from "MenuActions/ManageLIbraryAction";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByOfficialRating } from "ItemList/ItemSortTypes/SortByOfficialRating";
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
@@ -30,13 +27,6 @@ export const ShowService: BaseItemKindService = {
 	findUrl: (item) => `/Show/${item.Id}`,
 	listUrl: (library) => `/Shows/${library.Id}`,
 	relevantPersonKinds: ["Actor", "Director", "Writer", "GuestStar", "Producer", "Editor"],
-	listActions: [
-		[
-			ManageLibraryAction,
-			RefreshItemAction,
-			RenameLibraryAction,
-		],
-	],
 	filterOptions: [
 		FilterByName,
 		FilterByGenre,

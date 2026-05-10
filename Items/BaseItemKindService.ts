@@ -1,6 +1,5 @@
 import { BaseItemDto, BaseItemKind, CollectionType, PersonKind } from "@jellyfin/sdk/lib/generated-client/models";
 import { IconProps } from "Common/IconProps";
-import { ItemMenuAction } from "Items/ItemMenuAction";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { ItemSortOption } from "ItemList/ItemSortOption";
 import { ImageShape } from "Items/ItemImage";
@@ -17,7 +16,6 @@ export interface BaseItemKindService {
 
 	filterOptions?: ItemFilterType[];
 	sortOptions?: ItemSortOption[];
-	listActions?: ItemMenuAction[][];
 	loadList?: (a: AbortController, libraryId: string) => Promise<BaseItemDto[]>;
 	listTypes?: BaseItemKind[];
 

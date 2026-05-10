@@ -20,9 +20,6 @@ import { SortByDatePlayed } from "ItemList/ItemSortTypes/SortByDatePlayed";
 import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { ImageShape } from "Items/ItemImage";
-import { RefreshItemAction } from "MenuActions/RefreshItemAction";
-import { RenameLibraryAction } from "MenuActions/RenameLibraryAction";
-import { ManageLibraryAction } from "MenuActions/ManageLIbraryAction";
 import { FilterByOfficialRating } from "ItemList/ItemFilterTypes/FilterByOfficialRating";
 
 export const MovieService: BaseItemKindService = {
@@ -32,13 +29,6 @@ export const MovieService: BaseItemKindService = {
 	relevantPersonKinds: ["Actor", "Director", "Writer", "Producer", "Editor"],
 	findIcon: (props) => <MovieIcon {...props} />,
 	listUrl: (library) => `/Movies/${library.Id}`,
-	listActions: [
-		[
-			ManageLibraryAction,
-			RefreshItemAction,
-			RenameLibraryAction,
-		],
-	],
 	filterOptions: [
 		FilterByName,
 		FilterByHasPlayed,

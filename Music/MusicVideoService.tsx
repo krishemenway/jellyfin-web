@@ -1,9 +1,6 @@
 import * as React from "react";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 import { MusicVideoIcon } from "Music/MusicVideoIcon";
-import { ManageLibraryAction } from "MenuActions/ManageLIbraryAction";
-import { RefreshItemAction } from "MenuActions/RefreshItemAction";
-import { RenameLibraryAction } from "MenuActions/RenameLibraryAction";
 import { FilterByName } from "ItemList/ItemFilterTypes/FilterByName";
 import { FilterByHasPlayed } from "ItemList/ItemFilterTypes/FilterByHasPlayed";
 import { FilterByContinueWatching } from "ItemList/ItemFilterTypes/FilterByContinueWatching";
@@ -29,13 +26,6 @@ export const MusicVideoService: BaseItemKindService = {
 	findIcon: (props) => <MusicVideoIcon {...props} />,
 	listUrl: (library) => `/MusicVideos/${library.Id}`,
 	relevantPersonKinds: ["Actor", "Director", "Writer", "Producer", "Composer", "Editor"],
-	listActions: [
-		[
-			ManageLibraryAction,
-			RefreshItemAction,
-			RenameLibraryAction,
-		],
-	],
 	filterOptions: [
 		FilterByName,
 		FilterByHasPlayed,

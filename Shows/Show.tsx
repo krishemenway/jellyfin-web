@@ -29,7 +29,7 @@ import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
-import { RefreshItemAction } from "MenuActions/RefreshItemAction";
+import { ItemRefreshButton } from "Items/ItemRefreshButton";
 import { CastAndCrew } from "Items/CastAndCrew";
 import { BackdropService } from "Common/BackdropService";
 import { PlayIcon } from "MediaPlayer/PlayIcon";
@@ -186,18 +186,16 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 				<ItemPageTitle item={show} isEditing={isEditing} editableItem={editableItem} />
 				<Layout direction="row" gap="1rem">
 					{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
+					{isEditing && <ItemRefreshButton item={show} />}
 					{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
 
 					<ItemActionsMenu items={[show]} user={user} actions={[
-						[ // User-based actions
+						[
 							AddToFavoritesAction,
 							MarkPlayedAction,
 							AddToCollectionAction,
 							AddToPlaylistAction,
-						],
-						[ // Server-based actions
 							EditItemAction,
-							RefreshItemAction,
 						]
 					]} />
 				</Layout>
@@ -240,19 +238,17 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 					<ItemPageTitle item={show} editableItem={undefined} isEditing={false} />
 					<Layout direction="row" gap=".5em">
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
+						{isEditing && <ItemRefreshButton item={episode} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
 						{!isEditing && <Button type="button" icon={<PlayIcon />} alignItems="center" px=".5em" py=".5em" onClick={() => VideoPlayerService.Instance.ClearAndPlay([episode])} />}
 						<ItemActionsMenu items={[episode]} user={user} actions={[
-							[ // User-based actions
+							[
 								PlayVideoAction,
 								AddToFavoritesAction,
 								MarkPlayedAction,
 								AddToCollectionAction,
 								AddToPlaylistAction,
-							],
-							[ // Server-based actions
 								EditItemAction,
-								RefreshItemAction,
 							]
 						]} />
 					</Layout>

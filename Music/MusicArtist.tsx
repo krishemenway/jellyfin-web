@@ -22,7 +22,7 @@ import { RevertIcon } from "CommonIcons/RevertIcon";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { EditItemAction } from "MenuActions/EditItemAction";
-import { RefreshItemAction } from "MenuActions/RefreshItemAction";
+import { ItemRefreshButton } from "Items/ItemRefreshButton";
 import { ItemOverview } from "Items/ItemOverview";
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { ListOf } from "Common/ListOf";
@@ -83,11 +83,11 @@ const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; relatedI
 					<ItemPageTitle item={artist} editableItem={editableItem} isEditing={isEditing} />
 					<Layout direction="row" gap="1rem">
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
+						{isEditing && <ItemRefreshButton item={artist} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
 						<ItemActionsMenu items={[artist]} user={user} actions={[
 							[ // Server-based actions
 								EditItemAction,
-								RefreshItemAction,
 							]
 						]} />
 					</Layout>

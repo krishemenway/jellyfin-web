@@ -19,7 +19,6 @@ import { SortFuncs } from "Common/Sort";
 import { BaseItemDto, QueryFiltersLegacy, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
 import { Form } from "Common/Form";
-import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { TextField } from "Common/TextField";
 import { ItemListService } from "ItemList/ItemListService";
@@ -32,6 +31,8 @@ import { useNavigate } from "react-router-dom";
 import { RadioCheckedIcon } from "CommonIcons/RadioCheckedIcon";
 import { RadioUncheckedIcon } from "CommonIcons/RadioUncheckedIcon";
 import { FieldError } from "Common/FieldError";
+import { ItemRefreshButton } from "Items/ItemRefreshButton";
+import { ManageLibraryButton } from "Servers/ManageLibraryButton";
 
 export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
@@ -91,9 +92,8 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 
 				<Layout direction="column" grow></Layout>
 
-				{(props.listOptions.ItemKindService?.listActions ?? []).length > 0 && (
-					<ItemActionsMenu items={[props.library]} user={props.user} alignSelf="end" actions={props.listOptions.ItemKindService?.listActions ?? []} />
-				)}
+				<ItemRefreshButton item={props.library} />
+				<ManageLibraryButton libraryId={props.library.Id} px=".5em" py=".5em" />
 			</Layout>
 
 			<AnchoredModal anchorElement={filterButtonRef} open={addFilterOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => { setAddFilterOpen(false); }}>
