@@ -14,8 +14,8 @@ import { PlayIcon } from "MediaPlayer/PlayIcon";
 import { MusicPlayerService } from "Music/MusicPlayerService";
 import { ItemOverview } from "Items/ItemOverview";
 import { ItemTags } from "Items/ItemTags";
-import { useBackgroundStyles } from "AppStyles";
-import { ItemImage } from "Items/ItemImage";
+import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
+import { ImageShape, ItemImage } from "Items/ItemImage";
 import { ItemRating } from "Items/ItemRating";
 import { ItemStudios } from "Items/ItemStudios";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
@@ -42,6 +42,8 @@ import { TranslatedText } from "Common/TranslatedText";
 import { HyperLink } from "Common/HyperLink";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { ItemDuration } from "Items/ItemDuration";
+import { ListOf } from "Common/ListOf";
+import { ItemsGridItem } from "ItemList/ItemGridItem";
 
 export const MusicAlbum: React.FC = () => {
 	const routeParams = useParams<{ albumId: string; songId?: string; }>();
@@ -52,7 +54,7 @@ export const MusicAlbum: React.FC = () => {
 	}
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(albumId).LoadItemWithAbort(), [albumId]);
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(albumId).LoadChildrenWithAbort(), [albumId]);
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(albumId).LoadChildrenWithAbort(false, { albumIds: [albumId], includeItemTypes: ["Audio", "MusicVideo"], recursive: true }), [albumId]);
 
 	return (
 		<PageWithNavigation icon="MusicAlbum">
@@ -61,13 +63,15 @@ export const MusicAlbum: React.FC = () => {
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(album, allSongs, user) => <LoadedMusicAlbums album={album} allSongs={allSongs} user={user} />}
+				whenReceived={(album, allAlbumItems, user) => <LoadedMusicAlbums album={album} allAlbumItems={allAlbumItems} user={user} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[]; user: UserDto }> = ({ album, allSongs, user }) => {
+const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemDto[]; user: UserDto }> = ({ album, allAlbumItems, user }) => {
+	const allSongs = React.useMemo(() => allAlbumItems.filter((i) => i.Type === "Audio"), [allAlbumItems]);
+	const allMusicVideos = React.useMemo(() => allAlbumItems.filter((i) => i.Type === "MusicVideo"), [allAlbumItems]);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 	const editableItem = useEditableItem(album, user);
 	const background = useBackgroundStyles();
@@ -119,15 +123,13 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 							<Button type="button" alignItems="center" px=".5em" py=".5em" icon={<PlayIcon />} title={{ Key: "HeaderPlayAll" }} onClick={() => MusicPlayerService.Instance.ClearAndPlay(allSongs)} />
 		
 							<ItemActionsMenu items={[album]} user={user} actions={[
-								[ // User-based actions
+								[
 									AddToFavoritesAction,
 									MarkPlayedAction,
 									AddToCollectionAction,
 									AddToPlaylistAction,
+									EditItemAction
 								],
-								[ // Server-based actions
-									EditItemAction,
-								]
 							]} />
 						</Layout>
 					</Layout>
@@ -154,6 +156,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allSongs: BaseItemDto[];
 						/>
 
 						<MusicAlbumSongs addFromChildOfId={album.Id!} allSongs={allSongs} />
+						<MusicAlbumVideos allMusicVideos={allMusicVideos} />
 					</Layout>
 				</Layout>
 			</Layout>
@@ -186,4 +189,22 @@ const Artists: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {
 	}
 
 	return undefined;
+};
+
+const MusicAlbumVideos: React.FC<{ allMusicVideos: BaseItemDto[] }> = ({ allMusicVideos }) => {
+	const videosPerRow = useBreakpointValues(1, 1, 3, 5);
+
+	return (
+		<ListOf
+			items={allMusicVideos}
+			direction="row" wrap gap="1rem"
+			forEachItem={(item) => (
+				<ItemsGridItem
+					item={item} key={item.Id}
+					itemsPerRow={videosPerRow}
+					shape={ImageShape.Landscape}
+				/>
+			)}
+		/>
+	);
 };
