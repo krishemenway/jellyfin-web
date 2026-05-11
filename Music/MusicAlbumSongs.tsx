@@ -50,6 +50,8 @@ const AlbumSongs: React.FC<{ addFromChildOfId: string; discSongs: BaseItemDto[] 
 };
 
 const AlbumSong: React.FC<{ song: BaseItemDto; addFromChildOfId: string; }> = (props) => {
+	const featuringArtists = React.useMemo(() => props.song.Artists?.filter((a) => props.song.AlbumArtist?.toLowerCase() !== a.toLowerCase()) ?? [], [props.song]);
+
 	return (
 		<Layout key={props.song.Id} width="100%" direction="row" draggable onDragStart={(evt) => { evt.dataTransfer.setData("AddType", "AudioId"); evt.dataTransfer.setData("AddFromChildrenOfId", props.addFromChildOfId); evt.dataTransfer.setData("AddTypeId", props.song.Id ?? ""); }}>
 			<Layout direction="column" alignItems="center" justifyContent="center" px=".5em" py=".5em"><DragIcon /></Layout>
@@ -57,7 +59,10 @@ const AlbumSong: React.FC<{ song: BaseItemDto; addFromChildOfId: string; }> = (p
 			<Button
 				transparent type="button" onClick={() => MusicPlayerService.Instance.ClearAndPlay([props.song])}
 				direction="row" grow px=".25em" py=".25em" gap="4em">
-				<Layout direction="row" grow textAlign="left">{props.song.IndexNumber}.&nbsp;{props.song.Name}</Layout>
+				<Layout direction="row" grow textAlign="left" gap="1em">
+					{props.song.IndexNumber}.&nbsp;{props.song.Name}
+					{featuringArtists.length > 0 && <Layout direction="row" fontSize=".8em" alignItems="center">{featuringArtists.join(", ")}</Layout>}
+				</Layout>
 				<Layout direction="row">{DateTime.ConvertTicksToDurationString(props.song.RunTimeTicks)}</Layout>
 			</Button>
 		</Layout>
