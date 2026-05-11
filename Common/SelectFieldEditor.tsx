@@ -77,7 +77,7 @@ export function MultiSelectEditor<TOption>(props: MultiSelectEditorProps<TOption
 				isClearable={false}
 				options={allOptions}
 				value={selectedOptions}
-				onChange={(newValue) => props.field.OnChange(newValue.map((nv) => allOptionsByValue[nv.value] ?? props.createNew!(nv.value)))}
+				onChange={(newValue) => props.field.OnChange(newValue.map((nv) => allOptionsByValue[nv.value] ?? props.createNew!(nv.value.trim())))}
 				components={{ MenuList: MenuList }}
 				styles={{
 					container: (base) => ({ ...base, width: "100%" }),
