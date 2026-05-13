@@ -4,7 +4,7 @@ import { ItemListViewOptions, ItemViewOptionsData } from "ItemList/ItemListViewO
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { EditableField } from "Common/EditableField";
 import { BaseItemDto } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
-import { Nullable } from "Common/MissingJavascriptFunctions";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 
 export class HomeViewOptions {
 	constructor(settings: Settings, libraries: BaseItemDto[]) {
@@ -20,15 +20,7 @@ export class HomeViewOptions {
 	}
 
 	public Swap(keyIndexA: number, keyIndexB: number) {
-		const set = this.ViewOptionsKeys.Current.Value;
-
-		const valueA = this.ViewOptionsKeys.Current.Value[keyIndexA];
-		const valueB = this.ViewOptionsKeys.Current.Value[keyIndexB];
-
-		set[keyIndexA] = valueB;
-		set[keyIndexB] = valueA;
-
-		this.ViewOptionsKeys.OnChange(set);
+		this.ViewOptionsKeys.OnChange(Linq.Swap(this.ViewOptionsKeys.Current.Value, keyIndexA, keyIndexB));
 	}
 
 	public Save(): void {

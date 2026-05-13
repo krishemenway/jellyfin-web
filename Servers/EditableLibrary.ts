@@ -1,12 +1,16 @@
 import { EditableField, IEditableField } from "Common/EditableField";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { EmbeddedSubtitleOptions, LibraryOptions, VirtualFolderInfo } from "@jellyfin/sdk/lib/generated-client/models";
+import { EmbeddedSubtitleOptions, LibraryOptions, LibraryOptionsResultDto, VirtualFolderInfo } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed } from "@residualeffect/reactor/lib";
+import { EditableLibraryItemTypeOptions } from "./EditableLibraryItemTypeOptions";
 
 export class EditableLibrary {
-	constructor(virtualFolderInfo?: VirtualFolderInfo) {
+	constructor(libraryOptions: LibraryOptionsResultDto, virtualFolderInfo?: VirtualFolderInfo) {
 		this.Existing = virtualFolderInfo;
+		this.LibraryOptions = libraryOptions;
 		this.IsNew = !Nullable.HasValue(virtualFolderInfo);
+
+		this.TypeOptions = (libraryOptions.TypeOptions ?? []).map((typeOption) => new EditableLibraryItemTypeOptions(typeOption, this.Existing?.LibraryOptions?.TypeOptions))
 
 		this.Locations = new EditableField("Locations", this.Existing?.Locations ?? []);
 		this.Enabled = new EditableField("Enabled", this.Existing?.LibraryOptions?.Enabled ?? false);
@@ -102,11 +106,12 @@ export class EditableLibrary {
 			DelimiterWhitelist: this.DelimiterWhitelist.Current.Value,
 			AutomaticallyAddToCollection: this.AutomaticallyAddToCollection.Current.Value,
 			AllowEmbeddedSubtitles: this.AllowEmbeddedSubtitles.Current.Value,
+			TypeOptions: this.TypeOptions.map((to) => to.CreateRequest()),
 		};
 	}
 
 	public AllFields(): IEditableField[] {
-		return [
+		const fields: IEditableField[] = [
 			this.Locations,
 			this.Enabled,
 			this.EnablePhotos,
@@ -148,8 +153,12 @@ export class EditableLibrary {
 			this.AutomaticallyAddToCollection,
 			this.AllowEmbeddedSubtitles,
 		];
+
+		this.TypeOptions.forEach((to) => fields.push(...to.AllFields()));
+
+		return fields;
 	}
-	
+
 	public HasChanged: Computed<boolean>;
 	public CanMakeRequest: Computed<boolean>;
 
@@ -193,12 +202,9 @@ export class EditableLibrary {
 	public DelimiterWhitelist: EditableField<Array<string>>;
 	public AutomaticallyAddToCollection: EditableField<boolean>;
 	public AllowEmbeddedSubtitles: EditableField<EmbeddedSubtitleOptions>;
-
-	/*
-	public PathInfos: EditableField<Array<MediaPathInfo>>;
-	public TypeOptions: EditableField<Array<TypeOptions>>;
-	*/
+	public TypeOptions: EditableLibraryItemTypeOptions[];
 
 	public Existing: VirtualFolderInfo|undefined;
+	public LibraryOptions: LibraryOptionsResultDto;
 	public IsNew: boolean;
 }

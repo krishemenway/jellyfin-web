@@ -1,4 +1,25 @@
 export class Linq {
+	public static Swap<T>(array: T[], indexA: number, indexB: number): T[] {
+		const valueA = array[indexA];
+		const valueB = array[indexB];
+
+		array[indexA] = valueB;
+		array[indexB] = valueA;
+
+		return array;
+	}
+
+	public static ToggleItem<T>(array: T[], item: T): T[] {
+		const index = array.indexOf(item);
+
+		if (index > -1) {
+			array.splice(index, 1);
+			return array;
+		} else {
+			return array.concat([item]);
+		}
+	}
+
 	public static GroupBy<TKey extends string|number, TValue>(array: TValue[], keyFunc: (arrayValue: TValue) => TKey): Record<TKey, TValue[]> {
 		return array.reduce((grouped, current) => {
 			const key = keyFunc(current);

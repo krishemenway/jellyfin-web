@@ -3,41 +3,53 @@ import { Layout } from "Common/Layout";
 import { useParams } from "react-router";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { ServerIcon } from "Servers/ServerIcon";
-import { Loading } from "Common/Loading";
+import { Loading, useDataOrNull } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { getLibraryApi, getLibraryStructureApi } from "@jellyfin/sdk/lib/utils/api";
 import { EditableLibrary } from "./EditableLibrary";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "./ServerService";
-import { Nullable } from "Common/MissingJavascriptFunctions";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
-import { CollectionType, EmbeddedSubtitleOptions, LibraryOptionsResultDto } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
-import { ToggleSwitch } from "Common/ToggleSwitch";
+import { CollectionType, CountryInfo, CultureDto, EmbeddedSubtitleOptions, LibraryOptionsResultDto, LibraryTypeOptionsDto, LocalizationOption } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
+import { BaseToggleSwitch, ToggleSwitch } from "Common/ToggleSwitch";
 import { PageTitle } from "Common/PageTitle";
 import { FieldLabel } from "Common/FieldLabel";
 import { TranslatedText, useTranslatedText } from "Common/TranslatedText";
-import { SelectFieldEditor } from "Common/SelectFieldEditor";
+import { MultiSelectEditor, SelectFieldEditor } from "Common/SelectFieldEditor";
 import { TextField } from "Common/TextField";
+import { EditableField } from "Common/EditableField";
+import { LocalizationOptionsStore } from "ServerAdmin/LocalizationOptionsStore";
+import { Form } from "Common/Form";
+import { EditableLibraryItemTypeOptions } from "./EditableLibraryItemTypeOptions";
+import { useObservable } from "node_modules/@residualeffect/rereactor/lib";
+import { ListOf } from "Common/ListOf";
+import { ArrowUpIcon } from "CommonIcons/ArrowUpIcon";
+import { ArrowDownIcon } from "CommonIcons/ArrowDownIcon";
+import { Button } from "Common/Button";
 
 class LibraryManager {
 	constructor() {
 		this.EditableLibrary = new Receiver("UnknownError");
-		this.LibraryOptions = new Receiver("UnknownError");
+	}
+
+	public SaveLibrary(): void {
+		console.log("Submit");
 	}
 
 	public LoadWithAbort(libraryId: string): () => void {
-		this.EditableLibrary.Start((a) => getLibraryStructureApi(ServerService.Instance.CurrentApi).getVirtualFolders({ signal: a.signal }).then(response => {
-			const library = new EditableLibrary(response.data.find((l) => l.ItemId === libraryId));
-			this.LibraryOptions.Start((a) => getLibraryApi(ServerService.Instance.CurrentApi).getLibraryOptionsInfo({ libraryContentType: library.Existing?.CollectionType as CollectionType, isNewLibrary: library.IsNew }, { signal: a.signal }).then((r) => r.data));
-			return library;
+		this.EditableLibrary.Start((a) => getLibraryStructureApi(ServerService.Instance.CurrentApi).getVirtualFolders({ signal: a.signal }).then(async response => {
+			const library = Linq.First(response.data, (f) => f.ItemId === libraryId);
+			const libraryOptions = await getLibraryApi(ServerService.Instance.CurrentApi).getLibraryOptionsInfo({ libraryContentType: library.CollectionType as CollectionType, isNewLibrary: false }, { signal: a.signal }).then((r) => r.data);
+
+			return new EditableLibrary(libraryOptions, library);
 		}));
 
-		return () => { this.EditableLibrary.ResetIfLoading(); this.LibraryOptions.ResetIfLoading(); };
+		return () => this.EditableLibrary.ResetIfLoading();
 	}
 
 	public EditableLibrary: Receiver<EditableLibrary>;
-	public LibraryOptions: Receiver<LibraryOptionsResultDto>;
 
 	static get Instance(): LibraryManager {
 		return this._instance ?? (this._instance = new LibraryManager());
@@ -58,19 +70,19 @@ export const ManageLibrary: React.FC = () => {
 	return (
 		<PageWithNavigation icon={<ServerIcon />}>
 			<Loading
-				receivers={[LibraryManager.Instance.EditableLibrary, LibraryManager.Instance.LibraryOptions]}
+				receivers={[LibraryManager.Instance.EditableLibrary]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="3rem" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="3rem" />}
-				whenReceived={(editableLibrary, libraryOptions) => <LoadedLibraryManager editableLibrary={editableLibrary} libraryOptions={libraryOptions} />}
+				whenReceived={(editableLibrary) => <LoadedLibraryManager editableLibrary={editableLibrary} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const LoadedLibraryManager: React.FC<{ editableLibrary: EditableLibrary; libraryOptions: LibraryOptionsResultDto }> = ({ editableLibrary, libraryOptions }) => {
+const LoadedLibraryManager: React.FC<{ editableLibrary: EditableLibrary }> = ({ editableLibrary }) => {
 	return (
-		<Layout direction="column" gap="1rem">
+		<Form direction="column" gap="1rem" onSubmit={() => { LibraryManager.Instance.SaveLibrary(); }}>
 			<PageTitle text={editableLibrary.Existing?.Name} />
 
 			<Layout direction="column" gap=".25rem">
@@ -80,6 +92,27 @@ const LoadedLibraryManager: React.FC<{ editableLibrary: EditableLibrary; library
 				</Layout>
 
 				<TranslatedText textKey="EnableLibraryHelp" elementType="div" />
+			</Layout>
+
+			<Layout direction="column">
+				<TranslatedText textKey="Folders" elementType="div" />
+				<MultiSelectEditor
+					allOptions={[]}
+					field={editableLibrary.Locations}
+					getLabel={(l) => l}
+					getValue={(l) => l}
+					createNew={(l) => l}
+				/>
+			</Layout>
+
+			<Layout direction="column">
+				<TranslatedText textKey="LabelMetadataDownloadLanguage" elementType="div" />
+				<LanguageSelector languageField={editableLibrary.PreferredMetadataLanguage} />
+			</Layout>
+
+			<Layout direction="column">
+				<TranslatedText textKey="LabelCountry" elementType="div" />
+				<CountrySelector countryField={editableLibrary.MetadataCountryCode} />
 			</Layout>
 
 			<Layout direction="column" gap=".25rem">
@@ -109,6 +142,8 @@ const LoadedLibraryManager: React.FC<{ editableLibrary: EditableLibrary; library
 				<TranslatedText textKey="LabelEnableRealtimeMonitorHelp" elementType="div" />
 			</Layout>
 
+			{editableLibrary.TypeOptions.map(typeOption => <EditableTypeOptions key={typeOption.Type} typeOption={typeOption} />)}
+
 			<Layout direction="column" gap=".25rem">
 				<FieldLabel field={editableLibrary.SeasonZeroDisplayName} textKey="LabelSpecialSeasonsDisplayName" />
 				<TextField field={editableLibrary.SeasonZeroDisplayName} px=".5em" py=".25em" />
@@ -128,6 +163,76 @@ const LoadedLibraryManager: React.FC<{ editableLibrary: EditableLibrary; library
 
 				<TranslatedText textKey="AllowEmbeddedSubtitlesHelp" elementType="div" />
 			</Layout>
+		</Form>
+	);
+};
+
+const EditableTypeOptions: React.FC<{ typeOption: EditableLibraryItemTypeOptions }> = ( { typeOption }) => {
+	const fetcherOrder = useObservable(typeOption.MetadataFetcherOrder.Current);
+	const enabledFetchers = useObservable(typeOption.MetadataFetchers.Current);
+
+	return (
+		<Layout direction="column">
+			<Layout direction="row" fontSize="1.2em">
+				<TranslatedText textKey="LabelTypeMetadataDownloaders" textProps={[typeOption.Type!]} />
+			</Layout>
+
+			<ListOf
+				items={fetcherOrder}
+				direction="column" gap=".5rem" px="1rem" py=".5rem"
+				forEachItem={(fetcher, index) => (
+					<Layout key={fetcher} direction="row" gap="1rem" alignItems="center" justifyContent="space-between" maxWidth="25rem">
+						<BaseToggleSwitch enabled={enabledFetchers.indexOf(fetcher) > -1} onChange={(e) => typeOption.MetadataFetchers.OnChange(Linq.ToggleItem(enabledFetchers, fetcher))} />
+
+						<Layout direction="row">{fetcher}</Layout>
+
+						<Layout direction="row" gap=".25rem">
+							<Button type="button" onClick={() => { typeOption.MetadataFetcherOrder.OnChange(Linq.Swap(fetcherOrder, index, index - 1)); }} icon={<ArrowUpIcon />} px=".25em" py=".25em" />
+							<Button type="button" onClick={() => { typeOption.MetadataFetcherOrder.OnChange(Linq.Swap(fetcherOrder, index, index + 1)); }} icon={<ArrowDownIcon />} px=".25em" py=".25em" />
+						</Layout>
+					</Layout>
+				)}
+			/>
+
+			<Layout direction="row" px="1rem">
+				<TranslatedText textKey="LabelMetadataDownloadersHelp" />
+			</Layout>
 		</Layout>
+	);
+};
+
+const LanguageSelector: React.FC<{ languageField: EditableField<string> }> = ({ languageField }) => {
+	const allLanguages = [LocalizationOptionsStore.Instance.EmptyCulture].concat(useDataOrNull(LocalizationOptionsStore.Instance.LocalizationCultures) ?? []);
+	const allLanguageCodes = React.useMemo(() => allLanguages.map((d) => d.TwoLetterISOLanguageName!), [allLanguages]);
+	const languageByCode = React.useMemo(() => allLanguages.reduce((all, current) => { all[current.TwoLetterISOLanguageName!] = current; return all; }, {} as Record<string, CultureDto>), [allLanguages]);
+
+	React.useEffect(() => LocalizationOptionsStore.Instance.LoadCultures(), []);
+
+	return (
+		<SelectFieldEditor
+			allOptions={allLanguageCodes}
+			field={languageField}
+			getLabel={(l) => languageByCode[l].DisplayName}
+			getValue={(l) => l}
+			px=".5em" py=".25em" maxWidth="25em"
+		/>
+	);
+};
+
+const CountrySelector: React.FC<{ countryField: EditableField<string> }> = ({ countryField }) => {
+	const allCountries = [LocalizationOptionsStore.Instance.EmptyCountry].concat(useDataOrNull(LocalizationOptionsStore.Instance.LocalizationCountries) ?? []);
+	const allCountryCodes = React.useMemo(() => allCountries.map((d) => d.TwoLetterISORegionName!), [allCountries]);
+	const countriesByCode = React.useMemo(() => allCountries.reduce((all, current) => { all[current.TwoLetterISORegionName!] = current; return all; }, {} as Record<string, CountryInfo>), [allCountries]);
+
+	React.useEffect(() => LocalizationOptionsStore.Instance.LoadCountries(), []);
+
+	return (
+		<SelectFieldEditor
+			allOptions={allCountryCodes}
+			field={countryField}
+			getLabel={(l) => countriesByCode[l].DisplayName}
+			getValue={(l) => l}
+			px=".5em" py=".25em" maxWidth="25em"
+		/>
 	);
 };
