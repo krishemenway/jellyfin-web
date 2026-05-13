@@ -41,7 +41,7 @@ const ItemPlayedMarker: React.FC = () => {
 			width="4rem" height="4rem"
 			alignItems="start" justifyContent="end"
 		>
-			<CheckIcon size="1.5rem" mx=".25rem" my=".25rem" />
+			<CheckIcon size="1.5rem" mx=".25rem" my=".25rem" color="#F8F8F8" />
 		</Layout>
 	);
-}
+};

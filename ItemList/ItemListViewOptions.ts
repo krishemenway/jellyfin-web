@@ -52,6 +52,21 @@ export class ItemListViewOptions {
 		this.SortBy.unshift(CreateSortFunc(sortFunc, reversed));
 	}
 
+	public ReverseSort(sort: SortFuncs<BaseItemDto>): void {
+		const current = this.SortBy.AsArray();
+		const currentIndex = current.indexOf(sort);
+
+		current[currentIndex] = {
+			LabelKey: sort.LabelKey,
+			Reversed: !sort.Reversed,
+			Sort: sort.Sort,
+			SortType: sort.SortType,
+			GetContent: sort.GetContent,
+		};
+
+		this.SortBy.Value = current;
+	}
+
 	public AddNewFilter(onAddedSuccessfully: () => void): void {
 		const newFilter = this.NewFilter.Value!;
 
