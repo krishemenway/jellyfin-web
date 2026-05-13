@@ -7,13 +7,12 @@ import { ServerService } from "Servers/ServerService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { Layout } from "Common/Layout";
-import { ItemActionsMenu } from "Items/ItemActionsMenu";
-import { LoginService } from "Users/LoginService";
 import { ServerPaths } from "ServerAdmin/ServerPaths";
-import { ServerVersions } from "ServerAdmin/ServerVersions";
-import { ServerLibraries } from "ServerAdmin/ServerLibraries";
+import { ServerStatistics } from "ServerAdmin/ServerStatistics";
 import { EditGeneralSettingsModal } from "ServerAdmin/GeneralSettingsService";
 import { LocalizationOptionsStore } from "ServerAdmin/LocalizationOptionsStore";
+import { ServerControls } from "ServerAdmin/ServerControls";
+import { ServerScheduledTasks } from "ServerAdmin/ServerScheduledTasks";
 
 export const ServerDashboard: React.FC = () => {
 	React.useEffect(() => ServerService.Instance.LoadServerInfoWithAbort(), []);
@@ -24,21 +23,24 @@ export const ServerDashboard: React.FC = () => {
 			<PageTitle text={({ Key: "TabServer" })} suppressOnScreen />
 
 			<Loading
-				receivers={[ServerService.Instance.ServerInfo, LoginService.Instance.User]}
+				receivers={[ServerService.Instance.ServerInfo]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="3rem" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="3rem" />}
-				whenReceived={(server, user) => (
+				whenReceived={(server) => (
 					<Layout direction="column" gap="2rem" my="1rem">
 						<Layout direction="row" justifyContent="space-between">
 							<Layout direction="row" fontSize="2rem" className="server-name">{server.ServerName}</Layout>
-							<ItemActionsMenu items={[]} actions={[]} user={user} />
 						</Layout>
 		
 						<Layout direction="row" gap="1rem">
-							<ServerVersions server={server} />
-							<ServerLibraries />
+							<Layout direction="column" gap="1rem">
+								<ServerControls />
+								<ServerStatistics />
+							</Layout>
+
 							<ServerPaths />
+							<ServerScheduledTasks />
 						</Layout>
 					</Layout>
 				)}
