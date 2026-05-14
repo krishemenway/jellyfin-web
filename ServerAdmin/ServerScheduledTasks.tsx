@@ -61,7 +61,7 @@ export const ServerScheduledTasks: React.FC = () => {
 							<Layout direction="row" alignItems="center" justifyContent="center" fontSize="1.1em">{category}</Layout>
 
 							<ListOf
-								direction="column" gap=".25rem"
+								direction="column" gap=".5rem"
 								items={tasks[category]}
 								forEachItem={(task) => <ServerTask task={task} key={task.Id} />}
 							/>
@@ -79,16 +79,20 @@ export const ServerTask: React.FC<{ task: TaskInfo }> = ({ task }) => {
 	const duration =  React.useMemo(() => Nullable.HasValue(startTime) && Nullable.HasValue(endTime) ? formatDuration(intervalToDuration({ start: startTime, end: endTime })) : undefined, [startTime, endTime]);
 
 	return (
-		<Layout direction="row" justifyContent="space-between">
+		<Layout direction="row" justifyContent="space-between" gap="1rem">
 			<Layout direction="column">
 				<Layout direction="row">{task.Name}</Layout>
 
-				{Nullable.HasValue(endTime) && Nullable.HasValue(duration) && (
-					<TranslatedText textKey="LabelScheduledTaskLastRan" textProps={[`${endTime.toLocaleDateString()} ${endTime.toLocaleTimeString()}`, duration]} elementType="div" />
-				)}
+				<Layout direction="row" fontSize=".8em" fontColor="Secondary">
+					{Nullable.HasValue(endTime) ? (
+						<TranslatedText textKey="LabelScheduledTaskLastRan" textProps={[`${endTime.toLocaleDateString()} ${endTime.toLocaleTimeString()}`, Nullable.StringHasValue(duration) ? duration! : `< ${formatDuration({ seconds: 1 })}`]} />
+					) : (
+						<TranslatedText textKey="LabelScheduledTaskLastRan" textProps={["—", "—"]} />
+					)}
+				</Layout>
 			</Layout>
 
-			<Button type="button" onClick={() => ScheduledTasksService.Instance.RunTask(task)} icon={<PlayIcon />} px=".25em" py=".25em" alignItems="center" justifyContent="center" />
+			<Button type="button" onClick={() => ScheduledTasksService.Instance.RunTask(task)} icon={<PlayIcon />} px=".5em" py=".5em" alignItems="center" justifyContent="center" />
 		</Layout>
 	);
 };

@@ -3,6 +3,9 @@ import { Theme, ButtonStates, ButtonState } from "Themes/Theme";
 import { Dark } from "Themes/Dark";
 import { Light } from "Themes/Light";
 import { EditableField } from "Common/EditableField";
+import { Property } from "csstype";
+
+export type ThemeFontColors = "Primary"|"Secondary"|"Error";
 
 export class ThemeService {
 	constructor() {
@@ -34,6 +37,19 @@ export class ThemeService {
 
 		this.ApplyButtonStatesCssVariables(root, "Button", theme.Button);
 		this.ApplyButtonStatesCssVariables(root, "ButtonSelected", theme.ButtonSelected);
+	}
+
+	public ConvertFontColor(themeColor?: ThemeFontColors): Property.Color|undefined {
+		switch (themeColor) {
+			case undefined:
+				return undefined;
+			case "Primary":
+				return "var(--PrimaryTextColor)";
+			case "Secondary":
+				return "var(--SecondaryTextColor)";
+			case "Error":
+				return "var(--ErrorTextColor)";
+		}
 	}
 
 	private ApplyButtonStatesCssVariables(root: HTMLElement, name: string, state: ButtonStates): void {

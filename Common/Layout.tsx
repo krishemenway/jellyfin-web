@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Property } from "csstype";
 import { Nullable } from "Common/MissingJavascriptFunctions";
+import { ThemeFontColors, ThemeService } from "Themes/ThemeService";
 
 export enum DimensionZLayers {
 	Default = 0,
@@ -34,6 +35,7 @@ export interface LayoutWithoutChildrenProps {
 	overflowY?: Property.OverflowY;
 	overflowX?: Property.OverflowX;
 
+	fontColor?: ThemeFontColors;
 	fontSize?: Property.FontSize;
 	lineHeight?: Property.LineHeight;
 	textAlign?: Property.TextAlign;
@@ -123,6 +125,7 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		overflowX: props?.overflowX,
 		overflowY: props?.overflowY,
 
+		color: ThemeService.Instance.ConvertFontColor(props?.fontColor),
 		fontSize: props?.fontSize,
 		lineHeight: props?.lineHeight,
 		textAlign: props?.textAlign,
