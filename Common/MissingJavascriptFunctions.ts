@@ -33,12 +33,12 @@ export class Linq {
 		return array.filter((value, index) => array.indexOf(value) === index);
 	}
 
-	public static First<T>(array: T[], matchFunc?: (t: T) => boolean): T {
+	public static First<T>(array: readonly T[], matchFunc?: (t: T) => boolean): T {
 		const result = Nullable.Value(matchFunc, array, (match) => array.filter(match));
 		return result[0];
 	}
 
-	public static Single<T>(array: T[], matchFunc?: (t: T) => boolean): T {
+	public static Single<T>(array: readonly T[], matchFunc?: (t: T) => boolean): T {
 		const result = Nullable.Value(matchFunc, array, (match) => array.filter(match));
 
 		if (result.length !== 1) {
