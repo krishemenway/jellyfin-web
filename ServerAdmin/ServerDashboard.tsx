@@ -13,6 +13,7 @@ import { EditGeneralSettingsModal } from "ServerAdmin/GeneralSettingsService";
 import { LocalizationOptionsStore } from "ServerAdmin/LocalizationOptionsStore";
 import { ServerControls } from "ServerAdmin/ServerControls";
 import { ServerScheduledTasks } from "ServerAdmin/ServerScheduledTasks";
+import { ServerDevices } from "ServerAdmin/ServerDevices";
 
 export const ServerDashboard: React.FC = () => {
 	React.useEffect(() => ServerService.Instance.LoadServerInfoWithAbort(), []);
@@ -41,6 +42,7 @@ export const ServerDashboard: React.FC = () => {
 
 							<ServerPaths />
 							<ServerScheduledTasks />
+							<ServerDevices />
 						</Layout>
 					</Layout>
 				)}
