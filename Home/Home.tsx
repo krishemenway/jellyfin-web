@@ -13,8 +13,8 @@ import { ListOf } from "Common/ListOf";
 import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ImageShape } from "Items/ItemImage";
-import { useComputed, useObservable } from "@residualeffect/rereactor/lib";
-import { BaseItemDto } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
+import { useComputed, useObservable } from "@residualeffect/rereactor";
+import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { HyperLink } from "Common/HyperLink";
 import { TranslatedText } from "Common/TranslatedText";
 import { UserViewStore } from "Users/UserViewStore";
@@ -97,8 +97,8 @@ const AddHomeSectionButton: React.FC<{ homeViewOptions: HomeViewOptions; librari
 			<AutoCompleteFieldEditor
 				allOptions={allOptions}
 				field={field}
-				getLabel={(o) => `${libraries.find((l) => l.Id === o?.LibraryId)?.Name} - ${o?.Label.Current.Value}`}
-				getValue={(o) => o?.Key!}
+				getLabel={(o) => `${Linq.Single(libraries, (l) => l.Id === o.LibraryId).Name} - ${o.Label.Current.Value}`}
+				getValue={(o) => o.Key}
 			/>
 
 			<Button

@@ -1,8 +1,8 @@
 import { EditableField, IEditableField } from "Common/EditableField";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { EmbeddedSubtitleOptions, LibraryOptions, LibraryOptionsResultDto, VirtualFolderInfo } from "@jellyfin/sdk/lib/generated-client/models";
-import { Computed } from "@residualeffect/reactor/lib";
-import { EditableLibraryItemTypeOptions } from "./EditableLibraryItemTypeOptions";
+import { Computed } from "@residualeffect/reactor";
+import { EditableLibraryItemTypeOptions } from "Servers/EditableLibraryItemTypeOptions";
 
 export class EditableLibrary {
 	constructor(libraryOptions: LibraryOptionsResultDto, virtualFolderInfo?: VirtualFolderInfo) {

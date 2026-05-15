@@ -6,7 +6,7 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 import { FieldLabel } from "Common/FieldLabel";
 import { TranslatedText } from "Common/TranslatedText";
 import { DateField } from "Common/TextField";
-import { formatDate } from "node_modules/date-fns/format";
+import { formatDate } from "date-fns/format";
 
 export const ItemPremiereDate: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {
 	const premiereDate = React.useMemo(() => Nullable.HasValue(props.item.PremiereDate) ? formatDate(props.item.PremiereDate, "PPP") : undefined, [props.item.PremiereDate]);

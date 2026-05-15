@@ -1,9 +1,9 @@
 import * as React from "react";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 import { BookIcon } from "Books/BookIcon";
-import { getItemsApi } from "node_modules/@jellyfin/sdk/lib/utils/api/items-api";
+import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { ServerService } from "Servers/ServerService";
-import { BaseItemKind, ItemSortBy } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemKind, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
 import { FilterByGenre } from "ItemList/ItemFilterTypes/FilterByGenre";
 import { FilterByName } from "ItemList/ItemFilterTypes/FilterByName";
 import { FilterByHasPlayed } from "ItemList/ItemFilterTypes/FilterByHasPlayed";

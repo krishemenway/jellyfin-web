@@ -8,7 +8,7 @@ import { Layout } from "Common/Layout";
 import { Receiver } from "Common/Receiver";
 import { DeviceInfoDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { ServerService } from "Servers/ServerService";
-import { getDevicesApi } from "node_modules/@jellyfin/sdk/lib/utils/api";
+import { getDevicesApi } from "@jellyfin/sdk/lib/utils/api";
 import { TranslatedText } from "Common/TranslatedText";
 
 class ServerDevicesService {

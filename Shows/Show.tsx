@@ -333,7 +333,7 @@ const EpisodesInSeason: React.FC<EpisodesInSeasonProps> = (props) => {
 		<Layout direction="row" px=".5em" py=".5em" gap=".5em" wrap className={background.panel}>
 			{props.episodes.map((item) => (
 				<ItemsGridItem
-					item={item}
+					item={item} key={item.Id}
 					itemsPerRow={itemsPerRow}
 					shape={ImageShape.Landscape}
 					fallback={props.season}

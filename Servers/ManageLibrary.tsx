@@ -7,12 +7,12 @@ import { Loading, useDataOrNull } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { getLibraryApi, getLibraryStructureApi } from "@jellyfin/sdk/lib/utils/api";
-import { EditableLibrary } from "./EditableLibrary";
+import { EditableLibrary } from "Servers/EditableLibrary";
 import { Receiver } from "Common/Receiver";
-import { ServerService } from "./ServerService";
+import { ServerService } from "Servers/ServerService";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
-import { CollectionType, CountryInfo, CultureDto, EmbeddedSubtitleOptions, LibraryOptionsResultDto, LibraryTypeOptionsDto, LocalizationOption } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
+import { CollectionType, CountryInfo, CultureDto, EmbeddedSubtitleOptions } from "@jellyfin/sdk/lib/generated-client/models";
 import { BaseToggleSwitch, ToggleSwitch } from "Common/ToggleSwitch";
 import { PageTitle } from "Common/PageTitle";
 import { FieldLabel } from "Common/FieldLabel";
@@ -22,8 +22,8 @@ import { TextField } from "Common/TextField";
 import { EditableField } from "Common/EditableField";
 import { LocalizationOptionsStore } from "ServerAdmin/LocalizationOptionsStore";
 import { Form } from "Common/Form";
-import { EditableLibraryItemTypeOptions } from "./EditableLibraryItemTypeOptions";
-import { useObservable } from "node_modules/@residualeffect/rereactor/lib";
+import { EditableLibraryItemTypeOptions } from "Servers/EditableLibraryItemTypeOptions";
+import { useObservable } from "@residualeffect/rereactor";
 import { ListOf } from "Common/ListOf";
 import { ArrowUpIcon } from "CommonIcons/ArrowUpIcon";
 import { ArrowDownIcon } from "CommonIcons/ArrowDownIcon";
@@ -182,7 +182,7 @@ const EditableTypeOptions: React.FC<{ typeOption: EditableLibraryItemTypeOptions
 				direction="column" gap=".5rem" px="1rem" py=".5rem"
 				forEachItem={(fetcher, index) => (
 					<Layout key={fetcher} direction="row" gap="1rem" alignItems="center" justifyContent="space-between" maxWidth="25rem">
-						<BaseToggleSwitch enabled={enabledFetchers.indexOf(fetcher) > -1} onChange={(e) => typeOption.MetadataFetchers.OnChange(Linq.ToggleItem(enabledFetchers, fetcher))} />
+						<BaseToggleSwitch enabled={enabledFetchers.indexOf(fetcher) > -1} onChange={() => typeOption.MetadataFetchers.OnChange(Linq.ToggleItem(enabledFetchers, fetcher))} />
 
 						<Layout direction="row">{fetcher}</Layout>
 

@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Layout } from "Common/Layout";
-import { DateTime, Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { DateTime, Linq } from "Common/MissingJavascriptFunctions";
 import { Button } from "Common/Button";
 import { PlayIcon } from "MediaPlayer/PlayIcon";
 import { MusicPlayerService } from "Music/MusicPlayerService";
 import { ListOf } from "Common/ListOf";
 import { TranslatedText } from "Common/TranslatedText";
-import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
 import { DragIcon } from "CommonIcons/DragIcon";
 import { useBackgroundStyles } from "AppStyles";

@@ -39,7 +39,8 @@ import { RevertIcon } from "CommonIcons/RevertIcon";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { EditableItemProps } from "Items/EditableItemProps";
 import { TextField } from "Common/TextField";
-import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
+import { MusicAlbumService } from "Music/MusicAlbumService";
+import { MusicArtistService } from "Music/MusicArtistService";
 import { HyperLink } from "Common/HyperLink";
 import { FieldLabel } from "Common/FieldLabel";
 import { MultiSelectEditor } from "Common/SelectFieldEditor";
@@ -186,7 +187,7 @@ const AlbumName: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) =>
 		return (
 			<>
 				<Layout direction="row"><TranslatedText textKey="Album" /></Layout>
-				<HyperLink to={BaseItemKindServiceFactory.FindOrNull("MusicAlbum")?.findUrl!({ Id: props.item.AlbumId })!} direction="row" px=".5em" py=".25em">{props.item.Album}</HyperLink>
+				<HyperLink to={MusicAlbumService.findUrl!({ Id: props.item.AlbumId })!} direction="row" px=".5em" py=".25em">{props.item.Album}</HyperLink>
 			</>
 		);
 	}
@@ -218,7 +219,7 @@ const Artists: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {
 			<>
 				<Layout direction="row"><TranslatedText textKey="Artists" /></Layout>
 				{props.item.ArtistItems?.map((ai) => (
-					<HyperLink key={ai.Name} to={BaseItemKindServiceFactory.FindOrNull("MusicArtist")?.findUrl!({ Id: ai.Id })!} direction="row" px=".5em" py=".25em">{ai.Name}</HyperLink>
+					<HyperLink key={ai.Name} to={MusicArtistService.findUrl!({ Id: ai.Id })!} direction="row" px=".5em" py=".25em">{ai.Name}</HyperLink>
 				))}
 				{props.item.Artists?.filter((artist) => !Nullable.HasValue(props.item.ArtistItems?.find((artistItem) => artistItem.Name === artist))).map((artist) => (
 					<Layout key={artist} direction="row" px=".5em" py=".25em">{artist}</Layout>

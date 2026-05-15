@@ -17,7 +17,7 @@ import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
 import { ItemEditorService, useEditableItem } from "Items/ItemEditorService";
 import { LoginService } from "Users/LoginService";
-import { useObservable } from "@residualeffect/rereactor/lib";
+import { useObservable } from "@residualeffect/rereactor";
 import { RevertIcon } from "CommonIcons/RevertIcon";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
@@ -109,7 +109,7 @@ const Albums: React.FC<{ artist: BaseItemDto; relatedItemsToArtist: BaseItemDto[
 			direction="row" gap="1rem" wrap
 			items={albumsAndVideos}
 			forEachItem={(item) => item.Type === "MusicAlbum" ? (
-				<Album key={item.Id} artist={artist} album={item} relatedItemsToArtist={relatedItemsToArtist} musicVideosPerRow={musicVideosPerRow} />
+				<Album key={item.Id} artist={artist} album={item} relatedItemsToArtist={relatedItemsToArtist} />
 			) : (
 				<ItemsGridItem key={item.Id} item={item} itemsPerRow={musicVideosPerRow} shape={ImageShape.Landscape} />
 			)}
@@ -117,12 +117,13 @@ const Albums: React.FC<{ artist: BaseItemDto; relatedItemsToArtist: BaseItemDto[
 	);
 };
 
-const Album: React.FC<{ artist: BaseItemDto; album: BaseItemDto; relatedItemsToArtist: BaseItemDto[]; musicVideosPerRow: number; }> = ({ artist, album, relatedItemsToArtist, musicVideosPerRow }) => {
+const Album: React.FC<{ artist: BaseItemDto; album: BaseItemDto; relatedItemsToArtist: BaseItemDto[]; }> = ({ artist, album, relatedItemsToArtist }) => {
 	const background = useBackgroundStyles();
+	const albumsPerRow = useBreakpointValues(1, 1, 2, 2);
 	const songs = React.useMemo(() => relatedItemsToArtist.filter((i) => i.Type === "Audio" && i.AlbumId === album.Id).sort(SortByIndexNumber.sortFunc), [album, relatedItemsToArtist]);
 
 	return (
-		<Layout direction="row" gap="1rem" width={{ itemsPerRow: 2, gap: "1rem" }} className={background.panel} py=".25rem">
+		<Layout direction="row" gap="1rem" width={{ itemsPerRow: albumsPerRow, gap: "1rem" }} className={background.panel} py=".25rem">
 			<LinkToItem item={album} direction="column" px="1rem" width="18rem" alignItems="center" justifyContent="center">
 				<ItemImage width="100%" item={album} type="Primary" />
 			</LinkToItem>

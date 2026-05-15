@@ -6,6 +6,6 @@ import { parseISO } from "date-fns";
 export const SortByDateCreated: ItemSortOption = {
 	labelKey: 'OptionDateAdded',
 	field: "DateCreated",
-	getContent: (i) => Nullable.StringHasValue(i?.DateCreated) ? parseISO(i?.DateCreated!).toLocaleString() : "—",
+	getContent: (i) => Nullable.StringValue(i?.DateCreated, "—", (date) => parseISO(date).toLocaleString()),
 	sortFunc: SortByString((i) => i.DateCreated),
 };

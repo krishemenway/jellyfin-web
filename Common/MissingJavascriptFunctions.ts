@@ -97,6 +97,10 @@ export class Nullable {
 	public static Value<T, T2>(obj: T|undefined|null, defaultValue: T2, valueSelector: (o: T) => T2): T2 {
 		return Nullable.HasValue(obj) ? valueSelector(obj) : defaultValue;
 	}
+
+	public static StringValue(value: string|undefined|null, defaultValue: string, modify: (v: string) => string): string {
+		return Nullable.HasValue(value) && value.length > 0 ? modify(value) : defaultValue;
+	}
 }
 
 export class NumberLimits {

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Layout } from "Common/Layout";
 import { Button } from "Common/Button";
-import { getScheduledTasksApi, getSystemApi } from "node_modules/@jellyfin/sdk/lib/utils/api";
+import { getScheduledTasksApi, getSystemApi } from "@jellyfin/sdk/lib/utils/api";
 import { ServerService } from "Servers/ServerService";
 import { Linq } from "Common/MissingJavascriptFunctions";
 

@@ -1,9 +1,9 @@
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
-import { Computed, Observable } from "node_modules/@residualeffect/reactor/lib";
+import { Computed, Observable } from "@residualeffect/reactor";
 import { ItemListViewOptions, ItemViewOptionsData } from "ItemList/ItemListViewOptions";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { EditableField } from "Common/EditableField";
-import { BaseItemDto } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 
 export class HomeViewOptions {

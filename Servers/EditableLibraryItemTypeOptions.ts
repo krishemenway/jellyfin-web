@@ -1,6 +1,6 @@
 import { EditableField, IEditableField } from "Common/EditableField";
 import { Linq } from "Common/MissingJavascriptFunctions";
-import { LibraryTypeOptionsDto, TypeOptions } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
+import { LibraryTypeOptionsDto, TypeOptions } from "@jellyfin/sdk/lib/generated-client/models";
 
 export class EditableLibraryItemTypeOptions {
 	constructor(typeOptionDto: LibraryTypeOptionsDto, allTypeOptions?: TypeOptions[]) {

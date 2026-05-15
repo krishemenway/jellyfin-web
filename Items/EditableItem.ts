@@ -1,4 +1,4 @@
-import { BaseItemDto, BaseItemKind, DayOfWeek, MetadataField, NameGuidPair, PersonKind, Video3DFormat } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, DayOfWeek, MetadataField, NameGuidPair, Video3DFormat } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed, ObservableArray } from "@residualeffect/reactor";
 import { EditableField, IEditableField } from "Common/EditableField";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";

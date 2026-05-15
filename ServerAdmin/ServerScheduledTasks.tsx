@@ -31,7 +31,7 @@ class ScheduledTasksService {
 	}
 
 	public ScheduledTasks: Receiver<Record<string, TaskInfo[]>>;
-	public ExecuteTask: Receiver<any>;
+	public ExecuteTask: Receiver<void>;
 
 	static get Instance(): ScheduledTasksService {
 		return this._instance ?? (this._instance = new ScheduledTasksService());
@@ -85,7 +85,7 @@ export const ServerTask: React.FC<{ task: TaskInfo }> = ({ task }) => {
 
 				<Layout direction="row" fontSize=".8em" fontColor="Secondary">
 					{Nullable.HasValue(endTime) ? (
-						<TranslatedText textKey="LabelScheduledTaskLastRan" textProps={[`${endTime.toLocaleDateString()} ${endTime.toLocaleTimeString()}`, Nullable.StringHasValue(duration) ? duration! : `< ${formatDuration({ seconds: 1 })}`]} />
+						<TranslatedText textKey="LabelScheduledTaskLastRan" textProps={[`${endTime.toLocaleDateString()} ${endTime.toLocaleTimeString()}`, Nullable.StringValue(duration, `< ${formatDuration({ seconds: 1 })}`, d => d)]} />
 					) : (
 						<TranslatedText textKey="LabelScheduledTaskLastRan" textProps={["—", "—"]} />
 					)}

@@ -10,9 +10,9 @@ import { TranslatedText, useTranslatedText } from "Common/TranslatedText";
 import { RefreshIcon } from "CommonIcons/RefreshIcon";
 import { EditableField } from "Common/EditableField";
 import { ToggleSwitch } from "Common/ToggleSwitch";
-import { useObservable } from "node_modules/@residualeffect/rereactor/lib";
+import { useObservable } from "@residualeffect/rereactor";
 import { Form } from "Common/Form";
-import { getItemRefreshApi } from "node_modules/@jellyfin/sdk/lib/utils/api";
+import { getItemRefreshApi } from "@jellyfin/sdk/lib/utils/api";
 import { ServerService } from "Servers/ServerService";
 import { Receiver } from "Common/Receiver";
 import { useIsBusy } from "Common/Loading";
@@ -30,7 +30,7 @@ const refreshItem = (item: BaseItemDto, onSuccess: () => void) => {
 		metadataRefreshMode: refreshAction.Current.Value,
 		replaceAllImages: replaceImages.Current.Value,
 		regenerateTrickplay: replaceTrickplayImages.Current.Value,
-	}, { signal: a.signal }).then((r) => { onSuccess(); }))
+	}, { signal: a.signal }).then(() => { onSuccess(); }))
 }
 
 export const ItemRefreshButton: React.FC<{ item: BaseItemDto }> = ({ item }) => {

@@ -18,7 +18,7 @@ interface Statistic {
 
 const countsReceiver = new Receiver<ItemCounts>("UnknownError");
 
-export const ServerStatistics: React.FC = (props) => {
+export const ServerStatistics: React.FC = () => {
 	React.useEffect(() => {
 		countsReceiver.Start((a) => getLibraryApi(ServerService.Instance.CurrentApi).getItemCounts({ }, { signal: a.signal }).then(r => r.data));
 		return () => countsReceiver.ResetIfLoading();

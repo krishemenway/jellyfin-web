@@ -30,7 +30,7 @@ export const ItemsGridItem: React.FC<{ item: BaseItemDto; fallback?: BaseItemDto
 
 const GridItemField: React.FC<{ item: BaseItemDto; getContent: (item: BaseItemDto) => string|undefined|null; }> = (props) => {
 	const content = React.useMemo(() => props.getContent(props.item), [props.item, props.getContent]);
-	return <Layout direction="column" py=".25em" textAlign="center">{Nullable.StringHasValue(content) ? content : "-"}</Layout>;
+	return <Layout direction="column" py=".25em" textAlign="center">{Nullable.StringValue(content, "—", v => v)}</Layout>;
 };
 
 const ItemPlayedMarker: React.FC = () => {

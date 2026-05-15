@@ -9,7 +9,7 @@ import { ItemEditorService } from "Items/ItemEditorService";
 import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { useObservable } from "node_modules/@residualeffect/rereactor/lib";
+import { useObservable } from "@residualeffect/rereactor";
 import { TextField } from "Common/TextField";
 import { Button } from "Common/Button";
 import { SelectFieldEditor } from "Common/SelectFieldEditor";
@@ -46,7 +46,7 @@ const ExternalProviderEditors: React.FC<{ metadataInfo: MetadataEditorInfo; link
 	const getName = (key: string) => props.metadataInfo.ExternalIdInfos?.find(i => i.Key === key)?.Name;
 	const editableItemProviderKeys = editableItemProviders.map(p => p.Key);
 	const remainingProviders = props.metadataInfo.ExternalIdInfos?.filter((info) => editableItemProviderKeys.indexOf(info.Key ?? "") === -1) ?? [];
-	const [selectNewProviderField, _] = React.useState(new EditableField<ExternalIdInfo|undefined>("AddProviderOptions", remainingProviders[0]));
+	const [selectNewProviderField] = React.useState(new EditableField<ExternalIdInfo>("AddProviderOptions", remainingProviders[0]));
 	const itemPerRow = useBreakpointValues(1, 1, 1, 2);
 
 	React.useEffect(() => {
@@ -77,7 +77,7 @@ const ExternalProviderEditors: React.FC<{ metadataInfo: MetadataEditorInfo; link
 					grow
 				/>
 
-				<Button type="button" px=".5em" py=".5em" onClick={() => { props.editableItem?.ProviderIds.push(new EditableItemProvider(selectNewProviderField.Current.Value?.Key!, "")); }} icon={<AddIcon />} alignItems="center" />
+				<Button type="button" px=".5em" py=".5em" onClick={() => { props.editableItem?.ProviderIds.push(new EditableItemProvider(selectNewProviderField.Current.Value.Key!, "")); }} icon={<AddIcon />} alignItems="center" />
 			</Layout>
 		</Layout>
 	);
