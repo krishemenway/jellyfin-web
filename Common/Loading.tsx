@@ -6,11 +6,11 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 export interface BaseLoadingComponentProps {
 	minimumTimeRequiredToRender?: number;
 
-	whenLoading: JSX.Element,
-	whenNotStarted: JSX.Element;
+	whenLoading: React.ReactNode,
+	whenNotStarted: React.ReactNode;
 
-	whenError: (errors: string[]) => JSX.Element,
-	whenUnloaded?: JSX.Element;
+	whenError: (errors: string[]) => React.ReactNode,
+	whenUnloaded?: React.ReactNode;
 
 	determineLoadState?: () => LoadState;
 }
@@ -42,14 +42,14 @@ export function useDataOrNull<T>(receiver: Receiver<T>): T|null {
 	return useObservable(receiver.Data).ReceivedData;
 }
 
-function LoadingComponent<A>(props: { receivers: [Receiver<A>], whenReceived: (a: A) => JSX.Element } & BaseLoadingComponentProps): JSX.Element;
-function LoadingComponent<A, B>(props: { receivers: [Receiver<A>, Receiver<B>], whenReceived: (a: A, b: B) => JSX.Element } & BaseLoadingComponentProps): JSX.Element;
-function LoadingComponent<A, B, C>(props: { receivers: [Receiver<A>, Receiver<B>, Receiver<C>], whenReceived: (a: A, b: B, c: C) => JSX.Element } & BaseLoadingComponentProps): JSX.Element;
-function LoadingComponent<A, B, C, D>(props: { receivers: [Receiver<A>, Receiver<B>, Receiver<C>, Receiver<D>], whenReceived: (a: A, b: B, c: C, d: D) => JSX.Element } & BaseLoadingComponentProps): JSX.Element;
-function LoadingComponent<A, B, C, D, E>(props: { receivers: [Receiver<A>, Receiver<B>, Receiver<C>, Receiver<D>, Receiver<E>], whenReceived: (a: A, b: B, c: C, d: D, e: E) => JSX.Element } & BaseLoadingComponentProps): JSX.Element;
-function LoadingComponent<A, B, C, D, E, F>(props: { receivers: [Receiver<A>, Receiver<B>, Receiver<C>, Receiver<D>, Receiver<E>, Receiver<F>], whenReceived: (a: A, b: B, c: C, d: D, e: E, f: F) => JSX.Element } & BaseLoadingComponentProps): JSX.Element;
+function LoadingComponent<A>(props: { receivers: [Receiver<A>], whenReceived: (a: A) => React.ReactNode } & BaseLoadingComponentProps): React.ReactNode;
+function LoadingComponent<A, B>(props: { receivers: [Receiver<A>, Receiver<B>], whenReceived: (a: A, b: B) => React.ReactNode } & BaseLoadingComponentProps): React.ReactNode;
+function LoadingComponent<A, B, C>(props: { receivers: [Receiver<A>, Receiver<B>, Receiver<C>], whenReceived: (a: A, b: B, c: C) => React.ReactNode } & BaseLoadingComponentProps): React.ReactNode;
+function LoadingComponent<A, B, C, D>(props: { receivers: [Receiver<A>, Receiver<B>, Receiver<C>, Receiver<D>], whenReceived: (a: A, b: B, c: C, d: D) => React.ReactNode } & BaseLoadingComponentProps): React.ReactNode;
+function LoadingComponent<A, B, C, D, E>(props: { receivers: [Receiver<A>, Receiver<B>, Receiver<C>, Receiver<D>, Receiver<E>], whenReceived: (a: A, b: B, c: C, d: D, e: E) => React.ReactNode } & BaseLoadingComponentProps): React.ReactNode;
+function LoadingComponent<A, B, C, D, E, F>(props: { receivers: [Receiver<A>, Receiver<B>, Receiver<C>, Receiver<D>, Receiver<E>, Receiver<F>], whenReceived: (a: A, b: B, c: C, d: D, e: E, f: F) => React.ReactNode } & BaseLoadingComponentProps): React.ReactNode;
 
-function LoadingComponent(props: { receivers: Receiver<unknown>[], whenReceived: (...inputValues: unknown[]) => JSX.Element, } & BaseLoadingComponentProps): JSX.Element {
+function LoadingComponent(props: { receivers: Receiver<unknown>[], whenReceived: (...inputValues: unknown[]) => React.ReactNode, } & BaseLoadingComponentProps): React.ReactNode {
 	const [hasPassedThreshold, setHasPassedThreshold] = React.useState(false);
 	const receiverData = props.receivers.map((r) => useObservable(r.Data));
 	const receiveState = (props.determineLoadState ?? DetermineLoadState.Default)(receiverData);

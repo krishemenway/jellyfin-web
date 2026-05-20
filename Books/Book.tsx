@@ -58,7 +58,7 @@ export const Book: React.FC = () => {
 	);
 };
 
-function LoadedBook({ user, book }: { user: UserDto, book: BaseItemDto }): JSX.Element {
+export const LoadedBook: React.FC<{ user: UserDto, book: BaseItemDto }> = ({ user, book }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(book, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);

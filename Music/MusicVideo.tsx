@@ -70,7 +70,7 @@ export const MusicVideo: React.FC = () => {
 	);
 };
 
-function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: BaseItemDto }): JSX.Element {
+const LoadedMusicVideo: React.FC<{ user: UserDto, musicVideo: BaseItemDto }> = ({ user, musicVideo }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(musicVideo, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
@@ -170,7 +170,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 				</Layout>
 			</Layout>
 		</Layout>
-	)
+	);
 };
 
 const AlbumName: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {

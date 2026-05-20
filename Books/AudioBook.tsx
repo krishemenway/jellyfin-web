@@ -58,7 +58,7 @@ export const AudioBook: React.FC = () => {
 	);
 };
 
-function LoadedAudioBook({ user, audioBook }: { user: UserDto, audioBook: BaseItemDto }): JSX.Element {
+const LoadedAudioBook: React.FC<{ user: UserDto, audioBook: BaseItemDto }> = ({ user, audioBook }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(audioBook, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);

@@ -60,7 +60,7 @@ export const Movie: React.FC = () => {
 	);
 };
 
-function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JSX.Element {
+const LoadedMovie: React.FC<{ user: UserDto, movie: BaseItemDto }> = ({ user, movie }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(movie, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
@@ -155,5 +155,5 @@ function LoadedMovie({ user, movie }: { user: UserDto, movie: BaseItemDto }): JS
 				</Layout>
 			</Layout>
 		</Layout>
-	)
-}
+	);
+};

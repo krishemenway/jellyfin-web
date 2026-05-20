@@ -11,7 +11,7 @@ interface FieldLabelProps<T> {
 	showErrors: boolean;
 }
 
-export function FieldError<T>(props: FieldLabelProps<T>): JSX.Element {
+export function FieldError<T>(props: FieldLabelProps<T>): React.ReactNode {
 	const background = useBackgroundStyles();
 	const errorTextKey = useObservable(props.field.ErrorMessage);
 

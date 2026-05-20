@@ -16,7 +16,7 @@ interface SelectFieldEditorProps<TOption> extends LayoutWithoutChildrenProps {
 	getLabel: (value: TOption) => React.ReactNode;
 }
 
-export function SelectFieldEditor<TOption>(props: SelectFieldEditorProps<TOption>): JSX.Element {
+export function SelectFieldEditor<TOption>(props: SelectFieldEditorProps<TOption>): React.ReactNode {
 	const value = useObservable(props.field.Current);
 
 	return (
@@ -26,7 +26,7 @@ export function SelectFieldEditor<TOption>(props: SelectFieldEditorProps<TOption
 	);
 }
 
-export function AutoCompleteFieldEditor<TOption>(props: SelectFieldEditorProps<TOption>): JSX.Element {
+export function AutoCompleteFieldEditor<TOption>(props: SelectFieldEditorProps<TOption>): React.ReactNode {
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 	const current = useObservable(props.field.Current);
 
@@ -59,7 +59,7 @@ interface MultiSelectEditorProps<TOption> extends LayoutWithoutChildrenProps {
 	createNew?: (value: string) => TOption;
 }
 
-export function MultiSelectEditor<TOption>(props: MultiSelectEditorProps<TOption>): JSX.Element {
+export function MultiSelectEditor<TOption>(props: MultiSelectEditorProps<TOption>): React.ReactNode {
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 	const currentValues = useObservable(props.field.Current);
 
@@ -113,7 +113,7 @@ export function MultiSelectEditor<TOption>(props: MultiSelectEditorProps<TOption
 };
 
 const SplitCharacter = "|";
-export function MultiSelectWithSplitEditor(props: SelectFieldEditorProps<string>): JSX.Element {
+export function MultiSelectWithSplitEditor(props: SelectFieldEditorProps<string>): React.ReactNode {
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 	const currentValues = useObservable(props.field.Current).split(SplitCharacter);
 
