@@ -9,7 +9,7 @@ import { DateField } from "Common/TextField";
 import { formatDate } from "date-fns/format";
 
 export const ItemPremiereDate: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {
-	const premiereDate = React.useMemo(() => Nullable.HasValue(props.item.PremiereDate) ? formatDate(props.item.PremiereDate, "PPP") : undefined, [props.item.PremiereDate]);
+	const premiereDate = React.useMemo(() => Nullable.StringValue(props.item.PremiereDate, "", (date) => formatDate(date, "PPP")), [props.item.PremiereDate]);
 
 	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
 		return (
@@ -20,7 +20,7 @@ export const ItemPremiereDate: React.FC<{ item: BaseItemDto; }&EditableItemProps
 		);
 	}
 
-	if (Nullable.HasValue(premiereDate)) {
+	if (Nullable.StringHasValue(premiereDate)) {
 		return (
 			<Layout direction="row" gap=".5em" alignItems="center">
 				<TranslatedText textKey="Premiere" elementType="div" />
