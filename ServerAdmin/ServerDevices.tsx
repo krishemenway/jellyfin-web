@@ -10,6 +10,8 @@ import { DeviceInfoDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { ServerService } from "Servers/ServerService";
 import { getDevicesApi } from "@jellyfin/sdk/lib/utils/api";
 import { TranslatedText } from "Common/TranslatedText";
+import { formatDate } from "date-fns/format";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 class ServerDevicesService {
 	constructor() {
@@ -48,9 +50,9 @@ export const ServerDevices: React.FC = () => {
 						direction="column" gap="1em"
 						items={devices}
 						forEachItem={(device) => (
-							<Layout key={device.Id} gap=".25em" direction="column">
-								<Layout direction="row">{device.LastUserName} - {device.Name}</Layout>
-								<Layout direction="row" fontSizeREM={.9} fontColor="Secondary">{device.DateLastActivity}</Layout>
+							<Layout key={`${device.Id}-${device.DateLastActivity}`} gap=".25em" direction="column">
+								<Layout direction="row">{device.LastUserName} — {device.Name}</Layout>
+								<Layout direction="row" fontSizeREM={.9} fontColor="Secondary">{Nullable.StringValue(device.DateLastActivity, "—", (date) => formatDate(date, "PPP pp"))}</Layout>
 							</Layout>
 						)}
 					/>
