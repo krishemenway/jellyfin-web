@@ -126,7 +126,7 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		overflowY: props?.overflowY,
 
 		color: ThemeService.Instance.ConvertFontColor(props?.fontColor),
-		fontSize: Nullable.Value(props?.fontSizeREM, undefined, (f) => `${f}rem`),
+		fontSize: Nullable.Value(props?.fontSizeREM, undefined, (f) => f + "rem"),
 		lineHeight: props?.lineHeight,
 		textAlign: props?.textAlign,
 		textOverflow: props?.textOverflow,
