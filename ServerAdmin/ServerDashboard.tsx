@@ -31,7 +31,7 @@ export const ServerDashboard: React.FC = () => {
 				whenReceived={(server) => (
 					<Layout direction="column" gap="2rem" my="1rem">
 						<Layout direction="row" justifyContent="space-between">
-							<Layout direction="row" fontSize="2rem" className="server-name">{server.ServerName}</Layout>
+							<Layout direction="row" fontSizeREM={2} className="server-name">{server.ServerName}</Layout>
 						</Layout>
 		
 						<Layout direction="row" gap="1rem">

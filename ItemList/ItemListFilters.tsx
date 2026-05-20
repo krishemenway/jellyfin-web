@@ -193,7 +193,7 @@ const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilt
 	return (
 		<Form py="1em" px="1em" gap="1em" direction="column" onSubmit={() => { props.listOptions.AddNewFilter(() => props.onClosed()); }} minWidth="20em" maxWidth="26em">
 			<Layout direction="row" alignItems="center" justifyContent="center" gap="1em">
-				<Layout direction="column" fontSize="1.2em"><TranslatedText textKey={props.newFilter.FilterType.labelKey} /></Layout>
+				<Layout direction="column" fontSizeREM={1.2}><TranslatedText textKey={props.newFilter.FilterType.labelKey} /></Layout>
 				<AutoCompleteFieldEditor field={props.newFilter.Operation} allOptions={props.newFilter.FilterType.operations} getValue={(o) => o.Name} getLabel={(o) => <TranslatedText textKey={o.Name} />} grow />
 			</Layout>
 

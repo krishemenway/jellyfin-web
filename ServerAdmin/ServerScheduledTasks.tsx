@@ -58,7 +58,7 @@ export const ServerScheduledTasks: React.FC = () => {
 					direction="column" gap="1rem" py=".5rem" px=".5rem"
 					forEachItem={(category) => (
 						<Layout direction="column" gap=".75em" px=".5rem" key={category}>
-							<Layout direction="row" alignItems="center" justifyContent="center" fontSize="1.1em">{category}</Layout>
+							<Layout direction="row" alignItems="center" justifyContent="center" fontSizeREM={1.1}>{category}</Layout>
 
 							<ListOf
 								direction="column" gap=".5rem"
@@ -83,7 +83,7 @@ export const ServerTask: React.FC<{ task: TaskInfo }> = ({ task }) => {
 			<Layout direction="column">
 				<Layout direction="row">{task.Name}</Layout>
 
-				<Layout direction="row" fontSize=".8em" fontColor="Secondary">
+				<Layout direction="row" fontSizeREM={.8} fontColor="Secondary">
 					{Nullable.HasValue(endTime) ? (
 						<TranslatedText textKey="LabelScheduledTaskLastRan" textProps={[`${endTime.toLocaleDateString()} ${endTime.toLocaleTimeString()}`, Nullable.StringValue(duration, `< ${formatDuration({ seconds: 1 })}`, d => d)]} />
 					) : (

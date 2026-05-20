@@ -38,7 +38,7 @@ export const Search: React.FC = () => {
 			>
 				<Layout direction="column" className={background.panel} minHeight="22em" minWidth="25em">
 					<Layout direction="row" justifyContent="space-between" px=".5em" py=".5em" bb>
-						<Layout direction="row" alignItems="center" fontSize="1.5em">Search Results</Layout>
+						<Layout direction="row" alignItems="center" fontSizeREM={1.5}>Search Results</Layout>
 						<Button className={background.transparent} direction="row" alignItems="center" type="button" onClick={() => SearchService.Instance.Clear()} icon={<CloseIcon size="2em" />} />
 					</Layout>
 
@@ -62,7 +62,7 @@ const LoadedSearchResults: React.FC<{ results: SearchResults }> = (props) => {
 	return (
 		<Layout direction="row" grow>
 			{props.results.AllTypes.length > 1 && (
-				<Layout direction="column" fontSize="1.25em">
+				<Layout direction="column" fontSizeREM={1.25}>
 					<Button transparent px=".5em" py=".5em" direction="row" key="All" type="button" selected={selectedType === undefined} onClick={() => props.results.SelectedType.Value = undefined} icon={<InfinityIcon />} />
 
 					{props.results.AllTypes.map((type) => (

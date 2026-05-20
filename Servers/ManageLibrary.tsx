@@ -173,7 +173,7 @@ const EditableTypeOptions: React.FC<{ typeOption: EditableLibraryItemTypeOptions
 
 	return (
 		<Layout direction="column">
-			<Layout direction="row" fontSize="1.2em">
+			<Layout direction="row" fontSizeREM={1.2}>
 				<TranslatedText textKey="LabelTypeMetadataDownloaders" textProps={[typeOption.Type!]} />
 			</Layout>
 

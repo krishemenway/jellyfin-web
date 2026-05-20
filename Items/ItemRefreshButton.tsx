@@ -66,20 +66,20 @@ export const ItemRefreshButton: React.FC<{ item: BaseItemDto }> = ({ item }) => 
 					</Layout>
 
 					{mode !== "Default" && (
-						<Layout direction="row" gap="1rem" fontSize=".8em" alignItems="center" px=".25rem">
+						<Layout direction="row" gap="1rem" fontSizeREM={.8} alignItems="center" px=".25rem">
 							<ToggleSwitch field={replaceImages} />
 							<FieldLabel field={replaceImages} py=".5em" />
 						</Layout>
 					)}
 
 					{mode !== "Default" && (
-						<Layout direction="row" gap="1rem" fontSize=".8em" alignItems="center" px=".25rem">
+						<Layout direction="row" gap="1rem" fontSizeREM={.8} alignItems="center" px=".25rem">
 							<ToggleSwitch field={replaceTrickplayImages} />
 							<FieldLabel field={replaceTrickplayImages} py=".5em" />
 						</Layout>
 					)}
 
-					<Layout direction="row" maxWidth="26em" fontSize=".8em" py=".5rem"><TranslatedText textKey="RefreshDialogHelp" /></Layout>
+					<Layout direction="row" maxWidth="26em" fontSizeREM={.8} py=".5rem"><TranslatedText textKey="RefreshDialogHelp" /></Layout>
 
 					<Layout direction="row" justifyContent="end" gap=".5rem">
 						<Button type="button" label="ButtonCancel" onClick={closeNavigation} px=".5em" py=".25em" disabled={isRefreshing} />

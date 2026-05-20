@@ -22,7 +22,7 @@ export const ConnectToServer: React.FC<{ open: boolean; onClosed: () => void; }&
 
 	return (
 		<Form onSubmit={() => { ServerService.Instance.TryAddServer(onClosed); }} direction="column" justifyContent="center" gap="2em" className={background.panel} px="1em" py="1em" {...props}>
-			<Layout elementType="h2" direction="row" fontSize="1.2em"><TranslatedText textKey="HeaderConnectToServer" /></Layout>
+			<Layout elementType="h2" direction="row" fontSizeREM={1.2}><TranslatedText textKey="HeaderConnectToServer" /></Layout>
 
 			<Layout direction="column" gap=".5em">
 				<FieldLabel field={ServerService.Instance.TryAddServerHost} />

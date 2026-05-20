@@ -158,7 +158,7 @@ function LoadedMusicVideo({ user, musicVideo }: { user: UserDto, musicVideo: Bas
 				/>
 
 				<Layout direction="column" minWidth="100%">
-					<Layout direction="row" fontSize="1.5em" py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
+					<Layout direction="row" fontSizeREM={1.5} py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
 
 					<CastAndCrew
 						itemWithPeople={musicVideo}

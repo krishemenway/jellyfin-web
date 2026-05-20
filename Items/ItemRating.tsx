@@ -11,7 +11,7 @@ import { Loading } from "Common/Loading";
 
 export const ItemRating: React.FC<{ item: BaseItemDto; libraryId: string; }&EditableItemProps&StyleLayoutProps> = (props) => {
 	const background = useBackgroundStyles();
-	const combined = {...{fontSize: "1.5em", px: ".25em", py: ".25em" } as StyleLayoutProps, ...props as StyleLayoutProps};
+	const combined = {...{fontSizeREM: 1.5, px: ".25em", py: ".25em" } as StyleLayoutProps, ...props as StyleLayoutProps};
 	const rating = Linq.Coalesce([props.item.CustomRating, props.item.OfficialRating], "", (r) => Nullable.StringHasValue(r));
 
 	React.useEffect(() => ItemFilterService.Instance.LoadFiltersWithAbort([props.libraryId]), [props.libraryId]);

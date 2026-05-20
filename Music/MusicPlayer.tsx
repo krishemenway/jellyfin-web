@@ -55,7 +55,7 @@ export const MusicPlayerStatus: React.FC<{ className?: string; isFullscreen?: tr
 
 	return (
 		<Layout direction="column" className={props.className} py=".5em" px=".5em" gap="1em" width="40%">
-			<Layout direction="row" fontSize="1.2em" lineHeight="1.5em" gap=".5em" alignItems="center">
+			<Layout direction="row" fontSizeREM={1.2} lineHeight="1.5rem" gap=".5em" alignItems="center">
 				<MediaPlayStateIcon state={playState} />
 
 				<Layout direction="row" overflowX="hidden" width="100%" textOverflow="ellipsis" whiteSpace="nowrap" display="block" grow>
@@ -68,7 +68,7 @@ export const MusicPlayerStatus: React.FC<{ className?: string; isFullscreen?: tr
 				<Layout direction="row"><Duration ticks={currentProgress * DateTime.TicksPerSecond} /> / <Duration ticks={current?.Item.RunTimeTicks} /></Layout>
 			</Layout>
 
-			<Layout direction="row" fontSize="1.5em" justifyContent="space-between">
+			<Layout direction="row" fontSizeREM={1.5} justifyContent="space-between">
 				<Layout direction="row" gap=".25em">
 					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayerService.Instance.Playlist.GoBack(); }} icon={<BackwardIcon />} disabled={!hasPrevious}/>
 					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayerService.Instance.Play(); }} icon={<MediaPlayStateIcon state={MediaPlayState.Playing} />} />

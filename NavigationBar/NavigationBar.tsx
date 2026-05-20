@@ -41,7 +41,7 @@ export const NavigationBar: React.FC<{ icon?: React.ReactElement; }> = (props) =
 				whenError={() => <NavigationButton />}
 				whenReceived={(libraries, server, quickConnectEnabled, user) => <OpenNavigationButton libraries={libraries} server={server} quickConnectEnabled={quickConnectEnabled} user={user} />}
 			/>
-			{props.icon && (<Layout direction="row" alignItems="center" fontSize="1.5em">{props.icon}</Layout>)}
+			{props.icon && (<Layout direction="row" alignItems="center" fontSizeREM={1.5}>{props.icon}</Layout>)}
 			<Layout direction="row" alignItems="center"><Search /></Layout>
 		</Layout>
 	);

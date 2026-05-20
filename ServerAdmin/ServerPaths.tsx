@@ -48,7 +48,7 @@ export const ServerPaths: React.FC = () => {
 			whenReceived={(storage, localizationOptions) => (
 				<Layout direction="column" gap="1em" className={background.panel} px="1em" py="1em">
 					<Layout direction="row" justifyContent="space-between">
-						<TranslatedText textKey="HeaderPaths" elementType="div" layout={{ fontSize: "1.2em" }} />
+						<TranslatedText textKey="HeaderPaths" elementType="div" layout={{ fontSizeREM: 1.2 }} />
 						<Button type="button" onClick={() => GeneralSettingsService.Instance.Load(localizationOptions)} direction="row" icon={<EditIcon />} px=".25em" py=".25em" />
 					</Layout>
 					<ListOf

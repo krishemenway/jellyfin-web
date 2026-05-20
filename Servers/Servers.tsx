@@ -19,7 +19,7 @@ export const Servers: React.FC<{ open: boolean; onClosed: () => void; }> = ({ op
 	return (
 		<Layout direction="column" gap="1em">
 			<Layout direction="column" className={background.panel} gap="1em" px="1em" py="1em" minWidth="20em">
-				<Layout direction="row" elementType="h2" fontSize="1.2em"><TranslatedText textKey="SelectServer" /></Layout>
+				<Layout direction="row" elementType="h2" fontSizeREM={1.2}><TranslatedText textKey="SelectServer" /></Layout>
 
 				<ListOf
 					items={servers}

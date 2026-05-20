@@ -61,7 +61,7 @@ const AlbumSong: React.FC<{ song: BaseItemDto; addFromChildOfId: string; }> = (p
 				direction="row" grow px=".25em" py=".25em" gap="4em">
 				<Layout direction="row" grow textAlign="left" gap="1em">
 					{props.song.IndexNumber}.&nbsp;{props.song.Name}
-					{featuringArtists.length > 0 && <Layout direction="row" fontSize=".8em" alignItems="center">{featuringArtists.join(", ")}</Layout>}
+					{featuringArtists.length > 0 && <Layout direction="row" fontSizeREM={.8} alignItems="center">{featuringArtists.join(", ")}</Layout>}
 				</Layout>
 				<Layout direction="row">{DateTime.ConvertTicksToDurationString(props.song.RunTimeTicks)}</Layout>
 			</Button>

@@ -128,7 +128,7 @@ const Album: React.FC<{ artist: BaseItemDto; album: BaseItemDto; relatedItemsToA
 				<ItemImage width="100%" item={album} type="Primary" />
 			</LinkToItem>
 			<Layout direction="column" grow px=".5rem">
-				<Layout direction="row" fontSize="1.5rem" py=".25em">{album.Name}</Layout>
+				<Layout direction="row" fontSizeREM={1.5} py=".25em">{album.Name}</Layout>
 				<MusicAlbumSongs addFromChildOfId={artist.Id!} allSongs={songs} />
 			</Layout>
 		</Layout>

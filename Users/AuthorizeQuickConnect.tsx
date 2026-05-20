@@ -23,9 +23,9 @@ export const AuthorizeQuickConnect: React.FC<{ open: boolean; onClose: () => voi
 	if (isSuccessful === true) {
 		return (
 			<Layout direction="column" px="1em" py="1em" gap="1em" maxWidth="20em">
-				<TranslatedText textKey="QuickConnect" elementType="h2" layout={{ fontSize: "1.2em" }} />
+				<TranslatedText textKey="QuickConnect" elementType="h2" layout={{ fontSizeREM: 1.2 }} />
 
-				<TranslatedText textKey="QuickConnectDescription" elementType="p" layout={{ fontSize: "0.9em" }} />
+				<TranslatedText textKey="QuickConnectDescription" elementType="p" layout={{ fontSizeREM: 0.9 }} />
 
 				<TranslatedText textKey="QuickConnectAuthorizeSuccess" />
 				<Button type="button" px=".5em" py=".25em" justifyContent="center" label="ButtonOk" onClick={() => onClose()} />
@@ -35,9 +35,9 @@ export const AuthorizeQuickConnect: React.FC<{ open: boolean; onClose: () => voi
 
 	return (
 		<Form direction="column" px="1em" py="1em" gap="1em" maxWidth="20em" onSubmit={(() => QuickConnectService.Instance.AuthorizeQuickConnect())}>
-			<TranslatedText textKey="QuickConnect" elementType="h2" layout={{ fontSize: "1.2em" }} />
+			<TranslatedText textKey="QuickConnect" elementType="h2" layout={{ fontSizeREM: 1.2 }} />
 
-			<TranslatedText textKey="QuickConnectDescription" elementType="p" layout={{ fontSize: "0.9em" }} />
+			<TranslatedText textKey="QuickConnectDescription" elementType="p" layout={{ fontSizeREM: 0.9 }} />
 
 			<FieldLabel field={QuickConnectService.Instance.QuickConnectCode} />
 			<TextField field={QuickConnectService.Instance.QuickConnectCode} px=".5em" py=".25em" />

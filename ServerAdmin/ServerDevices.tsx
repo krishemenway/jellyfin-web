@@ -43,14 +43,14 @@ export const ServerDevices: React.FC = () => {
 			whenNotStarted={<LoadingIcon alignSelf="center" size="3em" />}
 			whenReceived={(devices) => (
 				<Layout direction="column" className={background.panel} gap="1rem" py="1rem" px="1rem">
-					<Layout direction="row" fontSize="1.1em"><TranslatedText textKey="HeaderDevices" /></Layout>
+					<Layout direction="row" fontSizeREM={1.1}><TranslatedText textKey="HeaderDevices" /></Layout>
 					<ListOf
 						direction="column" gap="1em"
 						items={devices}
 						forEachItem={(device) => (
 							<Layout key={device.Id} gap=".25em" direction="column">
 								<Layout direction="row">{device.LastUserName} - {device.Name}</Layout>
-								<Layout direction="row" fontSize=".9em" fontColor="Secondary">{device.DateLastActivity}</Layout>
+								<Layout direction="row" fontSizeREM={.9} fontColor="Secondary">{device.DateLastActivity}</Layout>
 							</Layout>
 						)}
 					/>

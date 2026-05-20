@@ -124,7 +124,7 @@ export const Login: React.FC<{ server: ServerConnection; }&StyleLayoutProps> = (
 	return (
 		<Layout direction="column" gap="1em" alignItems="center" py="2em" {...props}>
 			<JellyfinIcon size="2em" />
-			<Layout direction="column" fontSize="1.5em">{props.server.Name}</Layout>
+			<Layout direction="column" fontSizeREM={1.5}>{props.server.Name}</Layout>
 			<SignInWithCredentials />
 			<Loading
 				receivers={[QuickConnectService.Instance.QuickConnectEnabled]}

@@ -280,7 +280,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 const EpisodeTitle: React.FC<{ episode: BaseItemDto; }&EditableItemProps> = ({ editableItem, episode, isEditing }) => {
 	if (isEditing && Nullable.HasValue(editableItem)) {
 		return (
-			<Layout direction="row" fontSize="1.3em" elementType="h2" gap=".5rem" alignItems="center">
+			<Layout direction="row" fontSizeREM={1.3} elementType="h2" gap=".5rem" alignItems="center">
 				<FieldLabel field={editableItem.ParentIndexNumber} textKey="LabelSeasonNumber" />
 				<NumberField field={editableItem.ParentIndexNumber} width="3rem" textAlign="center" />
 
@@ -293,7 +293,7 @@ const EpisodeTitle: React.FC<{ episode: BaseItemDto; }&EditableItemProps> = ({ e
 	}
 
 	return (
-		<Layout direction="row" fontSize="1.3em" elementType="h2">{episode.SeasonName} <TranslatedText textKey="Episode" /> {episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}</Layout>
+		<Layout direction="row" fontSizeREM={1.3} elementType="h2">{episode.SeasonName} <TranslatedText textKey="Episode" /> {episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}</Layout>
 	);
 }
 
@@ -308,7 +308,7 @@ const SeasonForShow: React.FC<{ season: BaseItemDto; allEpisodes: BaseItemDto[];
 
 	return (
 		<Layout direction="column" minWidth="100%">
-			<Button type="button" onClick={() => setSeasonOpen(!seasonOpen)} direction="row" fontSize="1.5em" py=".5em" px=".5em" gap=".5em">
+			<Button type="button" onClick={() => setSeasonOpen(!seasonOpen)} direction="row" fontSizeREM={1.5} py=".5em" px=".5em" gap=".5em">
 				<Layout direction="row">{season.Name}</Layout>
 				<Layout direction="row"><ProductionYearRangeForEpisodes episodes={episodes} /></Layout>
 			</Button>
@@ -363,7 +363,7 @@ const CastAndCrewSection: React.FC<{ item: BaseItemDto; startOpen: boolean; }&Ed
 
 	return (
 		<Layout direction="column" minWidth="100%">
-			<Button type="button" label="HeaderCastAndCrew" onClick={() => setOpen(!open)} direction="row" fontSize="1.5em" py=".5em" px=".5em" gap=".5em" />
+			<Button type="button" label="HeaderCastAndCrew" onClick={() => setOpen(!open)} direction="row" fontSizeREM={1.5} py=".5em" px=".5em" gap=".5em" />
 
 			<Collapsible open={open}>
 				<CastAndCrew

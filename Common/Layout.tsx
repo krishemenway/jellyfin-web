@@ -36,7 +36,7 @@ export interface LayoutWithoutChildrenProps {
 	overflowX?: Property.OverflowX;
 
 	fontColor?: ThemeFontColors;
-	fontSize?: Property.FontSize;
+	fontSizeREM?: number;
 	lineHeight?: Property.LineHeight;
 	textAlign?: Property.TextAlign;
 	textOverflow?: Property.TextOverflow;
@@ -126,7 +126,7 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		overflowY: props?.overflowY,
 
 		color: ThemeService.Instance.ConvertFontColor(props?.fontColor),
-		fontSize: props?.fontSize,
+		fontSize: Nullable.Value(props?.fontSizeREM, undefined, (f) => `${f}rem`),
 		lineHeight: props?.lineHeight,
 		textAlign: props?.textAlign,
 		textOverflow: props?.textOverflow,
