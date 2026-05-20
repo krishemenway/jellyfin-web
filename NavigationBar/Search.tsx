@@ -17,6 +17,7 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { Virtuoso } from "react-virtuoso";
+import { TranslatedText } from "Common/TranslatedText";
 
 export const Search: React.FC = () => {
 	const [textRef, setTextRef] = React.useState<HTMLInputElement|null>(null);
@@ -38,7 +39,7 @@ export const Search: React.FC = () => {
 			>
 				<Layout direction="column" className={background.panel} minHeight="22em" minWidth="25em">
 					<Layout direction="row" justifyContent="space-between" px=".5em" py=".5em" bb>
-						<Layout direction="row" alignItems="center" fontSizeREM={1.5}>Search Results</Layout>
+						<Layout direction="row" alignItems="center" fontSizeREM={1.5}><TranslatedText textKey="SearchResults" /></Layout>
 						<Button className={background.transparent} direction="row" alignItems="center" type="button" onClick={() => SearchService.Instance.Clear()} icon={<CloseIcon size="2em" />} />
 					</Layout>
 
