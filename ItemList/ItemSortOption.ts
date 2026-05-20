@@ -8,12 +8,13 @@ export interface ItemSortOption {
 	sortFunc: (a: BaseItemDto, b: BaseItemDto) => number;
 }
 
-export function CreateSortFunc(sortOption: ItemSortOption, reversed: boolean): SortFuncs<BaseItemDto> {
+export function CreateSortFunc(sortOption: ItemSortOption, reversed: boolean, hidden: boolean): SortFuncs<BaseItemDto> {
 	return {
 		LabelKey: sortOption.labelKey,
 		Sort: sortOption.sortFunc,
 		GetContent: sortOption.getContent,
 		Reversed: reversed,
-		SortType: sortOption.field
+		SortType: sortOption.field,
+		Hidden: hidden,
 	};
 }

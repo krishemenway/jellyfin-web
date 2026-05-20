@@ -3,7 +3,7 @@ import { BaseItemDto, ImageType } from "@jellyfin/sdk/lib/generated-client/model
 import { useBackgroundStyles } from "AppStyles";
 import { ImageShape, ItemImage } from "Items/ItemImage";
 import { LinkToItem } from "Items/LinkToItem";
-import { Layout } from "Common/Layout";
+import { Layout, LayoutWithoutChildrenProps } from "Common/Layout";
 import { SortFuncs } from "Common/Sort";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { CheckIcon } from "CommonIcons/CheckIcon";
@@ -16,21 +16,21 @@ export const ItemsGridItem: React.FC<{ item: BaseItemDto; fallback?: BaseItemDto
 			item={props.item}
 			className={`${background.button}`}
 			direction="column" position="relative"
-			py=".5em" px=".5em" gap="1em"
+			py=".5em" px=".5em" gap=".25em"
 			justifyContent="space-between" alignItems="center"
 			width={{ itemsPerRow: props.itemsPerRow, gap: ".5em" }}
 		>
 			{props.item.UserData?.Played && <ItemPlayedMarker />}
 			<ItemImage item={props.item} fallback={props.fallback} type={props.imageType ?? ImageType.Primary} lazy objectFit="cover" maxWidth="100%" grow />
 			<GridItemField item={props.item} getContent={props.getContent ?? ((i) => i.Name)} />
-			{(props.additionalFields ?? []).map((s) => <GridItemField key={`${props.item.Id + s.LabelKey}`} item={props.item} getContent={s.GetContent} />)}
+			{(props.additionalFields ?? []).filter((f) => !f.Hidden).map((s) => <GridItemField key={`${props.item.Id + s.LabelKey}`} item={props.item} getContent={s.GetContent} fontSizeREM={.9} fontColor="Secondary" />)}
 		</LinkToItem>
 	);
 };
 
-const GridItemField: React.FC<{ item: BaseItemDto; getContent: (item: BaseItemDto) => string|undefined|null; }> = (props) => {
+const GridItemField: React.FC<{ item: BaseItemDto; getContent: (item: BaseItemDto) => string|undefined|null; }&LayoutWithoutChildrenProps> = (props) => {
 	const content = React.useMemo(() => props.getContent(props.item), [props.item, props.getContent]);
-	return <Layout direction="column" py=".25em" textAlign="center">{Nullable.StringValue(content, "—", v => v)}</Layout>;
+	return <Layout direction="column" textAlign="center" {...props}>{Nullable.StringValue(content, "—", v => v)}</Layout>;
 };
 
 const ItemPlayedMarker: React.FC = () => {

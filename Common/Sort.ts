@@ -4,6 +4,7 @@ export interface SortFuncs<T> {
 	GetContent: (t: T) => string|undefined|null;
 	Sort: (a: T, b: T) => number;
 	Reversed: boolean;
+	Hidden: boolean;
 }
 
 export function SortByNumber<T>(findNumberFunc: (x: T) => number|undefined|null) {

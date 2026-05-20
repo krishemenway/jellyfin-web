@@ -33,6 +33,7 @@ import { RadioUncheckedIcon } from "CommonIcons/RadioUncheckedIcon";
 import { FieldError } from "Common/FieldError";
 import { ItemRefreshButton } from "Items/ItemRefreshButton";
 import { ManageLibraryButton } from "Servers/ManageLibraryButton";
+import { VisibleIcon } from "CommonIcons/VisibleIcon";
 
 export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
@@ -140,7 +141,11 @@ const ConfiguredSort: React.FC<{ sort: SortFuncs<BaseItemDto>; listOptions: Item
 		<Layout direction="row" gap="1em" className={background.alternatePanel} alignItems="center">
 			<Button type="button" onClick={() => props.listOptions.ReverseSort(props.sort)} direction="row" px=".25em" py=".25em" icon={props.sort.Reversed ? <ArrowUpIcon /> : <ArrowDownIcon />} />
 			<TranslatedText textKey={props.sort.LabelKey} elementType="div" />
-			<Button type="button" onClick={() => props.listOptions.SortBy.remove(props.sort)} icon={<DeleteIcon />} px=".25em" py=".25em" />
+
+			<Layout direction="row">
+				<Button type="button" onClick={() => props.listOptions.SortBy.remove(props.sort)} icon={<DeleteIcon />} px=".25em" py=".25em" />
+				<Button type="button" onClick={() => props.listOptions.HideSort(props.sort)} px=".25em" py=".25em"><VisibleIcon visible={!props.sort.Hidden} /></Button>
+			</Layout>
 		</Layout>
 	);
 };

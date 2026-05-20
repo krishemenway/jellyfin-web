@@ -32,11 +32,11 @@ export class ItemListViewOptions {
 				throw new Error(`Missing sort type ${d.SortType} from service ${itemKindService.kind}`);
 			}
 
-			return CreateSortFunc(sort, d.Reversed);
+			return CreateSortFunc(sort, d.Reversed, d.Hidden);
 		}));
 
 		this.FilterFunc = new Computed(() => (item) => this.Filters.Value.every((f) => f.ShowItem(item)))
-		this.SortByFunc = new Computed(() => SortByObjectsFunc(this.SortBy.Value.concat([CreateSortFunc(SortByName, false)])));
+		this.SortByFunc = new Computed(() => SortByObjectsFunc(this.SortBy.Value.concat([CreateSortFunc(SortByName, false, false)])));
 	}
 
 	public CreateNewFilter(filterOption: ItemFilterType): void {
@@ -49,21 +49,20 @@ export class ItemListViewOptions {
 	}
 
 	public AddSort(sortFunc: ItemSortOption, reversed: boolean): void {
-		this.SortBy.unshift(CreateSortFunc(sortFunc, reversed));
+		this.SortBy.unshift(CreateSortFunc(sortFunc, reversed, false));
 	}
 
 	public ReverseSort(sort: SortFuncs<BaseItemDto>): void {
 		const current = this.SortBy.AsArray();
 		const currentIndex = current.indexOf(sort);
+		current[currentIndex].Reversed = !current[currentIndex].Reversed;
+		this.SortBy.Value = current;
+	}
 
-		current[currentIndex] = {
-			LabelKey: sort.LabelKey,
-			Reversed: !sort.Reversed,
-			Sort: sort.Sort,
-			SortType: sort.SortType,
-			GetContent: sort.GetContent,
-		};
-
+	public HideSort(sort: SortFuncs<BaseItemDto>): void {
+		const current = this.SortBy.AsArray();
+		const currentIndex = current.indexOf(sort);
+		current[currentIndex].Hidden = !current[currentIndex].Hidden;
 		this.SortBy.Value = current;
 	}
 
@@ -80,7 +79,7 @@ export class ItemListViewOptions {
 	}
 
 	public static CreateRecentlyAdded(service: BaseItemKindService, libraryId: string): ItemListViewOptions {
-		return new ItemListViewOptions(service, libraryId, `RecentlyAdded-${libraryId}`, { Filters: [], Kind: service.kind, Label: "Recently Added", Sorts: [{ Reversed: true, SortType: "DateCreated" }] }, false);
+		return new ItemListViewOptions(service, libraryId, `RecentlyAdded-${libraryId}`, { Filters: [], Kind: service.kind, Label: "Recently Added", Sorts: [{ Reversed: true, SortType: "DateCreated", Hidden: true }] }, false);
 	}
 
 	public CreateSaveRequest(): ItemViewOptionsData {
@@ -88,7 +87,7 @@ export class ItemListViewOptions {
 			Label: this.Label.Current.Value,
 			Kind: this.ItemKindService.kind,
 			Filters: this.Filters.Value.map((i) => ({ FilterType: i.FilterType.type, FilterValue: i.FilterValue.Current.Value, Operation: i.Operation.Current.Value.Name })),
-			Sorts: this.SortBy.Value.map((s) => ({ SortType: s.SortType, Reversed: s.Reversed }) as ItemViewOptionSortData),
+			Sorts: this.SortBy.Value.map((s) => ({ SortType: s.SortType, Reversed: s.Reversed, Hidden: s.Hidden }) as ItemViewOptionSortData),
 		};
 	}
 
@@ -122,6 +121,7 @@ export interface ItemViewOptionFilterData {
 export interface ItemViewOptionSortData {
 	SortType: ItemSortBy;
 	Reversed: boolean;
+	Hidden: boolean;
 }
 
 export interface ItemViewOptionsData {
