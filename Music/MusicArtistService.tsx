@@ -7,18 +7,22 @@ import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { FilterByName } from "ItemList/ItemFilterTypes/FilterByName";
 import { FilterByIsFavorite } from "ItemList/ItemFilterTypes/FilterByIsFavorite";
+import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
+import { FilterByGenre } from "ItemList/ItemFilterTypes/FilterByGenre";
 
 export const MusicArtistService: BaseItemKindService = {
 	kind: "MusicArtist",
 	findIcon: (props) => <MusicArtistIcon {...props} />,
 	findUrl: (i) => `/Music/Artist/${i.Id}`,
-	loadList: (a, id) => getArtistsApi(ServerService.Instance.CurrentApi).getArtists({ parentId: id }, { signal: a.signal }).then((result) => result.data.Items ?? []),
+	loadList: (a, id) => getArtistsApi(ServerService.Instance.CurrentApi).getArtists({ parentId: id, fields: [ "Genres" ] }, { signal: a.signal }).then((result) => result.data.Items ?? []),
 	filterOptions: [
 		FilterByName,
 		FilterByIsFavorite,
+		FilterByGenre,
 	],
 	sortOptions: [
 		SortByDateCreated,
 		SortByName,
+		SortByRuntime,
 	],
 };
