@@ -80,7 +80,7 @@ const LoadedItemsListView: React.FC<{ libraryId: string, viewOptionsKey?: string
 
 const ItemsViewWithOptions: React.FC<{ library: BaseItemDto; items: BaseItemDto[]; listOptions: ItemListViewOptions; itemList: ItemListService; itemKind: BaseItemKind; itemKindService: BaseItemKindService; settings: Settings; user: UserDto; filters: QueryFiltersLegacy }> = (props) => {
 	const sorts = useObservable(props.listOptions.SortBy);
-	const itemsPerRow = useBreakpointValues(2, 6, 7, 9);
+	const itemsPerRow = useBreakpointValues(2, 4, 7, 9);
 	const filteredAndSortedItems = useComputed(() => {
 		const listTypes = props.itemKindService.listTypes ?? [props.itemKind];
 		const items = props.items.filter((i) => listTypes.indexOf(i.Type!) > -1);
