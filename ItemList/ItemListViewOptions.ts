@@ -8,6 +8,7 @@ import { BaseItemKindService } from "Items/BaseItemKindService";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { EditableField, ValueIsRequired } from "Common/EditableField";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
+import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
 
 export class ItemListViewOptions {
 	constructor(itemKindService: BaseItemKindService, libraryId: string, key?: string, data?: ItemViewOptionsData, canSave?: boolean) {
@@ -79,7 +80,7 @@ export class ItemListViewOptions {
 	}
 
 	public static CreateRecentlyAdded(service: BaseItemKindService, libraryId: string): ItemListViewOptions {
-		return new ItemListViewOptions(service, libraryId, `RecentlyAdded-${libraryId}`, { Filters: [], Kind: service.kind, Label: "Recently Added", Sorts: [{ Reversed: true, SortType: "DateCreated", Hidden: true }] }, false);
+		return new ItemListViewOptions(service, libraryId, `RecentlyAdded-${libraryId}`, { Filters: [], Kind: service.kind, Label: "Recently Added", Sorts: [{ Reversed: true, SortType: SortByDateCreated.field, Hidden: true }] }, false);
 	}
 
 	public CreateSaveRequest(): ItemViewOptionsData {

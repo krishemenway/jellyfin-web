@@ -28,7 +28,7 @@ export class ItemListService {
 		this.ExistingOptions = new ObservableArray([]);
 		this.ConfirmDeleteOptions = new Observable(null);
 
-		this.DefaultLoadItems = (a, id) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: id, fields: ["DateCreated", "Genres", "Tags", "SortName", "Studios"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((response) => response.data.Items ?? []);
+		this.DefaultLoadItems = (a, id) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: id, fields: ["DateCreated", "Genres", "Tags", "SortName", "Studios", "DateLastMediaAdded"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((response) => response.data.Items ?? []);
 	}
 
 	public LoadWithAbort(statConfigs?: ItemListStatConfig[]): () => void {
