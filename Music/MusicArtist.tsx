@@ -30,6 +30,7 @@ import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
 import { MusicAlbumSongs } from "Music/MusicAlbumSongs";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { LinkToItem } from "Items/LinkToItem";
+import { ItemGenres } from "Items/ItemGenres";
 
 export const MusicArtist: React.FC = () => {
 	const artistId = useParams().artistId;
@@ -44,19 +45,20 @@ export const MusicArtist: React.FC = () => {
 	return (
 		<PageWithNavigation icon="MusicArtist">
 			<Loading
-				receivers={[LoginService.Instance.User, ItemService.Instance.FindOrCreateItemData(artistId).Item, ItemService.Instance.FindOrCreateItemData(artistId).Children]}
+				receivers={[LoginService.Instance.User, ItemService.Instance.FindOrCreateItemData(artistId).Item]}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(user, artist, relatedItemsToArtist) => <LoadedMusicArtist user={user} artist={artist} relatedItemsToArtist={relatedItemsToArtist} />}
+				whenReceived={(user, artist) => <LoadedMusicArtist user={user} artist={artist} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; relatedItemsToArtist: BaseItemDto[] }> = ({ user, artist, relatedItemsToArtist }) => {
+const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; }> = ({ user, artist }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(artist, user);
+	const genresPerRow = useBreakpointValues(1, 3, 3, 3);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(artist), [artist]);
@@ -68,6 +70,14 @@ const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; relatedI
 					<Layout direction="column" position="relative">
 						<ItemImage item={artist} type="Primary" />
 					</Layout>
+
+					<ItemGenres
+						item={artist}
+						direction="row" gap=".5rem" wrap
+						linkClassName={background.button}
+						linkLayout={{ direction: "column", width: { itemsPerRow: genresPerRow, gap: ".5rem" }, py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
+						editableItem={editableItem} isEditing={isEditing}
+					/>
 
 					<ItemExternalLinks
 						item={artist}
@@ -86,7 +96,7 @@ const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; relatedI
 						{isEditing && <ItemRefreshButton item={artist} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
 						<ItemActionsMenu items={[artist]} user={user} actions={[
-							[ // Server-based actions
+							[
 								EditItemAction,
 							]
 						]} />
@@ -94,7 +104,14 @@ const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; relatedI
 				</Layout>
 
 				<ItemOverview item={artist} editableItem={editableItem} isEditing={isEditing} />
-				<Albums artist={artist} relatedItemsToArtist={relatedItemsToArtist} />
+
+				<Loading
+					receivers={[ItemService.Instance.FindOrCreateItemData(artist.Id!).Children]}
+					whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
+					whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
+					whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
+					whenReceived={(relatedItemsToArtist) => <Albums artist={artist} relatedItemsToArtist={relatedItemsToArtist} />}
+				/>
 			</Layout>
 		</Layout>
 	);
