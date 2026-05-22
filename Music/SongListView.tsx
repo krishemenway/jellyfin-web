@@ -177,7 +177,7 @@ const LoadedItems: React.FC<{ addType: MusicPlayerDropActionType, libraryId: str
 	};
 
 	const filteredItems = React.useMemo(() => props.items.filter((i) => Nullable.Value(props.filters, true, (f) => f.length === 0 || f.some((filter) => filter(i) || props.selectedKeys.includes(props.getSelectedKey(i))))), [props.items, props.filters, props.selectedKeys, props.getSelectedKey]);
-	const sortedItems = React.useMemo(() => SortByObjects(filteredItems, [{ SortType: sortField.name, LabelKey: sortField.name, Sort: sortField.getSortFunc(props.stats ?? []), Reversed: sortReversed, GetContent: () => "" }]), [filteredItems, sortField, sortReversed]);
+	const sortedItems = React.useMemo(() => SortByObjects(filteredItems, [{ SortType: sortField.name, LabelKey: sortField.name, Sort: sortField.getSortFunc(props.stats ?? []), Reversed: sortReversed, GetContent: () => "", Hidden: true }]), [filteredItems, sortField, sortReversed]);
 
 	return (
 		<TableVirtuoso

@@ -22,7 +22,7 @@ import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; className?: string; linkProps?: StyleLayoutProps; }&EditableItemProps&StyleLayoutProps> = (props) => {
 	const relevantPersonKinds = BaseItemKindServiceFactory.FindOrThrow(props.itemWithPeople.Type).relevantPersonKinds ?? [];
 	const orderedCastAndCrew = React.useMemo(() => SortByObjects(props.itemWithPeople.People ?? [], [
-		{ LabelKey: "", Reversed: false, SortType: "PriorityOrder", Sort: SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"]), GetContent: () => "" },
+		{ LabelKey: "", Reversed: false, SortType: "PriorityOrder", Sort: SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"]), GetContent: () => "", Hidden: true },
 	]), [props.itemWithPeople.People]);
 
 	if (props.isEditing && Nullable.HasValue(props.editableItem)) {

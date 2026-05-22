@@ -88,7 +88,7 @@ export const FilterByOfficialRating: ItemFilterType = {
 	targetField: (item) => item.OfficialRating,
 	editor: (props) => {
 		const orderedRatings = React.useMemo(() => SortByObjects(props.filters.OfficialRatings ?? [], [
-			{ LabelKey: "", Reversed: false, SortType: "SortOrder", Sort: SortByNumber(rating => GetOrder(rating)), GetContent: (r) => r },
+			{ LabelKey: "", Reversed: false, SortType: "SortOrder", Sort: SortByNumber(rating => GetOrder(rating)), GetContent: (r) => r, Hidden: true },
 		]), [props.filters.OfficialRatings]);
 
 		if (props.currentOperation === EmptyOperation || props.currentOperation === NotEmptyOperation) {
