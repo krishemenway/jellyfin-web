@@ -63,7 +63,7 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 			<Layout direction="row" gap="1em" alignItems="center">
 				<Button type="button" px=".5em" py=".25em" justifyContent="center" alignItems="center" onClick={(button) => { setOptionsListButtonRef(button)}} icon={<LoadViewOptionsIcon />} />
 
-				{(Nullable.StringHasValue(currentOptionLabel) && <Layout direction="column">{currentOptionLabel}</Layout>)}
+				{Nullable.StringValue(currentOptionLabel, <></>, (label) => <Layout direction="column">{label}</Layout>)}
 
 				{(props.listOptions.ItemKindService?.filterOptions ?? []).length > 0 && (
 					<Layout direction="row" gap=".5em" alignItems="center">
@@ -157,8 +157,7 @@ const PickSortOptionModal: React.FC<{ sortOptions: ItemSortOption[]; onPicked: (
 		<ListOf
 			items={props.sortOptions}
 			direction="row" wrap
-			px="1em" py="1em" gap="1em"
-			maxWidth="416px"
+			px="1em" py="1em" gap="1em" width="25rem"
 			forEachItem={(sortOption) => (
 				<Button
 					key={sortOption.labelKey} label={{ Key: sortOption.labelKey }}
@@ -177,13 +176,12 @@ const PickFilterModal: React.FC<{ filterOptions: ItemFilterType[]; onPicked: (op
 		<ListOf
 			items={props.filterOptions}
 			direction="row" wrap
-			px="1em" py="1em" gap="1em" grow
-			maxWidth="400px"
+			px="1em" py="1em" gap="1em" grow width="25rem"
 			forEachItem={(filterOption) => (
 				<Button
 					key={filterOption.labelKey} label={filterOption.labelKey}
 					type="button" onClick={() => { props.onPicked(filterOption); props.onClosed(); }}
-					direction="column" width={{ itemsPerRow: itemsPerRow, gap: "1em" }} px=".25em" py=".5em"
+					direction="column" width={{ itemsPerRow: itemsPerRow, gap: "1em" }} px=".5em" py=".5em"
 				/>
 			)}
 		/>

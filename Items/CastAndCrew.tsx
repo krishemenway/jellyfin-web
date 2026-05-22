@@ -90,7 +90,7 @@ const CastAndCrewCredit: React.FC<{ person: BaseItemPerson; }&StyleLayoutProps> 
 		<LinkToPerson id={props.person.Id} direction="column" width={{ itemsPerRow: itemsPerRow }} {...props}>
 			<Layout direction="row" fontSizeREM={1}>{props.person.Name}</Layout>
 			<Layout direction="row" fontSizeREM={.8}>
-				{Nullable.StringHasValue(props.person.Role) ? props.person.Role : <TranslatedText textKey={props.person.Type!} />}
+				{Nullable.StringValue(props.person.Role, <TranslatedText textKey={props.person.Type!} />, (role) => <>{role}</>)}
 			</Layout>
 		</LinkToPerson>
 	);

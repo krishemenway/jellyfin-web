@@ -98,8 +98,9 @@ export class Nullable {
 		return Nullable.HasValue(obj) ? valueSelector(obj) : defaultValue;
 	}
 
-	public static StringValue(value: string|undefined|null, defaultValue: string, modify: (v: string) => string): string {
-		return Nullable.HasValue(value) && value.length > 0 ? modify(value) : defaultValue;
+	public static StringValue<T>(value: string|undefined|null, defaultValue: T, modify?: (v: string) => T): T {
+		const modifyOrDefault = modify ?? ((v: string) => v as T);
+		return Nullable.HasValue(value) && value.length > 0 ? modifyOrDefault(value) : defaultValue;
 	}
 }
 

@@ -6,6 +6,6 @@ import { parseISO } from "date-fns";
 export const SortByPremiereDate: ItemSortOption = {
 	labelKey: 'OptionReleaseDate',
 	field: "PremiereDate",
-	getContent: (i) => Nullable.StringHasValue(i.PremiereDate) ? parseISO(i.PremiereDate!).toLocaleDateString() : "—",
+	getContent: (i) => Nullable.StringValue(i.PremiereDate, "—", (premiereDate) => parseISO(premiereDate).toLocaleDateString()),
 	sortFunc: SortByString((i) => i.PremiereDate),
 };

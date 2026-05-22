@@ -39,7 +39,5 @@ export const ItemRating: React.FC<{ item: BaseItemDto; libraryId: string; }&Edit
 		);
 	}
 
-	return Nullable.StringHasValue(rating)
-		? <Layout direction="row" {...combined} className={background.alternatePanel} children={rating} />
-		: <></>;
+	return Nullable.StringValue(rating, <></>, (r) => <Layout direction="row" {...combined} className={background.alternatePanel} children={r} />);
 };

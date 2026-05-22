@@ -102,7 +102,7 @@ export class EditableItem {
 			PreferredMetadataCountryCode: this.PreferredMetadataCountryCode.Current.Value,
 			PreferredMetadataLanguage: this.PreferredMetadataLanguage.Current.Value,
 			PremiereDate: this.PremiereDate.Current.Value,
-			ProductionYear: Nullable.StringHasValue(this.PremiereDate.Current.Value) ? parseInt(this.PremiereDate.Current.Value.slice(0, 4)) : undefined,
+			ProductionYear: Nullable.StringValue(this.PremiereDate.Current.Value, null, (date) => parseInt(date.slice(0, 4))),
 			ProviderIds: this.ProviderIds.Value.reduce((all, current) => { all[current.Key] = current.Value.Current.Value ?? null; return all; }, {} as { [key: string]: string|null }),
 			SeasonName: this.SeasonName.Current.Value,
 			Status: this.Status.Current.Value,

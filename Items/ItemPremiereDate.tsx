@@ -20,14 +20,10 @@ export const ItemPremiereDate: React.FC<{ item: BaseItemDto; }&EditableItemProps
 		);
 	}
 
-	if (Nullable.StringHasValue(premiereDate)) {
-		return (
-			<Layout direction="row" gap=".5em" alignItems="center">
-				<TranslatedText textKey="Premiere" elementType="div" />
-				<Layout direction="row">{premiereDate}</Layout>
-			</Layout>
-		);
-	}
-
-	return undefined;
+	return Nullable.StringValue(premiereDate, <></>, (premiereDate) => (
+		<Layout direction="row" gap=".5em" alignItems="center">
+			<TranslatedText textKey="Premiere" elementType="div" />
+			<Layout direction="row">{premiereDate}</Layout>
+		</Layout>
+	));
 };

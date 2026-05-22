@@ -39,14 +39,10 @@ export const ItemOverview: React.FC<{ item: BaseItemDto; }&EditableItemProps> = 
 		return <MultiLineField field={props.editableItem.Overview} px=".25em" py=".25em" />;
 	}
 
-	if (!Nullable.StringHasValue(overview)) {
-		return undefined;
-	}
-
-	return (
+	return Nullable.StringValue(overview, <></>, (o) => (
 		<Layout direction="column" gap="1rem">
-			<div className={`${props.item.Type}-overview ${markdownStyles.overview}`} style={{ maxHeight: showMore ? undefined : '5rem' }} ref={element} dangerouslySetInnerHTML={{ __html: overview }} />
+			<div className={`${props.item.Type}-overview ${markdownStyles.overview}`} style={{ maxHeight: showMore ? undefined : '5rem' }} ref={element} dangerouslySetInnerHTML={{ __html: o }} />
 			{showMoreVisible && <Layout direction="row" justifyContent="end"><Button type="button" onClick={showAllOverview} px=".25em" py=".25em" label={{ Key: "ShowMore" }} /></Layout>}
 		</Layout>
-	);
+	));
 };
