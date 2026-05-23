@@ -38,7 +38,7 @@ export const ChangeImageButton: React.FC<{ item: BaseItemDto; imageType: ImageTy
 				id={`${item.Id}-${imageType}`}
 				type="file" accept="image/*"
 				onChange={(evt) => { onChange(evt.target.files) }}
-				style={{ position: "absolute", opacity: "0" }}
+				style={{ position: "absolute", opacity: "0", pointerEvents: "none" }}
 			/>
 		</>
 	);
