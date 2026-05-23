@@ -46,6 +46,7 @@ import { EditableItemProps } from "Items/EditableItemProps";
 import { NumberField, TextField } from "Common/TextField";
 import { FieldLabel } from "Common/FieldLabel";
 import { ItemPremiereDate } from "Items/ItemPremiereDate";
+import { ChangeImageButton } from "Items/ChangeImageButton";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
@@ -86,9 +87,13 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 	return (
 		<Layout direction="row" gap="1em" py="1em">
 			<Layout direction="column" maxWidth="20%" gap=".5em">
-				<Layout direction="column" position="relative">
-					<ItemImage item={show} type="Primary" />
-					<ItemRating item={show} position="absolute" bottom=".5em" right=".5em" libraryId={show.ParentId!} isEditing={isEditing} editableItem={editableItem} />
+				<Layout direction="column">
+					<Layout direction="column" position="relative">
+						<ItemImage item={show} type="Primary" />
+						<ItemRating item={show} position="absolute" bottom=".5em" right=".5em" libraryId={show.ParentId!} isEditing={isEditing} editableItem={editableItem} />
+					</Layout>
+
+					<ChangeImageButton item={show} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(show.Id!).LoadItemWithAbort(true)} />
 				</Layout>
 
 				<ItemStudios
@@ -140,9 +145,13 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 	return (
 		<Layout direction="row" gap="1em" py="1em">
 			<Layout direction="column" maxWidth="20%" gap=".5em">
-				<Layout direction="column" position="relative">
-					<ItemImage item={selectedEpisode} type="Primary" />
-					<ItemRating item={selectedEpisode} position="absolute" bottom=".5em" right=".5em" libraryId={show.ParentId!} isEditing={isEditing} editableItem={editableItem} />
+				<Layout direction="column">
+					<Layout direction="column" position="relative">
+						<ItemImage item={selectedEpisode} type="Primary" />
+						<ItemRating item={selectedEpisode} position="absolute" bottom=".5em" right=".5em" libraryId={selectedEpisode.ParentId!} isEditing={isEditing} editableItem={editableItem} />
+					</Layout>
+
+					<ChangeImageButton item={selectedEpisode} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(selectedEpisode.Id!).LoadItemWithAbort(true)} />
 				</Layout>
 
 				<ItemStudios

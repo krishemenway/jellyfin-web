@@ -46,6 +46,7 @@ import { FieldLabel } from "Common/FieldLabel";
 import { MultiSelectEditor } from "Common/SelectFieldEditor";
 import { ItemPremiereDate } from "Items/ItemPremiereDate";
 import { ItemDuration } from "Items/ItemDuration";
+import { ChangeImageButton } from "Items/ChangeImageButton";
 
 export const MusicVideo: React.FC = () => {
 	const routeParams = useParams<{ musicVideoId: string }>();
@@ -81,9 +82,13 @@ const LoadedMusicVideo: React.FC<{ user: UserDto, musicVideo: BaseItemDto }> = (
 		<Layout direction="row" gap="1em" py="1em">
 			<Layout direction="column" maxWidth="20%" gap=".5em">
 				<Layout direction="column" gap=".5em">
-					<Layout direction="column" position="relative">
-						<ItemImage item={musicVideo} type="Primary" />
-						<ItemRating item={musicVideo} position="absolute" bottom=".5em" right=".5em" isEditing={isEditing} editableItem={editableItem} libraryId={musicVideo.ParentId!} />
+					<Layout direction="column">
+						<Layout direction="column" position="relative">
+							<ItemImage item={musicVideo} type="Primary" />
+							<ItemRating item={musicVideo} position="absolute" bottom=".5em" right=".5em" libraryId={musicVideo.ParentId!} isEditing={isEditing} editableItem={editableItem} />
+						</Layout>
+	
+						<ChangeImageButton item={musicVideo} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(musicVideo.Id!).LoadItemWithAbort(true)} />
 					</Layout>
 
 					<ItemExternalLinks

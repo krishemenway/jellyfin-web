@@ -29,6 +29,7 @@ import { SortFuncs } from "Common/Sort";
 import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYear";
 import { ItemsApiGetItemsRequest } from "@jellyfin/sdk/lib/generated-client/api/items-api";
 import { CreateSortFunc } from "ItemList/ItemSortOption";
+import { ChangeImageButton } from "Items/ChangeImageButton";
 
 const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
 	imageTypeLimit: 1,
@@ -62,7 +63,10 @@ export const Person: React.FC = () => {
 				whenReceived={(person, creditedItems, user) => (
 					<Layout direction="row" gap="1em" py="1em" height="100%">
 						<Layout direction="column" maxWidth="20%" gap=".5em">
-							<ItemImage item={person} type="Primary" />
+							<Layout direction="column">
+								<ItemImage item={person} type="Primary" />
+								<ChangeImageButton item={person} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(person.Id!).LoadItemWithAbort(true)} />
+							</Layout>
 
 							<ItemExternalLinks
 								item={person}

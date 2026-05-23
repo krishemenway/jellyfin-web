@@ -35,6 +35,7 @@ import { Button } from "Common/Button";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { useObservable } from "@residualeffect/rereactor";
 import { RevertIcon } from "CommonIcons/RevertIcon";
+import { ChangeImageButton } from "Items/ChangeImageButton";
 
 export const Book: React.FC = () => {
 	const bookId = useParams<{ bookId: string }>().bookId;
@@ -69,9 +70,13 @@ export const LoadedBook: React.FC<{ user: UserDto, book: BaseItemDto }> = ({ use
 		<Layout direction="row" gap="1em" py="1rem">
 			<Layout direction="column" maxWidth="20%" gap=".5rem">
 				<Layout direction="column" gap=".5rem">
-					<Layout direction="column" position="relative">
-						<ItemImage item={book} type="Primary" />
-						<ItemRating item={book} position="absolute" bottom=".5rem" right=".5rem" editableItem={editableItem} libraryId={book.ParentId!} isEditing={isEditing} />
+					<Layout direction="column">
+						<Layout direction="column" position="relative">
+							<ItemImage item={book} type="Primary" />
+							<ItemRating item={book} position="absolute" bottom=".5em" right=".5em" libraryId={book.ParentId!} isEditing={isEditing} editableItem={editableItem} />
+						</Layout>
+	
+						<ChangeImageButton item={book} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(book.Id!).LoadItemWithAbort(true)} />
 					</Layout>
 
 					<ItemExternalLinks

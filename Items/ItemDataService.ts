@@ -19,7 +19,7 @@ export class ItemDataService {
 			return () => { };
 		}
 
-		this.Item.Start((a) => getUserLibraryApi(ServerService.Instance.CurrentApi).getItem({ itemId: this.Id, userId: ServerService.Instance.CurrentUserId.Value }, { signal: a.signal }).then(response => response.data));
+		this.Item.Start((a) => getUserLibraryApi(ServerService.Instance.CurrentApi).getItem({ itemId: this.Id, userId: ServerService.Instance.CurrentUserId.Value }, { signal: a.signal }).then(response => response.data), forceRefresh === true);
 		return () => this.Item.ResetIfLoading();
 	}
 

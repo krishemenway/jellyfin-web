@@ -31,6 +31,7 @@ import { MusicAlbumSongs } from "Music/MusicAlbumSongs";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { LinkToItem } from "Items/LinkToItem";
 import { ItemGenres } from "Items/ItemGenres";
+import { ChangeImageButton } from "Items/ChangeImageButton";
 
 export const MusicArtist: React.FC = () => {
 	const artistId = useParams().artistId;
@@ -67,8 +68,9 @@ const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; }> = ({ 
 		<Layout direction="row" gap="1em" py="1rem">
 			<Layout direction="column" maxWidth="20%" gap=".5rem">
 				<Layout direction="column" gap=".5rem">
-					<Layout direction="column" position="relative">
+					<Layout direction="column">
 						<ItemImage item={artist} type="Primary" />
+						<ChangeImageButton item={artist} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(artist.Id!).LoadItemWithAbort(true)} />
 					</Layout>
 
 					<ItemGenres

@@ -37,6 +37,7 @@ import { useObservable } from "@residualeffect/rereactor";
 import { RevertIcon } from "CommonIcons/RevertIcon";
 import { ItemPremiereDate } from "Items/ItemPremiereDate";
 import { ItemDuration } from "Items/ItemDuration";
+import { ChangeImageButton } from "Items/ChangeImageButton";
 
 export const Movie: React.FC = () => {
 	const movieId = useParams<{ movieId: string }>().movieId;
@@ -71,9 +72,13 @@ const LoadedMovie: React.FC<{ user: UserDto, movie: BaseItemDto }> = ({ user, mo
 		<Layout direction="row" gap="1em" py="1rem">
 			<Layout direction="column" maxWidth="20%" gap=".5rem">
 				<Layout direction="column" gap=".5rem">
-					<Layout direction="column" position="relative">
-						<ItemImage item={movie} type="Primary" />
-						<ItemRating item={movie} position="absolute" bottom=".5rem" right=".5rem" editableItem={editableItem} libraryId={movie.ParentId!} isEditing={isEditing} />
+					<Layout direction="column">
+						<Layout direction="column" position="relative">
+							<ItemImage item={movie} type="Primary" />
+							<ItemRating item={movie} position="absolute" bottom=".5em" right=".5em" libraryId={movie.ParentId!} isEditing={isEditing} editableItem={editableItem} />
+						</Layout>
+	
+						<ChangeImageButton item={movie} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(movie.Id!).LoadItemWithAbort(true)} />
 					</Layout>
 
 					<ItemExternalLinks

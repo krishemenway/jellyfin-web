@@ -35,6 +35,7 @@ import { Button } from "Common/Button";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { useObservable } from "@residualeffect/rereactor";
 import { RevertIcon } from "CommonIcons/RevertIcon";
+import { ChangeImageButton } from "Items/ChangeImageButton";
 
 export const AudioBook: React.FC = () => {
 	const audioBookId = useParams<{ audioBookId: string }>().audioBookId;
@@ -69,9 +70,13 @@ const LoadedAudioBook: React.FC<{ user: UserDto, audioBook: BaseItemDto }> = ({ 
 		<Layout direction="row" gap="1em" py="1rem">
 			<Layout direction="column" maxWidth="20%" gap=".5rem">
 				<Layout direction="column" gap=".5rem">
-					<Layout direction="column" position="relative">
-						<ItemImage item={audioBook} type="Primary" />
-						<ItemRating item={audioBook} position="absolute" bottom=".5rem" right=".5rem" editableItem={editableItem} libraryId={audioBook.ParentId!} isEditing={isEditing} />
+					<Layout direction="column">
+						<Layout direction="column" position="relative">
+							<ItemImage item={audioBook} type="Primary" />
+							<ItemRating item={audioBook} position="absolute" bottom=".5em" right=".5em" libraryId={audioBook.ParentId!} isEditing={isEditing} editableItem={editableItem} />
+						</Layout>
+	
+						<ChangeImageButton item={audioBook} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(audioBook.Id!).LoadItemWithAbort(true)} />
 					</Layout>
 
 					<ItemExternalLinks

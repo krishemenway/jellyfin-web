@@ -44,6 +44,7 @@ import { MusicArtistService } from "Music/MusicArtistService";
 import { ItemDuration } from "Items/ItemDuration";
 import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
+import { ChangeImageButton } from "Items/ChangeImageButton";
 
 export const MusicAlbum: React.FC = () => {
 	const routeParams = useParams<{ albumId: string; songId?: string; }>();
@@ -80,9 +81,13 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemD
 		<Layout direction="column" py="1em">
 			<Layout direction="row" gap="1em" py="1em">
 				<Layout direction="column" maxWidth="33.333%" gap=".5em">
-					<Layout direction="column" position="relative">
-						<ItemImage item={album} type="Primary" />
-						<ItemRating item={album} position="absolute" bottom=".5em" right=".5em" isEditing={isEditing} libraryId={album.ParentId!} editableItem={editableItem} />
+					<Layout direction="column">
+						<Layout direction="column" position="relative">
+							<ItemImage item={album} type="Primary" />
+							<ItemRating item={album} position="absolute" bottom=".5em" right=".5em" libraryId={album.ParentId!} isEditing={isEditing} editableItem={editableItem} />
+						</Layout>
+	
+						<ChangeImageButton item={album} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(album.Id!).LoadItemWithAbort(true)} />
 					</Layout>
 
 					<ItemStudios
