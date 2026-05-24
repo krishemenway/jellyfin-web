@@ -70,7 +70,7 @@ const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; }> = ({ 
 				<Layout direction="column" gap=".5rem">
 					<Layout direction="column">
 						<ItemImage item={artist} type="Primary" />
-						<ChangeImageButton item={artist} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(artist.Id!).LoadItemWithAbort(true)} />
+						<ChangeImageButton item={artist} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(artist.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
 					</Layout>
 
 					<ItemGenres

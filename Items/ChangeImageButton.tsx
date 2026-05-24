@@ -5,8 +5,9 @@ import { ServerService } from "Servers/ServerService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { TranslatedText } from "Common/TranslatedText";
 import { useBackgroundStyles } from "AppStyles";
+import { EditableItemProps } from "Items/EditableItemProps";
 
-export const ChangeImageButton: React.FC<{ item: BaseItemDto; imageType: ImageType; onChanged: () => void; }> = ({ item, imageType, onChanged }) => {
+export const ChangeImageButton: React.FC<{ item: BaseItemDto; imageType: ImageType; onChanged: () => void; }&EditableItemProps> = ({ item, imageType, onChanged, isEditing }) => {
 	const background = useBackgroundStyles();
 	const onChange = (fileList: FileList|null) => {
 		Nullable.TryExecute(fileList, (files) => {
@@ -27,6 +28,10 @@ export const ChangeImageButton: React.FC<{ item: BaseItemDto; imageType: ImageTy
 			reader.readAsDataURL(file);
 		});
 	};
+
+	if (!isEditing) {
+		return undefined;
+	}
 
 	return (
 		<>

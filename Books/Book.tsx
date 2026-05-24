@@ -76,7 +76,7 @@ export const LoadedBook: React.FC<{ user: UserDto, book: BaseItemDto }> = ({ use
 							<ItemRating item={book} position="absolute" bottom=".5em" right=".5em" libraryId={book.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 						</Layout>
 	
-						<ChangeImageButton item={book} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(book.Id!).LoadItemWithAbort(true)} />
+						<ChangeImageButton item={book} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(book.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
 					</Layout>
 
 					<ItemExternalLinks

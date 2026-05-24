@@ -76,7 +76,7 @@ const LoadedAudioBook: React.FC<{ user: UserDto, audioBook: BaseItemDto }> = ({ 
 							<ItemRating item={audioBook} position="absolute" bottom=".5em" right=".5em" libraryId={audioBook.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 						</Layout>
 	
-						<ChangeImageButton item={audioBook} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(audioBook.Id!).LoadItemWithAbort(true)} />
+						<ChangeImageButton item={audioBook} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(audioBook.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
 					</Layout>
 
 					<ItemExternalLinks

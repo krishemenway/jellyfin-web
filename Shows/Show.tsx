@@ -93,7 +93,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 						<ItemRating item={show} position="absolute" bottom=".5em" right=".5em" libraryId={show.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 					</Layout>
 
-					<ChangeImageButton item={show} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(show.Id!).LoadItemWithAbort(true)} />
+					<ChangeImageButton item={show} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(show.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
 				</Layout>
 
 				<ItemStudios
@@ -151,7 +151,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 						<ItemRating item={selectedEpisode} position="absolute" bottom=".5em" right=".5em" libraryId={selectedEpisode.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 					</Layout>
 
-					<ChangeImageButton item={selectedEpisode} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(selectedEpisode.Id!).LoadItemWithAbort(true)} />
+					<ChangeImageButton item={selectedEpisode} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(selectedEpisode.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
 				</Layout>
 
 				<ItemStudios

@@ -78,7 +78,7 @@ const LoadedMovie: React.FC<{ user: UserDto, movie: BaseItemDto }> = ({ user, mo
 							<ItemRating item={movie} position="absolute" bottom=".5em" right=".5em" libraryId={movie.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 						</Layout>
 	
-						<ChangeImageButton item={movie} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(movie.Id!).LoadItemWithAbort(true)} />
+						<ChangeImageButton item={movie} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(movie.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
 					</Layout>
 
 					<ItemExternalLinks

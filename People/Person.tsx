@@ -1,7 +1,7 @@
 import * as React from "react";
 import { parseISO, intervalToDuration } from "date-fns";
 import { useParams } from "react-router-dom";
-import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Layout } from "Common/Layout";
 import { Loading } from "Common/Loading";
 import { NotFound } from "Common/NotFound";
@@ -19,7 +19,7 @@ import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { ItemOverview } from "Items/ItemOverview";
 import { LoginService } from "Users/LoginService";
 import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
-import { PageTitle } from "Common/PageTitle";
+import { ItemPageTitle } from "Items/ItemPageTitle";
 import { Virtuoso } from "react-virtuoso";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
@@ -30,6 +30,12 @@ import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYea
 import { ItemsApiGetItemsRequest } from "@jellyfin/sdk/lib/generated-client/api/items-api";
 import { CreateSortFunc } from "ItemList/ItemSortOption";
 import { ChangeImageButton } from "Items/ChangeImageButton";
+import { useObservable } from "node_modules/@residualeffect/rereactor/lib";
+import { ItemEditorService, useEditableItem } from "Items/ItemEditorService";
+import { EditableItemProps } from "Items/EditableItemProps";
+import { Button } from "Common/Button";
+import { RevertIcon } from "CommonIcons/RevertIcon";
+import { SaveIcon } from "CommonIcons/SaveIcon";
 
 const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
 	imageTypeLimit: 1,
@@ -42,7 +48,6 @@ const CreditSortOrder: SortFuncs<BaseItemDto>[] = [CreateSortFunc(SortByProducti
 
 export const Person: React.FC = () => {
 	const personId = useParams().personId;
-	const background = useBackgroundStyles();
 
 	if (!Nullable.HasValue(personId)) {
 		return <PageWithNavigation icon="Person"><NotFound /></PageWithNavigation>;
@@ -60,48 +65,60 @@ export const Person: React.FC = () => {
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-				whenReceived={(person, creditedItems, user) => (
-					<Layout direction="row" gap="1em" py="1em" height="100%">
-						<Layout direction="column" maxWidth="20%" gap=".5em">
-							<Layout direction="column">
-								<ItemImage item={person} type="Primary" />
-								<ChangeImageButton item={person} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(person.Id!).LoadItemWithAbort(true)} />
-							</Layout>
-
-							<ItemExternalLinks
-								item={person}
-								direction="row" gap=".5em"
-								linkClassName={background.button}
-								linkLayout={{ direction: "row", width: "100%", py: ".5em", justifyContent: "center", grow: 1 }}
-								isEditing={false}
-							/>
-						</Layout>
-
-						<Layout direction="column" grow gap="1.5em">
-							<Layout direction="row" justifyContent="space-between">
-								<PageTitle text={person.Name} />
-								<ItemActionsMenu items={[person]} user={user} actions={[[
-									AddToFavoritesAction,
-									AddToCollectionAction,
-									EditItemAction,
-								]]} />
-							</Layout>
-
-							<PersonDetails person={person} />
-
-							<Virtuoso
-								data={creditedItems}
-								totalCount={creditedItems.length}
-								itemContent={(_, item) => <CreditedItem creditedItem={item} person={person} />}
-								style={{ height: "100%", width: "100%" }}
-							/>
-						</Layout>
-					</Layout>
-				)}
+				whenReceived={(person, creditedItems, user) => <LoadedPerson person={person} creditedItems={creditedItems} user={user} />}
 			/>
 		</PageWithNavigation>
 	);
 };
+
+const LoadedPerson: React.FC<{ person: BaseItemDto; creditedItems: BaseItemDto[]; user: UserDto }> = ({ person, creditedItems, user }) => {
+	const background = useBackgroundStyles();
+	const editableItem = useEditableItem(person, user);
+	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
+
+	return (
+		<Layout direction="row" gap="1em" py="1em" height="100%">
+			<Layout direction="column" maxWidth="20%" gap=".5em">
+				<Layout direction="column">
+					<ItemImage item={person} type="Primary" />
+					<ChangeImageButton item={person} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(person.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
+				</Layout>
+
+				<ItemExternalLinks
+					item={person}
+					direction="row" gap=".5em"
+					linkClassName={background.button}
+					linkLayout={{ direction: "row", width: "100%", py: ".5em", justifyContent: "center", grow: 1 }}
+					isEditing={isEditing} editableItem={editableItem}
+				/>
+			</Layout>
+
+			<Layout direction="column" grow gap="1.5em">
+				<Layout direction="row" justifyContent="space-between" gap="1rem">
+					<ItemPageTitle item={person} isEditing={isEditing} editableItem={editableItem} />
+					<Layout direction="row" gap="1rem">
+						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
+						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
+						<ItemActionsMenu items={[person]} user={user} actions={[[
+							AddToFavoritesAction,
+							AddToCollectionAction,
+							EditItemAction,
+						]]} />
+					</Layout>
+				</Layout>
+
+				<PersonDetails person={person} isEditing={isEditing} editableItem={editableItem} />
+
+				<Virtuoso
+					data={creditedItems}
+					totalCount={creditedItems.length}
+					itemContent={(_, item) => <CreditedItem creditedItem={item} person={person} />}
+					style={{ height: "100%", width: "100%" }}
+				/>
+			</Layout>
+		</Layout>
+	)
+}
 
 const CreditedItem: React.FC<{ creditedItem: BaseItemDto, person: BaseItemDto }> = ({ creditedItem, person }) => {
 	const creditedNameFuncForType = BaseItemKindServiceFactory.FindOrNull(creditedItem.Type)?.personCreditName ?? ((i) => i.Name);
@@ -121,7 +138,7 @@ const CreditedItem: React.FC<{ creditedItem: BaseItemDto, person: BaseItemDto }>
 	);
 };
 
-const PersonDetails: React.FC<{ person: BaseItemDto }> = (props) => {
+const PersonDetails: React.FC<{ person: BaseItemDto }&EditableItemProps> = (props) => {
 	if (!props.person.PremiereDate) {
 		return <></>;
 	}
@@ -151,7 +168,7 @@ const PersonDetails: React.FC<{ person: BaseItemDto }> = (props) => {
 				</Layout>
 			)}
 
-			<ItemOverview item={props.person} isEditing={false} />
+			<ItemOverview item={props.person} isEditing={props.isEditing} editableItem={props.editableItem} />
 		</Layout>
 	);
 };

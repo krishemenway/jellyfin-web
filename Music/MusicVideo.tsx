@@ -88,7 +88,7 @@ const LoadedMusicVideo: React.FC<{ user: UserDto, musicVideo: BaseItemDto }> = (
 							<ItemRating item={musicVideo} position="absolute" bottom=".5em" right=".5em" libraryId={musicVideo.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 						</Layout>
 	
-						<ChangeImageButton item={musicVideo} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(musicVideo.Id!).LoadItemWithAbort(true)} />
+						<ChangeImageButton item={musicVideo} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(musicVideo.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
 					</Layout>
 
 					<ItemExternalLinks

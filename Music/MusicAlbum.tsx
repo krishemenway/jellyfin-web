@@ -87,7 +87,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemD
 							<ItemRating item={album} position="absolute" bottom=".5em" right=".5em" libraryId={album.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 						</Layout>
 	
-						<ChangeImageButton item={album} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(album.Id!).LoadItemWithAbort(true)} />
+						<ChangeImageButton item={album} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(album.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
 					</Layout>
 
 					<ItemStudios
