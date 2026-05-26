@@ -4,7 +4,7 @@ import { ListOf, BaseListProps } from "Common/ListOf";
 import { HyperLink } from "Common/HyperLink";
 import { Layout, StyleLayoutProps } from "Common/Layout";
 import { EditableItemProps } from "Items/EditableItemProps";
-import { Nullable } from "Common/MissingJavascriptFunctions";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemEditorService } from "Items/ItemEditorService";
 import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
@@ -18,6 +18,7 @@ import { EditableItemProvider } from "Items/EditableItemProvider";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { useBreakpointValues } from "AppStyles";
 import { AddIcon } from "CommonIcons/AddIcon";
+import { FieldLabel } from "Common/FieldLabel";
 
 export const ItemExternalLinks: React.FC<{ item: BaseItemDto, linkLayout?: StyleLayoutProps, linkClassName?: string }&EditableItemProps&BaseListProps> = (props) => {
 	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
@@ -43,7 +44,7 @@ export const ItemExternalLinks: React.FC<{ item: BaseItemDto, linkLayout?: Style
 
 const ExternalProviderEditors: React.FC<{ metadataInfo: MetadataEditorInfo; linkLayout?: StyleLayoutProps }&EditableItemProps&BaseListProps> = (props) => {
 	const editableItemProviders = useObservable(props.editableItem!.ProviderIds);
-	const getName = (key: string) => props.metadataInfo.ExternalIdInfos?.find(i => i.Key === key)?.Name;
+	const getName = (key: string) => Linq.First(props.metadataInfo.ExternalIdInfos ?? [], i => i.Key === key)?.Name;
 	const editableItemProviderKeys = editableItemProviders.map(p => p.Key);
 	const remainingProviders = props.metadataInfo.ExternalIdInfos?.filter((info) => editableItemProviderKeys.indexOf(info.Key ?? "") === -1) ?? [];
 	const [selectNewProviderField] = React.useState(new EditableField<ExternalIdInfo>("AddProviderOptions", remainingProviders[0]));
@@ -59,7 +60,7 @@ const ExternalProviderEditors: React.FC<{ metadataInfo: MetadataEditorInfo; link
 			{editableItemProviders.map((editableItemProvider) => (
 				<Layout direction="column" key={editableItemProvider.Key} width={{ itemsPerRow: itemPerRow, gap: ".25rem" }} gap=".25rem">
 					<Layout direction="row" justifyContent="space-between">
-						<Layout direction="row">{getName(editableItemProvider.Key)}</Layout>
+						<FieldLabel field={editableItemProvider.Value} text={getName(editableItemProvider.Key)} />
 						<Button type="button" px=".25em" py=".25em" onClick={() => { props.editableItem!.ProviderIds.remove(editableItemProvider); }} icon={<DeleteIcon />} />
 					</Layout>
 
