@@ -12,15 +12,14 @@ import { LoginService } from "Users/LoginService";
 import { Loading } from "Common/Loading";
 
 export const PageWithNavigation: React.FC<{ icon: React.ReactElement|BaseItemKind; children?: React.ReactNode; matchHeight?: boolean }> = (props) => {
-	const heightProps = (props.matchHeight ?? false) ? { height: "100%" } : {};
 	const backdropUrl = useObservable(BackdropService.Instance.CurrentBackdropImageUrl);
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 
 	return (
-		<Layout key="page-with-navigation" direction="column" backgroundRepeat="no-repeat" backgroundSize="cover" backgroundUrl={backdropUrl} {...heightProps}>
-			<Layout key="backdrop-suppressor" direction="column" px="2em" py="1em" backgroundColor={Nullable.HasValue(backdropUrl) ? theme.BackdropSuppressorColor : undefined} {...heightProps}>
+		<Layout key="page-with-navigation" direction="column" backgroundRepeat="no-repeat" backgroundSize="cover" backgroundUrl={backdropUrl} height="100%">
+			<Layout key="backdrop-suppressor" direction="column" px="2em" py="1em" backgroundColor={Nullable.HasValue(backdropUrl) ? theme.BackdropSuppressorColor : undefined} height="100%">
 				<NavigationBar key="navigation-bar" icon={typeof props.icon === "string" ? <IconForItemKind itemKind={props.icon} /> : props.icon} />
-				<Layout key="page-content" direction="column" gap="1em" className="page-content" children={props.children} grow  {...heightProps} />
+				<Layout key="page-content" direction="column" gap="1em" className="page-content" children={props.children} grow height={(props.matchHeight ?? false) ? "100%" : undefined} />
 				<Loading receivers={[LoginService.Instance.User]} whenNotStarted={<></>} whenLoading={<></>} whenError={() => <></>} whenReceived={(user) => <MediaPlayer user={user} />} />
 			</Layout>
 		</Layout>
