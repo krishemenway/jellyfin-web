@@ -1,6 +1,7 @@
 import { BaseItemDto, PlaybackInfoResponse } from "@jellyfin/sdk/lib/generated-client/models";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api";
 import { Observable } from "@residualeffect/reactor";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { Receiver } from "Common/Receiver";
 import BrowserDeviceProfile from "Device/BrowserDeviceProfile";
 import { MediaPlayState } from "MediaPlayer/MediaPlayState";
@@ -25,7 +26,7 @@ export class VideoPlayerService {
 			} else {
 				this.Load(newItem);
 			}
-		})
+		});
 	}
 
 	public ClearAndPlay(items: BaseItemDto[]): void {
@@ -33,28 +34,20 @@ export class VideoPlayerService {
 		MediaPlayerService.Instance.PlayerType.Value = MediaPlayerType.Video;
 	}
 
-	public Pause(): void {
-		this.Video?.pause();
-		this.State.Value = MediaPlayState.Paused;
-	}
-
-	public Play(): void {
-		this.Video?.play();
-		this.State.Value = MediaPlayState.Playing;
-	}
-
-	public Stop(): void {
+	public Unload(): void {
 		this.Video?.pause();
 		this.Video?.fastSeek(0);
-		this.State.Value = MediaPlayState.Stopped;
-	}
-
-	public Unload(): void {
-		this.Stop();
+		this.Playlist.Stop();
 	}
 
 	public SetVideoElement(video: HTMLVideoElement|null): void {
-		this.Video = video ?? undefined;
+		Nullable.TryExecute(video, (videoElement) => {
+			this.Video = videoElement;
+			videoElement.addEventListener("play", () => { this.Playlist.Play(); });
+			videoElement.addEventListener("timeupdate", () => { this.Playlist.CurrentProgress.Value = videoElement.currentTime; });
+			videoElement.addEventListener("pause", () => { this.Playlist.Pause(); });
+			videoElement.addEventListener("ended", () => { this.Playlist.Finished(); });
+		});
 	}
 
 	private Load(item: MediaPlaylistItem): void {

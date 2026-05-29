@@ -1,7 +1,10 @@
 import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
-import { Nullable, NumberLimits } from "Common/MissingJavascriptFunctions";
+import { DateTime, Nullable, NumberLimits } from "Common/MissingJavascriptFunctions";
 import { MediaPlaylistItem } from "MediaPlayer/MediaPlaylistItem";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { MediaPlayState } from "MediaPlayer/MediaPlayState";
+import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api";
+import { ServerService } from "Servers/ServerService";
 
 export class MediaPlayerPlaylist {
 	constructor() {
@@ -12,6 +15,10 @@ export class MediaPlayerPlaylist {
 		this.IsVisible = new Observable(false);
 		this.HasPrevious = new Computed(() => this.Shuffle.Value || this.Repeat.Value || this.CurrentIndex() > 0);
 		this.HasNext = new Computed(() => this.Shuffle.Value || this.Repeat.Value || this.CurrentIndex() < this.ItemsInOrder.length - 1);
+		this.State = new Observable(MediaPlayState.Stopped);
+		this.CurrentProgress = new Observable(0);
+		this.PlaySessionId = (new Date().getTime() + 1).toString();
+		this.ProgressUpdateInterval = undefined;
 	}
 
 	public Reset(): void {
@@ -20,6 +27,77 @@ export class MediaPlayerPlaylist {
 		this.Repeat.Value = false;
 		this.Shuffle.Value = false;
 		this.IsVisible.Value = false;
+		this.StopReportingProgress();
+	}
+
+	public Play(): void {
+		if (this.State.Value === MediaPlayState.Playing) {
+			return;
+		}
+
+		this.State.Value = MediaPlayState.Playing;
+
+		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackStart({ playbackStartInfo: {
+			ItemId: this.Current.Value?.Item.Id,
+			MediaSourceId: this.Current.Value?.Item.Id,
+			PlaySessionId: this.PlaySessionId,
+			CanSeek: true,
+			IsMuted: false,
+			IsPaused: false,
+			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
+			RepeatMode: this.Repeat.Value ? "RepeatAll" : "RepeatNone",
+		}});
+
+		this.StartReportingProgress();
+	}
+
+	public Stop(): void {
+		if (this.State.Value === MediaPlayState.Stopped) {
+			return;
+		}
+
+		this.State.Value = MediaPlayState.Stopped;
+
+		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackStopped({ playbackStopInfo: {
+			ItemId: this.Current.Value?.Item.Id,
+			MediaSourceId: this.Current.Value?.Item.Id,
+			PlaySessionId: this.PlaySessionId,
+			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
+		}});
+
+		this.StopReportingProgress();
+	}
+
+	public Pause(): void {
+		if (this.State.Value === MediaPlayState.Paused) {
+			return;
+		}
+
+		this.State.Value = MediaPlayState.Paused;
+		
+		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackProgress({ playbackProgressInfo: {
+			ItemId: this.Current.Value?.Item.Id,
+			MediaSourceId: this.Current.Value?.Item.Id,
+			PlaySessionId: this.PlaySessionId,
+			IsPaused: true,
+			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
+		}});
+
+		this.StopReportingProgress();
+	}
+
+	public Finished(): void {
+		this.State.Value = MediaPlayState.Stopped;
+		const itemId = this.Current.Value?.Item.Id;
+
+		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackStopped({ playbackStopInfo: {
+			ItemId: this.Current.Value?.Item.Id,
+			MediaSourceId: itemId,
+			PlaySessionId: this.PlaySessionId,
+			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
+		}});
+
+		this.GoNext();
 	}
 
 	public ClearAndPlay(items: BaseItemDto[]): void {
@@ -113,7 +191,27 @@ export class MediaPlayerPlaylist {
 		};
 	}
 
+	private StartReportingProgress(): void {
+		this.ProgressUpdateInterval = window.setInterval(() => {
+			getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackProgress({ playbackProgressInfo: {
+				ItemId: this.Current.Value?.Item.Id,
+				MediaSourceId: this.Current.Value?.Item.Id,
+				PlaySessionId: this.PlaySessionId,
+				IsPaused: false,
+				PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
+			}});
+		}, this._progressUpdateIntervalDurationInMilliseconds);
+	}
+
+	private StopReportingProgress(): void {
+		Nullable.TryExecute(this.ProgressUpdateInterval, (interval) => {
+			window.clearInterval(interval);
+			this.ProgressUpdateInterval = undefined;
+		});
+	}
+
 	public Current: Observable<MediaPlaylistItem|undefined>;
+	public State: Observable<MediaPlayState>;
 
 	public ItemsInOrder: ObservableArray<MediaPlaylistItem>;
 
@@ -124,6 +222,11 @@ export class MediaPlayerPlaylist {
 	
 	public HasPrevious: Computed<boolean>;
 	public HasNext: Computed<boolean>;
+	public PlaySessionId: string;
+	public CurrentProgress: Observable<number>;
 
+	private ProgressUpdateInterval: number|undefined;
+
+	private _progressUpdateIntervalDurationInMilliseconds = 10000;
 	private _lastUsedId: number = 1;
 }

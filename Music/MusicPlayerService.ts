@@ -1,12 +1,9 @@
 import { BaseItemDto, BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
-import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api";
-import { Observable } from "@residualeffect/reactor";
-import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByNumber } from "Common/Sort";
 import { ItemService } from "Items/ItemsService";
 import { MediaPlayerService } from "MediaPlayer/MediaPlayerService";
 import { MediaPlayerType } from "MediaPlayer/MediaPlayerType";
-import { MediaPlayState } from "MediaPlayer/MediaPlayState";
 import { MediaPlaylistItem } from "MediaPlayer/MediaPlaylistItem";
 import { ServerService } from "Servers/ServerService";
 import { MediaPlayerPlaylist } from "MediaPlayer/MediaPlayerPlaylist";
@@ -16,14 +13,11 @@ export type MusicPlayerDropActionType = "MovePlaylistItem"|"AudioId"|"AlbumId-So
 export class MusicPlayerService {
 	constructor() {
 		this.AudioElement = new Audio();
-		this.CurrentProgress = new Observable(0);
 		this.Playlist = new MediaPlayerPlaylist();
-		this.PlaySessionId = (new Date().getTime() + 1).toString();
-		this.State = new Observable(MediaPlayState.Stopped);
 
 		this.AudioElement.addEventListener("timeupdate", (evt: Event) => this.OnTimeUpdate(evt));
 		this.AudioElement.addEventListener("loadeddata", () => { this.Play(); });
-		this.AudioElement.addEventListener("ended", () => this.Playlist.GoNext());
+		this.AudioElement.addEventListener("ended", () => { this.Playlist.Finished(); });
 
 		this.Playlist.Current.Subscribe((newItem) => {
 			if (newItem === undefined) {
@@ -63,70 +57,33 @@ export class MusicPlayerService {
 	}
 
 	public Load(playlistItem: MediaPlaylistItem): void {
-		this.Stop();
-		this.CurrentProgress.Value = 0;
+		this.Playlist.CurrentProgress.Value = 0;
 		this.AudioElement.src = this.CreateAudioUrl(playlistItem.Item);
 	}
 
 	public Stop(): void {
 		this.AudioElement.pause();
 		this.AudioElement.fastSeek(0);
-		this.State.Value = MediaPlayState.Stopped;
-
-		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackStopped({ playbackStopInfo: {
-			ItemId: this.Playlist.Current.Value?.Item.Id,
-			MediaSourceId: this.Playlist.Current.Value?.Item.Id,
-			PlaySessionId: this.PlaySessionId,
-			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
-		}});
+		this.Playlist.Stop();
 	}
 
 	public Pause(): void {
 		this.AudioElement.pause();
-		this.State.Value = MediaPlayState.Paused;
-		
-		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackProgress({ playbackProgressInfo: {
-			ItemId: this.Playlist.Current.Value?.Item.Id,
-			MediaSourceId: this.Playlist.Current.Value?.Item.Id,
-			PlaySessionId: this.PlaySessionId,
-			IsPaused: true,
-			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
-		}});
+		this.Playlist.Pause();
 	}
 
 	public Play(): void {
 		this.AudioElement.play();
-		this.State.Value = MediaPlayState.Playing;
-
-		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackStart({ playbackStartInfo: {
-			ItemId: this.Playlist.Current.Value?.Item.Id,
-			MediaSourceId: this.Playlist.Current.Value?.Item.Id,
-			PlaySessionId: this.PlaySessionId,
-			CanSeek: true,
-			IsMuted: false,
-			IsPaused: false,
-			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
-			RepeatMode: this.Playlist.Repeat.Value ? "RepeatAll" : "RepeatNone",
-		}});
-	}
-
-	public ChangeProgress(newProgress: number): void {
-		const currentState = this.State.Value;
-
-		this.AudioElement.fastSeek(newProgress);
-
-		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackProgress({ playbackProgressInfo: {
-			ItemId: this.Playlist.Current.Value?.Item.Id,
-			MediaSourceId: this.Playlist.Current.Value?.Item.Id,
-			PlaySessionId: this.PlaySessionId,
-			IsPaused: currentState === MediaPlayState.Paused,
-			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
-		}});
+		this.Playlist.Play();
 	}
 
 	public Unload(): void {
 		this.Stop();
 		this.Playlist.Reset();
+	}
+
+	public ChangeProgress(newProgress: number): void {
+		this.AudioElement.fastSeek(newProgress);
 	}
 
 	private AddItemsFromDataToPlaylist(dataTransfer: DataTransfer, filterItemsFunc: (item: BaseItemDto) => boolean, sortFunc: (a: BaseItemDto, b: BaseItemDto) => number, afterIndex?: number): void {
@@ -144,7 +101,7 @@ export class MusicPlayerService {
 	}
 
 	private OnTimeUpdate(evt: Event): void {
-		this.CurrentProgress.Value = (evt.currentTarget as HTMLAudioElement).currentTime;
+		this.Playlist.CurrentProgress.Value = (evt.currentTarget as HTMLAudioElement).currentTime;
 	}
 
 	private CreateAudioUrl(item: BaseItemDto): string {
@@ -159,7 +116,7 @@ export class MusicPlayerService {
 			TranscodingProtocol: "hls",
 			AudioCodec: "aac",
 			api_key: api.accessToken,
-			PlaySessionId: this.PlaySessionId,
+			PlaySessionId: this.Playlist.PlaySessionId,
 			StartTimeTicks: "0",
 			EnableRedirection: "true",
 			EnableRemoteMedia: "false",
@@ -169,10 +126,7 @@ export class MusicPlayerService {
 		return `${ServerService.Instance.CurrentApi.basePath}/Audio/${item.Id}/universal?${queryParams.toString()}`;
 	}
 
-	public CurrentProgress: Observable<number>;
 	public Playlist: MediaPlayerPlaylist;
-	public PlaySessionId: string;
-	public State: Observable<MediaPlayState>;
 
 	private AudioElement: HTMLAudioElement;
 

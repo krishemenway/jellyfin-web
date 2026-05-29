@@ -62,10 +62,10 @@ const AlbumInfo: React.FC<{ className: string }> = ({ className }) => {
 
 export const MusicPlayerStatus: React.FC<{ className?: string; isFullscreen?: true; }> = (props) => {
 	const current = useObservable(MusicPlayerService.Instance.Playlist.Current);
-	const currentProgress = useObservable(MusicPlayerService.Instance.CurrentProgress);
+	const currentProgress = useObservable(MusicPlayerService.Instance.Playlist.CurrentProgress);
 	const isRepeating = useObservable(MusicPlayerService.Instance.Playlist.Repeat);
 	const isShuffling = useObservable(MusicPlayerService.Instance.Playlist.Shuffle);
-	const playState = useObservable(MusicPlayerService.Instance.State);
+	const playState = useObservable(MusicPlayerService.Instance.Playlist.State);
 
 	const hasPrevious = useObservable(MusicPlayerService.Instance.Playlist.HasPrevious);
 	const hasNext = useObservable(MusicPlayerService.Instance.Playlist.HasNext);
@@ -88,9 +88,9 @@ export const MusicPlayerStatus: React.FC<{ className?: string; isFullscreen?: tr
 			<Layout direction="row" fontSizeREM={1.5} justifyContent="space-between">
 				<Layout direction="row" gap=".25em">
 					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayerService.Instance.Playlist.GoBack(); }} icon={<BackwardIcon />} disabled={!hasPrevious}/>
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayerService.Instance.Play(); }} icon={<MediaPlayStateIcon state={MediaPlayState.Playing} />} />
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayerService.Instance.Pause(); }} icon={<MediaPlayStateIcon state={MediaPlayState.Paused} />} />
-					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayerService.Instance.Stop(); }} icon={<MediaPlayStateIcon state={MediaPlayState.Stopped} />} />
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayerService.Instance.Play(); }} icon={<MediaPlayStateIcon state={MediaPlayState.Playing} />} disabled={playState === MediaPlayState.Playing} />
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayerService.Instance.Pause(); }} icon={<MediaPlayStateIcon state={MediaPlayState.Paused} />} disabled={playState === MediaPlayState.Paused} />
+					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayerService.Instance.Stop(); }} icon={<MediaPlayStateIcon state={MediaPlayState.Stopped} />} disabled={playState === MediaPlayState.Stopped} />
 					<Button type="button" px=".25em" py=".25em" onClick={() => { MusicPlayerService.Instance.Playlist.GoNext(); }} icon={<ForwardIcon />} disabled={!hasNext} />
 				</Layout>
 
@@ -112,7 +112,7 @@ const CurrentPlaylist: React.FC<{ className: string; user: UserDto }> = (props) 
 	const background = useBackgroundStyles();
 	const itemsInPlaylist = useObservable(MusicPlayerService.Instance.Playlist.ItemsInOrder);
 	const current = useObservable(MusicPlayerService.Instance.Playlist.Current);
-	const playState = useObservable(MusicPlayerService.Instance.State);
+	const playState = useObservable(MusicPlayerService.Instance.Playlist.State);
 
 	return (
 		<Layout
