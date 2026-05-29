@@ -1,5 +1,5 @@
 import * as React from "react";
-import { parseISO, intervalToDuration } from "date-fns";
+import { intervalToDuration } from "date-fns";
 import { useParams } from "react-router-dom";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Layout } from "Common/Layout";
@@ -21,7 +21,7 @@ import { LoginService } from "Users/LoginService";
 import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { ItemPageTitle } from "Items/ItemPageTitle";
 import { Virtuoso } from "react-virtuoso";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { DateTime, Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
 import { IconForItem } from "Items/IconForItem";
@@ -143,8 +143,8 @@ const PersonDetails: React.FC<{ person: BaseItemDto }&EditableItemProps> = (prop
 		return <></>;
 	}
 
-	const birthday = parseISO(props.person.PremiereDate);
-	const deathOrNow = !props.person.EndDate ? new Date(Date.now()) : parseISO(props.person.EndDate);
+	const birthday = DateTime.ParseWithoutZone(props.person.PremiereDate);
+	const deathOrNow = !props.person.EndDate ? new Date(Date.now()) : DateTime.ParseWithoutZone(props.person.EndDate);
 	const ageAtDeathOrNow = intervalToDuration({ start: birthday, end: deathOrNow });
 
 	return (

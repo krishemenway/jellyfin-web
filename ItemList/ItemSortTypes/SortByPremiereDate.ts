@@ -1,11 +1,10 @@
-import { Nullable } from "Common/MissingJavascriptFunctions";
+import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByString } from "Common/Sort";
 import { ItemSortOption } from "ItemList/ItemSortOption";
-import { parseISO } from "date-fns";
 
 export const SortByPremiereDate: ItemSortOption = {
 	labelKey: 'OptionReleaseDate',
 	field: "PremiereDate",
-	getContent: (i) => Nullable.StringValue(i.PremiereDate, "—", (premiereDate) => parseISO(premiereDate).toLocaleDateString()),
+	getContent: (i) => Nullable.StringValue(i.PremiereDate, "—", (premiereDate) => DateTime.ParseWithoutZone(premiereDate).toLocaleDateString()),
 	sortFunc: SortByString((i) => i.PremiereDate),
 };

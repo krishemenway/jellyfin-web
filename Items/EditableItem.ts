@@ -1,10 +1,10 @@
 import { BaseItemDto, DayOfWeek, MetadataField, NameGuidPair, Video3DFormat } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed, ObservableArray } from "@residualeffect/reactor";
 import { EditableField, IEditableField } from "Common/EditableField";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { DateTime, Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { EditablePersonCredit } from "Items/EditablePersonCredit";
 import { EditableItemProvider } from "Items/EditableItemProvider";
-import { formatISO } from "date-fns/formatISO";
+import { formatISO } from "date-fns";
 
 export class EditableItem {
 	constructor(item: BaseItemDto) {
@@ -45,7 +45,7 @@ export class EditableItem {
 		this.ProviderIds = new ObservableArray(Nullable.Value(item, [], (i) => Object.keys(i.ProviderIds ?? {}).map(key => new EditableItemProvider(key, i.ProviderIds![key]))));
 
 		this.Studios = new EditableField("Studios", Nullable.Value(item, [], (i) => i.Studios ?? []));
-		this.PremiereDate = new EditableField("Premiere", Nullable.Value(item?.PremiereDate, "", (date) => formatISO(date, { representation: 'date' })));
+		this.PremiereDate = new EditableField("Premiere", Nullable.Value(item?.PremiereDate, "", (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })));
 		this.DateCreated = new EditableField("DateCreated", Nullable.Value(item, undefined, (i) => i.DateCreated));
 		this.EndDate = new EditableField("EndDate", Nullable.Value(item, undefined, (i) => i.EndDate));
 		this.Height = new EditableField("Height", Nullable.Value(item, undefined, (i) => i.Height));

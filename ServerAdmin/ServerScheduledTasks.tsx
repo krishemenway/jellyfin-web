@@ -13,7 +13,7 @@ import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { Button } from "Common/Button";
 import { PlayIcon } from "MediaPlayer/PlayIcon";
 import { TranslatedText } from "Common/TranslatedText";
-import { formatDuration, intervalToDuration, parseISO } from "date-fns";
+import { formatDuration, intervalToDuration } from "date-fns";
 
 class ScheduledTasksService {
 	constructor() {
@@ -74,8 +74,8 @@ export const ServerScheduledTasks: React.FC = () => {
 };
 
 export const ServerTask: React.FC<{ task: TaskInfo }> = ({ task }) => {
-	const startTime = React.useMemo(() => Nullable.Value(task.LastExecutionResult?.StartTimeUtc, undefined, (startTime) => parseISO(startTime)), [task]);
-	const endTime = React.useMemo(() => Nullable.Value(task.LastExecutionResult?.EndTimeUtc, undefined, (endTime) => parseISO(endTime)), [task]);
+	const startTime = React.useMemo(() => Nullable.Value(task.LastExecutionResult?.StartTimeUtc, undefined, (startTime) => new Date(startTime)), [task]);
+	const endTime = React.useMemo(() => Nullable.Value(task.LastExecutionResult?.EndTimeUtc, undefined, (endTime) => new Date(endTime)), [task]);
 	const duration =  React.useMemo(() => Nullable.HasValue(startTime) && Nullable.HasValue(endTime) ? formatDuration(intervalToDuration({ start: startTime, end: endTime })) : undefined, [startTime, endTime]);
 
 	return (

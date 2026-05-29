@@ -10,7 +10,7 @@ import { DeviceInfoDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { ServerService } from "Servers/ServerService";
 import { getDevicesApi } from "@jellyfin/sdk/lib/utils/api";
 import { TranslatedText } from "Common/TranslatedText";
-import { formatDate } from "date-fns/format";
+import { formatDate } from "date-fns";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 
 class ServerDevicesService {

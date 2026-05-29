@@ -20,13 +20,17 @@ export class Linq {
 		}
 	}
 
-	public static GroupBy<TKey extends string|number, TValue>(array: TValue[], keyFunc: (arrayValue: TValue) => TKey): Record<TKey, TValue[]> {
+	public static GroupBy<TKey extends string|number|symbol, TValue>(array: TValue[], keyFunc: (arrayValue: TValue) => TKey): Record<TKey, TValue[]> {
 		return array.reduce((grouped, current) => {
 			const key = keyFunc(current);
 			grouped[key] = grouped[key] ?? [];
 			grouped[key].push(current);
 			return grouped;
 		}, {} as Record<TKey, TValue[]>);
+	}
+
+	public static ToRecord<TValue, TKey extends string|number|symbol = string>(array: TValue[], getKey: (value: TValue) => TKey): Record<TKey, TValue> {
+		return array.reduce((all, current) => { all[getKey(current)] = current; return all; }, {} as Record<TKey, TValue>);
 	}
 
 	public static Distinct<T>(array: T[]): T[] {
@@ -123,6 +127,15 @@ export class NumberLimits {
 }
 
 export class DateTime {
+	public static ParseWithoutZone(date: string): Date {
+		if (date.endsWith("Z")) {
+			return new Date(date.slice(0, date.length - 2));
+		}
+
+		const lastDash = date.lastIndexOf("-");
+		return new Date(date.slice(0, lastDash));
+	}
+
 	public static ConvertTicksToDurationString(ticks: number|null|undefined): string {
 		const parts = [];
 

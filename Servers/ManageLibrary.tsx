@@ -12,7 +12,7 @@ import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
-import { CollectionType, CountryInfo, CultureDto, EmbeddedSubtitleOptions } from "@jellyfin/sdk/lib/generated-client/models";
+import { CollectionType, EmbeddedSubtitleOptions } from "@jellyfin/sdk/lib/generated-client/models";
 import { BaseToggleSwitch, ToggleSwitch } from "Common/ToggleSwitch";
 import { PageTitle } from "Common/PageTitle";
 import { FieldLabel } from "Common/FieldLabel";
@@ -204,7 +204,7 @@ const EditableTypeOptions: React.FC<{ typeOption: EditableLibraryItemTypeOptions
 const LanguageSelector: React.FC<{ languageField: EditableField<string> }> = ({ languageField }) => {
 	const allLanguages = [LocalizationOptionsStore.Instance.EmptyCulture].concat(useDataOrNull(LocalizationOptionsStore.Instance.LocalizationCultures) ?? []);
 	const allLanguageCodes = React.useMemo(() => allLanguages.map((d) => d.TwoLetterISOLanguageName!), [allLanguages]);
-	const languageByCode = React.useMemo(() => allLanguages.reduce((all, current) => { all[current.TwoLetterISOLanguageName!] = current; return all; }, {} as Record<string, CultureDto>), [allLanguages]);
+	const languageByCode = React.useMemo(() => Linq.ToRecord(allLanguages, (l) => l.TwoLetterISOLanguageName ?? ""), [allLanguages]);
 
 	React.useEffect(() => LocalizationOptionsStore.Instance.LoadCultures(), []);
 
@@ -222,7 +222,7 @@ const LanguageSelector: React.FC<{ languageField: EditableField<string> }> = ({ 
 const CountrySelector: React.FC<{ countryField: EditableField<string> }> = ({ countryField }) => {
 	const allCountries = [LocalizationOptionsStore.Instance.EmptyCountry].concat(useDataOrNull(LocalizationOptionsStore.Instance.LocalizationCountries) ?? []);
 	const allCountryCodes = React.useMemo(() => allCountries.map((d) => d.TwoLetterISORegionName!), [allCountries]);
-	const countriesByCode = React.useMemo(() => allCountries.reduce((all, current) => { all[current.TwoLetterISORegionName!] = current; return all; }, {} as Record<string, CountryInfo>), [allCountries]);
+	const countriesByCode = React.useMemo(() => Linq.ToRecord(allCountries, (country) => country.TwoLetterISORegionName ?? ""), [allCountries]);
 
 	React.useEffect(() => LocalizationOptionsStore.Instance.LoadCountries(), []);
 
