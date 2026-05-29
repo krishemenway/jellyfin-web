@@ -20,13 +20,15 @@ import { BackwardIcon } from "MediaPlayer/BackwardIcon";
 import { ForwardIcon } from "MediaPlayer/ForwardIcon";
 import { ShuffleIcon } from "MediaPlayer/ShuffleIcon";
 import { RepeatIcon } from "MediaPlayer/RepeatIcon";
+import { ItemImageById } from "Items/ItemImage";
 
 export const MusicPlayer: React.FC<{ user: UserDto }> = ({ user }) => {
 	const background = useBackgroundStyles();
 
 	return (
 		<>
-			<Layout direction="row" gap=".75rem" position="fixed" zIndex={DimensionZLayers.Player} px=".25rem" py=".25rem" bottom="1rem" left="1rem" right="1rem" className={background.panel}>
+			<Layout direction="row" gap=".75rem" position="fixed" zIndex={DimensionZLayers.Player} px=".25rem" py=".25rem" bottom="1rem" left="1rem" right="1rem" height="11rem" className={background.panel}>
+				<AlbumInfo className={background.alternatePanel} />
 				<MusicPlayerStatus className={background.alternatePanel} />
 				<CurrentPlaylist className={background.alternatePanel} user={user} />
 
@@ -43,6 +45,21 @@ export const MusicPlayer: React.FC<{ user: UserDto }> = ({ user }) => {
 	);
 };
 
+const AlbumInfo: React.FC<{ className: string }> = ({ className }) => {
+	const current = useObservable(MusicPlayerService.Instance.Playlist.Current);
+
+	if (!Nullable.HasValue(current) || !Nullable.HasValue(current.Item.AlbumId) || !Nullable.HasValue(current.Item.Album)) {
+		return <></>;
+	}
+
+	return (
+		<Layout direction="column" height="100%" gap=".5rem" px=".5rem" py=".5rem" width="15rem" className={className}>
+			<ItemImageById itemId={current.Item.AlbumId} altText={current.Item.Album} type="Primary" objectFit="contain" height="100%" />
+			<Layout direction="row" justifyContent="center" children={current.Item.Album} />
+		</Layout>
+	);
+};
+
 export const MusicPlayerStatus: React.FC<{ className?: string; isFullscreen?: true; }> = (props) => {
 	const current = useObservable(MusicPlayerService.Instance.Playlist.Current);
 	const currentProgress = useObservable(MusicPlayerService.Instance.CurrentProgress);
@@ -54,7 +71,7 @@ export const MusicPlayerStatus: React.FC<{ className?: string; isFullscreen?: tr
 	const hasNext = useObservable(MusicPlayerService.Instance.Playlist.HasNext);
 
 	return (
-		<Layout direction="column" className={props.className} py=".5em" px=".5em" gap="1em" width="40%">
+		<Layout direction="column" className={props.className} py=".5em" px=".5em" gap="1em" width="40%" justifyContent="space-evenly">
 			<Layout direction="row" fontSizeREM={1.2} lineHeight="1.5rem" gap=".5em" alignItems="center">
 				<MediaPlayStateIcon state={playState} />
 

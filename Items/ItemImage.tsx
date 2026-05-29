@@ -12,8 +12,12 @@ export enum ImageShape {
 }
 
 export const ItemImage: React.FC<{ className?: string, item: BaseItemDto, fallback?: BaseItemDto, type: ImageType, fillWidth?: number, fillHeight?: number; lazy?: boolean }&LayoutWithoutChildrenProps> = (props) => {
-	const imageUrl = React.useMemo(() => getImageApi(ServerService.Instance.CurrentApi).getItemImageUrl(props.item, props.type, { fillWidth: props.fillWidth, fillHeight: props.fillHeight}), [props.item, props.type, props.fillWidth, props.fillHeight]);
-	const fallbackImageUrl = React.useMemo(() => Nullable.HasValue(props.fallback) ? getImageApi(ServerService.Instance.CurrentApi).getItemImageUrl(props.fallback, props.type, { fillWidth: props.fillWidth, fillHeight: props.fillHeight}) : "", [props.fallback, props.type, props.fillWidth, props.fillHeight]);
+	return <ItemImageById itemId={props.item.Id!} fallbackId={props.fallback?.Id} altText={props.item.Name ?? ""} {...props} />;
+};
+
+export const ItemImageById: React.FC<{ className?: string, itemId: string, fallbackId?: string, altText: string, type: ImageType, fillWidth?: number, fillHeight?: number; lazy?: boolean }&LayoutWithoutChildrenProps> = (props) => {
+	const imageUrl = React.useMemo(() => getImageApi(ServerService.Instance.CurrentApi).getItemImageUrlById(props.itemId, props.type, { fillWidth: props.fillWidth, fillHeight: props.fillHeight}), [props.itemId, props.type, props.fillWidth, props.fillHeight]);
+	const fallbackImageUrl = React.useMemo(() => Nullable.Value(props.fallbackId, "", (fid) => getImageApi(ServerService.Instance.CurrentApi).getItemImageUrlById(fid, props.type, { fillWidth: props.fillWidth, fillHeight: props.fillHeight})), [props.fallbackId, props.type, props.fillWidth, props.fillHeight]);
 	const onImageLoadError = React.useCallback((evt: React.SyntheticEvent<HTMLImageElement, Event>) => {
 		if (evt.currentTarget.src !== fallbackImageUrl && Nullable.HasValue(fallbackImageUrl)) {
 			evt.currentTarget.src = fallbackImageUrl;
@@ -24,7 +28,7 @@ export const ItemImage: React.FC<{ className?: string, item: BaseItemDto, fallba
 		<img
 			className={props.className}
 			src={imageUrl}
-			alt={props.item.Name ?? undefined}
+			alt={props.altText}
 			style={ApplyLayoutStyleProps(props)}
 			loading={props.lazy === true ? "lazy" : "eager"}
 			onError={onImageLoadError}
