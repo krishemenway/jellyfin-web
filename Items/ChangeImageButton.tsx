@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BaseItemDto, ImageType } from "@jellyfin/sdk/lib/generated-client/models";
-import { getImageApi } from "node_modules/@jellyfin/sdk/lib/utils/api";
+import { getImageApi } from "@jellyfin/sdk/lib/utils/api";
 import { ServerService } from "Servers/ServerService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { TranslatedText } from "Common/TranslatedText";

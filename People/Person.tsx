@@ -30,7 +30,7 @@ import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYea
 import { ItemsApiGetItemsRequest } from "@jellyfin/sdk/lib/generated-client/api/items-api";
 import { CreateSortFunc } from "ItemList/ItemSortOption";
 import { ChangeImageButton } from "Items/ChangeImageButton";
-import { useObservable } from "node_modules/@residualeffect/rereactor/lib";
+import { useObservable } from "@residualeffect/rereactor";
 import { ItemEditorService, useEditableItem } from "Items/ItemEditorService";
 import { EditableItemProps } from "Items/EditableItemProps";
 import { Button } from "Common/Button";

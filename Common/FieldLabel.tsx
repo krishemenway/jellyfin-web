@@ -2,7 +2,7 @@ import * as React from "react";
 import { IEditableField } from "Common/EditableField";
 import { TranslatedText } from "Common/TranslatedText";
 import { ApplyLayoutStyleProps, StyleLayoutProps } from "Common/Layout";
-import { Nullable } from "./MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 interface FieldLabelProps {
 	className?: string;
