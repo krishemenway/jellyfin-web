@@ -44,6 +44,7 @@ import { SongListView } from "Music/SongListView";
 import { MusicVideo } from "Music/MusicVideo";
 import { Loading } from "Common/Loading";
 import { TranslationService } from "Common/TranslatedText";
+import { MediaPlayer } from "MediaPlayer/MediaPlayer";
 
 const Layout: React.FC = () => {
 	const [breakpoint, ResponsiveProvider] = useCalculatedBreakpoint();
@@ -54,7 +55,12 @@ const Layout: React.FC = () => {
 				<Loading
 					receivers={[TranslationService.Instance.Translations]}
 					whenError={() => <></>} whenLoading={<></>} whenNotStarted={<></>}
-					whenReceived={() => <ErrorBoundary fallback={<LoadingErrorMessages errorTextKeys={["UnknownError"]} />}><Outlet /></ErrorBoundary>}
+					whenReceived={() => (
+						<ErrorBoundary fallback={<LoadingErrorMessages errorTextKeys={["UnknownError"]} />}>
+							<Outlet />
+							<MediaPlayer />
+						</ErrorBoundary>
+					)}
 				/>
 			</RequireServerAndUser>
 

@@ -2,39 +2,55 @@ import * as React from "react";
 import { DimensionZLayers, Layout } from "Common/Layout";
 import { Button } from "Common/Button";
 import { CloseIcon } from "CommonIcons/CloseIcon";
-import { MediaPlayerService } from "MediaPlayer/MediaPlayerService";
-import { MediaPlayerType } from "MediaPlayer/MediaPlayerType";
 import { VideoPlayerService } from "Videos/VideoPlayerService";
 import { Loading } from "Common/Loading";
-import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { DateTime, Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { useBackgroundStyles } from "AppStyles";
 import { MediaSourceInfo, PlaybackInfoResponse } from "@jellyfin/sdk/lib/generated-client/models";
 import { ServerService } from "Servers/ServerService";
+import { Slider } from "Common/Slider";
+import { Duration } from "MediaPlayer/Duration";
+import { useObservable } from "@residualeffect/rereactor";
+import { BackwardIcon } from "MediaPlayer/BackwardIcon";
+import { MediaPlayStateIcon } from "MediaPlayer/MediaPlayStateIcon";
+import { ForwardIcon } from "MediaPlayer/ForwardIcon";
+import { MediaPlayState } from "MediaPlayer/MediaPlayState";
+import { RepeatIcon } from "MediaPlayer/RepeatIcon";
+import { ShuffleIcon } from "MediaPlayer/ShuffleIcon";
+import { ArrowDownIcon } from "CommonIcons/ArrowDownIcon";
+import { ArrowUpIcon } from "CommonIcons/ArrowUpIcon";
+import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 export const VideoPlayer: React.FC = () => {
 	const background = useBackgroundStyles();
+	const fullscreen = useObservable(VideoPlayerService.Instance.Fullscreen);
 
 	return (
 		<>
-			<Layout direction="row" gap=".75em" position="fixed" zIndex={DimensionZLayers.Player} px=".25em" py=".25em" bottom="0" left="0" right="0" className={background.panel}>
-				<Layout direction="column" className={background.alternatePanel}>
-					<Loading
-						receivers={[VideoPlayerService.Instance.PlaybackInfo]}
-						whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-						whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
-						whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-						whenReceived={(r) => <VideoElement playbackInfo={r} />}
+			<Layout direction="row" gap=".75em" position="fixed" zIndex={DimensionZLayers.Player} px=".25em" py=".25em" bottom="0" left="0" right="0" top={fullscreen ? 0 : undefined} className={background.panel}>
+				<Loading
+					receivers={[VideoPlayerService.Instance.PlaybackInfo]}
+					whenError={() => <></>} whenLoading={<LoadingIcon alignSelf="center" size="4em" />} whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
+					whenReceived={(r) => <VideoElement playbackInfo={r} fullscreen={fullscreen} />}
+				/>
+
+				{!fullscreen && (
+					<Layout direction="column" className={background.alternatePanel} grow>
+						<VideoMetadata />
+					</Layout>
+				)}
+
+				<Layout direction={fullscreen ? "row" : "column"} position={fullscreen ? "absolute" : undefined} top="1rem" right="1rem" gap="1rem">
+					<Button
+						icon={fullscreen ? <ArrowDownIcon /> : <ArrowUpIcon />}
+						type="button" onClick={() => { VideoPlayerService.Instance.Fullscreen.Value = !VideoPlayerService.Instance.Fullscreen.Value; }}
+						px=".5em" py=".5em" height="100%" alignItems="center"
 					/>
-				</Layout>
 
-				<Layout direction="column" className={background.alternatePanel} grow>Data About the Video</Layout>
-
-				<Layout direction="column" className={background.alternatePanel}>
 					<Button
 						icon={<CloseIcon />}
-						type="button" onClick={() => { VideoPlayerService.Instance.Unload(); MediaPlayerService.Instance.PlayerType.Value = MediaPlayerType.None; }}
+						type="button" onClick={() => { VideoPlayerService.Instance.Unload(); }}
 						px=".5em" py=".5em" height="100%" alignItems="center"
 					/>
 				</Layout>
@@ -45,15 +61,92 @@ export const VideoPlayer: React.FC = () => {
 	);
 };
 
-const VideoElement: React.FC<{ playbackInfo: PlaybackInfoResponse }> = ({ playbackInfo }) => {
+const VideoElement: React.FC<{ playbackInfo: PlaybackInfoResponse; fullscreen: boolean }> = ({ playbackInfo, fullscreen }) => {
+	const background = useBackgroundStyles();
 	const mediaSource = Linq.First(playbackInfo.MediaSources ?? []);
+	const current = useObservable(VideoPlayerService.Instance.Playlist.Current);
+	const currentProgress = useObservable(VideoPlayerService.Instance.Playlist.CurrentProgress);
 
 	return (
-		<video
-			controls autoPlay
-			ref={(element) => { VideoPlayerService.Instance.SetVideoElement(element)}}
-			src={getUrlFromMediaSource(mediaSource)}
-		/>
+		<Layout direction="column" position="relative" width={!fullscreen ? "20rem" : "100%"} height={!fullscreen ? "12rem" : "100%"} className={background.alternatePanel} py="1rem">
+			<video
+				ref={(element) => { VideoPlayerService.Instance.SetVideoElement(element); }}
+				src={getUrlFromMediaSource(mediaSource)} autoPlay
+				style={{ width: "100%", height: "100%", objectFit: "contain" }}
+			/>
+
+			{!fullscreen && (
+				<Layout direction="column" gap="1rem" position="absolute" bottom=".5rem" left="1rem" right="1rem">
+					<Layout direction="row" gap="1em">
+						<Slider min={0} max={(current?.Item.RunTimeTicks ?? 0) / DateTime.TicksPerSecond} current={currentProgress} grow onChange={(newValue) => { VideoPlayerService.Instance.ChangeProgress(newValue); }} />
+					</Layout>
+				</Layout>
+			)}
+
+			{fullscreen && (
+				<Layout direction="column" gap="1rem" position="absolute" bottom=".5rem" left="1rem" right="1rem">
+					<Layout direction="row" gap="1em">
+						<Slider min={0} max={(current?.Item.RunTimeTicks ?? 0) / DateTime.TicksPerSecond} current={currentProgress} grow onChange={(newValue) => { VideoPlayerService.Instance.ChangeProgress(newValue); }} />
+						<Layout direction="row"><Duration ticks={currentProgress * DateTime.TicksPerSecond} /> / <Duration ticks={current?.Item.RunTimeTicks} /></Layout>
+					</Layout>
+
+					<VideoControls />
+				</Layout>
+			)}
+		</Layout>
+	);
+};
+
+const VideoControls: React.FC = () => {
+	const playState = useObservable(VideoPlayerService.Instance.Playlist.State);
+	const hasPrevious = useObservable(VideoPlayerService.Instance.Playlist.HasPrevious);
+	const hasNext = useObservable(VideoPlayerService.Instance.Playlist.HasNext);
+	const isRepeating = useObservable(VideoPlayerService.Instance.Playlist.Repeat);
+	const isShuffling = useObservable(VideoPlayerService.Instance.Playlist.Shuffle);
+
+	return (
+		<Layout direction="row" fontSizeREM={1.5} justifyContent="space-between">
+			<Layout direction="row" gap=".25em">
+				<Button type="button" px=".25em" py=".25em" onClick={() => { VideoPlayerService.Instance.Playlist.GoBack(); }} icon={<BackwardIcon />} disabled={!hasPrevious}/>
+				<Button
+					px=".25em" py=".25em"
+					icon={<MediaPlayStateIcon state={playState === MediaPlayState.Playing ? MediaPlayState.Paused : MediaPlayState.Playing} />}
+					type="button" onClick={() => { if (playState !== MediaPlayState.Playing) { VideoPlayerService.Instance.Play(); } else { VideoPlayerService.Instance.Pause(); }}}
+				/>
+				<Button type="button" px=".25em" py=".25em" onClick={() => { VideoPlayerService.Instance.Stop(); }} icon={<MediaPlayStateIcon state={MediaPlayState.Stopped} />} disabled={playState === MediaPlayState.Stopped} />
+				<Button type="button" px=".25em" py=".25em" onClick={() => { VideoPlayerService.Instance.Playlist.GoNext(); }} icon={<ForwardIcon />} disabled={!hasNext} />
+			</Layout>
+
+			<Layout direction="row" gap=".25em">
+				<Button type="button" px=".25em" py=".25em" selected={isRepeating} onClick={() => { VideoPlayerService.Instance.Playlist.ToggleRepeat(); }} icon={<RepeatIcon />} />
+				<Button type="button" px=".25em" py=".25em" selected={isShuffling} onClick={() => { VideoPlayerService.Instance.Playlist.ToggleShuffle(); }} icon={<ShuffleIcon />} />
+			</Layout>
+		</Layout>
+	);
+};
+
+const VideoMetadata: React.FC = () => {
+	const current = useObservable(VideoPlayerService.Instance.Playlist.Current);
+	const currentProgress = useObservable(VideoPlayerService.Instance.Playlist.CurrentProgress);
+
+	if (!Nullable.HasValue(current)) {
+		return <></>;
+	}
+
+	const service = BaseItemKindServiceFactory.FindOrThrow(current.Item.Type);
+	const headline = service.playerHeadline ?? ((item) => item.Name);
+	const secondary = service.playerSecondaryHeadline ?? (() => "");
+
+	return (
+		<Layout direction="column" px=".5rem" py=".5rem" justifyContent="space-between" height="100%">
+			<Layout direction="column" gap=".5rem">
+				<Layout direction="row">{headline(current.Item)}</Layout>
+				{Nullable.StringValue(secondary(current.Item), undefined, (secondary) => <Layout direction="row" fontColor="Secondary">{secondary}</Layout>)}
+				<Layout direction="row" fontColor="Secondary"><Duration ticks={currentProgress * DateTime.TicksPerSecond} /> / <Duration ticks={current?.Item.RunTimeTicks} /></Layout>
+			</Layout>
+
+			<VideoControls />
+		</Layout>
 	);
 }
 

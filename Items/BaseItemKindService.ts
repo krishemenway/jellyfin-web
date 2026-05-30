@@ -19,6 +19,8 @@ export interface BaseItemKindService {
 	loadList?: (a: AbortController, libraryId: string) => Promise<BaseItemDto[]>;
 	listTypes?: BaseItemKind[];
 
+	playerHeadline?: (item: BaseItemDto) => string;
+	playerSecondaryHeadline?: (item: BaseItemDto) => string;
 	personCreditName?: (item: BaseItemDto) => string;
 	searchResultName?: (item: BaseItemDto) => string;
 }

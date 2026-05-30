@@ -13,7 +13,7 @@ import { ServerService } from "Servers/ServerService";
 
 export class VideoPlayerService {
 	constructor() {
-		this.Fullscreen = new Observable(false);
+		this.Fullscreen = new Observable(true);
 		this.Playlist = new MediaPlayerPlaylist();
 		this.PlaySessionId = (new Date().getTime() + 1).toString();
 		this.State = new Observable(MediaPlayState.Stopped);
@@ -29,15 +29,36 @@ export class VideoPlayerService {
 		});
 	}
 
+	public ChangeProgress(newProgress: number): void {
+		this.Video?.fastSeek(newProgress);
+	}
+
 	public ClearAndPlay(items: BaseItemDto[]): void {
 		this.Playlist.ClearAndPlay(items);
 		MediaPlayerService.Instance.PlayerType.Value = MediaPlayerType.Video;
+	}
+
+	public Stop(): void {
+		this.Video?.pause();
+		this.Video?.fastSeek(0);
+		this.Playlist.Stop();
+	}
+
+	public Pause(): void {
+		this.Video?.pause();
+		this.Playlist.Pause();
+	}
+
+	public Play(): void {
+		this.Video?.play();
+		this.Playlist.Play();
 	}
 
 	public Unload(): void {
 		this.Video?.pause();
 		this.Video?.fastSeek(0);
 		this.Playlist.Stop();
+		MediaPlayerService.Instance.PlayerType.Value = MediaPlayerType.None;
 	}
 
 	public SetVideoElement(video: HTMLVideoElement|null): void {

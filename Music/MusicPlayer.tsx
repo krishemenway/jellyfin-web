@@ -21,6 +21,7 @@ import { ForwardIcon } from "MediaPlayer/ForwardIcon";
 import { ShuffleIcon } from "MediaPlayer/ShuffleIcon";
 import { RepeatIcon } from "MediaPlayer/RepeatIcon";
 import { ItemImageById } from "Items/ItemImage";
+import { Duration } from "MediaPlayer/Duration";
 
 export const MusicPlayer: React.FC<{ user: UserDto }> = ({ user }) => {
 	const background = useBackgroundStyles();
@@ -101,11 +102,6 @@ export const MusicPlayerStatus: React.FC<{ className?: string; isFullscreen?: tr
 			</Layout>
 		</Layout>
 	);
-};
-
-const Duration: React.FC<{ ticks: number|undefined|null }> = (props) => {
-	const totalProgress = React.useMemo(() => !Nullable.HasValue(props.ticks) ? "00:00" : DateTime.ConvertTicksToDurationString(props.ticks), [props.ticks])
-	return <>{totalProgress}</>;
 };
 
 const CurrentPlaylist: React.FC<{ className: string; user: UserDto }> = (props) => {
