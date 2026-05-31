@@ -26,7 +26,7 @@ import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
 import { IconForItem } from "Items/IconForItem";
 import { SortFuncs } from "Common/Sort";
-import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYear";
+import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { ItemsApiGetItemsRequest } from "@jellyfin/sdk/lib/generated-client/api/items-api";
 import { CreateSortFunc } from "ItemList/ItemSortOption";
 import { ChangeImageButton } from "Items/ChangeImageButton";
@@ -36,6 +36,7 @@ import { EditableItemProps } from "Items/EditableItemProps";
 import { Button } from "Common/Button";
 import { RevertIcon } from "CommonIcons/RevertIcon";
 import { SaveIcon } from "CommonIcons/SaveIcon";
+import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
 
 const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
 	imageTypeLimit: 1,
@@ -44,7 +45,7 @@ const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
 	includeItemTypes: [ "Audio", "Movie", "Episode", "AudioBook", "Photo", "Video", "MusicVideo"],
 };
 
-const CreditSortOrder: SortFuncs<BaseItemDto>[] = [CreateSortFunc(SortByProductionYear, true, false)];
+const CreditSortOrder: SortFuncs<BaseItemDto>[] = [CreateSortFunc(SortByPremiereDate, true, false), CreateSortFunc(SortByIndexNumber, true, false)];
 
 export const Person: React.FC = () => {
 	const personId = useParams().personId;
