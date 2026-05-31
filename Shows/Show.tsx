@@ -47,6 +47,7 @@ import { NumberField, TextField } from "Common/TextField";
 import { FieldLabel } from "Common/FieldLabel";
 import { ItemPremiereDate } from "Items/ItemPremiereDate";
 import { ChangeImageButton } from "Items/ChangeImageButton";
+import { ItemMediaInfo } from "Items/ItemMediaInfo";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
@@ -282,6 +283,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 			/>
 
 			<CastAndCrewSection item={episode} isEditing={isEditing} editableItem={editableEpisode} startOpen />
+			<ItemMediaInfo item={episode} />
 		</Layout>
 	);
 };
@@ -353,7 +355,6 @@ const EpisodesInSeason: React.FC<EpisodesInSeasonProps> = (props) => {
 	);
 };
 
-
 const ProductionYearRangeForEpisodes: React.FC<{ episodes: BaseItemDto[] }> = (props) => {
 	const allYears = React.useMemo(() => props.episodes.filter((e) => Nullable.HasValue(e.ProductionYear)).map((e) => e.ProductionYear), [props.episodes]);
 	const earliest = React.useMemo(() => Linq.Min(allYears, (e) => e), [allYears]);
@@ -389,16 +390,16 @@ const CastAndCrewSection: React.FC<{ item: BaseItemDto; startOpen: boolean; }&Ed
 };
 
 function sortSeasons(itemA: BaseItemDto, itemB: BaseItemDto): number {
-    const a = itemA.IndexNumber ?? 0;
-    const b = itemB.IndexNumber ?? 0;
+	const a = itemA.IndexNumber ?? 0;
+	const b = itemB.IndexNumber ?? 0;
 
-    if (a === 0 && b === 0) {
-        return (itemA.Name ?? '').localeCompare(itemB.Name ?? '');
-    } else if (a === 0) {
-        return 1;
-    } else if (b === 0) {
-        return -1;
-    } else {
-        return a - b;
-    }
+	if (a === 0 && b === 0) {
+		return (itemA.Name ?? '').localeCompare(itemB.Name ?? '');
+	} else if (a === 0) {
+		return 1;
+	} else if (b === 0) {
+		return -1;
+	} else {
+		return a - b;
+	}
 }

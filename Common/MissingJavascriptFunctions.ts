@@ -108,6 +108,54 @@ export class Nullable {
 	}
 }
 
+export class Bytes {
+	public static ConvertSize(sizeInBytes?: number|null): string|undefined {
+		if (!Nullable.HasValue(sizeInBytes)) {
+			return undefined;
+		}
+
+		if (sizeInBytes < 2048) {
+			return `${sizeInBytes}B`;
+		}
+
+		const sizeInKB = sizeInBytes / 1024;
+		if (sizeInKB < 2048) {
+			return `${sizeInKB.toFixed(2)}KB`;
+		}
+
+		const sizeInMB = sizeInKB / 1024;
+		if (sizeInMB < 2048) {
+			return `${sizeInMB.toFixed(2)}MB`;
+		}
+
+		const sizeInGB = sizeInMB / 1024;
+		return `${sizeInGB.toFixed(2)}GB`;
+	}
+
+	public static ConvertRate(rateInBits?: number|null) {
+		if (!Nullable.HasValue(rateInBits)) {
+			return undefined;
+		}
+
+		if (rateInBits < 2048) {
+			return `${rateInBits}bps`;
+		}
+
+		const rateInKilo = rateInBits / 1000;
+		if (rateInKilo < 2048) {
+			return `${rateInKilo.toFixed(2)}kbps`;
+		}
+
+		const rateInMega = rateInKilo / 1000;
+		if (rateInMega < 2048) {
+			return `${rateInMega.toFixed(2)}mbps`;
+		}
+
+		const rateInGiga = rateInMega / 1000;
+		return `${rateInGiga.toFixed(2)}gbps`;
+	}
+}
+
 export class NumberLimits {
 	public static NoLessThan(value: number, noLessThanValue: number, valueWhenLessThan?: number) {
 		if (value < noLessThanValue) {

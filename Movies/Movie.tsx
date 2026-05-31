@@ -38,6 +38,7 @@ import { RevertIcon } from "CommonIcons/RevertIcon";
 import { ItemPremiereDate } from "Items/ItemPremiereDate";
 import { ItemDuration } from "Items/ItemDuration";
 import { ChangeImageButton } from "Items/ChangeImageButton";
+import { ItemMediaInfo } from "Items/ItemMediaInfo";
 
 export const Movie: React.FC = () => {
 	const movieId = useParams<{ movieId: string }>().movieId;
@@ -158,6 +159,8 @@ const LoadedMovie: React.FC<{ user: UserDto, movie: BaseItemDto }> = ({ user, mo
 						isEditing={isEditing}
 					/>
 				</Layout>
+
+				<ItemMediaInfo item={movie} />
 			</Layout>
 		</Layout>
 	);

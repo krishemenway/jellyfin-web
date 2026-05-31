@@ -47,6 +47,7 @@ import { MultiSelectEditor } from "Common/SelectFieldEditor";
 import { ItemPremiereDate } from "Items/ItemPremiereDate";
 import { ItemDuration } from "Items/ItemDuration";
 import { ChangeImageButton } from "Items/ChangeImageButton";
+import { ItemMediaInfo } from "Items/ItemMediaInfo";
 
 export const MusicVideo: React.FC = () => {
 	const routeParams = useParams<{ musicVideoId: string }>();
@@ -173,6 +174,8 @@ const LoadedMusicVideo: React.FC<{ user: UserDto, musicVideo: BaseItemDto }> = (
 						isEditing={isEditing} editableItem={editableItem}
 					/>
 				</Layout>
+
+				<ItemMediaInfo item={musicVideo} />
 			</Layout>
 		</Layout>
 	);
