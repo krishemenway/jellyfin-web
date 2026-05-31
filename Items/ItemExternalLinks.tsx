@@ -19,6 +19,7 @@ import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { useBreakpointValues } from "AppStyles";
 import { AddIcon } from "CommonIcons/AddIcon";
 import { FieldLabel } from "Common/FieldLabel";
+import { Collapsible } from "Common/Collapsible";
 
 export const ItemExternalLinks: React.FC<{ item: BaseItemDto, linkLayout?: StyleLayoutProps, linkClassName?: string }&EditableItemProps&BaseListProps> = (props) => {
 	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
@@ -68,18 +69,20 @@ const ExternalProviderEditors: React.FC<{ metadataInfo: MetadataEditorInfo; link
 				</Layout>
 			))}
 
-			<Layout direction="row" width={{ itemsPerRow: itemPerRow, gap: ".25rem" }} gap=".25rem" py=".5rem">
-				<SelectFieldEditor
-					field={selectNewProviderField}
-					allOptions={remainingProviders}
-					getLabel={(i) => i?.Name}
-					getValue={(i) => i?.Key ?? ""}
-					py=".5em"
-					grow
-				/>
+			<Collapsible open={remainingProviders.length > 0}>
+				<Layout direction="row" width={{ itemsPerRow: itemPerRow, gap: ".25rem" }} gap=".25rem" py=".5rem">
+					<SelectFieldEditor
+						field={selectNewProviderField}
+						allOptions={remainingProviders}
+						getLabel={(i) => i?.Name}
+						getValue={(i) => i?.Key ?? ""}
+						py=".5em"
+						grow
+					/>
 
-				<Button type="button" px=".5em" py=".5em" onClick={() => { props.editableItem?.ProviderIds.push(new EditableItemProvider(selectNewProviderField.Current.Value.Key!, "")); }} icon={<AddIcon />} alignItems="center" />
-			</Layout>
+					<Button type="button" px=".5em" py=".5em" onClick={() => { props.editableItem?.ProviderIds.push(new EditableItemProvider(selectNewProviderField.Current.Value.Key!, "")); }} icon={<AddIcon />} alignItems="center" />
+				</Layout>
+			</Collapsible>
 		</Layout>
 	);
 };
