@@ -82,7 +82,8 @@ const LoadedPerson: React.FC<{ person: BaseItemDto; creditedItems: BaseItemDto[]
 			<Layout direction="column" maxWidth="20%" gap=".5em">
 				<Layout direction="column">
 					<ItemImage item={person} type="Primary" />
-					<ChangeImageButton item={person} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(person.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
+					<ChangeImageButton item={person} imageType="Primary" label="ButtonChangeImage" onChanged={() => ItemService.Instance.FindOrCreateItemData(person.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
+					<ChangeImageButton item={person} imageType="Backdrop" label="ButtonChangeBackdrop" onChanged={() => ItemService.Instance.FindOrCreateItemData(person.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
 				</Layout>
 
 				<ItemExternalLinks

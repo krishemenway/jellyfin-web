@@ -16,7 +16,7 @@ import { ListOf } from "Common/ListOf";
 import { Layout } from "Common/Layout";
 
 const remoteImageResults = new Receiver<RemoteImageInfo[]>("UnknownError");
-export const ChangeImageButton: React.FC<{ item: BaseItemDto; imageType: ImageType; onChanged: () => void; }&EditableItemProps> = ({ item, imageType, onChanged, isEditing }) => {
+export const ChangeImageButton: React.FC<{ label: string; item: BaseItemDto; imageType: ImageType; onChanged: () => void; }&EditableItemProps> = ({ label, item, imageType, onChanged, isEditing }) => {
 	const [modalIsOpen, setIsOpened] = React.useState(false);
 	const resetChangeImage = () => {
 		setIsOpened(false);
@@ -41,7 +41,7 @@ export const ChangeImageButton: React.FC<{ item: BaseItemDto; imageType: ImageTy
 
 	return (
 		<>
-			<Button type="button" onClick={() => { setIsOpened(true); }} label="ButtonChangeImage" alignItems="center" justifyContent="center" py=".5em" px=".5em" />
+			<Button type="button" onClick={() => { setIsOpened(true); }} label={label} alignItems="center" justifyContent="center" py=".5em" px=".5em" />
 
 			<CenteredModal open={modalIsOpen} onClosed={() => { setIsOpened(false)}}>
 				<Layout direction="column" gap="2rem" py="1rem" px="1rem">
@@ -62,8 +62,8 @@ export const ChangeImageButton: React.FC<{ item: BaseItemDto; imageType: ImageTy
 										</Layout>
 									)}
 									forEachItem={(r) => (
-										<Layout direction="column" key={r.Url} width={{ itemsPerRow: 2, gap: "1rem" }} justifyContent="space-between">
-											<img src={r.Url!} width={r.Width ?? undefined} height={r.Height ?? undefined}  />
+										<Layout direction="column" key={r.Url} height="20rem" width={{ itemsPerRow: 2, gap: "1rem" }} justifyContent="space-between">
+											<img src={r.Url!} width="100%" height="100%" style={{ objectFit: "contain" }} />
 											<Button type="button" onClick={() => { selectRemoteInfo(r, () => { resetChangeImage(); onChanged(); }) }} px=".5em" py=".5em" justifyContent="center" label="Select" />
 										</Layout>
 									)}
@@ -97,7 +97,7 @@ export const UploadImageButton: React.FC<{ item: BaseItemDto; imageType: ImageTy
 				const fileData = e.target?.result?.toString().split(",")[1];
 				const contentType = e.target?.result?.toString().split(",")[0].split(";")[0].replace("data:", "");
 
-				getImageApi(ServerService.Instance.CurrentApi).setItemImage({ imageType: imageType, itemId: item.Id!, body: fileData as File|undefined }, { headers: { "Content-Type": contentType }}).then(() => onChanged());
+				getImageApi(ServerService.Instance.CurrentApi).setItemImageByIndex({ imageType: imageType, itemId: item.Id!, body: fileData as File|undefined, imageIndex: 0 }, { headers: { "Content-Type": contentType }}).then(() => onChanged());
 			};
 
 			reader.readAsDataURL(file);
