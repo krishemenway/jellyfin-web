@@ -16,7 +16,6 @@ import { useBackgroundStyles } from "AppStyles";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { ItemOverview } from "Items/ItemOverview";
-import { TranslatedText } from "Common/TranslatedText";
 import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
 import { ItemPageTitle } from "Items/ItemPageTitle";
@@ -147,18 +146,14 @@ const LoadedMovie: React.FC<{ user: UserDto, movie: BaseItemDto }> = ({ user, mo
 					showMoreLimit={25}
 				/>
 
-				<Layout direction="column" minWidth="100%">
-					<Layout direction="row" fontSizeREM={1.5} py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
-
-					<CastAndCrew
-						itemWithPeople={movie}
-						className={background.panel}
-						direction="row" wrap px=".5em" py="1em"
-						linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
-						editableItem={editableItem}
-						isEditing={isEditing}
-					/>
-				</Layout>
+				<CastAndCrew
+					itemWithPeople={movie}
+					className={background.panel}
+					direction="row" wrap px=".5em" py="1em"
+					linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
+					editableItem={editableItem}
+					isEditing={isEditing}
+				/>
 
 				<ItemMediaInfo item={movie} />
 			</Layout>

@@ -163,17 +163,13 @@ const LoadedMusicVideo: React.FC<{ user: UserDto, musicVideo: BaseItemDto }> = (
 					isEditing={isEditing} editableItem={editableItem} libraryId={musicVideo.ParentId!}
 				/>
 
-				<Layout direction="column" minWidth="100%">
-					<Layout direction="row" fontSizeREM={1.5} py=".5em" px=".5em" className={background.panel}><TranslatedText textKey="HeaderCastAndCrew" /></Layout>
-
-					<CastAndCrew
-						itemWithPeople={musicVideo}
-						className={background.panel}
-						direction="row" wrap px=".5em" py="1em"
-						linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
-						isEditing={isEditing} editableItem={editableItem}
-					/>
-				</Layout>
+				<CastAndCrew
+					itemWithPeople={musicVideo}
+					className={background.panel}
+					direction="row" wrap px=".5em" py="1em"
+					linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
+					isEditing={isEditing} editableItem={editableItem}
+				/>
 
 				<ItemMediaInfo item={musicVideo} />
 			</Layout>

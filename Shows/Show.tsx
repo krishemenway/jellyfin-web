@@ -222,7 +222,13 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 				showMoreLimit={25}
 			/>
 
-			<CastAndCrewSection item={show} editableItem={editableItem} isEditing={isEditing} startOpen={false} />
+			<CastAndCrew
+				className={background.panel}
+				itemWithPeople={show}
+				direction="row" wrap
+				linkProps={{ px: ".5em", py: ".5em", gap: ".25em" }}
+				isEditing={isEditing} editableItem={editableItem}
+			/>
 
 			<ListOf
 				items={seasons}
@@ -277,7 +283,14 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 				showMoreLimit={25}
 			/>
 
-			<CastAndCrewSection item={episode} isEditing={isEditing} editableItem={editableEpisode} startOpen />
+			<CastAndCrew
+				className={background.panel}
+				itemWithPeople={episode}
+				direction="row" wrap
+				linkProps={{ px: ".5em", py: ".5em", gap: ".25em" }}
+				isEditing={isEditing} editableItem={editableEpisode}
+			/>
+
 			<ItemMediaInfo item={episode} />
 		</Layout>
 	);
@@ -356,32 +369,6 @@ const ProductionYearRangeForEpisodes: React.FC<{ episodes: BaseItemDto[] }> = (p
 	const newest = React.useMemo(() => Linq.Max(allYears, (e) => e), [allYears]);
 
 	return <>({earliest !== newest ? `${earliest} - ${newest}` : earliest})</>;
-};
-
-const CastAndCrewSection: React.FC<{ item: BaseItemDto; startOpen: boolean; }&EditableItemProps> = (props) => {
-	const [open, setOpen] = React.useState(props.startOpen);
-	const background = useBackgroundStyles();
-
-	if (!Nullable.HasValue(props.item.People) || props.item.People.length === 0 ) {
-		return <></>;
-	}
-
-	return (
-		<Layout direction="column" minWidth="100%">
-			<Button type="button" label="HeaderCastAndCrew" onClick={() => setOpen(!open)} direction="row" fontSizeREM={1.5} py=".5em" px=".5em" gap=".5em" />
-
-			<Collapsible open={open}>
-				<CastAndCrew
-					className={background.panel}
-					itemWithPeople={props.item}
-					direction="row" wrap
-					linkProps={{ px: ".5em", py: ".5em", gap: ".25em" }}
-					editableItem={props.editableItem}
-					isEditing={props.isEditing}
-				/>
-			</Collapsible>
-		</Layout>
-	);
 };
 
 function sortSeasons(itemA: BaseItemDto, itemB: BaseItemDto): number {

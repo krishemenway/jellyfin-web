@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseItemDto, BaseItemPerson, PersonKind } from "@jellyfin/sdk/lib/generated-client/models";
-import { useBreakpointValues } from "AppStyles";
-import { SortByNumber, SortByObjects } from "Common/Sort";
+import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
+import { SortByNumber, SortByObjects, SortFuncs } from "Common/Sort";
 import { ListOf } from "Common/ListOf";
 import { LinkToPerson } from "People/LinkToPerson";
 import { Layout, StyleLayoutProps } from "Common/Layout";
@@ -16,46 +16,62 @@ import { SelectFieldEditor } from "Common/SelectFieldEditor";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { Button } from "Common/Button";
 import { AddIcon } from "CommonIcons/AddIcon";
-import { ItemEditorService } from "Items/ItemEditorService";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
+import { Collapsible } from "Common/Collapsible";
 
-export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; className?: string; linkProps?: StyleLayoutProps; }&EditableItemProps&StyleLayoutProps> = (props) => {
+export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; className?: string; linkProps?: StyleLayoutProps; startOpen?: boolean; }&EditableItemProps&StyleLayoutProps> = (props) => {
+	const [open, setOpen] = React.useState(props.startOpen ?? false);
+	const itemsPerRow = useBreakpointValues(1, 2, 3, 5);
 	const relevantPersonKinds = BaseItemKindServiceFactory.FindOrThrow(props.itemWithPeople.Type).relevantPersonKinds ?? [];
-	const orderedCastAndCrew = React.useMemo(() => SortByObjects(props.itemWithPeople.People ?? [], [
-		{ LabelKey: "", Reversed: false, SortType: "PriorityOrder", Sort: SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"]), GetContent: () => "", Hidden: true },
-	]), [props.itemWithPeople.People]);
+	const orderedCastAndCrew = React.useMemo(() => SortByObjects(props.itemWithPeople.People ?? [], CastAndCrewSortOrder), [props.itemWithPeople.People]);
 
-	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
-		return <EditableCastAndCrew {...props} editableItem={props.editableItem} relevantPersonKinds={relevantPersonKinds} />;
+	if (!props.isEditing && orderedCastAndCrew.length === 0) {
+		return <></>;
 	}
 
 	return (
+		<Layout direction="column" minWidth="100%">
+			<Button type="button" label="HeaderCastAndCrew" onClick={() => setOpen(!open)} direction="row" fontSizeREM={1.5} py=".5em" px=".5em" gap=".5em" />
+
+			<Collapsible open={open}>
+				{props.isEditing && Nullable.HasValue(props.editableItem) ? (
+					<EditableCastAndCrew {...props} editableItem={props.editableItem} relevantPersonKinds={relevantPersonKinds} itemsPerRow={itemsPerRow} />
+				) : (
+					<ReadOnlyCastAndCrew orderedCastAndCrew={orderedCastAndCrew} {...props} />
+				)}
+			</Collapsible>
+		</Layout>
+	);
+};
+
+const ReadOnlyCastAndCrew: React.FC<{ orderedCastAndCrew: BaseItemPerson[]; linkProps?: StyleLayoutProps }&StyleLayoutProps> = ({ orderedCastAndCrew, linkProps, ...props }) => {
+	const background = useBackgroundStyles();
+
+	return (
 		<ListOf
-			direction="row"
 			items={orderedCastAndCrew}
-			emptyListView={Nullable.HasValue(props.editableItem) ? <Button type="button" onClick={() => { ItemEditorService.Instance.IsEditing.Value = true; props.editableItem!.People.push(new EditablePersonCredit({ Type: relevantPersonKinds[0] })); }} icon={<AddIcon />} px=".5em" alignItems="center" label="Add" /> : <Layout direction="row"><TranslatedText textKey="MessageNothingHere" /></Layout>}
-			forEachItem={((person) => <CastAndCrewCredit key={person.Id + Linq.Coalesce([person.Role, person.Type?.toString()], "Unknown", (s) => Nullable.StringHasValue(s))} person={person} {...props.linkProps} />)}
+			direction="row" className={background.panel}
+			forEachItem={((person) => <CastAndCrewCredit key={person.Id + Linq.Coalesce([person.Role, person.Type?.toString()], "Unknown", (s) => Nullable.StringHasValue(s))} person={person} {...linkProps} />)}
 			{...props}
 		/>
 	);
 };
 
-const EditableCastAndCrew: React.FC<{ className?: string; editableItem: EditableItem; relevantPersonKinds: PersonKind[] }&StyleLayoutProps> = (props) => {
-	const itemsPerRow = useBreakpointValues(1, 2, 3, 5);
+const EditableCastAndCrew: React.FC<{ className?: string; editableItem: EditableItem; relevantPersonKinds: PersonKind[]; itemsPerRow: number; }&StyleLayoutProps> = (props) => {
 	const people = useObservable(props.editableItem.People);
 
 	return (
-		<Layout direction="row" wrap gap=".25rem">
+		<Layout direction="row" wrap gap=".25rem" className={props.className}>
 			{people.map((person) => (
-				<EditPersonCredit key={person.Key} person={person} onDelete={() => { props.editableItem.People.remove(person); }} itemsPerRow={itemsPerRow} relevantPersonKinds={props.relevantPersonKinds} />
+				<EditPersonCredit key={person.Key} person={person} onDelete={() => { props.editableItem.People.remove(person); }} itemsPerRow={props.itemsPerRow} relevantPersonKinds={props.relevantPersonKinds} />
 			))}
 
 			<Button
 				type="button"
 				onClick={() => { props.editableItem.People.push(new EditablePersonCredit({ Type: props.relevantPersonKinds[0]  }))}}
 				icon={<AddIcon />}
-				width={{ itemsPerRow: itemsPerRow, gap: ".25rem" }}
-				px=".5em" gap=".5rem" alignItems="center" justifyContent="center"
+				width={{ itemsPerRow: props.itemsPerRow, gap: ".25rem" }}
+				px=".5em" py="1.1rem" gap=".5rem" alignItems="center" justifyContent="center"
 			/>
 		</Layout>
 	);
@@ -123,3 +139,7 @@ const sortPriorityByType: Record<PersonKind, number> = {
 	"Translator": 50,
 	"Unknown": 100,
 };
+
+const CastAndCrewSortOrder: SortFuncs<BaseItemPerson>[] = [
+	{ LabelKey: "", Reversed: false, SortType: "PriorityOrder", Sort: SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"]), GetContent: () => "", Hidden: true },
+];
