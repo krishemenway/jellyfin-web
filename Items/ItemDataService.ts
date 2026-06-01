@@ -23,8 +23,8 @@ export class ItemDataService {
 		return () => this.Item.ResetIfLoading();
 	}
 
-	public LoadChildrenWithAbort(withParentId?: boolean, request?: Partial<ItemsApiGetItemsRequest>, sortFuncs?: SortFuncs<BaseItemDto>[]): () => void {
-		if (this.Children.HasData.Value) {
+	public LoadChildrenWithAbort(withParentId?: boolean, request?: Partial<ItemsApiGetItemsRequest>, sortFuncs?: SortFuncs<BaseItemDto>[], forceRefresh?: boolean): () => void {
+		if (forceRefresh !== true && this.Children.HasData.Value) {
 			return () => { };
 		}
 
@@ -36,7 +36,7 @@ export class ItemDataService {
 			sortOrder: ["Ascending"],
 		};
 
-		this.Children.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ...baseRequest, ...request }, { signal: a.signal }).then((response) => SortByObjects(response.data.Items ?? [], sortFuncs ?? [])), true);
+		this.Children.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ...baseRequest, ...request }, { signal: a.signal }).then((response) => SortByObjects(response.data.Items ?? [], sortFuncs ?? [])), forceRefresh === true);
 		return () => this.Children.ResetIfLoading();
 	}
 

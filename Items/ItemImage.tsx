@@ -11,13 +11,36 @@ export enum ImageShape {
 	Square,
 }
 
-export const ItemImage: React.FC<{ className?: string, item: BaseItemDto, fallback?: BaseItemDto, type: ImageType, fillWidth?: number, fillHeight?: number; lazy?: boolean }&LayoutWithoutChildrenProps> = (props) => {
-	return <ItemImageById itemId={props.item.Id!} fallbackId={props.fallback?.Id} altText={props.item.Name ?? ""} {...props} />;
+interface BaseItemImageProps extends LayoutWithoutChildrenProps {
+	type: ImageType;
+
+	fillWidth?: number;
+	fillHeight?: number;
+
+	className?: string;
+	lazy?: boolean;
+}
+
+interface ItemImageProps extends BaseItemImageProps {
+	item: BaseItemDto;
+	fallback?: BaseItemDto;
+}
+
+export const ItemImage: React.FC<ItemImageProps> = (props) => {
+	return <ItemImageById itemId={props.item.Id!} fallbackId={props.fallback?.Id} altText={props.item.Name ?? ""} tag={Nullable.Value(props.item.ImageTags, undefined, (tags) => tags[props.type])} {...props} />;
 };
 
-export const ItemImageById: React.FC<{ className?: string, itemId: string, fallbackId?: string, altText: string, type: ImageType, fillWidth?: number, fillHeight?: number; lazy?: boolean }&LayoutWithoutChildrenProps> = (props) => {
-	const imageUrl = React.useMemo(() => getImageApi(ServerService.Instance.CurrentApi).getItemImageUrlById(props.itemId, props.type, { fillWidth: props.fillWidth, fillHeight: props.fillHeight}), [props.itemId, props.type, props.fillWidth, props.fillHeight]);
-	const fallbackImageUrl = React.useMemo(() => Nullable.Value(props.fallbackId, "", (fid) => getImageApi(ServerService.Instance.CurrentApi).getItemImageUrlById(fid, props.type, { fillWidth: props.fillWidth, fillHeight: props.fillHeight})), [props.fallbackId, props.type, props.fillWidth, props.fillHeight]);
+interface ItemImageByIdProps extends BaseItemImageProps {
+	itemId: string;
+	fallbackId?: string;
+	altText: string;
+	tag?: string;
+}
+
+export const ItemImageById: React.FC<ItemImageByIdProps> = ({ className, lazy, itemId, fallbackId, altText, type, fillWidth, fillHeight, tag, ...layoutStyleProps }) => {
+	const service = React.useMemo(() => getImageApi(ServerService.Instance.CurrentApi), []);
+	const imageUrl = React.useMemo(() => service.getItemImageUrlById(itemId, type, { fillWidth: fillWidth, fillHeight: fillHeight, tag: tag }), [itemId, type, fillWidth, fillHeight, tag]);
+	const fallbackImageUrl = React.useMemo(() => Nullable.Value(fallbackId, "", (fid) => service.getItemImageUrlById(fid, type, { fillWidth: fillWidth, fillHeight: fillHeight})), [fallbackId, type, fillWidth, fillHeight, tag]);
 	const onImageLoadError = React.useCallback((evt: React.SyntheticEvent<HTMLImageElement, Event>) => {
 		if (evt.currentTarget.src !== fallbackImageUrl && Nullable.HasValue(fallbackImageUrl)) {
 			evt.currentTarget.src = fallbackImageUrl;
@@ -26,11 +49,11 @@ export const ItemImageById: React.FC<{ className?: string, itemId: string, fallb
 
 	return (
 		<img
-			className={props.className}
+			className={className}
 			src={imageUrl}
-			alt={props.altText}
-			style={ApplyLayoutStyleProps(props)}
-			loading={props.lazy === true ? "lazy" : "eager"}
+			alt={altText}
+			style={ApplyLayoutStyleProps(layoutStyleProps)}
+			loading={lazy === true ? "lazy" : "eager"}
 			onError={onImageLoadError}
 		/>
 	);

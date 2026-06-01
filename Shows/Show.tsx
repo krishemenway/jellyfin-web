@@ -133,12 +133,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 	const background = useBackgroundStyles();
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 	const allEpisodes = React.useMemo(() => children.filter((i) => i.Type === "Episode"), [children]);
-	const selectedEpisode = Nullable.Value(episodeId, undefined, (e) => allEpisodes.find((i) => i.Id === e));
-
-	if (!Nullable.HasValue(selectedEpisode)) {
-		throw new Error("Missing");
-	}
-
+	const selectedEpisode = Linq.Single(allEpisodes, (e) => e.Id === episodeId);
 	const editableItem = useEditableItem(selectedEpisode, user);
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(selectedEpisode), [selectedEpisode]);
@@ -152,7 +147,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 						<ItemRating item={selectedEpisode} position="absolute" bottom=".5em" right=".5em" libraryId={selectedEpisode.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 					</Layout>
 
-					<ChangeImageButton item={selectedEpisode} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(selectedEpisode.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
+					<ChangeImageButton item={selectedEpisode} imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(show.Id!).LoadChildrenWithAbort(true, { recursive: true }, undefined, true)} isEditing={isEditing} />
 				</Layout>
 
 				<ItemStudios
