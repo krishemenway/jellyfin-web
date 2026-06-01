@@ -61,7 +61,7 @@ const ExternalProviderEditors: React.FC<{ metadataInfo: MetadataEditorInfo; link
 			{editableItemProviders.map((editableItemProvider) => (
 				<Layout direction="column" key={editableItemProvider.Key} width={{ itemsPerRow: itemPerRow, gap: ".25rem" }} gap=".25rem">
 					<Layout direction="row" justifyContent="space-between">
-						<FieldLabel field={editableItemProvider.Value} text={getName(editableItemProvider.Key)} />
+						<FieldLabel field={editableItemProvider.Value} text={getName(editableItemProvider.Key) ?? editableItemProvider.Key} />
 						<Button type="button" px=".25em" py=".25em" onClick={() => { props.editableItem!.ProviderIds.remove(editableItemProvider); }} icon={<DeleteIcon />} />
 					</Layout>
 
