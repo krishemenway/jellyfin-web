@@ -21,6 +21,7 @@ import { ShuffleIcon } from "MediaPlayer/ShuffleIcon";
 import { ArrowDownIcon } from "CommonIcons/ArrowDownIcon";
 import { ArrowUpIcon } from "CommonIcons/ArrowUpIcon";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
+import { CurrentPlaylist } from "MediaPlayer/MediaPlayerPlaylistTable";
 
 export const VideoPlayer: React.FC = () => {
 	const background = useBackgroundStyles();
@@ -40,6 +41,8 @@ export const VideoPlayer: React.FC = () => {
 						<VideoMetadata />
 					</Layout>
 				)}
+
+				<CurrentPlaylist className={background.alternatePanel} playlist={VideoPlayerService.Instance.Playlist} />
 
 				<Layout direction={fullscreen ? "row" : "column"} position={fullscreen ? "absolute" : undefined} top="1rem" right="1rem" gap="1rem">
 					<Button
@@ -64,17 +67,27 @@ export const VideoPlayer: React.FC = () => {
 const VideoElement: React.FC<{ playbackInfo: PlaybackInfoResponse; fullscreen: boolean }> = ({ playbackInfo, fullscreen }) => {
 	const background = useBackgroundStyles();
 	const mediaSource = Linq.First(playbackInfo.MediaSources ?? []);
-	const current = useObservable(VideoPlayerService.Instance.Playlist.Current);
-	const currentProgress = useObservable(VideoPlayerService.Instance.Playlist.CurrentProgress);
+	const url = getUrlFromMediaSource(mediaSource);
 
 	return (
 		<Layout direction="column" position="relative" width={!fullscreen ? "20rem" : "100%"} height={!fullscreen ? "12rem" : "100%"} className={background.alternatePanel} py="1rem">
 			<video
-				ref={(element) => { VideoPlayerService.Instance.SetVideoElement(element); }}
-				src={getUrlFromMediaSource(mediaSource)} autoPlay
+				src={url} ref={(element) => { VideoPlayerService.Instance.SetVideoElement(element); }}
 				style={{ width: "100%", height: "100%", objectFit: "contain" }}
+				disablePictureInPicture autoPlay
 			/>
 
+			<VideoExtras fullscreen={fullscreen} />
+		</Layout>
+	);
+};
+
+const VideoExtras: React.FC<{ fullscreen: boolean; }> = ({ fullscreen }) => {
+	const current = useObservable(VideoPlayerService.Instance.Playlist.Current);
+	const currentProgress = useObservable(VideoPlayerService.Instance.Playlist.CurrentProgress);
+
+	return (
+		<>
 			{!fullscreen && (
 				<Layout direction="column" gap="1rem" position="absolute" bottom=".5rem" left="1rem" right="1rem">
 					<Layout direction="row" gap="1em">
@@ -93,9 +106,9 @@ const VideoElement: React.FC<{ playbackInfo: PlaybackInfoResponse; fullscreen: b
 					<VideoControls />
 				</Layout>
 			)}
-		</Layout>
-	);
-};
+		</>
+	)
+}
 
 const VideoControls: React.FC = () => {
 	const playState = useObservable(VideoPlayerService.Instance.Playlist.State);
@@ -158,9 +171,7 @@ function getUrlFromMediaSource(mediaSource: MediaSourceInfo): string {
 			UserId: ServerService.Instance.CurrentUserId.Value,
 			DeviceId: api.deviceInfo.id,
 			api_key: api.accessToken,
-			PlaySessionId: VideoPlayerService.Instance.PlaySessionId,
 			MediaSourceId: mediaSource.Id ?? "",
-			// Tag=
 		});
 
 		return `${api.basePath}/Videos/${mediaSource.Id}/stream.${mediaSource.Container}?${queryParams.toString()}`;

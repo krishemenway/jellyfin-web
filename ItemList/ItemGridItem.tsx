@@ -7,8 +7,19 @@ import { Layout, LayoutWithoutChildrenProps } from "Common/Layout";
 import { SortFuncs } from "Common/Sort";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { CheckIcon } from "CommonIcons/CheckIcon";
+import { PlaylistDragItemsFunc } from "MediaPlayer/MediaPlayerPlaylist";
 
-export const ItemsGridItem: React.FC<{ item: BaseItemDto; fallback?: BaseItemDto, imageType?: ImageType; shape: ImageShape; itemsPerRow: number; additionalFields?: readonly SortFuncs<BaseItemDto>[]; getContent?: (item: BaseItemDto) => string|undefined }> = (props) => {
+interface ItemsGridItemProps {
+	item: BaseItemDto;
+	fallback?: BaseItemDto;
+	imageType?: ImageType;
+	shape: ImageShape;
+	itemsPerRow: number;
+	additionalFields?: readonly SortFuncs<BaseItemDto>[];
+	getContent?: (item: BaseItemDto) => string|undefined;
+}
+
+export const ItemsGridItem: React.FC<ItemsGridItemProps> = (props) => {
 	const background = useBackgroundStyles();
 
 	return (
@@ -19,6 +30,7 @@ export const ItemsGridItem: React.FC<{ item: BaseItemDto; fallback?: BaseItemDto
 			py=".5em" px=".5em" gap=".25em"
 			justifyContent="space-between" alignItems="center"
 			width={{ itemsPerRow: props.itemsPerRow, gap: ".5em" }}
+			onDragStart={PlaylistDragItemsFunc(() => [props.item])}
 		>
 			{props.item.UserData?.Played && <ItemPlayedMarker />}
 			<ItemImage item={props.item} fallback={props.fallback} type={props.imageType ?? ImageType.Primary} lazy objectFit="cover" maxWidth="100%" grow />

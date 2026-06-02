@@ -9,7 +9,16 @@ export function useUrlToItem(item: BaseItemDto, afterUrl?: string): string {
 	return findUrlForItemFuncOrDefault(item) + (afterUrl ?? "");
 }
 
-export const LinkToItem: React.FC<{ item: BaseItemDto; afterUrl?: string; className?: string; children: React.ReactNode; onClick?: () => void; }&StyleLayoutPropsWithRequiredDirection> = (props) => {
-	const url = useUrlToItem(props.item, props.afterUrl);
+interface LinkToItemProps extends StyleLayoutPropsWithRequiredDirection {
+	item: BaseItemDto;
+	afterUrl?: string;
+	className?: string;
+	children: React.ReactNode;
+	onClick?: () => void;
+	onDragStart?: (evt: React.DragEvent<HTMLElement>) => void;
+}
+
+export const LinkToItem: React.FC<LinkToItemProps> = ({ item, afterUrl, ...props }) => {
+	const url = useUrlToItem(item, afterUrl);
 	return <HyperLink to={url} {...props} />;
 };

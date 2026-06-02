@@ -1,14 +1,9 @@
-import { BaseItemDto, BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
-import { Nullable } from "Common/MissingJavascriptFunctions";
-import { SortByNumber } from "Common/Sort";
-import { ItemService } from "Items/ItemsService";
+import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { MediaPlayerService } from "MediaPlayer/MediaPlayerService";
 import { MediaPlayerType } from "MediaPlayer/MediaPlayerType";
 import { MediaPlaylistItem } from "MediaPlayer/MediaPlaylistItem";
 import { ServerService } from "Servers/ServerService";
 import { MediaPlayerPlaylist } from "MediaPlayer/MediaPlayerPlaylist";
-
-export type MusicPlayerDropActionType = "MovePlaylistItem"|"AudioId"|"AlbumId-SongList"|"ArtistName-SongList"|"AudioId-SongList";
 
 export class MusicPlayerService {
 	constructor() {
@@ -26,29 +21,6 @@ export class MusicPlayerService {
 				this.Load(newItem);
 			}
 		})
-	}
-
-	public HandleDrop(dataTransfer: DataTransfer, afterIndex?: number): void {
-		const addType = dataTransfer.getData("AddType") as MusicPlayerDropActionType;
-		const addTypeId = dataTransfer.getData("AddTypeId");
-		
-		switch (addType) {
-			case "MovePlaylistItem":
-				this.Playlist.MovePlaylistItem(parseInt(addTypeId, 10), afterIndex);
-				break;
-			case "AudioId":
-				this.AddItemsFromDataToPlaylist(dataTransfer, (item) => item.Id === addTypeId, SortByNumber((i) => i.IndexNumber), afterIndex);
-				break;
-			case "ArtistName-SongList":
-				this.AddItemsFromListToPlaylist(dataTransfer, "Audio", (item) => item.Artists?.includes(addTypeId) ?? false, SortByNumber((i) => i.IndexNumber), afterIndex);
-				break;
-			case "AlbumId-SongList":
-				this.AddItemsFromListToPlaylist(dataTransfer, "Audio", (item) => item.AlbumId === addTypeId, SortByNumber((i) => i.IndexNumber), afterIndex);
-				break;
-			case "AudioId-SongList":
-				this.AddItemsFromListToPlaylist(dataTransfer, "Audio", (item) => item.Id === addTypeId, SortByNumber((i) => i.IndexNumber), afterIndex);
-				break;
-		}
 	}
 
 	public ClearAndPlay(items: BaseItemDto[]): void {
@@ -84,20 +56,6 @@ export class MusicPlayerService {
 
 	public ChangeProgress(newProgress: number): void {
 		this.AudioElement.fastSeek(newProgress);
-	}
-
-	private AddItemsFromDataToPlaylist(dataTransfer: DataTransfer, filterItemsFunc: (item: BaseItemDto) => boolean, sortFunc: (a: BaseItemDto, b: BaseItemDto) => number, afterIndex?: number): void {
-		Nullable.TryExecute(dataTransfer.getData("AddFromChildrenOfId"), (childrenOfId) => {
-			const childrenToSearch = ItemService.Instance.FindOrCreateItemData(childrenOfId).Children;
-			this.Playlist.AddRange((childrenToSearch.Data.Value.ReceivedData ?? []).filter(filterItemsFunc).sort(sortFunc), afterIndex);
-		});
-	}
-
-	private AddItemsFromListToPlaylist(dataTransfer: DataTransfer, kind: BaseItemKind, filterItemsFunc: (item: BaseItemDto) => boolean, sortFunc: (a: BaseItemDto, b: BaseItemDto) => number, afterIndex?: number): void {
-		Nullable.TryExecute(dataTransfer.getData("AddFromLibrary"), (libraryId) => {
-			const childrenToSearch = ItemService.Instance.FindOrCreateItemList(libraryId, kind).List;
-			this.Playlist.AddRange((childrenToSearch.Data.Value.ReceivedData?.List ?? []).filter(filterItemsFunc).sort(sortFunc), afterIndex);
-		});
 	}
 
 	private OnTimeUpdate(evt: Event): void {

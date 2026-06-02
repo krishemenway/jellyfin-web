@@ -1,19 +1,16 @@
 import * as React from "react";
 import { useObservable } from "@residualeffect/rereactor";
 import { UserDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { Virtuoso } from "react-virtuoso";
 import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { DimensionZLayers, Layout } from "Common/Layout";
 import { useBackgroundStyles } from "AppStyles";
 import { TranslatedText } from "Common/TranslatedText";
 import { Button } from "Common/Button";
-import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { MusicPlayerService } from "Music/MusicPlayerService";
 import { MediaPlayerService } from "MediaPlayer/MediaPlayerService";
 import { MediaPlayerType } from "MediaPlayer/MediaPlayerType";
 import { MediaPlayState } from "MediaPlayer/MediaPlayState";
 import { Slider } from "Common/Slider";
-import { DragIcon } from "CommonIcons/DragIcon";
 import { CloseIcon } from "CommonIcons/CloseIcon";
 import { MediaPlayStateIcon } from "MediaPlayer/MediaPlayStateIcon";
 import { BackwardIcon } from "MediaPlayer/BackwardIcon";
@@ -22,8 +19,9 @@ import { ShuffleIcon } from "MediaPlayer/ShuffleIcon";
 import { RepeatIcon } from "MediaPlayer/RepeatIcon";
 import { ItemImageById } from "Items/ItemImage";
 import { Duration } from "MediaPlayer/Duration";
+import { CurrentPlaylist } from "MediaPlayer/MediaPlayerPlaylistTable";
 
-export const MusicPlayer: React.FC<{ user: UserDto }> = ({ user }) => {
+export const MusicPlayer: React.FC<{ user: UserDto }> = () => {
 	const background = useBackgroundStyles();
 
 	return (
@@ -31,7 +29,7 @@ export const MusicPlayer: React.FC<{ user: UserDto }> = ({ user }) => {
 			<Layout direction="row" gap=".75rem" position="fixed" zIndex={DimensionZLayers.Player} px=".25rem" py=".25rem" bottom="1rem" left="1rem" right="1rem" height="11rem" className={background.panel}>
 				<AlbumInfo className={background.alternatePanel} />
 				<MusicPlayerStatus className={background.alternatePanel} />
-				<CurrentPlaylist className={background.alternatePanel} user={user} />
+				<CurrentPlaylist className={background.alternatePanel} playlist={MusicPlayerService.Instance.Playlist} />
 
 				<Layout direction="column" className={background.alternatePanel}>
 					<Button
@@ -100,89 +98,6 @@ export const MusicPlayerStatus: React.FC<{ className?: string; isFullscreen?: tr
 					<Button type="button" px=".25em" py=".25em" selected={isShuffling} onClick={() => { MusicPlayerService.Instance.Playlist.ToggleShuffle(); }} icon={<ShuffleIcon />} />
 				</Layout>
 			</Layout>
-		</Layout>
-	);
-};
-
-const CurrentPlaylist: React.FC<{ className: string; user: UserDto }> = (props) => {
-	const background = useBackgroundStyles();
-	const itemsInPlaylist = useObservable(MusicPlayerService.Instance.Playlist.ItemsInOrder);
-	const current = useObservable(MusicPlayerService.Instance.Playlist.Current);
-	const playState = useObservable(MusicPlayerService.Instance.Playlist.State);
-
-	return (
-		<Layout
-			className={props.className}
-			direction="column" grow py=".25em" px=".25em"
-			onDragOver={(evt) => {
-				evt.preventDefault();
-				evt.dataTransfer.dropEffect = "copy";
-
-				Nullable.TryExecute((evt.target as HTMLElement).closest("*[data-index]") as HTMLElement|undefined|null, (element) => {
-					const elementMidpoint = element.getBoundingClientRect().height / 2;
-					
-					if (evt.nativeEvent.offsetY > elementMidpoint) {
-						element.style.borderTopStyle = "";
-						element.style.borderBottomStyle = "solid";
-					} else {
-						element.style.borderTopStyle = "solid";
-						element.style.borderBottomStyle = "";
-					}
-				});
-			}}
-			onDragLeave={(evt) => {
-				evt.preventDefault();
-				evt.dataTransfer.dropEffect = "copy";
-
-				Nullable.TryExecute((evt.target as HTMLElement).closest("*[data-index]") as HTMLElement|undefined|null, (element) => {
-					element.style.borderStyle = "";
-				});
-			}}
-			onDrop={(evt) => {
-				evt.preventDefault();
-				evt.dataTransfer.dropEffect ="copy";
-
-				const addAfterIndex = Nullable.Value((evt.target as HTMLElement).closest("*[data-index]") as HTMLElement|undefined|null, undefined, (element) => {
-					const index = parseInt(element.attributes.getNamedItem("data-index")?.value ?? "0", 10);
-					const elementMidpoint = element.getBoundingClientRect().height / 2;
-					element.style.borderStyle = "";
-
-					return evt.nativeEvent.offsetY > elementMidpoint ? index : index - 1;
-				});
-
-				MusicPlayerService.Instance.HandleDrop(evt.dataTransfer, addAfterIndex);
-			}}
-		>
-			{itemsInPlaylist.length > 0 ? (
-				<Virtuoso
-					data={itemsInPlaylist}
-					computeItemKey={(_, item) => item.Id}
-					style={{ height: "100%", width: "100%" }}
-					itemContent={(index, data) => (
-						<Layout direction="row" position="relative" draggable onDragStart={(evt) => { evt.dataTransfer.setData("AddType", "MovePlaylistItem"); evt.dataTransfer.setData("AddTypeId", index.toString()); }}>
-							<Layout direction="column" alignItems="center" justifyContent="center" position="absolute" top={0} bottom={0} left={0} width="5%">
-								{Nullable.Value(current, <DragIcon />, (c) => c === data ? <MediaPlayStateIcon state={playState} /> : <DragIcon />)}
-							</Layout>
-
-							<Button transparent width="100%" px="5%" type="button" textAlign="start" onClick={() => { MusicPlayerService.Instance.Playlist.GoIndex(index)}}>
-								<Layout direction="column" px=".5em" py=".5em" width="80%">{data.Item.Name}</Layout>
-								<Layout direction="column" px=".5em" py=".5em" justifyContent="center" alignItems="end" width="20%">{DateTime.ConvertTicksToDurationString(data.Item.RunTimeTicks)}</Layout>
-							</Button>
-
-							<Button
-								type="button" onClick={() => { MusicPlayerService.Instance.Playlist.Remove(data); }}
-								direction="column" alignItems="center" justifyContent="center" transparent
-								position="absolute" top={0} bottom={0} right={0} width="5%"
-								icon={<DeleteIcon />}
-							/>
-						</Layout>
-					)}
-				/>
-			) : (
-				<Layout className={background.dashed} direction="column" justifyContent="center" alignItems="center" width="100%" grow>
-					<TranslatedText textKey="AddToPlaylist" />
-				</Layout>
-			)}
 		</Layout>
 	);
 };

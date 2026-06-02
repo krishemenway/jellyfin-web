@@ -10,6 +10,7 @@ import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
 import { DragIcon } from "CommonIcons/DragIcon";
 import { useBackgroundStyles } from "AppStyles";
+import { PlaylistDragItemsFunc } from "MediaPlayer/MediaPlayerPlaylist";
 
 export const MusicAlbumSongs: React.FC<{ addFromChildOfId: string; allSongs: BaseItemDto[] }> = ({ addFromChildOfId, allSongs }) => {
 	const tracksByDiscNumber = React.useMemo(() => Linq.GroupBy(allSongs.sort(SortByIndexNumber.sortFunc), (t) => t.ParentIndexNumber ?? 0), [allSongs]);
@@ -44,16 +45,16 @@ const AlbumSongs: React.FC<{ addFromChildOfId: string; discSongs: BaseItemDto[] 
 		<ListOf
 			items={props.discSongs}
 			direction="column" className={background.alternatePanel}
-			forEachItem={(song) => <AlbumSong key={song.Id} song={song} addFromChildOfId={props.addFromChildOfId} />}
+			forEachItem={(song) => <AlbumSong key={song.Id} song={song} />}
 		/>
 	)
 };
 
-const AlbumSong: React.FC<{ song: BaseItemDto; addFromChildOfId: string; }> = (props) => {
+const AlbumSong: React.FC<{ song: BaseItemDto; }> = (props) => {
 	const featuringArtists = React.useMemo(() => props.song.Artists?.filter((a) => props.song.AlbumArtist?.toLowerCase() !== a.toLowerCase()) ?? [], [props.song]);
 
 	return (
-		<Layout key={props.song.Id} width="100%" direction="row" draggable onDragStart={(evt) => { evt.dataTransfer.setData("AddType", "AudioId"); evt.dataTransfer.setData("AddFromChildrenOfId", props.addFromChildOfId); evt.dataTransfer.setData("AddTypeId", props.song.Id ?? ""); }}>
+		<Layout key={props.song.Id} width="100%" direction="row" draggable onDragStart={PlaylistDragItemsFunc(() => [props.song])}>
 			<Layout direction="column" alignItems="center" justifyContent="center" px=".5em" py=".5em"><DragIcon /></Layout>
 
 			<Button

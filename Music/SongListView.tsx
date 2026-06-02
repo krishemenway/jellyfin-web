@@ -20,7 +20,9 @@ import { UserViewStore } from "Users/UserViewStore";
 import { SortByNumber, SortByObjects, SortByString } from "Common/Sort";
 import { ObservableArray } from "@residualeffect/reactor";
 import { ServerService } from "Servers/ServerService";
-import { MusicPlayerDropActionType, MusicPlayerService } from "Music/MusicPlayerService";
+import { MusicPlayerService } from "Music/MusicPlayerService";
+import { PlaylistDragItemsFunc } from "MediaPlayer/MediaPlayerPlaylist";
+import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
 
 export const SongListView: React.FC = () => {
 	const libraryId = useParams().libraryId;
@@ -87,11 +89,11 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 						whenNotStarted={<LoadingIcon size="4em" />}
 						whenReceived={(artists, albums, songs) => (
 							<LoadedItems
-								addType="ArtistName-SongList"
 								libraryId={props.libraryId}
 								items={artists.List}
 								selectedKeys={filteredArtists}
 								getSelectedKey={(i) => i.Name!}
+								audioItemsInOrder={(item) => songs.List.filter((s) => s.ArtistItems?.some((ai) => ai.Id === item.Id))}
 								stats={[albums.Stats["AlbumCountByArtistId"], songs.Stats["SongCountByArtistId"]]}
 								onToggled={(artist) => { Nullable.TryExecute(artist.Name, (name) => observableArtists.toggle(name)); }}
 								columns={[
@@ -111,11 +113,11 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 						whenNotStarted={<LoadingIcon size="4em" />}
 						whenReceived={(albums, songs) => (
 							<LoadedItems
-								addType="AlbumId-SongList"
 								libraryId={props.libraryId}
 								items={albums.List}
 								getSelectedKey={(i) => i.Id!}
 								selectedKeys={filteredAlbumIds}
+								audioItemsInOrder={(item) => songs.List.filter((s) => s.AlbumId === item.Id)}
 								stats={[songs.Stats["SongCountByAlbumId"]]}
 								filters={filteredArtists.map((artist) => (album) => (album.Artists ?? []).indexOf(artist) > -1)}
 								onToggled={(album) => { Nullable.TryExecute(album.Id, (id) => observableAlbumIds.toggle(id)); }}
@@ -139,11 +141,11 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 					whenNotStarted={<LoadingIcon size="4em" />}
 					whenReceived={(audios) => (
 						<LoadedItems
-							addType="AudioId-SongList"
 							libraryId={props.libraryId}
 							items={audios.List}
 							selectedKeys={[]}
 							getSelectedKey={() => ""}
+							audioItemsInOrder={(item) => [item]}
 							onToggled={(audio) => { MusicPlayerService.Instance.ClearAndPlay([audio]); }}
 							filters={filteredArtists.map((artist) => (song: BaseItemDto) => (song.Artists ?? []).indexOf(artist) > -1).concat(filteredAlbumIds.map((albumId) => (song: BaseItemDto) => song.AlbumId === albumId))}
 							columns={[
@@ -162,7 +164,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 	);
 };
 
-const LoadedItems: React.FC<{ addType: MusicPlayerDropActionType, libraryId: string; items: BaseItemDto[]; columns: Column[]; stats?: Record<string, number>[]; selectedKeys: readonly string[]; getSelectedKey: (item: BaseItemDto) => string; onToggled: (item: BaseItemDto) => void; filters?: ((item: BaseItemDto) => boolean)[] }> = (props) => {
+const LoadedItems: React.FC<{ libraryId: string; items: BaseItemDto[]; columns: Column[]; stats?: Record<string, number>[]; selectedKeys: readonly string[]; getSelectedKey: (item: BaseItemDto) => string; onToggled: (item: BaseItemDto) => void; filters?: ((item: BaseItemDto) => boolean)[]; audioItemsInOrder: (item: BaseItemDto) => BaseItemDto[] }> = (props) => {
 	const background = useBackgroundStyles();
 	const [sortField, setSortField] = React.useState(props.columns[0]);
 	const [sortReversed, setSortReversed] = React.useState(false);
@@ -191,7 +193,7 @@ const LoadedItems: React.FC<{ addType: MusicPlayerDropActionType, libraryId: str
 						{...trProps}
 						style={{ ...style }}
 						className={props.selectedKeys.includes(props.getSelectedKey(item)) ? background.selected : background.transparent}
-						draggable onDragStart={(evt) => { evt.dataTransfer.setData("AddType", props.addType); evt.dataTransfer.setData("AddFromLibrary", props.libraryId); evt.dataTransfer.setData("AddTypeId", (props.addType === "ArtistName-SongList" ? item.Name : item.Id) ?? ""); }}
+						draggable onDragStart={PlaylistDragItemsFunc(() => props.audioItemsInOrder(item).sort(SortByIndexNumber.sortFunc))}
 						onClick={() => { props.onToggled(item); }}
 					/>
 				),

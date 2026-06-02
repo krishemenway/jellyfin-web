@@ -18,7 +18,6 @@ export class VideoPlayerService {
 		this.PlaySessionId = (new Date().getTime() + 1).toString();
 		this.State = new Observable(MediaPlayState.Stopped);
 		this.PlaybackInfo = new Receiver("UnknownError");
-		this.PlaySessionId = (new Date().getTime() + 1).toString();
 
 		this.Playlist.Current.Subscribe((newItem) => {
 			if (newItem === undefined) {
@@ -72,7 +71,7 @@ export class VideoPlayerService {
 	}
 
 	private Load(item: MediaPlaylistItem): void {
-		this.PlaybackInfo.Start((a) => getMediaInfoApi(ServerService.Instance.CurrentApi).getPostedPlaybackInfo({ itemId: item.Item.Id ?? "", userId: ServerService.Instance.CurrentUserId.Value, playbackInfoDto: { DeviceProfile: BrowserDeviceProfile() } }, { signal: a.signal }).then((r) => r.data))
+		this.PlaybackInfo.Start((a) => getMediaInfoApi(ServerService.Instance.CurrentApi).getPostedPlaybackInfo({ itemId: item.Item.Id ?? "", userId: ServerService.Instance.CurrentUserId.Value, playbackInfoDto: { DeviceProfile: BrowserDeviceProfile() } }, { signal: a.signal }).then((r) => r.data));
 	}
 
 	public Playlist: MediaPlayerPlaylist;

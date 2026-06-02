@@ -6,6 +6,19 @@ import { MediaPlayState } from "MediaPlayer/MediaPlayState";
 import { getPlaystateApi } from "@jellyfin/sdk/lib/utils/api";
 import { ServerService } from "Servers/ServerService";
 
+export type PlaylistDropActionType = "MovePlaylistItem"|"AddItemIds";
+const dragItems: Record<string, BaseItemDto> = {};
+
+export const PlaylistDragItemsFunc: (getItemsFunc: () => BaseItemDto[]) => ((evt: React.DragEvent<HTMLElement>) => void) = (getItemsFunc) => {
+	return (evt) => {
+		const items = getItemsFunc();
+
+		items.forEach((i) => { dragItems[i.Id!] = i; });
+		evt.dataTransfer.setData("AddType", "AddItemIds");
+		evt.dataTransfer.setData("ItemIds", JSON.stringify(items.map((i) => i.Id)));
+	};
+};
+
 export class MediaPlayerPlaylist {
 	constructor() {
 		this.Current = new Observable(undefined);
@@ -56,6 +69,7 @@ export class MediaPlayerPlaylist {
 			return;
 		}
 
+		this.StopReportingProgress();
 		this.State.Value = MediaPlayState.Stopped;
 
 		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackStopped({ playbackStopInfo: {
@@ -64,8 +78,6 @@ export class MediaPlayerPlaylist {
 			PlaySessionId: this.PlaySessionId,
 			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
 		}});
-
-		this.StopReportingProgress();
 	}
 
 	public Pause(): void {
@@ -73,6 +85,7 @@ export class MediaPlayerPlaylist {
 			return;
 		}
 
+		this.StopReportingProgress();
 		this.State.Value = MediaPlayState.Paused;
 		
 		getPlaystateApi(ServerService.Instance.CurrentApi).reportPlaybackProgress({ playbackProgressInfo: {
@@ -82,8 +95,6 @@ export class MediaPlayerPlaylist {
 			IsPaused: true,
 			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
 		}});
-
-		this.StopReportingProgress();
 	}
 
 	public Finished(): void {
@@ -158,13 +169,14 @@ export class MediaPlayerPlaylist {
 		this.IsVisible.Value = !this.IsVisible.Value;
 	}
 
-	public MovePlaylistItem(atIndex: number, addAfterIndex?: number): void {
+	public MovePlaylistItem(dataTransfer: DataTransfer, addAfterIndex?: number): void {
+		const playlistIndex = parseInt(dataTransfer.getData("PlaylistIndex"), 10);
 		const addAfterIndexOrMax = Math.min(this.ItemsInOrder.length, addAfterIndex ?? (this.ItemsInOrder.length - 1));
 
-		if (atIndex !== addAfterIndexOrMax) {
+		if (playlistIndex !== addAfterIndexOrMax) {
 			const items = this.ItemsInOrder.Value.slice();
 			const itemToAddAfter = items[addAfterIndexOrMax];
-			const itemToMove = items.splice(atIndex, 1)[0];
+			const itemToMove = items.splice(playlistIndex, 1)[0];
 			const indexToAddAfter = items.indexOf(itemToAddAfter);
 			items.splice(indexToAddAfter + 1, 0, itemToMove);
 
@@ -177,6 +189,26 @@ export class MediaPlayerPlaylist {
 			this.ItemsInOrder.push(...this.ItemsInOrder.splice(index, this.ItemsInOrder.length - index, ...items));
 		}, () => {
 			this.ItemsInOrder.push(...items);
+		});
+	}
+
+	public HandleDrop(dataTransfer: DataTransfer, afterIndex?: number): void {
+		const addTypeId = dataTransfer.getData("AddType");
+
+		switch (addTypeId) {
+			case "MovePlaylistItem":
+				this.MovePlaylistItem(dataTransfer, afterIndex);
+				break;
+			case "AddItemIds":
+				this.AddItemsFromDataToPlaylist(dataTransfer, afterIndex);
+				break;
+		}
+	}
+
+	private AddItemsFromDataToPlaylist(dataTransfer: DataTransfer, afterIndex?: number): void {
+		Nullable.TryExecute((JSON.parse(dataTransfer.getData("ItemIds")) as string[]), (itemIds) => {
+			this.AddRange(itemIds.map((id) => dragItems[id]), afterIndex);
+			itemIds.forEach((i) => delete dragItems[i]);
 		});
 	}
 
