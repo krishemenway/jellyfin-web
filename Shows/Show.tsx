@@ -48,6 +48,7 @@ import { FieldLabel } from "Common/FieldLabel";
 import { ItemPremiereDate } from "Items/ItemPremiereDate";
 import { ChangeImageButton } from "Items/ChangeImageButton";
 import { ItemMediaInfo } from "Items/ItemMediaInfo";
+import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
@@ -136,6 +137,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 	const allEpisodes = React.useMemo(() => children.filter((i) => i.Type === "Episode"), [children]);
 	const selectedEpisode = Linq.Single(allEpisodes, (e) => e.Id === episodeId);
 	const editableItem = useEditableItem(selectedEpisode, user);
+	const remainingEpisodes = allEpisodes.filter((i) => (i.PremiereDate ?? "") > (selectedEpisode.PremiereDate ?? "")).sort(SortByPremiereDate.sortFunc);
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(selectedEpisode), [selectedEpisode]);
 
@@ -178,7 +180,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 				/>
 			</Layout>
 
-			{Nullable.Value(selectedEpisode, undefined, (episode) => <EpisodeDetails episode={episode} show={show} user={user} isEditing={isEditing} />)}
+			{Nullable.Value(selectedEpisode, undefined, (episode) => <EpisodeDetails episode={episode} show={show} user={user} isEditing={isEditing} remainingEpisodes={remainingEpisodes} />)}
 		</Layout>
 	);
 };
@@ -240,7 +242,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 	)
 };
 
-const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: UserDto; }&EditableItemProps> = ({ episode, show, user, isEditing }) => {
+const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: UserDto; remainingEpisodes: BaseItemDto[] }&EditableItemProps> = ({ episode, show, user, isEditing, remainingEpisodes }) => {
 	const editableEpisode = useEditableItem(episode, user);
 	const background = useBackgroundStyles();
 	return (
@@ -252,7 +254,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={episode} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
-						{!isEditing && <Button type="button" icon={<PlayIcon />} alignItems="center" px=".5em" py=".5em" onClick={() => VideoPlayerService.Instance.ClearAndPlay([episode])} />}
+						{!isEditing && <Button type="button" icon={<PlayIcon />} alignItems="center" px=".5em" py=".5em" onClick={() => VideoPlayerService.Instance.ClearAndPlay([episode].concat(remainingEpisodes))} />}
 						<ItemActionsMenu items={[episode]} user={user} actions={[
 							[
 								PlayVideoAction,
