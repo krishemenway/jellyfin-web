@@ -78,6 +78,7 @@ export const useGlobalStyles = createUseStyles({
 			fontFamily: "var(--FontFamily),Arial,sans-serif",
 			background: "transparent",
 			textDecoration: "none",
+			transition: "opacity ease-in-out .5s",
 		},
 		"input": {
 			boxSizing: "content-box",

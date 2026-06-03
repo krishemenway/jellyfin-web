@@ -13,19 +13,29 @@ import { ServerService } from "Servers/ServerService";
 
 export class VideoPlayerService {
 	constructor() {
-		this.Fullscreen = new Observable(true);
 		this.Playlist = new MediaPlayerPlaylist();
-		this.PlaySessionId = (new Date().getTime() + 1).toString();
+		this.PlaySessionId = "";
 		this.State = new Observable(MediaPlayState.Stopped);
 		this.PlaybackInfo = new Receiver("UnknownError");
+		this.ControlsVisible = new Observable(false);
 
 		this.Playlist.Current.Subscribe((newItem) => {
 			if (newItem === undefined) {
 				this.Unload();
 			} else {
+				this.PlaySessionId = (new Date().getTime() + 1).toString();
 				this.Load(newItem);
 			}
 		});
+	}
+
+	public MakeControlsVisible(): void {
+		if (!this.ControlsVisible.Value) {
+			this.ControlsVisible.Value = true;
+		}
+
+		window.clearTimeout(this.HideControls);
+		this.HideControls = window.setTimeout(() => { this.ControlsVisible.Value = false; }, 5000);
 	}
 
 	public ChangeProgress(newProgress: number): void {
@@ -34,6 +44,7 @@ export class VideoPlayerService {
 
 	public ClearAndPlay(items: BaseItemDto[]): void {
 		this.Playlist.ClearAndPlay(items);
+		this.MakeControlsVisible();
 		MediaPlayerService.Instance.PlayerType.Value = MediaPlayerType.Video;
 	}
 
@@ -78,8 +89,10 @@ export class VideoPlayerService {
 	public PlaySessionId: string;
 	public State: Observable<MediaPlayState>;
 	public PlaybackInfo: Receiver<PlaybackInfoResponse>;
-	public Fullscreen: Observable<boolean>;
 	public Video: HTMLVideoElement|undefined;
+	public ControlsVisible: Observable<boolean>;
+
+	private HideControls: number|undefined;
 
 	static get Instance(): VideoPlayerService {
 		return this._instance ?? (this._instance = new VideoPlayerService());

@@ -25,7 +25,8 @@ import { CurrentPlaylist } from "MediaPlayer/MediaPlayerPlaylistTable";
 
 export const VideoPlayer: React.FC = () => {
 	const background = useBackgroundStyles();
-	const fullscreen = useObservable(VideoPlayerService.Instance.Fullscreen);
+	const fullscreen = useObservable(VideoPlayerService.Instance.Playlist.Fullscreen);
+	const controlsVisible = useObservable(VideoPlayerService.Instance.ControlsVisible);
 
 	return (
 		<>
@@ -33,7 +34,7 @@ export const VideoPlayer: React.FC = () => {
 				<Loading
 					receivers={[VideoPlayerService.Instance.PlaybackInfo]}
 					whenError={() => <></>} whenLoading={<LoadingIcon alignSelf="center" size="4em" />} whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-					whenReceived={(r) => <VideoElement playbackInfo={r} fullscreen={fullscreen} />}
+					whenReceived={(r) => <VideoElement playbackInfo={r} fullscreen={fullscreen} controlsVisible={controlsVisible} />}
 				/>
 
 				{!fullscreen && (
@@ -44,10 +45,10 @@ export const VideoPlayer: React.FC = () => {
 
 				<CurrentPlaylist className={background.alternatePanel} playlist={VideoPlayerService.Instance.Playlist} />
 
-				<Layout direction={fullscreen ? "row" : "column"} position={fullscreen ? "absolute" : undefined} top="1rem" right="1rem" gap="1rem">
+				<Layout direction={fullscreen ? "row" : "column"} position={fullscreen ? "absolute" : undefined} top="1rem" right="1rem" gap="1rem" opacity={controlsVisible ? 100 : 0}>
 					<Button
 						icon={fullscreen ? <ArrowDownIcon /> : <ArrowUpIcon />}
-						type="button" onClick={() => { VideoPlayerService.Instance.Fullscreen.Value = !VideoPlayerService.Instance.Fullscreen.Value; }}
+						type="button" onClick={() => { VideoPlayerService.Instance.Playlist.Fullscreen.Value = !VideoPlayerService.Instance.Playlist.Fullscreen.Value; }}
 						px=".5em" py=".5em" height="100%" alignItems="center"
 					/>
 
@@ -64,7 +65,7 @@ export const VideoPlayer: React.FC = () => {
 	);
 };
 
-const VideoElement: React.FC<{ playbackInfo: PlaybackInfoResponse; fullscreen: boolean }> = ({ playbackInfo, fullscreen }) => {
+const VideoElement: React.FC<{ playbackInfo: PlaybackInfoResponse; fullscreen: boolean; controlsVisible: boolean; }> = ({ playbackInfo, fullscreen, controlsVisible }) => {
 	const background = useBackgroundStyles();
 	const mediaSource = Linq.First(playbackInfo.MediaSources ?? []);
 	const url = getUrlFromMediaSource(mediaSource);
@@ -75,14 +76,17 @@ const VideoElement: React.FC<{ playbackInfo: PlaybackInfoResponse; fullscreen: b
 				src={url} ref={(element) => { VideoPlayerService.Instance.SetVideoElement(element); }}
 				style={{ width: "100%", height: "100%", objectFit: "contain" }}
 				disablePictureInPicture autoPlay
+				onClick={() => { VideoPlayerService.Instance.MakeControlsVisible(); }}
+				onFocus={() => { VideoPlayerService.Instance.MakeControlsVisible(); }}
+				onMouseOver={() => { VideoPlayerService.Instance.MakeControlsVisible(); }}
 			/>
 
-			<VideoExtras fullscreen={fullscreen} />
+			<VideoExtras fullscreen={fullscreen} controlsVisible={controlsVisible} />
 		</Layout>
 	);
 };
 
-const VideoExtras: React.FC<{ fullscreen: boolean; }> = ({ fullscreen }) => {
+const VideoExtras: React.FC<{ fullscreen: boolean; controlsVisible: boolean; }> = ({ fullscreen, controlsVisible }) => {
 	const current = useObservable(VideoPlayerService.Instance.Playlist.Current);
 	const currentProgress = useObservable(VideoPlayerService.Instance.Playlist.CurrentProgress);
 
@@ -97,7 +101,7 @@ const VideoExtras: React.FC<{ fullscreen: boolean; }> = ({ fullscreen }) => {
 			)}
 
 			{fullscreen && (
-				<Layout direction="column" gap="1rem" position="absolute" bottom=".5rem" left="1rem" right="1rem">
+				<Layout direction="column" gap="1rem" position="absolute" bottom=".5rem" left="1rem" right="1rem" opacity={controlsVisible ? 100 : 0}>
 					<Layout direction="row" gap="1em">
 						<Slider min={0} max={(current?.Item.RunTimeTicks ?? 0) / DateTime.TicksPerSecond} current={currentProgress} grow onChange={(newValue) => { VideoPlayerService.Instance.ChangeProgress(newValue); }} />
 						<Layout direction="row"><Duration ticks={currentProgress * DateTime.TicksPerSecond} /> / <Duration ticks={current?.Item.RunTimeTicks} /></Layout>
@@ -169,6 +173,7 @@ function getUrlFromMediaSource(mediaSource: MediaSourceInfo): string {
 	if (mediaSource.SupportsDirectPlay || mediaSource.SupportsDirectStream) {
 		const queryParams = new URLSearchParams({
 			UserId: ServerService.Instance.CurrentUserId.Value,
+			PlaySessionId: VideoPlayerService.Instance.PlaySessionId,
 			DeviceId: api.deviceInfo.id,
 			api_key: api.accessToken,
 			MediaSourceId: mediaSource.Id ?? "",

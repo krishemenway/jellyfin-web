@@ -32,6 +32,7 @@ export class MediaPlayerPlaylist {
 		this.CurrentProgress = new Observable(0);
 		this.PlaySessionId = (new Date().getTime() + 1).toString();
 		this.ProgressUpdateInterval = undefined;
+		this.Fullscreen = new Observable(true);
 	}
 
 	public Reset(): void {
@@ -108,7 +109,11 @@ export class MediaPlayerPlaylist {
 			PositionTicks: parseInt((this.CurrentProgress.Value * DateTime.TicksPerSecond).toString(), 10),
 		}});
 
-		this.GoNext();
+		if (this.HasNext.Value) {
+			this.GoNext();
+		} else {
+			this.Fullscreen.Value = false;
+		}
 	}
 
 	public ClearAndPlay(items: BaseItemDto[]): void {
@@ -256,6 +261,7 @@ export class MediaPlayerPlaylist {
 	public HasNext: Computed<boolean>;
 	public PlaySessionId: string;
 	public CurrentProgress: Observable<number>;
+	public Fullscreen: Observable<boolean>;
 
 	private ProgressUpdateInterval: number|undefined;
 
