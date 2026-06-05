@@ -2,12 +2,11 @@ import { BaseItemDto, BaseItemKind, ItemSortBy } from "@jellyfin/sdk/lib/generat
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
-import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
+import { ItemListViewOptions, ItemViewOptionDataSource, ItemViewOptionsData } from "ItemList/ItemListViewOptions";
 import { Observable, ObservableArray } from "@residualeffect/reactor";
 import { Settings, SettingsStore } from "Users/SettingsStore";
-import { BaseItemKindService } from "Items/BaseItemKindService";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
-import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export interface ItemListStatConfig {
 	Key: string;
@@ -19,16 +18,27 @@ export interface ItemListWithStats {
 	Stats: Record<string, Record<string, number>>;
 }
 
+const defaultLoadFunc = (a: AbortController, id: string) => (getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: id, fields: ["DateCreated", "Genres", "Tags", "SortName", "Studios"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((r) => r.data.Items ?? []));
+const loadRequestForDataSource = (dataSource: ItemViewOptionDataSource): (a: AbortController) => Promise<BaseItemDto[]> => {
+	if (dataSource.DataSource === "Library") {
+		const [kind, libraryId] = dataSource.DataSourceKey.split("|");
+		const service = BaseItemKindServiceFactory.FindOrThrow(kind as BaseItemKind);
+		const loadList = service.loadList ?? defaultLoadFunc;
+		return (a: AbortController) => loadList(a, libraryId).then((list) => Nullable.Value(service.listTypes, list, (types) => list.filter((l) => types.indexOf(l.Type!) > -1)));
+	} else if (dataSource.DataSource === "Tag") {
+		return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, tags: [dataSource.DataSourceKey] }, { signal: a.signal }).then((r) => r.data.Items ?? []);
+	} else {
+		throw new Error(`Unknown data source ${dataSource.DataSource}`);
+	}
+}
+
 export class ItemListService {
-	constructor(libraryId: string, itemKind: BaseItemKind) {
-		this.LibraryId = libraryId;
-		this.ItemKind = itemKind;
+	constructor(dataSource: ItemViewOptionDataSource) {
+		this.DataSource = dataSource;
 		this.List = new Receiver("UnknownError");
-		this.ListOptions = new Observable(null);
+		this.ListOptions = new Observable(new ItemListViewOptions(this.DataSource, undefined));
 		this.ExistingOptions = new ObservableArray([]);
 		this.ConfirmDeleteOptions = new Observable(null);
-
-		this.DefaultLoadItems = (a, id) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: id, fields: ["DateCreated", "Genres", "Tags", "SortName", "Studios", "DateLastMediaAdded"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((response) => response.data.Items ?? []);
 	}
 
 	public LoadWithAbort(statConfigs?: ItemListStatConfig[]): () => void {
@@ -36,7 +46,7 @@ export class ItemListService {
 			return () => { };
 		}
 
-		this.List.Start((a) => (BaseItemKindServiceFactory.FindOrNull(this.ItemKind)?.loadList ?? this.DefaultLoadItems)(a, this.LibraryId).then((result) => {
+		this.List.Start((a) => loadRequestForDataSource(this.DataSource)(a).then(result => {
 			return {
 				List: result,
 				Stats: result.reduce((stats, current) => {
@@ -57,15 +67,23 @@ export class ItemListService {
 		return () => this.List.ResetIfLoading();
 	}
 
-	public LoadItemListViewOptionsOrNew(settings: Settings, itemKind: BaseItemKindService, viewOptionsKey?: string): void {
-		this.ExistingOptions.Value = settings.AllKeys().filter((k) => k.startsWith(`ViewOption|${this.LibraryId}`)).map((key) => new ItemListViewOptions(itemKind, this.LibraryId, key.split("|")[2], settings.ReadAsJson(key))).concat([
-			ItemListViewOptions.CreateRecentlyAdded(itemKind, this.LibraryId),
+	public LoadItemListViewOptionsOrNew(settings: Settings, viewOptionsKey?: string): void {
+		this.ExistingOptions.Value = settings.AllKeys().filter((k) => k.startsWith(`ViewOption|`)).map((key) => {
+			const optionData = settings.ReadAsJsonOrThrow<ItemViewOptionsData>(key);
+
+			if (optionData.DataSource.DataSource !== this.DataSource.DataSource || optionData.DataSource.DataSourceKey !== this.DataSource.DataSourceKey) {
+				return undefined;
+			}
+
+			return new ItemListViewOptions(this.DataSource, optionData, true);
+		}).filter((o) => o !== undefined).concat([
+			ItemListViewOptions.CreateRecentlyAddedToLibrary(this.DataSource),
 		]);
 
 		if (Nullable.HasValue(viewOptionsKey)) {
-			this.ListOptions.Value = this.ExistingOptions.Value.filter((o) => o.Key == viewOptionsKey)[0] ?? new ItemListViewOptions(itemKind, this.LibraryId);
+			this.ListOptions.Value = Linq.First(this.ExistingOptions.Value, (o) => o.Key == viewOptionsKey) ?? new ItemListViewOptions(this.DataSource, undefined);
 		} else {
-			this.ListOptions.Value = new ItemListViewOptions(itemKind, this.LibraryId);
+			this.ListOptions.Value = new ItemListViewOptions(this.DataSource, undefined);
 		}
 	}
 
@@ -94,12 +112,9 @@ export class ItemListService {
 		});
 	}
 
-	public LibraryId: string;
-	public ItemKind: BaseItemKind;
+	public DataSource: ItemViewOptionDataSource;
 	public List: Receiver<ItemListWithStats>;
-	public ListOptions: Observable<ItemListViewOptions|null>;
+	public ListOptions: Observable<ItemListViewOptions>;
 	public ExistingOptions: ObservableArray<ItemListViewOptions>;
 	public ConfirmDeleteOptions: Observable<ItemListViewOptions|null>;
-
-	private DefaultLoadItems: (a: AbortController, id: string) => Promise<BaseItemDto[]>;
 }

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BaseItemDto, BaseItemKind, QueryFiltersLegacy, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemKind, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { useComputed, useObservable } from "@residualeffect/rereactor";
 import { useBreakpointValues } from "AppStyles";
 import { Layout } from "Common/Layout";
@@ -25,37 +25,37 @@ import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ServerService } from "Servers/ServerService";
 import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { BaseItemKindService } from "Items/BaseItemKindService";
+import { ItemRefreshButton } from "Items/ItemRefreshButton";
+import { ManageLibraryButton } from "Servers/ManageLibraryButton";
+import { useUrlToItem } from "Items/LinkToItem";
 
-export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = (props) => {
+export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = ({ paramName, itemKind }) => {
 	const routeParams = useParams();
 	const userId = useObservable(ServerService.Instance.CurrentUserId);
-	const libraryId = routeParams[props.paramName];
+	const libraryId = routeParams[paramName];
 	const viewOptionsKey = routeParams.viewOptionsKey;
+	const itemKindService = BaseItemKindServiceFactory.FindOrThrow(itemKind);
 
 	if (!Nullable.HasValue(libraryId)) {
-		return <PageWithNavigation icon={props.itemKind}><NotFound /></PageWithNavigation>;
+		return <PageWithNavigation icon={itemKind}><NotFound /></PageWithNavigation>;
 	}
 
-	const itemList = ItemService.Instance.FindOrCreateItemList(libraryId, props.itemKind);
+	const itemList = React.useMemo(() => ItemService.Instance.FindOrCreateListFromLibrary(libraryId, itemKind), [libraryId]);
 
-	React.useEffect(() => itemList.LoadWithAbort(), [itemList]);
 	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
 	React.useEffect(() => ItemFilterService.Instance.LoadFiltersWithAbort([libraryId]), [libraryId]);
-	React.useEffect(() => UserViewStore.Instance.LoadUserViewsWithAbort(userId), [userId]);
 
 	return (
-		<PageWithNavigation icon={props.itemKind}>
+		<PageWithNavigation icon={itemKind}>
 			<Loading
-				receivers={[itemList.List, SettingsStore.Instance.ReceiverFor("usersettings"), LoginService.Instance.User, ItemFilterService.Instance.FindOrCreateFiltersReceiver([libraryId]), UserViewStore.Instance.FindOrCreateForUser(userId)]}
+				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), LoginService.Instance.User, UserViewStore.Instance.FindOrCreateForUser(userId)]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-				whenReceived={(items, settings, user, filters, libraries) => (
-					<LoadedItemsListView
-						libraryId={libraryId} viewOptionsKey={viewOptionsKey} itemList={itemList}
-						items={items.List} settings={settings}
-						user={user} libraries={libraries}
-						itemKind={props.itemKind} filters={filters}
+				whenReceived={(settings, user, libraries) => (
+					<LoadedBasicItemListView
+						libraryId={libraryId} viewOptionsKey={viewOptionsKey} itemList={itemList} itemKindService={itemKindService}
+						settings={settings} user={user} libraries={libraries} key={libraryId}
 					/>
 				)}
 			/>
@@ -63,41 +63,65 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 	);
 };
 
-const LoadedItemsListView: React.FC<{ libraryId: string, viewOptionsKey?: string; items: BaseItemDto[]; itemList: ItemListService; itemKind: BaseItemKind; settings: Settings; user: UserDto; libraries: BaseItemDto[]; filters: QueryFiltersLegacy }> = (props) => {
-	const itemKindService = BaseItemKindServiceFactory.FindOrThrow(props.itemKind);
-	const listOptions = useObservable(props.itemList.ListOptions);
-	const library = Linq.Single(props.libraries, (l) => l.Id === props.libraryId);
+const LoadedBasicItemListView: React.FC<{ libraryId: string; viewOptionsKey?: string; settings: Settings; user: UserDto; itemList: ItemListService; libraries: BaseItemDto[]; itemKindService: BaseItemKindService }> = ({ itemList, libraries, ...props }) => {
+	const listOptions = useObservable(itemList.ListOptions);
+	const library = Linq.Single(libraries, (l) => l.Id === props.libraryId);
 
-	React.useEffect(() => { props.itemList.LoadItemListViewOptionsOrNew(props.settings, itemKindService, props.viewOptionsKey); }, [props.settings, itemKindService, props.viewOptionsKey]);
+	React.useEffect(() => itemList.LoadWithAbort(), [itemList, libraries]);
+	React.useEffect(() => { itemList.LoadItemListViewOptionsOrNew(props.settings, props.viewOptionsKey); }, [props.settings, props.viewOptionsKey]);
 
 	return (
-		<Layout direction="column" gap="1em" py="1em">
-			<PageTitle text={library?.Name} suppressOnScreen />
-			{listOptions && <ItemsViewWithOptions {...props} listOptions={listOptions} itemKindService={itemKindService} library={library} />}
-		</Layout>
+		<Loading
+			receivers={[itemList.List]}
+			whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
+			whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
+			whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
+			whenReceived={(items) => (
+				<Layout direction="column" gap="1em" py="1em">
+					<PageTitle text={library?.Name} suppressOnScreen />
+					<LoadedItemsView items={items.List} itemList={itemList} listOptions={listOptions} library={library} {...props} />
+				</Layout>
+			)}
+		/>
 	);
 };
 
-const ItemsViewWithOptions: React.FC<{ library: BaseItemDto; items: BaseItemDto[]; listOptions: ItemListViewOptions; itemList: ItemListService; itemKind: BaseItemKind; itemKindService: BaseItemKindService; settings: Settings; user: UserDto; filters: QueryFiltersLegacy }> = (props) => {
+
+const LoadedItemsView: React.FC<{ library: BaseItemDto; items: BaseItemDto[]; listOptions: ItemListViewOptions; itemList: ItemListService; itemKindService: BaseItemKindService; settings: Settings; user: UserDto; }> = (props) => {
 	const sorts = useObservable(props.listOptions.SortBy);
 	const itemsPerRow = useBreakpointValues(2, 4, 7, 9);
+	const baseUrl = useUrlToItem(props.library);
 	const filteredAndSortedItems = useComputed(() => {
-		const listTypes = props.itemKindService.listTypes ?? [props.itemKind];
-		const items = props.items.filter((i) => listTypes.indexOf(i.Type!) > -1);
-
 		if (props.listOptions === null) {
-			return items;
+			return props.items;
 		}
 
 		const filterFunc = props.listOptions.FilterFunc.Value;
 		const sortFunc = props.listOptions.SortByFunc.Value;
 
-		return items.filter(filterFunc).sort(sortFunc);
-	}, [props.items, props.listOptions, props.itemKindService]);
+		return props.items.filter(filterFunc).sort(sortFunc);
+	}, [props.items, props.listOptions]);
 
 	return (
 		<>
-			<ItemListFilters library={props.library} user={props.user} listOptions={props.listOptions} filters={props.filters} itemList={props.itemList} settings={props.settings} total={props.items.length} remaining={filteredAndSortedItems.length} />
+			<ItemListFilters
+				user={props.user}
+				baseUrl={baseUrl}
+				listOptions={props.listOptions}
+				itemList={props.itemList}
+				settings={props.settings}
+				items={props.items}
+				remaining={filteredAndSortedItems.length}
+				filterTypes={props.itemKindService.filterOptions ?? []}
+				sortTypes={props.itemKindService.sortOptions ?? []}
+				additionalButtons={(
+					<>
+						<ItemRefreshButton item={props.library} />
+						<ManageLibraryButton libraryId={props.library.Id} px=".5em" py=".5em" />
+					</>
+				)}
+			/>
+
 			<ListOf
 				items={filteredAndSortedItems}
 				direction="row" wrap gap=".5em"
@@ -113,5 +137,5 @@ const ItemsViewWithOptions: React.FC<{ library: BaseItemDto; items: BaseItemDto[
 				)}
 			/>
 		</>
-	)
-}
+	);
+};

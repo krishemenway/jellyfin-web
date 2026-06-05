@@ -25,7 +25,7 @@ import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 export const MusicVideoService: BaseItemKindService = {
 	kind: "MusicVideo",
 	findIcon: (props) => <MusicVideoIcon {...props} />,
-	listUrl: (library) => `/MusicVideos/${library.Id}`,
+	listUrl: (libraryId) => `/MusicVideos/${libraryId}`,
 	playerSecondaryHeadline: (item) => Linq.Coalesce([item.Album, item.ProductionYear?.toString()], "", (v) => Nullable.StringHasValue(v)) + Nullable.StringValue(item.Artists?.join(", "), "", (artists) => " — " + artists),
 	relevantPersonKinds: ["Actor", "Director", "Writer", "Producer", "Composer", "Editor"],
 	filterOptions: [

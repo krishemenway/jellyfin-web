@@ -6,7 +6,7 @@ import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
 export const PlaylistService: BaseItemKindService = {
 	kind: "Playlist",
 	findIcon: (props) => <PlaylistIcon {...props} />,
-	listUrl: (library) => `/Playlists/${library.Id}`,
+	listUrl: (libraryId) => `/Playlists/${libraryId}`,
 	sortOptions: [
 		SortByDateCreated,
 	],

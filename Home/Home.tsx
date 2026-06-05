@@ -13,7 +13,7 @@ import { ListOf } from "Common/ListOf";
 import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ImageShape } from "Items/ItemImage";
-import { useComputed, useObservable } from "@residualeffect/rereactor";
+import { useComputed, useObservable } from "@residualeffect/rereactor/lib";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { HyperLink } from "Common/HyperLink";
 import { TranslatedText } from "Common/TranslatedText";
@@ -30,7 +30,8 @@ import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { HomeViewOptions } from "Home/HomeViewOptions";
 import { ArrowDownIcon } from "CommonIcons/ArrowDownIcon";
 import { ArrowUpIcon } from "CommonIcons/ArrowUpIcon";
-import { Linq } from "Common/MissingJavascriptFunctions";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 export const Home: React.FC = () => {
 	const userId = useObservable(ServerService.Instance.CurrentUserId);
@@ -64,7 +65,6 @@ const HomeWithSettings: React.FC<{ settings: Settings; libraries: BaseItemDto[] 
 					key={config.Key}
 					viewOptions={config}
 					itemsPerRow={itemsPerRow}
-					libraries={libraries}
 					isEditing={isEditing}
 					onDeleted={() => homeViewOptions.Remove(sectionIndex)}
 					onMoveUp={sectionIndex > 0 ? () => homeViewOptions.Swap(sectionIndex, sectionIndex - 1) : undefined}
@@ -88,7 +88,7 @@ const HomeWithSettings: React.FC<{ settings: Settings; libraries: BaseItemDto[] 
 	);
 };
 
-const AddHomeSectionButton: React.FC<{ homeViewOptions: HomeViewOptions; libraries: BaseItemDto[] }> = ({ homeViewOptions, libraries }) => {
+const AddHomeSectionButton: React.FC<{ homeViewOptions: HomeViewOptions; libraries: BaseItemDto[] }> = ({ homeViewOptions }) => {
 	const allOptions = useObservable(homeViewOptions.AllViewOptions);
 	const field = React.useMemo(() => new EditableField<ItemListViewOptions>("AddHomeSection", allOptions[0]), [homeViewOptions]);
 
@@ -97,7 +97,7 @@ const AddHomeSectionButton: React.FC<{ homeViewOptions: HomeViewOptions; librari
 			<AutoCompleteFieldEditor
 				allOptions={allOptions}
 				field={field}
-				getLabel={(o) => `${Linq.Single(libraries, (l) => l.Id === o.LibraryId).Name} - ${o.Label.Current.Value}`}
+				getLabel={(o) => o.Label.Current.Value}
 				getValue={(o) => o.Key}
 			/>
 
@@ -110,18 +110,19 @@ const AddHomeSectionButton: React.FC<{ homeViewOptions: HomeViewOptions; librari
 	);
 };
 
-const HomeSection: React.FC<{ viewOptions: ItemListViewOptions; itemsPerRow: number; libraries: BaseItemDto[]; isEditing: boolean; onDeleted: () => void; onMoveUp?: () => void; onMoveDown?: () => void; }> = ({ viewOptions, itemsPerRow, libraries, isEditing, onDeleted, onMoveUp, onMoveDown }) => {
+const HomeSection: React.FC<{ viewOptions: ItemListViewOptions; itemsPerRow: number; isEditing: boolean; onDeleted: () => void; onMoveUp?: () => void; onMoveDown?: () => void; }> = ({ viewOptions, itemsPerRow, isEditing, onDeleted, onMoveUp, onMoveDown }) => {
+	const list = ItemService.Instance.FindOrCreateListFromSource(viewOptions.DataSource);
 	const label = useObservable(viewOptions.Label.Current);
 
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemList(viewOptions.LibraryId, viewOptions.ItemKindService.kind).LoadWithAbort(), [viewOptions]);
+	React.useEffect(() => list.LoadWithAbort(), [viewOptions]);
 
 	return (
 		<Loading
-			receivers={[ItemService.Instance.FindOrCreateItemList(viewOptions.LibraryId, viewOptions.ItemKindService.kind).List]}
+			receivers={[list.List]}
 			whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 			whenLoading={<LoadingSection label={label} itemsPerRow={itemsPerRow} />}
 			whenNotStarted={<LoadingSection label={label} itemsPerRow={itemsPerRow} />}
-			whenReceived={(itemWithStats) => <HomeSectionWithLoadedItems label={label} itemsFromList={itemWithStats.List} itemsPerRow={itemsPerRow} libraries={libraries} viewOptions={viewOptions} isEditing={isEditing} onDeleted={onDeleted} onMoveDown={onMoveDown} onMoveUp={onMoveUp} />}
+			whenReceived={(itemWithStats) => <HomeSectionWithLoadedItems label={label} itemsFromList={itemWithStats.List} itemsPerRow={itemsPerRow} viewOptions={viewOptions} isEditing={isEditing} onDeleted={onDeleted} onMoveDown={onMoveDown} onMoveUp={onMoveUp} />}
 		/>
 	);
 };
@@ -149,16 +150,31 @@ const LoadingSection: React.FC<{ label: string; itemsPerRow: number }> = ({ labe
 	);
 };
 
-const HomeSectionWithLoadedItems: React.FC<{ label: string; itemsFromList: BaseItemDto[]; viewOptions: ItemListViewOptions; itemsPerRow: number; libraries: BaseItemDto[]; isEditing: boolean; onDeleted: () => void; onMoveUp?: () => void; onMoveDown?: () => void; }> = ({ label, itemsFromList, viewOptions, itemsPerRow, libraries, isEditing, onDeleted, onMoveUp, onMoveDown }) => {
-	const listUrl = viewOptions.ItemKindService.listUrl && viewOptions.ItemKindService.listUrl(libraries.find((l) => l.Id === viewOptions.LibraryId)!) + "/" + viewOptions.Key;
-	const filteredAndSortedItems = useComputed(() => {
-		const listTypes = viewOptions.ItemKindService.listTypes ?? [viewOptions.ItemKindService.kind];
-		const items = itemsFromList.filter((i) => listTypes.indexOf(i.Type!) > -1);
+function showMoreLink(viewOptions: ItemListViewOptions): string {
+	switch(viewOptions.DataSource.DataSource) {
+		case "Library": {
+			const [kind, libraryId] = viewOptions.DataSource.DataSourceKey.split("|");
+			const service = BaseItemKindServiceFactory.FindOrThrow(kind);
 
+			if (!Nullable.HasValue(service.listUrl)) {
+				throw new Error(`Missing list url for type ${service.kind} to render Show More link`);
+			}
+
+			return `${service.listUrl(libraryId)}/${viewOptions.Key}`;
+		}
+		case "Tag": {
+			return `/Tags/${viewOptions.DataSource.DataSourceKey}/${viewOptions.Key}`;
+		}
+	}
+}
+
+const HomeSectionWithLoadedItems: React.FC<{ label: string; itemsFromList: BaseItemDto[]; viewOptions: ItemListViewOptions; itemsPerRow: number; isEditing: boolean; onDeleted: () => void; onMoveUp?: () => void; onMoveDown?: () => void; }> = ({ label, itemsFromList, viewOptions, itemsPerRow, isEditing, onDeleted, onMoveUp, onMoveDown }) => {
+	const listUrl = showMoreLink(viewOptions);
+	const filteredAndSortedItems = useComputed(() => {
 		const filterFunc = viewOptions.FilterFunc.Value;
 		const sortFunc = viewOptions.SortByFunc.Value;
 
-		return items.filter(filterFunc).sort(sortFunc);
+		return itemsFromList.filter(filterFunc).sort(sortFunc);
 	}, [itemsFromList, viewOptions]);
 
 	return (
@@ -178,7 +194,7 @@ const HomeSectionWithLoadedItems: React.FC<{ label: string; itemsFromList: BaseI
 						<Button type="button" onClick={onDeleted} icon={<DeleteIcon />} px=".25em" py=".25em" />
 					</Layout>
 				)}
-				{!isEditing && <ShowMoreLibraryLink filteredItems={filteredAndSortedItems} itemsPerRow={itemsPerRow} listUrl={listUrl!} />}
+				{!isEditing && <ShowMoreLibraryLink filteredItems={filteredAndSortedItems} itemsPerRow={itemsPerRow} listUrl={listUrl} />}
 			</Layout>
 
 			<ListOf

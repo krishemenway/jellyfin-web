@@ -23,6 +23,6 @@ export const CollectionFolderService: BaseItemKindService = {
 			throw new Error("Missing url for item " + item.Name)
 		}
 
-		return itemKindService.listUrl(item);
+		return itemKindService.listUrl(item.Id!);
 	}
 };

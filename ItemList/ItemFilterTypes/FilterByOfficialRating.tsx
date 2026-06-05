@@ -5,9 +5,9 @@ import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
 import { EmptyOperation, NotEmptyOperation } from "ItemList/FilterOperations/EmptyOperation";
 import { EqualOperation } from "ItemList/FilterOperations/EqualOperation";
 import { FilterOperation } from "ItemList/FilterOperation";
-import { Nullable } from "Common/MissingJavascriptFunctions";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { GetOrder } from "ItemList/ItemSortTypes/SortByOfficialRating";
-import { SortByNumber, SortByObjects } from "Common/Sort";
+import { SortByNumber } from "Common/Sort";
 
 export const LessThanRatingOperation: FilterOperation = {
 	Name: "LessThan",
@@ -87,9 +87,7 @@ export const FilterByOfficialRating: ItemFilterType = {
 	labelKey: "LabelParentalRating",
 	targetField: (item) => item.OfficialRating,
 	editor: (props) => {
-		const orderedRatings = React.useMemo(() => SortByObjects(props.filters.OfficialRatings ?? [], [
-			{ LabelKey: "", Reversed: false, SortType: "SortOrder", Sort: SortByNumber(rating => GetOrder(rating)), GetContent: (r) => r, Hidden: true },
-		]), [props.filters.OfficialRatings]);
+		const ratings = React.useMemo(() => Linq.Distinct(props.items.map((i) => i.OfficialRating).filter((i) => Nullable.HasValue(i))).sort(SortByNumber(s => GetOrder(s))), [props.items]);
 
 		if (props.currentOperation === EmptyOperation || props.currentOperation === NotEmptyOperation) {
 			return <></>;
@@ -97,7 +95,7 @@ export const FilterByOfficialRating: ItemFilterType = {
 
 		return (
 			<Layout direction="column">
-				<AutoCompleteFieldEditor field={props.filter.FilterValue} allOptions={orderedRatings} getValue={(rating) => rating} getLabel={(rating) => rating} />
+				<AutoCompleteFieldEditor field={props.filter.FilterValue} allOptions={ratings} getValue={(rating) => rating} getLabel={(rating) => rating} />
 			</Layout>
 		);
 	},

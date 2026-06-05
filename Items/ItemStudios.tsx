@@ -31,7 +31,7 @@ const EditItemStudios: React.FC<{ linkLayout?: StyleLayoutProps }&EditableItemPr
 		throw new Error("Missing libraryId!");
 	}
 
-	const studioList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "Studio");
+	const studioList = ItemService.Instance.FindOrCreateListFromSource({ DataSource: "Library", DataSourceKey: `Studio|${props.libraryId}` });
 	React.useEffect(() => studioList.LoadWithAbort(), [studioList]);
 
 	return (

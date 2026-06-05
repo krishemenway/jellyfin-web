@@ -10,7 +10,7 @@ export interface BaseItemKindService {
 	primaryShape?: ImageShape;
 	findIcon?: (iconProps: IconProps, collectionType?: CollectionType) => React.ReactNode;
 	findUrl?: (item: BaseItemDto) => string;
-	listUrl?: (libraryItem: BaseItemDto) => string;
+	listUrl?: (libraryId: string) => string;
 
 	relevantPersonKinds?: PersonKind[];
 

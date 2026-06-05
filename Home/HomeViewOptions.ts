@@ -1,10 +1,10 @@
-import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { Computed, Observable } from "@residualeffect/reactor";
-import { ItemListViewOptions, ItemViewOptionsData } from "ItemList/ItemListViewOptions";
+import { ItemListViewOptions, ItemViewOptionDataSource, ItemViewOptionsData } from "ItemList/ItemListViewOptions";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { EditableField } from "Common/EditableField";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 export class HomeViewOptions {
 	constructor(settings: Settings, libraries: BaseItemDto[]) {
@@ -34,8 +34,13 @@ export class HomeViewOptions {
 
 	private CreateAllBuiltInOptions(libraries: BaseItemDto[]): ItemListViewOptions[] {
 		return libraries.reduce((all, library) => {
-			const serviceForLibrary = BaseItemKindServiceFactory.FindOrThrowByCollectionType(library.CollectionType)!;
-			all.push(ItemListViewOptions.CreateRecentlyAdded(serviceForLibrary, library.Id!));
+			const service = BaseItemKindServiceFactory.FindOrThrowByCollectionType(library.CollectionType);
+			const dataSource: ItemViewOptionDataSource = {
+				DataSource: "Library",
+				DataSourceKey: `${service.kind}|${library.Id}`,
+			};
+
+			all.push(ItemListViewOptions.CreateRecentlyAddedToLibrary(dataSource));
 			return all;
 		}, [] as ItemListViewOptions[]);
 	}
@@ -46,14 +51,13 @@ export class HomeViewOptions {
 	}
 
 	private LoadForKey(key: string, settings: Settings): ItemListViewOptions {
-		const keyParts = key.split("|");
 		const viewOptionsData = settings.ReadAsJson<ItemViewOptionsData>(key);
 
 		if (!Nullable.HasValue(viewOptionsData)) {
 			throw new Error(`Unable to find ${key}`);
 		}
 
-		return new ItemListViewOptions(BaseItemKindServiceFactory.FindOrThrow(viewOptionsData?.Kind), keyParts[1], keyParts[2], viewOptionsData);
+		return new ItemListViewOptions(viewOptionsData.DataSource, viewOptionsData, true);
 	}
 
 	public Settings: Settings;

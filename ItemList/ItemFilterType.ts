@@ -1,12 +1,11 @@
-import { BaseItemDto, QueryFiltersLegacy } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { FilterOperation } from "ItemList/FilterOperation";
 import { EditableItemFilter } from "ItemList/EditableItemFilter";
 
 export interface ItemFilterTypeProps {
 	filter: EditableItemFilter;
-	filters: QueryFiltersLegacy;
+	items: BaseItemDto[];
 	currentOperation: FilterOperation;
-	libraryId: string;
 }
 
 export interface ItemFilterType {

@@ -1,6 +1,7 @@
 import { ItemDataService } from "Items/ItemDataService";
 import { ItemListService } from "ItemList/ItemListService";
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
+import { ItemViewOptionDataSource } from "ItemList/ItemListViewOptions";
+import { BaseItemKind } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
 
 export class ItemService {
 	constructor() {
@@ -12,8 +13,18 @@ export class ItemService {
 		return this._itemDataByItemId[id] ?? (this._itemDataByItemId[id] = new ItemDataService(id));
 	}
 
-	public FindOrCreateItemList(libraryId: string, kind: BaseItemKind): ItemListService {
-		return this._itemListByItemId[libraryId+kind] ?? (this._itemListByItemId[libraryId+kind] = new ItemListService(libraryId, kind));
+	public FindOrCreateListFromLibrary(libraryId: string, kind: BaseItemKind): ItemListService {
+		const source: ItemViewOptionDataSource = {
+			DataSource: "Library",
+			DataSourceKey: `${kind}|${libraryId}`,
+		};
+
+		return this.FindOrCreateListFromSource(source);
+	}
+
+	public FindOrCreateListFromSource(dataSource: ItemViewOptionDataSource): ItemListService {
+		const key = dataSource.DataSource + dataSource.DataSourceKey;
+		return this._itemListByItemId[key] ?? (this._itemListByItemId[key] = new ItemListService(dataSource));
 	}
 
 	private _itemDataByItemId: Record<string, ItemDataService>;

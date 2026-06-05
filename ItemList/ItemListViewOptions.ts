@@ -1,39 +1,31 @@
-import { BaseItemDto, BaseItemKind, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByObjectsFunc, SortFuncs } from "Common/Sort";
 import { EditableItemFilter } from "ItemList/EditableItemFilter";
 import { CreateSortFunc, ItemSortOption } from "ItemList/ItemSortOption";
-import { BaseItemKindService } from "Items/BaseItemKindService";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { EditableField, ValueIsRequired } from "Common/EditableField";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
-import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
+import { ItemSortOptionStore } from "./ItemSortOptionStore";
+import { ItemFilterTypeStore } from "./ItemFilterTypeStore";
 
 export class ItemListViewOptions {
-	constructor(itemKindService: BaseItemKindService, libraryId: string, key?: string, data?: ItemViewOptionsData, canSave?: boolean) {
-		this.Key = key ?? self.crypto.randomUUID();
-		this.LibraryId = libraryId;
+	constructor(dataSource: ItemViewOptionDataSource, data?: ItemViewOptionsData, canSave?: boolean) {
+		this.Key = Nullable.Value(data?.Key, self.crypto.randomUUID(), k => k);
 		this.IsUnsaved = !Nullable.HasValue(data);
 		this.CanSave = canSave ?? true;
 		this.Label = new EditableField("Filter", Nullable.Value(data, "", (d) => d.Label), (v) => ValueIsRequired(v));
 		this.ShowErrors = new Observable(false);
+		this.DataSource = data?.DataSource ?? dataSource;
 
-		this.ItemKindService = itemKindService;
 		this.NewFilter = new Observable(undefined);
 		this.Filters = new ObservableArray(Nullable.Value(data, [], (d) => d.Filters).map((d) => {
-			const filterType = (itemKindService?.filterOptions ?? []).find((f) => f.type === d.FilterType);
-			return new EditableItemFilter(filterType, d.FilterValue, d.Operation);
+			return new EditableItemFilter(ItemFilterTypeStore.Instance.FindOrThrow(d.FilterType), d.FilterValue, d.Operation);
 		}));
 
-		this.SortBy = new ObservableArray(Nullable.Value(data, [], (d) => d.Sorts).map((d) => {
-			const sort = (itemKindService?.sortOptions ?? []).find((s) => s.field === d.SortType);
-
-			if (sort === undefined) {
-				throw new Error(`Missing sort type ${d.SortType} from service ${itemKindService.kind}`);
-			}
-
-			return CreateSortFunc(sort, d.Reversed, d.Hidden);
+		this.SortBy = new ObservableArray(Nullable.Value(data, [], (d) => d.Sorts).map(d => {
+			return CreateSortFunc(ItemSortOptionStore.Instance.FindOrThrow(d.SortType), d.Reversed, d.Hidden);
 		}));
 
 		this.FilterFunc = new Computed(() => (item) => this.Filters.Value.every((f) => f.ShowItem(item)))
@@ -79,30 +71,30 @@ export class ItemListViewOptions {
 		}
 	}
 
-	public static CreateRecentlyAdded(service: BaseItemKindService, libraryId: string): ItemListViewOptions {
-		return new ItemListViewOptions(service, libraryId, `RecentlyAdded-${libraryId}`, { Filters: [], Kind: service.kind, Label: "Recently Added", Sorts: [{ Reversed: true, SortType: SortByDateCreated.field, Hidden: true }] }, false);
+	public static CreateRecentlyAddedToLibrary(dataSource: ItemViewOptionDataSource): ItemListViewOptions {
+		return new ItemListViewOptions(dataSource, { DataSource: dataSource, Key: `RecentlyAdded-${dataSource.DataSourceKey}`, Filters: [], Label: "Recently Added", Sorts: [{ Reversed: true, SortType: "DateCreated", Hidden: true }] }, false);
 	}
 
 	public CreateSaveRequest(): ItemViewOptionsData {
 		return {
+			Key: this.Key,
+			DataSource: this.DataSource,
 			Label: this.Label.Current.Value,
-			Kind: this.ItemKindService.kind,
 			Filters: this.Filters.Value.map((i) => ({ FilterType: i.FilterType.type, FilterValue: i.FilterValue.Current.Value, Operation: i.Operation.Current.Value.Name })),
 			Sorts: this.SortBy.Value.map((s) => ({ SortType: s.SortType, Reversed: s.Reversed, Hidden: s.Hidden }) as ItemViewOptionSortData),
 		};
 	}
 
 	public BuildStorageKey(): string {
-		return `ViewOption|${this.LibraryId}|${this.Key}`;
+		return `ViewOption|${this.Key}`;
 	}
 
 	public Key: string;
-	public LibraryId: string;
 	public IsUnsaved: boolean;
 	public CanSave: boolean;
 	public Label: EditableField<string>;
-	public ItemKindService: BaseItemKindService;
 	public ShowErrors: Observable<boolean>;
+	public DataSource: ItemViewOptionDataSource;
 
 	public NewFilter: Observable<EditableItemFilter|undefined>;
 
@@ -125,9 +117,15 @@ export interface ItemViewOptionSortData {
 	Hidden: boolean;
 }
 
+export interface ItemViewOptionDataSource {
+	DataSource: "Library"|"Tag";
+	DataSourceKey: string;
+}
+
 export interface ItemViewOptionsData {
-	Kind: BaseItemKind;
 	Label: string;
+	Key: string;
+	DataSource: ItemViewOptionDataSource;
 	Filters: ItemViewOptionFilterData[];
 	Sorts: ItemViewOptionSortData[];
 }

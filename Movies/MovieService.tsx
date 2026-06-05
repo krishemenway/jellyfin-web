@@ -28,7 +28,7 @@ export const MovieService: BaseItemKindService = {
 	searchResultName: (item) => `${item.Name} (${item.ProductionYear})`,
 	relevantPersonKinds: ["Actor", "Director", "Writer", "Producer", "Editor"],
 	findIcon: (props) => <MovieIcon {...props} />,
-	listUrl: (library) => `/Movies/${library.Id}`,
+	listUrl: (libraryId) => `/Movies/${libraryId}`,
 	filterOptions: [
 		FilterByName,
 		FilterByHasPlayed,

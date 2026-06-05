@@ -36,7 +36,7 @@ import { StudioService } from "Studios/StudioService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export class BaseItemKindServiceFactory {
-	public static FindOrThrow(kind?: BaseItemKind): BaseItemKindService {
+	public static FindOrThrow(kind?: BaseItemKind|string): BaseItemKindService {
 		const result = BaseItemKindServiceFactory.FindOrNull(kind);
 
 		if (!Nullable.HasValue(result)) {
@@ -46,12 +46,12 @@ export class BaseItemKindServiceFactory {
 		return result;
 	}
 
-	public static FindOrNull(kind?: BaseItemKind): BaseItemKindService|null {
+	public static FindOrNull(kind?: BaseItemKind|string): BaseItemKindService|null {
 		if (kind === undefined) {
 			return null;
 		}
 
-		return this._servicesByKind[kind] ?? null;
+		return this._servicesByKind[kind as BaseItemKind] ?? null;
 	}
 
 	public static FindOrNullByCollectionType(collectionType?: CollectionType): BaseItemKindService|null {
@@ -62,7 +62,7 @@ export class BaseItemKindServiceFactory {
 		return this._servicesByCollection[collectionType] ?? null;
 	}
 
-	public static FindOrThrowByCollectionType(collectionType?: CollectionType): BaseItemKindService|null {
+	public static FindOrThrowByCollectionType(collectionType?: CollectionType): BaseItemKindService {
 		const result = BaseItemKindServiceFactory.FindOrNullByCollectionType(collectionType);
 
 		if (!Nullable.HasValue(result)) {

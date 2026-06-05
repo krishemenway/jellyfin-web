@@ -32,15 +32,7 @@ export const SongListView: React.FC = () => {
 		return <PageWithNavigation icon="Audio" matchHeight><NotFound /></PageWithNavigation>;
 	}
 
-	const albumList = ItemService.Instance.FindOrCreateItemList(libraryId, "MusicAlbum");
-	const artistList = ItemService.Instance.FindOrCreateItemList(libraryId, "MusicArtist");
-	const songList = ItemService.Instance.FindOrCreateItemList(libraryId, "Audio");
-
-	React.useEffect(() => artistList.LoadWithAbort(), [artistList]);
-	React.useEffect(() => albumList.LoadWithAbort([{ Key: "AlbumCountByArtistId", GetKeysForItem: (i) => i.AlbumArtists?.map((a) => a.Id) ?? [] }]), [albumList]);
-	React.useEffect(() => songList.LoadWithAbort([{ Key: "SongCountByArtistId", GetKeysForItem: (i) => i.Artists?.map((a) => a) ?? [] }, { Key: "SongCountByAlbumId", GetKeysForItem: (i) => [i.AlbumId] }]), [songList]);
 	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
-	React.useEffect(() => UserViewStore.Instance.LoadUserViewsWithAbort(userId), [userId]);
 
 	return (
 		<PageWithNavigation icon="Audio" matchHeight>
@@ -49,7 +41,7 @@ export const SongListView: React.FC = () => {
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
 				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-				whenReceived={(settings, user, libraries) => <LoadedMusicLibrary libraryId={libraryId} settings={settings} user={user} libraries={libraries} />}
+				whenReceived={(settings, user, libraries) => <SongListViewContent libraryId={libraryId} settings={settings} user={user} libraries={libraries} />}
 			/>
 		</PageWithNavigation>
 	);
@@ -63,15 +55,18 @@ interface Column {
 	getSortFunc: (stats: Record<string, number>[]) => (a: BaseItemDto, b: BaseItemDto) => number;
 }
 
-const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user: UserDto; libraries: BaseItemDto[] }> = (props) => {
+export const SongListViewContent: React.FC<{ libraryId: string; libraries: BaseItemDto[]; user: UserDto; settings: Settings; }> = ({ libraryId, libraries }) => {
 	const background = useBackgroundStyles();
-	const observableArtists = React.useMemo(() => new ObservableArray<string>([]), [props.libraryId]);
-	const observableAlbumIds = React.useMemo(() => new ObservableArray<string>([]), [props.libraryId]);
+	const library = Linq.Single(libraries, (l) => l.Id === libraryId);
 
-	const albumList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "MusicAlbum");
-	const artistList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "MusicArtist");
-	const audioList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "Audio");
-	const library = Linq.Single(props.libraries, (l) => l.Id === props.libraryId);
+	const albumList = ItemService.Instance.FindOrCreateListFromLibrary(libraryId, "MusicAlbum");
+	const artistList = ItemService.Instance.FindOrCreateListFromLibrary(libraryId, "MusicArtist");
+	const audioList = ItemService.Instance.FindOrCreateListFromLibrary(libraryId, "Audio");
+
+	React.useEffect(() => audioList.LoadWithAbort([{ Key: "SongCountByArtistId", GetKeysForItem: (i) => i.Artists?.map((a) => a) ?? [] }, { Key: "SongCountByAlbumId", GetKeysForItem: (i) => [i.AlbumId] }]), [audioList]);
+
+	const observableArtists = React.useMemo(() => new ObservableArray<string>([]), [libraryId]);
+	const observableAlbumIds = React.useMemo(() => new ObservableArray<string>([]), [libraryId]);
 
 	const filteredArtists = useObservable(observableArtists);
 	const filteredAlbumIds = useObservable(observableAlbumIds);
@@ -89,7 +84,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 						whenNotStarted={<LoadingIcon size="4em" />}
 						whenReceived={(artists, albums, songs) => (
 							<LoadedItems
-								libraryId={props.libraryId}
+								libraryId={libraryId}
 								items={artists.List}
 								selectedKeys={filteredArtists}
 								getSelectedKey={(i) => i.Name!}
@@ -113,7 +108,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 						whenNotStarted={<LoadingIcon size="4em" />}
 						whenReceived={(albums, songs) => (
 							<LoadedItems
-								libraryId={props.libraryId}
+								libraryId={libraryId}
 								items={albums.List}
 								getSelectedKey={(i) => i.Id!}
 								selectedKeys={filteredAlbumIds}
@@ -141,7 +136,7 @@ const LoadedMusicLibrary: React.FC<{ libraryId: string; settings: Settings; user
 					whenNotStarted={<LoadingIcon size="4em" />}
 					whenReceived={(audios) => (
 						<LoadedItems
-							libraryId={props.libraryId}
+							libraryId={libraryId}
 							items={audios.List}
 							selectedKeys={[]}
 							getSelectedKey={() => ""}

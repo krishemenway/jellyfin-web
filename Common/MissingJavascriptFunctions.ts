@@ -37,6 +37,10 @@ export class Linq {
 		return array.filter((value, index) => array.indexOf(value) === index);
 	}
 
+	public static SelectMany<T, T2>(array: readonly T[], select: (t: T) => T2[]): T2[] {
+		return array.reduce((all, current) => { all.push(...select(current)); return all; }, [] as T2[]);
+	}
+
 	public static First<T>(array: readonly T[], matchFunc?: (t: T) => boolean): T {
 		const result = Nullable.Value(matchFunc, array, (match) => array.filter(match));
 		return result[0];

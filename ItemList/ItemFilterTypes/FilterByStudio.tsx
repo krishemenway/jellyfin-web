@@ -4,31 +4,19 @@ import { ItemFilterType, ItemFilterTypeProps } from "ItemList/ItemFilterType";
 import { Layout } from "Common/Layout";
 import { MultiSelectWithSplitEditor } from "Common/SelectFieldEditor";
 import { EmptyOperation, NotEmptyOperation } from "ItemList/FilterOperations/EmptyOperation";
-import { ItemService } from "Items/ItemsService";
-import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { LoadingIcon } from "Common/LoadingIcon";
-import { Loading } from "Common/Loading";
+import { Linq } from "Common/MissingJavascriptFunctions";
+import { SortByString } from "Common/Sort";
 
 const StudioEditor: React.FC<ItemFilterTypeProps> = (props) => {
-	const studioList = ItemService.Instance.FindOrCreateItemList(props.libraryId, "Studio");
+	const studios = React.useMemo(() => Linq.Distinct(Linq.SelectMany(props.items, (i) => i.Studios ?? [])).sort(SortByString(s => s.Name)), [props.items]);
 
 	if (props.currentOperation === EmptyOperation || props.currentOperation === NotEmptyOperation) {
 		return <></>;
 	}
 
-	React.useEffect(() => studioList.LoadWithAbort(), [studioList]);
-
 	return (
 		<Layout direction="column">
-			<Loading
-				receivers={[studioList.List]}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<LoadingIcon alignSelf="center" size="2em" />}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="2em" />}
-				whenReceived={(items) => (
-					<MultiSelectWithSplitEditor field={props.filter.FilterValue} allOptions={items.List.map((s) => s.Name ?? "")} getValue={(studioName) => studioName} getLabel={(studioName) => studioName} />
-				)}
-			/>
+			<MultiSelectWithSplitEditor field={props.filter.FilterValue} allOptions={studios.map((s) => s.Name ?? "")} getValue={(studioName) => studioName} getLabel={(studioName) => studioName} />
 		</Layout>
 	);
 };

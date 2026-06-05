@@ -16,7 +16,7 @@ import { ItemSortOption } from "ItemList/ItemSortOption";
 import { EditableItemFilter } from "ItemList/EditableItemFilter";
 import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { SortFuncs } from "Common/Sort";
-import { BaseItemDto, QueryFiltersLegacy, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
 import { Form } from "Common/Form";
 import { SaveIcon } from "CommonIcons/SaveIcon";
@@ -24,26 +24,26 @@ import { TextField } from "Common/TextField";
 import { ItemListService } from "ItemList/ItemListService";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { LinkToItem, useUrlToItem as urlToItem } from "Items/LinkToItem";
 import { useIsBusy } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { useNavigate } from "react-router-dom";
 import { RadioCheckedIcon } from "CommonIcons/RadioCheckedIcon";
 import { RadioUncheckedIcon } from "CommonIcons/RadioUncheckedIcon";
 import { FieldError } from "Common/FieldError";
-import { ItemRefreshButton } from "Items/ItemRefreshButton";
-import { ManageLibraryButton } from "Servers/ManageLibraryButton";
 import { VisibleIcon } from "CommonIcons/VisibleIcon";
+import { HyperLink } from "Common/HyperLink";
 
 export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
 	itemList: ItemListService;
 	user: UserDto;
-	library: BaseItemDto;
+	sortTypes: ItemSortOption[];
+	filterTypes: ItemFilterType[];
 	settings: Settings;
-	filters: QueryFiltersLegacy;
-	total: number;
+	items: BaseItemDto[];
 	remaining: number;
+	additionalButtons?: React.ReactNode;
+	baseUrl: string;
 }
 
 export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
@@ -65,7 +65,7 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 
 				{Nullable.StringValue(currentOptionLabel, <></>, (label) => <Layout direction="column">{label}</Layout>)}
 
-				{(props.listOptions.ItemKindService?.filterOptions ?? []).length > 0 && (
+				{props.filterTypes.length > 0 && (
 					<Layout direction="row" gap=".5em" alignItems="center">
 						<TranslatedText textKey="Filters" elementType="div" formatText={(t) => `${t}:`} />
 						<Button px=".25em" py=".25em" type="button" onClick={() => setAddFilterOpen(true)} ref={(element) => { setFilterButtonRef(element); }} icon={<AddIcon />} />
@@ -77,7 +77,7 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 					</Layout>
 				)}
 
-				{(props.listOptions.ItemKindService?.sortOptions ?? []).length > 0 && (
+				{props.sortTypes.length > 0 && (
 					<Layout direction="row" gap=".5em" alignItems="center">
 						<TranslatedText textKey="HeaderSortBy" elementType="div" formatText={(t) => `${t}:`} />
 						<Button px=".25em" py=".25em" type="button" onClick={() => setAddSortOpen(true)} ref={(element) => { setSortButtonRef(element); }} icon={<AddIcon />} />
@@ -89,24 +89,23 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 					</Layout>
 				)}
 
-				<Layout direction="row">{props.total === props.remaining ? props.total : `${props.total} - ${props.total - props.remaining} = ${props.remaining}`}</Layout>
+				<Layout direction="row">{props.items.length === props.remaining ? props.items.length : `${props.items.length} - ${props.items.length - props.remaining} = ${props.remaining}`}</Layout>
 
 				<Layout direction="column" grow></Layout>
 
-				<ItemRefreshButton item={props.library} />
-				<ManageLibraryButton libraryId={props.library.Id} px=".5em" py=".5em" />
+				{props.additionalButtons}
 			</Layout>
 
 			<AnchoredModal anchorElement={filterButtonRef} open={addFilterOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => { setAddFilterOpen(false); }}>
-				<PickFilterModal filterOptions={props.listOptions.ItemKindService?.filterOptions ?? []} onPicked={(option) => props.listOptions.CreateNewFilter(option)} onClosed={() => { setAddFilterOpen(false); }} />
+				<PickFilterModal filterTypes={props.filterTypes} onPicked={(option) => props.listOptions.CreateNewFilter(option)} onClosed={() => { setAddFilterOpen(false); }} />
 			</AnchoredModal>
 
 			<AnchoredModal anchorElement={filterButtonRef} open={newFilter !== undefined} anchorAlignment="center" opensInDirection="right" onClosed={() => props.listOptions.ClearNewFilter()}>
-				{newFilter && <ConfigureFilterModal libraryId={props.library.Id!} listOptions={props.listOptions} newFilter={newFilter} filters={props.filters} onClosed={() => props.listOptions.ClearNewFilter()} />}
+				{newFilter && <ConfigureFilterModal items={props.items} listOptions={props.listOptions} newFilter={newFilter} onClosed={() => props.listOptions.ClearNewFilter()} />}
 			</AnchoredModal>
 
 			<AnchoredModal anchorElement={sortButtonRef} open={addSortOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => setAddSortOpen(false)} maxWidth="20%">
-				<PickSortOptionModal sortOptions={props.listOptions.ItemKindService?.sortOptions ?? []} onPicked={(option, reversed) => props.listOptions.AddSort(option, reversed)} onClosed={() => setAddSortOpen(false)} />
+				<PickSortOptionModal sortTypes={props.sortTypes} onPicked={(option, reversed) => props.listOptions.AddSort(option, reversed)} onClosed={() => setAddSortOpen(false)} />
 			</AnchoredModal>
 
 			<AnchoredModal anchorElement={optionsListButtonRef} open={optionsListButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => { setOptionsListButtonRef(null); props.itemList.ConfirmDeleteOptions.Value = null; props.listOptions.ShowErrors.Value = false; }}>
@@ -150,12 +149,12 @@ const ConfiguredSort: React.FC<{ sort: SortFuncs<BaseItemDto>; listOptions: Item
 	);
 };
 
-const PickSortOptionModal: React.FC<{ sortOptions: ItemSortOption[]; onPicked: (option: ItemSortOption, reversed: boolean) => void; onClosed: () => void; }> = (props) => {
+const PickSortOptionModal: React.FC<{ sortTypes: ItemSortOption[]; onPicked: (option: ItemSortOption, reversed: boolean) => void; onClosed: () => void; }> = (props) => {
 	const itemsPerRow = useBreakpointValues(1, 2, 2, 2);
 
 	return (
 		<ListOf
-			items={props.sortOptions}
+			items={props.sortTypes}
 			direction="row" wrap
 			px="1em" py="1em" gap="1em" width="25rem"
 			forEachItem={(sortOption) => (
@@ -169,12 +168,12 @@ const PickSortOptionModal: React.FC<{ sortOptions: ItemSortOption[]; onPicked: (
 	);
 };
 
-const PickFilterModal: React.FC<{ filterOptions: ItemFilterType[]; onPicked: (option: ItemFilterType) => void; onClosed: () => void; }> = (props) => {
+const PickFilterModal: React.FC<{ filterTypes: ItemFilterType[]; onPicked: (option: ItemFilterType) => void; onClosed: () => void; }> = (props) => {
 	const itemsPerRow = useBreakpointValues(1, 2, 2, 2);
 
 	return (
 		<ListOf
-			items={props.filterOptions}
+			items={props.filterTypes}
 			direction="row" wrap
 			px="1em" py="1em" gap="1em" grow width="25rem"
 			forEachItem={(filterOption) => (
@@ -188,7 +187,7 @@ const PickFilterModal: React.FC<{ filterOptions: ItemFilterType[]; onPicked: (op
 	);
 };
 
-const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilter: EditableItemFilter; filters: QueryFiltersLegacy; libraryId: string; onClosed: () => void; }> = (props) => {
+const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilter: EditableItemFilter; onClosed: () => void; items: BaseItemDto[]; }> = (props) => {
 	const operation = useObservable(props.newFilter.Operation.Current);
 	const FilterTypeEditor = props.newFilter.FilterType.editor;
 	const showErrors = useObservable(props.listOptions.ShowErrors);
@@ -211,7 +210,7 @@ const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilt
 	);
 };
 
-const PickOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings; library: BaseItemDto; onClosed: () => void }> = (props) => {
+const PickOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings; baseUrl: string; onClosed: () => void }> = (props) => {
 	const itemFilterOptions = useObservable(props.itemList.ExistingOptions);
 	const current = useObservable(props.itemList.ListOptions);
 
@@ -224,12 +223,12 @@ const PickOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings
 			/>
 
 			{!current?.IsUnsaved && (
-				<LinkToItem
-					item={props.library}
+				<HyperLink
+					to={props.baseUrl}
 					direction="row" px=".5em" py=".5em" gap=".5rem">
 					<RadioUncheckedIcon />
 					<TranslatedText textKey="New" />
-				</LinkToItem>
+				</HyperLink>
 			)}
 
 			{current?.IsUnsaved && (
@@ -239,7 +238,7 @@ const PickOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings
 	);
 };
 
-const SaveNewOptions: React.FC<{ itemList: ItemListService; settings: Settings; listOptions: ItemListViewOptions; library: BaseItemDto; onClosed: () => void }> = (props) => {
+const SaveNewOptions: React.FC<{ itemList: ItemListService; settings: Settings; listOptions: ItemListViewOptions; baseUrl: string; onClosed: () => void }> = (props) => {
 	const navigate = useNavigate();
 	const isBusy = useIsBusy(SettingsStore.Instance.SaveSettingsResult);
 	const showErrors = useObservable(props.listOptions.ShowErrors);
@@ -247,7 +246,7 @@ const SaveNewOptions: React.FC<{ itemList: ItemListService; settings: Settings; 
 	return (
 		<Form
 			direction="row" gap=".5rem" alignItems="start"
-			onSubmit={() => { props.itemList.SaveViewOptions(props.settings, props.listOptions, (newFilterLabelOrNull) => { props.onClosed(); Nullable.TryExecute(newFilterLabelOrNull, (label) => navigate(urlToItem(props.library, `/${label}`))) }); }}>
+			onSubmit={() => { props.itemList.SaveViewOptions(props.settings, props.listOptions, (newFilterLabelOrNull) => { props.onClosed(); Nullable.TryExecute(newFilterLabelOrNull, (label) => navigate(`${props.baseUrl}/${label}`)) }); }}>
 
 			<Layout direction="column" grow>
 				<TextField field={props.listOptions.Label} py=".25em" px=".5em" grow placeholder={{ Key: "LabelNewName" }} />
@@ -261,18 +260,17 @@ const SaveNewOptions: React.FC<{ itemList: ItemListService; settings: Settings; 
 	);
 };
 
-const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions: ItemListViewOptions; library: BaseItemDto; settings: Settings; isSelected: boolean }> = (props) => {
+const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions: ItemListViewOptions; baseUrl: string; settings: Settings; isSelected: boolean }> = (props) => {
 	const label = useObservable(props.itemListViewOptions.Label.Current);
 
 	return (
 		<Layout direction="row" justifyContent="space-between" gap=".5rem">
-			<LinkToItem
-				key={label} item={props.library}
-				afterUrl={`/${props.itemListViewOptions.Key}`}
+			<HyperLink
+				key={label} to={`${props.baseUrl}/${props.itemListViewOptions.Key}`}
 				direction="row" px=".5em" py=".5em" grow gap=".5rem" alignItems="center">
 				{props.isSelected ? <RadioCheckedIcon /> : <RadioUncheckedIcon />}
 				{label}
-			</LinkToItem>
+			</HyperLink>
 
 			{props.itemListViewOptions.CanSave && (
 				<>
@@ -298,7 +296,7 @@ const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions
 	);
 };
 
-const ConfirmDelete: React.FC<{ itemList: ItemListService; settings: Settings; library: BaseItemDto; options: ItemListViewOptions; onClosed: () => void }> = (props) => {
+const ConfirmDelete: React.FC<{ itemList: ItemListService; settings: Settings; baseUrl: string; options: ItemListViewOptions; onClosed: () => void }> = (props) => {
 	const navigate = useNavigate();
 
 	return (
@@ -307,7 +305,7 @@ const ConfirmDelete: React.FC<{ itemList: ItemListService; settings: Settings; l
 
 			<Layout direction="row" gap="1rem" width="100%" justifyContent="end">
 				<Button type="button" label="ButtonCancel" onClick={() => { props.onClosed() }} px="1em" py=".5em" />
-				<Button type="button" label="ButtonRemove" onClick={() => { props.itemList.RemoveViewOptions(props.settings, props.options, () => { props.onClosed(); navigate(urlToItem(props.library)); }); }} px="1em" py=".5em" />
+				<Button type="button" label="ButtonRemove" onClick={() => { props.itemList.RemoveViewOptions(props.settings, props.options, () => { props.onClosed(); navigate(props.baseUrl); }); }} px="1em" py=".5em" />
 			</Layout>
 		</Layout>
 	);

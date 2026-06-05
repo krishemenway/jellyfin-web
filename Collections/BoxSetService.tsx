@@ -8,7 +8,7 @@ export const BoxSetService: BaseItemKindService = {
 	kind: "BoxSet",
 	findIcon: (props) => <CollectionIcon {...props} />,
 	findUrl: (item) => `/Collection/${item.Id}`,
-	listUrl: (library) => `/Collections/${library.Id}`,
+	listUrl: (libraryId) => `/Collections/${libraryId}`,
 	sortOptions: [
 		SortByName,
 		SortByDateCreated,
