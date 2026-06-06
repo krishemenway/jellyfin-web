@@ -26,7 +26,7 @@ const loadRequestForDataSource = (dataSource: ItemViewOptionDataSource): (a: Abo
 		const loadList = service.loadList ?? defaultLoadFunc;
 		return (a: AbortController) => loadList(a, libraryId).then((list) => Nullable.Value(service.listTypes, list, (types) => list.filter((l) => types.indexOf(l.Type!) > -1)));
 	} else if (dataSource.DataSource === "Tag") {
-		return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, tags: [dataSource.DataSourceKey] }, { signal: a.signal }).then((r) => r.data.Items ?? []);
+		return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, tags: [dataSource.DataSourceKey], isMissing: false }, { signal: a.signal }).then((r) => r.data.Items ?? []);
 	} else {
 		throw new Error(`Unknown data source ${dataSource.DataSource}`);
 	}
