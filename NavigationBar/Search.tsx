@@ -28,27 +28,26 @@ export const Search: React.FC = () => {
 	return (
 		<Layout direction="row" alignItems="center" position="relative">
 			<SearchIcon className={searchStyles.searchIcon} size="20" />
-			<TextField px="2em" py=".25em" className={`${background.field} ${searchStyles.queryField}`} field={SearchService.Instance.SearchTermField} ref={(r) => { setTextRef(r); return r; }} />
+			<TextField px="2em" py=".25em" className={`${background.field} ${searchStyles.queryField}`} field={SearchService.Instance.SearchTermField} ref={(r) => { setTextRef(r); }} />
 
 			<AnchoredModal
-				alternatePanel
 				anchorElement={textRef}
 				open={(textRef ?? false) && resultsVisible}
-				onClosed={() => { }}
-				opensInDirection="right"
+				onClosed={() => { SearchService.Instance.Clear(); }}
+				opensInDirection="right" noPanel
 			>
-				<Layout direction="column" className={background.panel} minHeight="22em" minWidth="25em">
-					<Layout direction="row" justifyContent="space-between" px=".5em" py=".5em" bb>
-						<Layout direction="row" alignItems="center" fontSizeREM={1.5}><TranslatedText textKey="SearchResults" /></Layout>
-						<Button className={background.transparent} direction="row" alignItems="center" type="button" onClick={() => SearchService.Instance.Clear()} icon={<CloseIcon size="2em" />} />
+				<Layout direction="column" minHeight="22em" minWidth="25em" gap=".25rem">
+					<Layout className={background.alternatePanel} direction="row" justifyContent="space-between" px=".5em" py=".5em" fontSizeREM={1.2}>
+						<Layout direction="row" alignItems="center"><TranslatedText textKey="SearchResults" /></Layout>
+						<Button type="button" onClick={() => SearchService.Instance.Clear()} icon={<CloseIcon />} transparent direction="row" alignItems="center" px=".25em" py=".25em" />
 					</Layout>
 
 					<Loading
 						receivers={[SearchService.Instance.Results]}
 						whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-						whenLoading={<LoadingIcon alignSelf="center" size="3em" />}
-						whenNotStarted={<LoadingIcon alignSelf="center" size="3em" />}
-						whenReceived={(results) => <LoadedSearchResults results={results} />}
+						whenLoading={<Layout className={background.alternatePanel} direction="column" alignItems="center" justifyContent="center" grow><LoadingIcon size="3em" /></Layout>}
+						whenNotStarted={<Layout className={background.alternatePanel} direction="column" alignItems="center" justifyContent="center" grow><LoadingIcon size="3em" /></Layout>}
+						whenReceived={(results) => <LoadedSearchResults className={background.alternatePanel} results={results} />}
 					/>
 				</Layout>
 			</AnchoredModal>
@@ -56,30 +55,38 @@ export const Search: React.FC = () => {
 	);
 };
 
-const LoadedSearchResults: React.FC<{ results: SearchResults }> = (props) => {
+const LoadedSearchResults: React.FC<{ className: string; results: SearchResults }> = (props) => {
 	const selectedType = useObservable(props.results.SelectedType);
 	const selectedItems = useObservable(props.results.SelectedItems);
 
 	return (
-		<Layout direction="row" grow>
-			{props.results.AllTypes.length > 1 && (
-				<Layout direction="column" fontSizeREM={1.25}>
-					<Button transparent px=".5em" py=".5em" direction="row" key="All" type="button" selected={selectedType === undefined} onClick={() => props.results.SelectedType.Value = undefined} icon={<InfinityIcon />} />
-
-					{props.results.AllTypes.map((type) => (
-						<Button transparent px=".5em" py=".5em" direction="row" key={type} type="button" selected={selectedType === type} onClick={() => props.results.SelectedType.Value = type} icon={<IconForItemKind itemKind={type} />} />
-					))}
+		<Layout direction="row" grow gap=".25rem">
+			{props.results.AllItems.length === 0 ? (
+				<Layout className={props.className} direction="row" alignItems="center" justifyContent="center" grow width="100%">
+					<TranslatedText textKey="NoSubtitleSearchResultsFound" />
 				</Layout>
-			)}
+			) : (
+				<>
+				{props.results.AllTypes.length > 1 && (
+					<Layout className={props.className} direction="column" fontSizeREM={1.25}>
+						<Button transparent px=".5em" py=".5em" direction="row" key="All" type="button" selected={selectedType === undefined} onClick={() => props.results.SelectedType.Value = undefined} icon={<InfinityIcon />} />
 
-			<Layout direction="column" grow>
-				<Virtuoso
-					data={selectedItems}
-					totalCount={selectedItems.length}
-					itemContent={(_, result) => <SearchResult item={result} />}
-					style={{ width: "100%", height: "100%" }}
-				/>
-			</Layout>
+						{props.results.AllTypes.map((type) => (
+							<Button transparent px=".5em" py=".5em" direction="row" key={type} type="button" selected={selectedType === type} onClick={() => props.results.SelectedType.Value = type} icon={<IconForItemKind itemKind={type} />} />
+						))}
+					</Layout>
+				)}
+
+				<Layout direction="column" grow className={props.className}>
+					<Virtuoso
+						data={selectedItems}
+						totalCount={selectedItems.length}
+						itemContent={(_, result) => <SearchResult item={result} />}
+						style={{ width: "100%", height: "100%" }}
+					/>
+				</Layout>
+				</>
+			)}
 		</Layout>
 	);
 };
