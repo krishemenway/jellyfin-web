@@ -3,7 +3,6 @@ import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigat
 import { useParams } from "react-router-dom";
 import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemService } from "Items/ItemsService";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
