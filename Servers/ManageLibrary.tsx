@@ -1,11 +1,10 @@
 import * as React from "react";
 import { Layout } from "Common/Layout";
 import { useParams } from "react-router";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { ServerIcon } from "Servers/ServerIcon";
 import { Loading, useDataOrNull } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { LoadingIcon } from "Common/LoadingIcon";
 import { getLibraryApi, getLibraryStructureApi } from "@jellyfin/sdk/lib/utils/api";
 import { EditableLibrary } from "Servers/EditableLibrary";
 import { Receiver } from "Common/Receiver";
@@ -72,8 +71,7 @@ export const ManageLibrary: React.FC = () => {
 			<Loading
 				receivers={[LibraryManager.Instance.EditableLibrary]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<LoadingIcon alignSelf="center" size="3rem" />}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="3rem" />}
+				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenReceived={(editableLibrary) => <LoadedLibraryManager editableLibrary={editableLibrary} />}
 			/>
 		</PageWithNavigation>

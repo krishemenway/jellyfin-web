@@ -1,9 +1,8 @@
 import * as React from "react";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { TagIcon } from "Tags/TagIcon";
 import { Loading } from "Common/Loading";
 import { ItemFilterService } from "Items/ItemFilterService";
-import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { UserViewStore } from "Users/UserViewStore";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
@@ -21,8 +20,7 @@ export const Tags: React.FC = () => {
 			<Layout direction="column" grow alignItems="center" justifyContent="center">
 				<Loading
 					receivers={[UserViewStore.Instance.FindOrCreateForUser(user)]}
-					whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-					whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
+					whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 					whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 					whenReceived={(libraries) => <TagsForLibraries libraries={libraries} />}
 				/>
@@ -39,8 +37,7 @@ const TagsForLibraries: React.FC<{ libraries: BaseItemDto[] }> = (props) => {
 	return (
 		<Loading
 			receivers={[receiver]}
-			whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-			whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
+			whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 			whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 			whenReceived={(filters) => (
 				<ListOf

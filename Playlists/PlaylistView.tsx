@@ -2,12 +2,11 @@ import * as React from "react";
 import { useParams } from "react-router-dom";
 import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemService } from "Items/ItemsService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { LoginService } from "Users/LoginService";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 
 export const PlaylistView: React.FC = () => {
@@ -25,8 +24,7 @@ export const PlaylistView: React.FC = () => {
 		<PageWithNavigation icon="Playlist">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(playlistId).Item, ItemService.Instance.FindOrCreateItemData(playlistId).Children, LoginService.Instance.User]}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
+				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(playlist, children, user) => <LoadedPlaylist playlist={playlist} children={children} user={user} />}
 			/>

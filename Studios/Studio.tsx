@@ -1,12 +1,11 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { ItemService } from "Items/ItemsService";
 import { NotFound } from "Common/NotFound";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { Layout } from "Common/Layout";
 import { Loading } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { PageTitle } from "Common/PageTitle";
 import { ListOf } from "Common/ListOf";
@@ -30,8 +29,7 @@ export const Studio: React.FC = () => {
 		<PageWithNavigation icon="Studio">
 			<Loading
 				receivers={[studioData.Item, studioData.Children]}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
+				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(studio, items) => (
 					<Layout direction="column" gap="1em" py="1em" height="100%">

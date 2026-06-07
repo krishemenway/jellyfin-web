@@ -33,7 +33,8 @@ export const VideoPlayer: React.FC = () => {
 			<Layout direction="row" gap=".75em" position="fixed" zIndex={DimensionZLayers.Player} px=".25em" py=".25em" bottom="0" left="0" right="0" top={fullscreen ? 0 : undefined} className={background.panel}>
 				<Loading
 					receivers={[VideoPlayerService.Instance.PlaybackInfo]}
-					whenError={() => <></>} whenLoading={<LoadingIcon alignSelf="center" size="4em" />} whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
+					whenError={() => <></>}
+					whenLoading={<LoadingIcon alignSelf="center" size="4em" />} whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
 					whenReceived={(r) => <VideoElement playbackInfo={r} fullscreen={fullscreen} controlsVisible={controlsVisible} />}
 				/>
 

@@ -26,8 +26,8 @@ export const ItemExternalLinks: React.FC<{ item: BaseItemDto, linkLayout?: Style
 		return (
 			<Loading
 				receivers={[ItemEditorService.Instance.MetadataInfo]}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
+				whenNotStarted={<LoadingIcon alignSelf="center" size="2em" />}
+				whenLoading={<LoadingIcon alignSelf="center" size="2em" />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(metadataInfo) => <ExternalProviderEditors metadataInfo={metadataInfo} {...props} />}
 			/>

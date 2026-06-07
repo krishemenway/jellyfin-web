@@ -6,12 +6,11 @@ import { Layout } from "Common/Layout";
 import { ListOf } from "Common/ListOf";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { LoadingIcon } from "Common/LoadingIcon";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
 import { ItemListFilters } from "ItemList/ItemListFilters";
 import { ItemService } from "Items/ItemsService";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { useParams } from "react-router-dom";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
@@ -49,8 +48,7 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 			<Loading
 				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), LoginService.Instance.User, UserViewStore.Instance.FindOrCreateForUser(userId)]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
+				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenReceived={(settings, user, libraries) => (
 					<LoadedBasicItemListView
 						libraryId={libraryId} viewOptionsKey={viewOptionsKey} itemList={itemList} itemKindService={itemKindService}
@@ -73,8 +71,7 @@ const LoadedBasicItemListView: React.FC<{ libraryId: string; viewOptionsKey?: st
 		<Loading
 			receivers={[itemList.List]}
 			whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-			whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-			whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
+			whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 			whenReceived={(items) => (
 				<Layout direction="column" gap="1em" py="1em">
 					<PageTitle text={library?.Name} suppressOnScreen />

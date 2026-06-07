@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ItemProps, TableProps, TableVirtuoso } from "react-virtuoso";
 import { useParams } from "react-router-dom";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { Loading } from "Common/Loading";
 import { ItemService } from "Items/ItemsService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
@@ -39,8 +39,7 @@ export const SongListView: React.FC = () => {
 			<Loading
 				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), LoginService.Instance.User, UserViewStore.Instance.FindOrCreateForUser(userId)]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
+				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenReceived={(settings, user, libraries) => <SongListViewContent libraryId={libraryId} settings={settings} user={user} libraries={libraries} />}
 			/>
 		</PageWithNavigation>

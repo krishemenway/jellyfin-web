@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { useParams } from "react-router-dom";
 import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";
@@ -63,8 +63,7 @@ export const MusicVideo: React.FC = () => {
 		<PageWithNavigation icon="Series">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(musicVideoId).Item, LoginService.Instance.User]}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
+				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(musicVideo, user) => <LoadedMusicVideo musicVideo={musicVideo} user={user} />}
 			/>

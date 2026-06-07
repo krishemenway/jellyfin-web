@@ -1,13 +1,12 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { TagIcon } from "Tags/TagIcon";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { LoadingIcon } from "Common/LoadingIcon";
 import { PageTitle } from "Common/PageTitle";
 import { Layout } from "Common/Layout";
 import { ListOf } from "Common/ListOf";
@@ -56,8 +55,7 @@ export const Tag: React.FC = () => {
 			<Loading
 				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), LoginService.Instance.User, listService.List, ]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
+				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenReceived={(settings, user, items) => <TagListViewOptions tag={tag} viewOptionsKey={viewOptionsKey} items={items.List} listService={listService} settings={settings} user={user} />}
 			/>
 		</PageWithNavigation>

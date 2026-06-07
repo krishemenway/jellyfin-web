@@ -1,13 +1,12 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { PageTitle } from "Common/PageTitle";
 import { Loading } from "Common/Loading";
 import { useBreakpointValues } from "AppStyles";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
 import { ItemService } from "Items/ItemsService";
-import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Layout } from "Common/Layout";
 import { ListOf } from "Common/ListOf";
@@ -31,8 +30,7 @@ export const Genre: React.FC = () => {
 				<PageTitle text={genre} />
 				<Loading
 					receivers={[studioData.Children]}
-					whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-					whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
+					whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 					whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 					whenReceived={(items) => (
 						<ListOf

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { useParams } from "react-router-dom";
 import { Layout } from "Common/Layout";
 import { ItemService } from "Items/ItemsService";
@@ -47,8 +47,7 @@ export const MusicArtist: React.FC = () => {
 		<PageWithNavigation icon="MusicArtist">
 			<Loading
 				receivers={[LoginService.Instance.User, ItemService.Instance.FindOrCreateItemData(artistId).Item]}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
+				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(user, artist) => <LoadedMusicArtist user={user} artist={artist} />}
 			/>

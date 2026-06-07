@@ -1,13 +1,12 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { ItemService } from "Items/ItemsService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
 import { CollectionIcon } from "Collections/CollectionIcon";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { LoadingIcon } from "Common/LoadingIcon";
 import { Layout } from "Common/Layout";
 import { PageTitle } from "Common/PageTitle";
 import { ListOf } from "Common/ListOf";
@@ -32,8 +31,7 @@ export const Collection: React.FC = () => {
 			<Loading
 				receivers={[collectionService.Item, collectionService.Children]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
+				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenReceived={(collection, collectionItems) => (
 					<Layout direction="column" gap="1em" py="1em" height="100%">
 						<PageTitle text={collection.Name} />

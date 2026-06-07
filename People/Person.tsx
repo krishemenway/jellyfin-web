@@ -5,12 +5,11 @@ import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models"
 import { Layout } from "Common/Layout";
 import { Loading } from "Common/Loading";
 import { NotFound } from "Common/NotFound";
-import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { TranslatedText } from "Common/TranslatedText";
 import { ItemImage } from "Items/ItemImage";
 import { ItemService } from "Items/ItemsService";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { useBackgroundStyles } from "AppStyles";
 import { LinkToItem } from "Items/LinkToItem";
@@ -64,8 +63,7 @@ export const Person: React.FC = () => {
 			<Loading
 				receivers={[personData.Item, personData.Children, LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
+				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenReceived={(person, creditedItems, user) => <LoadedPerson person={person} creditedItems={creditedItems} user={user} />}
 			/>
 		</PageWithNavigation>

@@ -1,10 +1,9 @@
 import * as React from "react";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { useParams } from "react-router-dom";
 import { Layout } from "Common/Layout";
 import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemService } from "Items/ItemsService";
 import { ListOf } from "Common/ListOf";
@@ -65,8 +64,7 @@ export const Show: React.FC = () => {
 		<PageWithNavigation icon="Series">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(showId).Item, ItemService.Instance.FindOrCreateItemData(showId).Children, LoginService.Instance.User]}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
+				whenNotStarted={<PageIsLoading />} whenLoading={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(show, children, user) => !Nullable.StringHasValue(routeParams.episodeId)
 					? <LoadedShow show={show} children={children} user={user} />

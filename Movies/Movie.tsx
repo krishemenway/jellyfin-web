@@ -1,10 +1,9 @@
 import * as React from "react";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { useParams } from "react-router-dom";
 import { NotFound } from "Common/NotFound";
 import { ItemService } from "Items/ItemsService";
 import { Loading } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Layout } from "Common/Layout";
 import { ItemImage } from "Items/ItemImage";
@@ -52,8 +51,7 @@ export const Movie: React.FC = () => {
 		<PageWithNavigation icon="Movie">
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(movieId).Item, LoginService.Instance.User]}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
+				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(movie, user) => <LoadedMovie movie={movie} user={user} />}
 			/>

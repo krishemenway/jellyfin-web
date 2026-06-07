@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { HomeIcon } from "Home/HomeIcon";
 import { PageTitle } from "Common/PageTitle";
 import { Settings, SettingsStore } from "Users/SettingsStore";
@@ -43,8 +43,7 @@ export const Home: React.FC = () => {
 			<Loading
 				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), UserViewStore.Instance.FindOrCreateForUser(userId)]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
-				whenNotStarted={<LoadingIcon alignSelf="center" size="4em" my="8em" />}
+				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenReceived={(settings, libraries) => <HomeWithSettings settings={settings} libraries={libraries} />}
 			/>
 		</PageWithNavigation>

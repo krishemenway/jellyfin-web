@@ -7,6 +7,7 @@ import { useObservable } from "@residualeffect/rereactor";
 import { BackdropService } from "Common/BackdropService";
 import { ThemeService } from "Themes/ThemeService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
+import { LoadingIcon } from "Common/LoadingIcon";
 
 export const PageWithNavigation: React.FC<{ icon: React.ReactElement|BaseItemKind; children?: React.ReactNode; matchHeight?: boolean }> = (props) => {
 	const backdropUrl = useObservable(BackdropService.Instance.CurrentBackdropImageUrl);
@@ -21,3 +22,7 @@ export const PageWithNavigation: React.FC<{ icon: React.ReactElement|BaseItemKin
 		</Layout>
 	);
 };
+
+export const PageIsLoading: React.FC = () => (
+	<Layout direction="column" justifyContent="center" height="100%"><LoadingIcon alignSelf="center" size="4em" /></Layout>
+);
