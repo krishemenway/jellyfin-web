@@ -12,7 +12,6 @@ import { PageTitle } from "Common/PageTitle";
 import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { useBreakpointValues } from "AppStyles";
-import { ImageShape } from "Items/ItemImage";
 
 export const Studio: React.FC = () => {
 	const studiosPerRow = useBreakpointValues(2, 6, 9, 9);
@@ -46,7 +45,6 @@ export const Studio: React.FC = () => {
 									key={item.Id ?? index.toString()}
 									item={item}
 									itemsPerRow={studiosPerRow}
-									shape={ImageShape.Portrait}
 								/>
 							)}
 						/>

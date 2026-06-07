@@ -12,7 +12,6 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Layout } from "Common/Layout";
 import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
-import { ImageShape } from "Items/ItemImage";
 
 export const Genre: React.FC = () => {
 	const genresPerRow = useBreakpointValues(2, 6, 9, 9);
@@ -44,7 +43,6 @@ export const Genre: React.FC = () => {
 									key={item.Id ?? index.toString()}
 									item={item}
 									itemsPerRow={genresPerRow}
-									shape={ImageShape.Portrait}
 								/>
 							)}
 						/>

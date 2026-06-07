@@ -12,7 +12,6 @@ import { ItemService } from "Items/ItemsService";
 import { ListOf } from "Common/ListOf";
 import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
-import { ImageShape } from "Items/ItemImage";
 import { useComputed, useObservable } from "@residualeffect/rereactor/lib";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { HyperLink } from "Common/HyperLink";
@@ -206,7 +205,6 @@ const HomeSectionWithLoadedItems: React.FC<{ label: string; itemsFromList: BaseI
 						key={item.Id ?? index.toString()}
 						item={item}
 						itemsPerRow={itemsPerRow}
-						shape={ImageShape.Portrait}
 					/>
 				)}
 			/>

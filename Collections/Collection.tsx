@@ -12,7 +12,6 @@ import { Layout } from "Common/Layout";
 import { PageTitle } from "Common/PageTitle";
 import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
-import { ImageShape } from "Items/ItemImage";
 import { useBreakpointValues } from "AppStyles";
 
 export const Collection: React.FC = () => {
@@ -47,7 +46,6 @@ export const Collection: React.FC = () => {
 									key={item.Id ?? index.toString()}
 									item={item}
 									itemsPerRow={collectionsPerRow}
-									shape={ImageShape.Portrait}
 								/>
 							)}
 						/>

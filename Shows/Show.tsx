@@ -10,7 +10,7 @@ import { ItemService } from "Items/ItemsService";
 import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { ImageShape, ItemImage } from "Items/ItemImage";
+import { ItemImage } from "Items/ItemImage";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemTags } from "Items/ItemTags";
 import { ItemRating } from "Items/ItemRating";
@@ -357,7 +357,6 @@ const EpisodesInSeason: React.FC<EpisodesInSeasonProps> = (props) => {
 				<ItemsGridItem
 					item={item} key={item.Id}
 					itemsPerRow={itemsPerRow}
-					shape={ImageShape.Landscape}
 					fallback={props.season}
 					getContent={(item) => `${item.IndexNumber}. ${item.Name}`}
 				/>

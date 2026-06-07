@@ -10,7 +10,6 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
 import { ItemListFilters } from "ItemList/ItemListFilters";
-import { ImageShape } from "Items/ItemImage";
 import { ItemService } from "Items/ItemsService";
 import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
 import { useParams } from "react-router-dom";
@@ -130,7 +129,6 @@ const LoadedItemsView: React.FC<{ library: BaseItemDto; items: BaseItemDto[]; li
 						key={item.Id ?? index.toString()}
 						item={item}
 						fallback={props.library}
-						shape={props.itemKindService.primaryShape ?? ImageShape.Portrait}
 						itemsPerRow={itemsPerRow}
 						additionalFields={sorts}
 					/>

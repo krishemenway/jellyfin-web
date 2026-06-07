@@ -8,7 +8,7 @@ import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { NotFound } from "Common/NotFound";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { ImageShape, ItemImage } from "Items/ItemImage";
+import { ItemImage } from "Items/ItemImage";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { BackdropService } from "Common/BackdropService";
 import { ItemPageTitle } from "Items/ItemPageTitle";
@@ -131,7 +131,7 @@ const Albums: React.FC<{ artist: BaseItemDto; relatedItemsToArtist: BaseItemDto[
 			forEachItem={(item) => item.Type === "MusicAlbum" ? (
 				<Album key={item.Id} artist={artist} album={item} relatedItemsToArtist={relatedItemsToArtist} />
 			) : (
-				<ItemsGridItem key={item.Id} item={item} itemsPerRow={musicVideosPerRow} shape={ImageShape.Landscape} />
+				<ItemsGridItem key={item.Id} item={item} itemsPerRow={musicVideosPerRow} />
 			)}
 		/>
 	);

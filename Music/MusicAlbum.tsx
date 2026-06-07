@@ -15,7 +15,7 @@ import { MusicPlayerService } from "Music/MusicPlayerService";
 import { ItemOverview } from "Items/ItemOverview";
 import { ItemTags } from "Items/ItemTags";
 import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
-import { ImageShape, ItemImage } from "Items/ItemImage";
+import { ItemImage } from "Items/ItemImage";
 import { ItemRating } from "Items/ItemRating";
 import { ItemStudios } from "Items/ItemStudios";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
@@ -208,7 +208,6 @@ const MusicAlbumVideos: React.FC<{ allMusicVideos: BaseItemDto[] }> = ({ allMusi
 				<ItemsGridItem
 					item={item} key={item.Id}
 					itemsPerRow={videosPerRow}
-					shape={ImageShape.Landscape}
 				/>
 			)}
 		/>

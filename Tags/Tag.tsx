@@ -12,7 +12,6 @@ import { PageTitle } from "Common/PageTitle";
 import { Layout } from "Common/Layout";
 import { ListOf } from "Common/ListOf";
 import { useBreakpointValues } from "AppStyles";
-import { ImageShape } from "Items/ItemImage";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ItemService } from "Items/ItemsService";
 import { ItemFilterType } from "ItemList/ItemFilterType";
@@ -135,7 +134,6 @@ const ItemsViewWithOptions: React.FC<{ tag: string; items: BaseItemDto[]; listOp
 					<ItemsGridItem
 						key={item.Id ?? index.toString()}
 						item={item}
-						shape={ImageShape.Portrait}
 						itemsPerRow={itemsPerRow}
 						additionalFields={sorts}
 					/>
