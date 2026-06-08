@@ -65,7 +65,7 @@ const ExternalProviderEditors: React.FC<{ metadataInfo: MetadataEditorInfo; link
 						<Button type="button" px=".25em" py=".25em" onClick={() => { props.editableItem!.ProviderIds.remove(editableItemProvider); }} icon={<DeleteIcon />} />
 					</Layout>
 
-					<TextField field={editableItemProvider.Value} />
+					<TextField field={editableItemProvider.Value} px=".25em" py=".25em" />
 				</Layout>
 			))}
 
