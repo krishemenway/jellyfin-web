@@ -25,12 +25,12 @@ export class MusicPlayerService {
 
 	public ClearAndPlay(items: BaseItemDto[]): void {
 		this.Playlist.ClearAndPlay(items);
-		MediaPlayerService.Instance.PlayerType.Value = MediaPlayerType.Music;
 	}
 
 	public Load(playlistItem: MediaPlaylistItem): void {
 		this.Playlist.CurrentProgress.Value = 0;
 		this.AudioElement.src = this.CreateAudioUrl(playlistItem.Item);
+		MediaPlayerService.Instance.SetPlayer(MediaPlayerType.Music);
 	}
 
 	public Stop(): void {
@@ -52,6 +52,7 @@ export class MusicPlayerService {
 	public Unload(): void {
 		this.Stop();
 		this.Playlist.Reset();
+		MediaPlayerService.Instance.SetPlayer(MediaPlayerType.None);
 	}
 
 	public ChangeProgress(newProgress: number): void {

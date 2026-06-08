@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useObservable } from "@residualeffect/rereactor";
-import { UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { DimensionZLayers, Layout } from "Common/Layout";
 import { useBackgroundStyles } from "AppStyles";
@@ -21,7 +20,7 @@ import { ItemImageById } from "Items/ItemImage";
 import { Duration } from "MediaPlayer/Duration";
 import { CurrentPlaylist } from "MediaPlayer/MediaPlayerPlaylistTable";
 
-export const MusicPlayer: React.FC<{ user: UserDto }> = () => {
+export const MusicPlayer: React.FC = () => {
 	const background = useBackgroundStyles();
 
 	return (

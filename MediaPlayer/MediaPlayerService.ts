@@ -6,6 +6,12 @@ export class MediaPlayerService {
 		this.PlayerType = new Observable(MediaPlayerType.None);
 	}
 
+	public SetPlayer(type: MediaPlayerType): void {
+		if (this.PlayerType.Value !== type) {
+			this.PlayerType.Value = type;
+		}
+	}
+
 	public PlayerType: Observable<MediaPlayerType>;
 
 	static get Instance(): MediaPlayerService {

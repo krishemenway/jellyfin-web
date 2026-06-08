@@ -45,7 +45,6 @@ export class VideoPlayerService {
 	public ClearAndPlay(items: BaseItemDto[]): void {
 		this.Playlist.ClearAndPlay(items);
 		this.MakeControlsVisible();
-		MediaPlayerService.Instance.PlayerType.Value = MediaPlayerType.Video;
 	}
 
 	public Stop(): void {
@@ -68,7 +67,7 @@ export class VideoPlayerService {
 		this.Video?.pause();
 		this.Video?.fastSeek(0);
 		this.Playlist.Stop();
-		MediaPlayerService.Instance.PlayerType.Value = MediaPlayerType.None;
+		MediaPlayerService.Instance.SetPlayer(MediaPlayerType.None);
 	}
 
 	public SetVideoElement(video: HTMLVideoElement|null): void {
@@ -82,6 +81,7 @@ export class VideoPlayerService {
 	}
 
 	private Load(item: MediaPlaylistItem): void {
+		MediaPlayerService.Instance.SetPlayer(MediaPlayerType.Video);
 		this.PlaybackInfo.Start((a) => getMediaInfoApi(ServerService.Instance.CurrentApi).getPostedPlaybackInfo({ itemId: item.Item.Id ?? "", userId: ServerService.Instance.CurrentUserId.Value, playbackInfoDto: { DeviceProfile: BrowserDeviceProfile() } }, { signal: a.signal }).then((r) => r.data));
 	}
 
