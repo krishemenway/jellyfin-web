@@ -44,10 +44,13 @@ export class EditableItem {
 		this.People = new ObservableArray(Nullable.Value(item, [], i => (i.People ?? []).map(c => new EditablePersonCredit(c))));
 		this.ProviderIds = new ObservableArray(Nullable.Value(item, [], (i) => Object.keys(i.ProviderIds ?? {}).map(key => new EditableItemProvider(key, i.ProviderIds![key]))));
 
+		this.ProductionLocation = new EditableField("ProductionLocations", Nullable.Value(item.ProductionLocations, undefined, (i) => i[0]));
 		this.Studios = new EditableField("Studios", Nullable.Value(item, [], (i) => i.Studios ?? []));
+
 		this.PremiereDate = new EditableField("Premiere", Nullable.Value(item?.PremiereDate, "", (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })));
+		this.EndDate = new EditableField("EndDate", Nullable.Value(item?.EndDate, undefined, (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })));
 		this.DateCreated = new EditableField("DateCreated", Nullable.Value(item, undefined, (i) => i.DateCreated));
-		this.EndDate = new EditableField("EndDate", Nullable.Value(item, undefined, (i) => i.EndDate));
+
 		this.Height = new EditableField("Height", Nullable.Value(item, undefined, (i) => i.Height));
 		this.AspectRatio = new EditableField("AspectRatio", Nullable.Value(item, undefined, (i) => i.AspectRatio));
 		this.Video3DFormat = new EditableField("Video3DFormat", Nullable.Value(item, undefined, (i) => i.Video3DFormat));
@@ -103,6 +106,7 @@ export class EditableItem {
 			PreferredMetadataLanguage: this.PreferredMetadataLanguage.Current.Value,
 			PremiereDate: this.PremiereDate.Current.Value,
 			ProductionYear: Nullable.StringValue(this.PremiereDate.Current.Value, null, (date) => parseInt(date.slice(0, 4))),
+			ProductionLocations: Nullable.StringValue(this.ProductionLocation.Current.Value, [], (l) => [l]),
 			ProviderIds: this.ProviderIds.Value.reduce((all, current) => { all[current.Key] = current.Value.Current.Value ?? null; return all; }, {} as { [key: string]: string|null }),
 			SeasonName: this.SeasonName.Current.Value,
 			Status: this.Status.Current.Value,
@@ -199,9 +203,11 @@ export class EditableItem {
 	public Tags: EditableField<string[]>;
 
 	public PremiereDate: EditableField<string>;
+	public EndDate: EditableField<string|undefined>;
+
+	public ProductionLocation: EditableField<string|undefined>;
 
 	public DateCreated: EditableField<string|undefined|null>;
-	public EndDate: EditableField<string|undefined|null>;
 
 	public Height: EditableField<number|undefined|null>;
 	public AspectRatio: EditableField<string|undefined|null>;

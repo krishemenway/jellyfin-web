@@ -36,6 +36,8 @@ import { Button } from "Common/Button";
 import { RevertIcon } from "CommonIcons/RevertIcon";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
+import { DateField, TextField } from "Common/TextField";
+import { FieldLabel } from "Common/FieldLabel";
 
 const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
 	imageTypeLimit: 1,
@@ -139,33 +141,48 @@ const CreditedItem: React.FC<{ creditedItem: BaseItemDto, person: BaseItemDto }>
 };
 
 const PersonDetails: React.FC<{ person: BaseItemDto }&EditableItemProps> = (props) => {
-	if (!props.person.PremiereDate) {
-		return <></>;
-	}
-
-	const birthday = DateTime.ParseWithoutZone(props.person.PremiereDate);
-	const deathOrNow = !props.person.EndDate ? new Date(Date.now()) : DateTime.ParseWithoutZone(props.person.EndDate);
+	const birthday = Nullable.Value(props.person.PremiereDate, new Date(Date.now()), (d) => DateTime.ParseWithoutZone(d));
+	const deathOrNow = Nullable.Value(props.person.EndDate, new Date(Date.now()), (d) => DateTime.ParseWithoutZone(d));
 	const ageAtDeathOrNow = intervalToDuration({ start: birthday, end: deathOrNow });
 
 	return (
 		<Layout direction="column" gap="1em">
-			<Layout direction="row" alignItems="center" gap=".5em">
-				<TranslatedText textKey="BirthDateValue" textProps={[birthday.toLocaleDateString()]} elementType="div" className="birthDate" />
+			{Nullable.HasValue(props.editableItem) && props.isEditing ? (
+				<Layout direction="row" alignItems="center" gap=".5em">
+					<FieldLabel field={props.editableItem.PremiereDate} textKey="LabelBirthDate" />
+					<DateField field={props.editableItem.PremiereDate} px=".5em" py=".25em" />
 
-				{!props.person.EndDate && (
-					<Layout direction="row" className="age">({ageAtDeathOrNow.years})</Layout>
-				)}
+					<FieldLabel field={props.editableItem.ProductionLocation} textKey="BirthLocation" />
+					<TextField field={props.editableItem.ProductionLocation} px=".5em" py=".25em" />
+				</Layout>
+			) : Nullable.HasValue(props.person.PremiereDate) ? (
+				<Layout direction="row" alignItems="center" gap=".5em">
+					<TranslatedText textKey="BirthDateValue" textProps={[birthday.toLocaleDateString()]} elementType="div" className="birthDate" />
 
-				{!!props.person.ProductionLocations && !!props.person.ProductionLocations[0] && (
-					<Layout direction="row" className="birthLocation">@ {props.person.ProductionLocations[0]}</Layout>
-				)}
-			</Layout>
+					{!Nullable.HasValue(props.person.EndDate) && (
+						<Layout direction="row" className="age">({ageAtDeathOrNow.years})</Layout>
+					)}
 
-			{!!props.person.EndDate && (
+					{!!props.person.ProductionLocations && !!props.person.ProductionLocations[0] && (
+						<Layout direction="row" className="birthLocation">@ {props.person.ProductionLocations[0]}</Layout>
+					)}
+				</Layout>
+			) : (
+				<></>
+			)}
+
+			{Nullable.HasValue(props.editableItem) && props.isEditing ? (
+				<Layout direction="row" className="deathDateAndDeathAge">
+					<FieldLabel field={props.editableItem.EndDate} textKey="LabelDeathDate" />
+					<DateField field={props.editableItem.EndDate} px=".5em" py=".25em" />
+				</Layout>
+			) : Nullable.HasValue(props.person.EndDate) ? (
 				<Layout direction="row" className="deathDateAndDeathAge">
 					<TranslatedText textKey="DeathDateValue" textProps={[deathOrNow.toLocaleDateString()]} />
 					<TranslatedText textKey="AgeValue" textProps={[ageAtDeathOrNow.years?.toString() ?? ""]} />
 				</Layout>
+			) : (
+				<></>
 			)}
 
 			<ItemOverview item={props.person} isEditing={props.isEditing} editableItem={props.editableItem} />
