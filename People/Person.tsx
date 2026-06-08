@@ -38,6 +38,7 @@ import { SaveIcon } from "CommonIcons/SaveIcon";
 import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
 import { DateField, TextField } from "Common/TextField";
 import { FieldLabel } from "Common/FieldLabel";
+import { ItemTags } from "Items/ItemTags";
 
 const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
 	imageTypeLimit: 1,
@@ -140,43 +141,44 @@ const CreditedItem: React.FC<{ creditedItem: BaseItemDto, person: BaseItemDto }>
 	);
 };
 
-const PersonDetails: React.FC<{ person: BaseItemDto }&EditableItemProps> = (props) => {
-	const birthday = Nullable.Value(props.person.PremiereDate, new Date(Date.now()), (d) => DateTime.ParseWithoutZone(d));
-	const deathOrNow = Nullable.Value(props.person.EndDate, new Date(Date.now()), (d) => DateTime.ParseWithoutZone(d));
+const PersonDetails: React.FC<{ person: BaseItemDto }&EditableItemProps> = ({ person, isEditing, editableItem }) => {
+	const background = useBackgroundStyles();
+	const birthday = Nullable.Value(person.PremiereDate, new Date(Date.now()), (d) => DateTime.ParseWithoutZone(d));
+	const deathOrNow = Nullable.Value(person.EndDate, new Date(Date.now()), (d) => DateTime.ParseWithoutZone(d));
 	const ageAtDeathOrNow = intervalToDuration({ start: birthday, end: deathOrNow });
 
 	return (
 		<Layout direction="column" gap="1em">
-			{Nullable.HasValue(props.editableItem) && props.isEditing ? (
+			{Nullable.HasValue(editableItem) && isEditing ? (
 				<Layout direction="row" alignItems="center" gap=".5em">
-					<FieldLabel field={props.editableItem.PremiereDate} textKey="LabelBirthDate" />
-					<DateField field={props.editableItem.PremiereDate} px=".5em" py=".25em" />
+					<FieldLabel field={editableItem.PremiereDate} textKey="LabelBirthDate" />
+					<DateField field={editableItem.PremiereDate} px=".5em" py=".25em" />
 
-					<FieldLabel field={props.editableItem.ProductionLocation} textKey="BirthLocation" />
-					<TextField field={props.editableItem.ProductionLocation} px=".5em" py=".25em" />
+					<FieldLabel field={editableItem.ProductionLocation} textKey="BirthLocation" />
+					<TextField field={editableItem.ProductionLocation} px=".5em" py=".25em" />
 				</Layout>
-			) : Nullable.HasValue(props.person.PremiereDate) ? (
+			) : Nullable.HasValue(person.PremiereDate) ? (
 				<Layout direction="row" alignItems="center" gap=".5em">
 					<TranslatedText textKey="BirthDateValue" textProps={[birthday.toLocaleDateString()]} elementType="div" className="birthDate" />
 
-					{!Nullable.HasValue(props.person.EndDate) && (
+					{!Nullable.HasValue(person.EndDate) && (
 						<Layout direction="row" className="age">({ageAtDeathOrNow.years})</Layout>
 					)}
 
-					{!!props.person.ProductionLocations && !!props.person.ProductionLocations[0] && (
-						<Layout direction="row" className="birthLocation">@ {props.person.ProductionLocations[0]}</Layout>
+					{!!person.ProductionLocations && !!person.ProductionLocations[0] && (
+						<Layout direction="row" className="birthLocation">@ {person.ProductionLocations[0]}</Layout>
 					)}
 				</Layout>
 			) : (
 				<></>
 			)}
 
-			{Nullable.HasValue(props.editableItem) && props.isEditing ? (
+			{Nullable.HasValue(editableItem) && isEditing ? (
 				<Layout direction="row" className="deathDateAndDeathAge">
-					<FieldLabel field={props.editableItem.EndDate} textKey="LabelDeathDate" />
-					<DateField field={props.editableItem.EndDate} px=".5em" py=".25em" />
+					<FieldLabel field={editableItem.EndDate} textKey="LabelDeathDate" />
+					<DateField field={editableItem.EndDate} px=".5em" py=".25em" />
 				</Layout>
-			) : Nullable.HasValue(props.person.EndDate) ? (
+			) : Nullable.HasValue(person.EndDate) ? (
 				<Layout direction="row" className="deathDateAndDeathAge">
 					<TranslatedText textKey="DeathDateValue" textProps={[deathOrNow.toLocaleDateString()]} />
 					<TranslatedText textKey="AgeValue" textProps={[ageAtDeathOrNow.years?.toString() ?? ""]} />
@@ -185,7 +187,15 @@ const PersonDetails: React.FC<{ person: BaseItemDto }&EditableItemProps> = (prop
 				<></>
 			)}
 
-			<ItemOverview item={props.person} isEditing={props.isEditing} editableItem={props.editableItem} />
+			<ItemOverview item={person} isEditing={isEditing} editableItem={editableItem} />
+			<ItemTags
+				item={person}
+				isEditing={isEditing} editableItem={editableItem}
+				direction="row" gap=".5em" wrap
+				linkClassName={background.button}
+				linkLayout={{ px: ".25em", py: ".25em" }}
+				showMoreLimit={25}
+			/>
 		</Layout>
 	);
 };
