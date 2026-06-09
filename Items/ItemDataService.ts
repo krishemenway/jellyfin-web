@@ -4,6 +4,7 @@ import { getItemsApi, getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api";
 import { Receiver } from "Common/Receiver";
 import { SortByObjects, SortFuncs } from "Common/Sort";
 import { ServerService } from "Servers/ServerService";
+import { ItemCacheResetService } from "Items/ItemCacheResetService";
 
 export class ItemDataService {
 	constructor(id: string) {
@@ -19,7 +20,8 @@ export class ItemDataService {
 			return () => { };
 		}
 
-		this.Item.Start((a) => getUserLibraryApi(ServerService.Instance.CurrentApi).getItem({ itemId: this.Id, userId: ServerService.Instance.CurrentUserId.Value }, { signal: a.signal }).then(response => response.data), forceRefresh === true);
+		const user = ServerService.Instance.CurrentUserId.Value;
+		this.Item.Start((a) => getUserLibraryApi(ServerService.Instance.CurrentApi).getItem({ itemId: this.Id, userId: user }, { signal: a.signal }).then(r => r.data), forceRefresh === true);
 		return () => this.Item.ResetIfLoading();
 	}
 
@@ -36,7 +38,11 @@ export class ItemDataService {
 			sortOrder: ["Ascending"],
 		};
 
-		this.Children.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ...baseRequest, ...request }, { signal: a.signal }).then((response) => SortByObjects(response.data.Items ?? [], sortFuncs ?? [])), forceRefresh === true);
+		this.Children.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ...baseRequest, ...request }, { signal: a.signal }).then((r) => SortByObjects(r.data.Items ?? [], sortFuncs ?? [])).then((items) => {
+			ItemCacheResetService.Instance.LoadedItems(items, this.Children);
+			return items;
+		}), forceRefresh === true);
+
 		return () => this.Children.ResetIfLoading();
 	}
 

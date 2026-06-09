@@ -1,12 +1,13 @@
 import { BaseItemDto, BaseItemKind, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api";
-import { Receiver } from "Common/Receiver";
+import { IReceiver, Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { ItemListViewOptions, ItemViewOptionDataSource, ItemViewOptionsData } from "ItemList/ItemListViewOptions";
 import { Observable, ObservableArray } from "@residualeffect/reactor";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
+import { ItemCacheResetService } from "Items/ItemCacheResetService";
 
 export interface ItemListStatConfig {
 	Key: string;
@@ -19,14 +20,20 @@ export interface ItemListWithStats {
 }
 
 const defaultLoadFunc = (a: AbortController, id: string) => (getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: id, fields: ["DateCreated", "Genres", "Tags", "SortName", "Studios"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((r) => r.data.Items ?? []));
-const loadRequestForDataSource = (dataSource: ItemViewOptionDataSource): (a: AbortController) => Promise<BaseItemDto[]> => {
+const loadRequestForDataSource = (dataSource: ItemViewOptionDataSource, receiver: IReceiver): (a: AbortController) => Promise<BaseItemDto[]> => {
 	if (dataSource.DataSource === "Library") {
 		const [kind, libraryId] = dataSource.DataSourceKey.split("|");
 		const service = BaseItemKindServiceFactory.FindOrThrow(kind as BaseItemKind);
 		const loadList = service.loadList ?? defaultLoadFunc;
-		return (a: AbortController) => loadList(a, libraryId).then((list) => Nullable.Value(service.listTypes, list, (types) => list.filter((l) => types.indexOf(l.Type!) > -1)));
+		return (a: AbortController) => loadList(a, libraryId).then((list) => Nullable.Value(service.listTypes, list, (types) => list.filter((l) => types.indexOf(l.Type!) > -1))).then((items) => {
+			ItemCacheResetService.Instance.LoadedItems(items, receiver);
+			return items;
+		});
 	} else if (dataSource.DataSource === "Tag") {
-		return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, tags: [dataSource.DataSourceKey], isMissing: false }, { signal: a.signal }).then((r) => r.data.Items ?? []);
+		return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, tags: [dataSource.DataSourceKey], isMissing: false }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
+			ItemCacheResetService.Instance.LoadedItems(items, receiver);
+			return items;
+		});
 	} else {
 		throw new Error(`Unknown data source ${dataSource.DataSource}`);
 	}
@@ -46,7 +53,7 @@ export class ItemListService {
 			return () => { };
 		}
 
-		this.List.Start((a) => loadRequestForDataSource(this.DataSource)(a).then(result => {
+		this.List.Start((a) => loadRequestForDataSource(this.DataSource, this.List)(a).then(result => {
 			return {
 				List: result,
 				Stats: result.reduce((stats, current) => {

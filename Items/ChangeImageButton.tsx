@@ -14,6 +14,7 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Loading } from "Common/Loading";
 import { ListOf } from "Common/ListOf";
 import { Layout } from "Common/Layout";
+import { ItemCacheResetService } from "Items/ItemCacheResetService";
 
 const remoteImageResults = new Receiver<RemoteImageInfo[]>("UnknownError");
 export const ChangeImageButton: React.FC<{ label: string; item: BaseItemDto; imageType: ImageType; onChanged: () => void; }&EditableItemProps> = ({ label, item, imageType, onChanged, isEditing }) => {
@@ -64,7 +65,7 @@ export const ChangeImageButton: React.FC<{ label: string; item: BaseItemDto; ima
 									forEachItem={(r) => (
 										<Layout direction="column" key={r.Url} height="20rem" width={{ itemsPerRow: 2, gap: "1rem" }} justifyContent="space-between">
 											<img src={r.Url!} width="100%" height="100%" style={{ objectFit: "contain" }} />
-											<Button type="button" onClick={() => { selectRemoteInfo(r, () => { resetChangeImage(); onChanged(); }) }} px=".5em" py=".5em" justifyContent="center" label="Select" />
+											<Button type="button" onClick={() => { selectRemoteInfo(r, () => { ItemCacheResetService.Instance.ResetItem(item); resetChangeImage(); onChanged(); }) }} px=".5em" py=".5em" justifyContent="center" label="Select" />
 										</Layout>
 									)}
 								/>
@@ -73,7 +74,7 @@ export const ChangeImageButton: React.FC<{ label: string; item: BaseItemDto; ima
 					/>
 
 					<Layout direction="column" gap=".5rem">
-						<UploadImageButton item={item} imageType={imageType} onChanged={() => { resetChangeImage(); onChanged(); }} />
+						<UploadImageButton item={item} imageType={imageType} onChanged={() => { ItemCacheResetService.Instance.ResetItem(item); resetChangeImage(); onChanged(); }} />
 						<Button type="button" onClick={resetChangeImage} label="ButtonCancel" justifyContent="center" px=".5rem" py=".5rem" fontColor="Secondary" />
 					</Layout>
 				</Layout>

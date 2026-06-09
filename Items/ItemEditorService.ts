@@ -8,6 +8,7 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 import { Receiver } from "Common/Receiver";
 import { useObservable } from "@residualeffect/rereactor";
 import { ItemService } from "Items/ItemsService";
+import { ItemCacheResetService } from "Items/ItemCacheResetService";
 
 export function useEditableItem(item: BaseItemDto, user: UserDto): EditableItem|undefined {
 	if (!user.Policy?.IsAdministrator) {
@@ -50,6 +51,7 @@ export class ItemEditorService {
 				if (wasSuccessful) {
 					this.IsEditing.Value = false;
 					this.CurrentEditableItem.Value?.OnSaved();
+					ItemCacheResetService.Instance.ResetItem(editableItem.From);
 					ItemService.Instance.FindOrCreateItemData(editableItem.From.Id!).LoadItemWithAbort(true);
 				}
 

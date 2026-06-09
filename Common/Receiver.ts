@@ -1,5 +1,13 @@
 import { Computed, Observable, ReadOnlyObservable } from "@residualeffect/reactor";
 
+export interface IReceiver {
+	Failed(error?: string): void;
+	Reset(): void;
+	ResetIfLoading(): void;
+	IsBusy: Computed<boolean>;
+	HasData: Computed<boolean>;
+}
+
 export enum LoadState {
 	NotStarted,
 	Loading,
@@ -15,7 +23,7 @@ export interface ReceiverData<TReceivedData> {
 }
 
 /** Object used for managing the state and resulting consequences of a long-running task. */
-export class Receiver<TReceivedData> {
+export class Receiver<TReceivedData> implements IReceiver {
 	constructor(errorTextKey: string) {
 		this.DefaultErrorTextKey = errorTextKey;
 
