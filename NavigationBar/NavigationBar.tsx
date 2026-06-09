@@ -80,7 +80,7 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[]; server: SystemI
 									px=".5em" py=".5em" gap=".5em" width={{ itemsPerRow: 3 }}
 								>
 									<Layout direction="row" justifyContent="center"><IconForItem item={library} size="1.5em" /></Layout>
-									<Layout direction="row" justifyContent="center">{library.Name}</Layout>
+									<Layout direction="row" justifyContent="center" textAlign="center">{library.Name}</Layout>
 								</LinkToItem>
 							))}
 
