@@ -74,7 +74,7 @@ export class ItemListService {
 		return () => this.List.ResetIfLoading();
 	}
 
-	public LoadItemListViewOptionsOrNew(settings: Settings, viewOptionsKey?: string): void {
+	public LoadItemListViewOptionsOrNew(settings: Settings, viewOptionsKey: string|undefined, contextName: string): void {
 		this.ExistingOptions.Value = settings.AllKeys().filter((k) => k.startsWith(`ViewOption|`)).map((key) => {
 			const optionData = settings.ReadAsJsonOrThrow<ItemViewOptionsData>(key);
 
@@ -84,7 +84,7 @@ export class ItemListService {
 
 			return new ItemListViewOptions(this.DataSource, optionData, true);
 		}).filter((o) => o !== undefined).concat([
-			ItemListViewOptions.CreateRecentlyAddedToLibrary(this.DataSource),
+			ItemListViewOptions.CreateRecentlyAdded(this.DataSource, contextName),
 		]);
 
 		if (Nullable.HasValue(viewOptionsKey)) {

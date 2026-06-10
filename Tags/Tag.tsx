@@ -65,7 +65,7 @@ export const Tag: React.FC = () => {
 const TagListViewOptions: React.FC<{ tag: string; viewOptionsKey?: string; items: BaseItemDto[]; listService: ItemListService; settings: Settings; user: UserDto; }> = ({ tag, listService, ...props }) => {
 	const listOptions = useObservable(listService.ListOptions);
 
-	React.useEffect(() => { listService.LoadItemListViewOptionsOrNew(props.settings, props.viewOptionsKey); }, [props.settings, props.viewOptionsKey]);
+	React.useEffect(() => { listService.LoadItemListViewOptionsOrNew(props.settings, props.viewOptionsKey, tag); }, [props.settings, props.viewOptionsKey]);
 	
 	return (
 		<Layout direction="column" gap="1em" py="1em" height="100%">

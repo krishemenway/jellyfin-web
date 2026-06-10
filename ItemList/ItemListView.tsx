@@ -65,7 +65,7 @@ const LoadedBasicItemListView: React.FC<{ libraryId: string; viewOptionsKey?: st
 	const library = Linq.Single(libraries, (l) => l.Id === props.libraryId);
 
 	React.useEffect(() => itemList.LoadWithAbort(), [itemList, libraries]);
-	React.useEffect(() => { itemList.LoadItemListViewOptionsOrNew(props.settings, props.viewOptionsKey); }, [props.settings, props.viewOptionsKey]);
+	React.useEffect(() => { itemList.LoadItemListViewOptionsOrNew(props.settings, props.viewOptionsKey, library.Name!); }, [props.settings, props.viewOptionsKey]);
 
 	return (
 		<Loading

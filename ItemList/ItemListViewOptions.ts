@@ -7,8 +7,8 @@ import { CreateSortFunc, ItemSortOption } from "ItemList/ItemSortOption";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { EditableField, ValueIsRequired } from "Common/EditableField";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
-import { ItemSortOptionStore } from "./ItemSortOptionStore";
-import { ItemFilterTypeStore } from "./ItemFilterTypeStore";
+import { ItemSortOptionStore } from "ItemList/ItemSortOptionStore";
+import { ItemFilterTypeStore } from "ItemList/ItemFilterTypeStore";
 
 export class ItemListViewOptions {
 	constructor(dataSource: ItemViewOptionDataSource, data?: ItemViewOptionsData, canSave?: boolean) {
@@ -71,8 +71,8 @@ export class ItemListViewOptions {
 		}
 	}
 
-	public static CreateRecentlyAddedToLibrary(dataSource: ItemViewOptionDataSource): ItemListViewOptions {
-		return new ItemListViewOptions(dataSource, { DataSource: dataSource, Key: `RecentlyAdded-${dataSource.DataSourceKey}`, Filters: [], Label: "Recently Added", Sorts: [{ Reversed: true, SortType: "DateCreated", Hidden: true }] }, false);
+	public static CreateRecentlyAdded(dataSource: ItemViewOptionDataSource, dataSourceName: string): ItemListViewOptions {
+		return new ItemListViewOptions(dataSource, { DataSource: dataSource, Key: `RecentlyAdded-${dataSource.DataSourceKey}`, Filters: [], Label: `${dataSourceName} - Recently Added`, Sorts: [{ Reversed: true, SortType: "DateCreated", Hidden: true }] }, false);
 	}
 
 	public CreateSaveRequest(): ItemViewOptionsData {

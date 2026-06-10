@@ -40,7 +40,7 @@ export class HomeViewOptions {
 				DataSourceKey: `${service.kind}|${library.Id}`,
 			};
 
-			all.push(ItemListViewOptions.CreateRecentlyAddedToLibrary(dataSource));
+			all.push(ItemListViewOptions.CreateRecentlyAdded(dataSource, library.Name!));
 			return all;
 		}, [] as ItemListViewOptions[]);
 	}
