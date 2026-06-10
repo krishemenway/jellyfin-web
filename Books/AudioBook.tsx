@@ -19,7 +19,7 @@ import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
 import { ItemPageTitle } from "Items/ItemPageTitle";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
-import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
+import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
@@ -117,6 +117,7 @@ const LoadedAudioBook: React.FC<{ user: UserDto; audioBook: BaseItemDto; reloadA
 								AddToFavoritesAction,
 								RemoveFromFavoritesAction,
 								MarkPlayedAction,
+								MarkUnplayedAction,
 								AddToCollectionAction,
 								AddToPlaylistAction,
 							],

@@ -24,7 +24,7 @@ import { TranslatedText } from "Common/TranslatedText";
 import { ItemOverview } from "Items/ItemOverview";
 import { LoginService } from "Users/LoginService";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
-import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
+import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
@@ -209,6 +209,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 							AddToFavoritesAction,
 							RemoveFromFavoritesAction,
 							MarkPlayedAction,
+							MarkUnplayedAction,
 							AddToCollectionAction,
 							AddToPlaylistAction,
 							EditItemAction,
@@ -269,6 +270,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 								AddToFavoritesAction,
 								RemoveFromFavoritesAction,
 								MarkPlayedAction,
+								MarkUnplayedAction,
 								AddToCollectionAction,
 								AddToPlaylistAction,
 								EditItemAction,

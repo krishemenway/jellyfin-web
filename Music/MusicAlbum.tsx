@@ -29,7 +29,7 @@ import { EditItemAction } from "MenuActions/EditItemAction";
 import { ItemRefreshButton } from "Items/ItemRefreshButton";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
-import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
+import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { LoginService } from "Users/LoginService";
 import { MusicAlbumSongs } from "Music/MusicAlbumSongs";
@@ -131,6 +131,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemD
 									AddToFavoritesAction,
 									RemoveFromFavoritesAction,
 									MarkPlayedAction,
+									MarkUnplayedAction,
 									AddToCollectionAction,
 									AddToPlaylistAction,
 									EditItemAction

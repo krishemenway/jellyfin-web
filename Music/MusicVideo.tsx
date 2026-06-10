@@ -19,7 +19,7 @@ import { ItemStudios } from "Items/ItemStudios";
 import { ItemPageTitle } from "Items/ItemPageTitle";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
-import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
+import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
@@ -132,6 +132,7 @@ const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloa
 								AddToFavoritesAction,
 								RemoveFromFavoritesAction,
 								MarkPlayedAction,
+								MarkUnplayedAction,
 								AddToCollectionAction,
 								AddToPlaylistAction,
 							],
