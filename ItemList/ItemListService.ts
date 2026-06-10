@@ -111,7 +111,7 @@ export class ItemListService {
 	}
 
 	public RemoveViewOptions(settings: Settings, listOptions: ItemListViewOptions, onSuccess: () => void): void {
-		SettingsStore.Instance.SaveSettings("usersettings", settings.CreateSaveRequestWithRemovedKey(listOptions.Key), () => {
+		SettingsStore.Instance.SaveSettings("usersettings", settings.CreateSaveRequestWithRemovedKey(listOptions.BuildStorageKey()), () => {
 			SettingsStore.Instance.LoadSettings("usersettings", () => {
 				this.ExistingOptions.remove(listOptions);
 				onSuccess();
