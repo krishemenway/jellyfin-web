@@ -18,7 +18,7 @@ import { ItemOverview } from "Items/ItemOverview";
 import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
 import { ItemPageTitle } from "Items/ItemPageTitle";
-import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
+import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
@@ -50,13 +50,13 @@ export const AudioBook: React.FC = () => {
 				receivers={[ItemService.Instance.FindOrCreateItemData(audioBookId).Item, LoginService.Instance.User]}
 				whenNotStarted={<PageIsLoading />} whenLoading={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(audioBook, user) => <LoadedAudioBook audioBook={audioBook} user={user} />}
+				whenReceived={(audioBook, user) => <LoadedAudioBook audioBook={audioBook} user={user} reloadAudioBook={() => ItemService.Instance.FindOrCreateItemData(audioBookId).LoadItemWithAbort(true)} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const LoadedAudioBook: React.FC<{ user: UserDto, audioBook: BaseItemDto }> = ({ user, audioBook }) => {
+const LoadedAudioBook: React.FC<{ user: UserDto; audioBook: BaseItemDto; reloadAudioBook: () => void; }> = ({ user, audioBook, reloadAudioBook }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(audioBook, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
@@ -73,8 +73,8 @@ const LoadedAudioBook: React.FC<{ user: UserDto, audioBook: BaseItemDto }> = ({ 
 							<ItemRating item={audioBook} position="absolute" bottom=".5em" right=".5em" libraryId={audioBook.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 						</Layout>
 	
-						<ChangeImageButton item={audioBook} label="ButtonChangeImage" imageType="Primary" onChanged={() => ItemService.Instance.FindOrCreateItemData(audioBook.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
-						<ChangeImageButton item={audioBook} label="ButtonChangeBackdrop" imageType="Backdrop" onChanged={() => ItemService.Instance.FindOrCreateItemData(audioBook.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
+						<ChangeImageButton item={audioBook} label="ButtonChangeImage" imageType="Primary" onChanged={() => reloadAudioBook()} isEditing={isEditing} />
+						<ChangeImageButton item={audioBook} label="ButtonChangeBackdrop" imageType="Backdrop" onChanged={() => reloadAudioBook()} isEditing={isEditing} />
 					</Layout>
 
 					<ItemExternalLinks
@@ -111,10 +111,11 @@ const LoadedAudioBook: React.FC<{ user: UserDto, audioBook: BaseItemDto }> = ({ 
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={audioBook} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
-						<ItemActionsMenu items={[audioBook]} user={user} actions={[
+						<ItemActionsMenu reloadItems={() => reloadAudioBook()} items={[audioBook]} user={user} actions={[
 							[ // User-based actions
 								PlayVideoAction,
 								AddToFavoritesAction,
+								RemoveFromFavoritesAction,
 								MarkPlayedAction,
 								AddToCollectionAction,
 								AddToPlaylistAction,

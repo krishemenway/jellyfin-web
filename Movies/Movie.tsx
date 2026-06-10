@@ -18,7 +18,7 @@ import { ItemOverview } from "Items/ItemOverview";
 import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
 import { ItemPageTitle } from "Items/ItemPageTitle";
-import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
+import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
@@ -53,13 +53,13 @@ export const Movie: React.FC = () => {
 				receivers={[ItemService.Instance.FindOrCreateItemData(movieId).Item, LoginService.Instance.User]}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(movie, user) => <LoadedMovie movie={movie} user={user} />}
+				whenReceived={(movie, user) => <LoadedMovie movie={movie} user={user} reloadMovie={() => ItemService.Instance.FindOrCreateItemData(movieId).LoadItemWithAbort(true)} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const LoadedMovie: React.FC<{ user: UserDto, movie: BaseItemDto }> = ({ user, movie }) => {
+const LoadedMovie: React.FC<{ user: UserDto; movie: BaseItemDto; reloadMovie: () => void; }> = ({ user, movie, reloadMovie }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(movie, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
@@ -76,8 +76,8 @@ const LoadedMovie: React.FC<{ user: UserDto, movie: BaseItemDto }> = ({ user, mo
 							<ItemRating item={movie} position="absolute" bottom=".5em" right=".5em" libraryId={movie.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 						</Layout>
 	
-						<ChangeImageButton item={movie} imageType="Primary" label="ButtonChangeImage" onChanged={() => ItemService.Instance.FindOrCreateItemData(movie.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
-						<ChangeImageButton item={movie} imageType="Backdrop" label="ButtonChangeBackdrop" onChanged={() => ItemService.Instance.FindOrCreateItemData(movie.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
+						<ChangeImageButton item={movie} imageType="Primary" label="ButtonChangeImage" onChanged={() => reloadMovie()} isEditing={isEditing} />
+						<ChangeImageButton item={movie} imageType="Backdrop" label="ButtonChangeBackdrop" onChanged={() => reloadMovie()} isEditing={isEditing} />
 					</Layout>
 
 					<ItemExternalLinks
@@ -114,10 +114,11 @@ const LoadedMovie: React.FC<{ user: UserDto, movie: BaseItemDto }> = ({ user, mo
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={movie} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
-						<ItemActionsMenu items={[movie]} user={user} actions={[
+						<ItemActionsMenu reloadItems={() => reloadMovie()} items={[movie]} user={user} actions={[
 							[ // User-based actions
 								PlayVideoAction,
 								AddToFavoritesAction,
+								RemoveFromFavoritesAction,
 								MarkPlayedAction,
 								AddToCollectionAction,
 								AddToPlaylistAction,

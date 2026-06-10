@@ -32,6 +32,7 @@ import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { LinkToItem } from "Items/LinkToItem";
 import { ItemGenres } from "Items/ItemGenres";
 import { ChangeImageButton } from "Items/ChangeImageButton";
+import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 
 export const MusicArtist: React.FC = () => {
 	const artistId = useParams().artistId;
@@ -49,13 +50,13 @@ export const MusicArtist: React.FC = () => {
 				receivers={[LoginService.Instance.User, ItemService.Instance.FindOrCreateItemData(artistId).Item]}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(user, artist) => <LoadedMusicArtist user={user} artist={artist} />}
+				whenReceived={(user, artist) => <LoadedMusicArtist user={user} artist={artist} reloadArtist={() => ItemService.Instance.FindOrCreateItemData(artistId).LoadItemWithAbort(true)} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; }> = ({ user, artist }) => {
+const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; reloadArtist: () => void; }> = ({ user, artist, reloadArtist }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(artist, user);
 	const genresPerRow = useBreakpointValues(1, 3, 3, 3);
@@ -69,8 +70,8 @@ const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; }> = ({ 
 				<Layout direction="column" gap=".5rem">
 					<Layout direction="column">
 						<ItemImage item={artist} type="Primary" />
-						<ChangeImageButton item={artist} imageType="Primary" label="ButtonChangeImage" onChanged={() => ItemService.Instance.FindOrCreateItemData(artist.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
-						<ChangeImageButton item={artist} imageType="Backdrop" label="ButtonChangeBackdrop" onChanged={() => ItemService.Instance.FindOrCreateItemData(artist.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
+						<ChangeImageButton item={artist} imageType="Primary" label="ButtonChangeImage" onChanged={() => reloadArtist()} isEditing={isEditing} />
+						<ChangeImageButton item={artist} imageType="Backdrop" label="ButtonChangeBackdrop" onChanged={() => reloadArtist()} isEditing={isEditing} />
 					</Layout>
 
 					<ItemGenres
@@ -97,9 +98,11 @@ const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; }> = ({ 
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={artist} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
-						<ItemActionsMenu items={[artist]} user={user} actions={[
+						<ItemActionsMenu reloadItems={() => reloadArtist()} items={[artist]} user={user} actions={[
 							[
 								EditItemAction,
+								AddToFavoritesAction,
+								RemoveFromFavoritesAction,
 							]
 						]} />
 					</Layout>

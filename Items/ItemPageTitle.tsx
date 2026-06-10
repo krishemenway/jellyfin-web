@@ -6,13 +6,14 @@ import { Layout } from "Common/Layout";
 import { EditableItemProps } from "Items/EditableItemProps";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { TextField } from "Common/TextField";
+import { ItemFavoriteIcon } from "Items/ItemFavoriteIcon";
 
-export const ItemPageTitle: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {
+export const ItemPageTitle: React.FC<{ item: BaseItemDto; suppressFavorite?: boolean; }&EditableItemProps> = ({ item, editableItem, isEditing, suppressFavorite }) => {
 	const server = useDataOrNull(ServerService.Instance.ServerInfo);
 
-	React.useEffect(() => { document.title = props.item.Name + Nullable.Value(server, "", (s) => ` | ${s.ServerName}`); }, [props.item, server]);
+	React.useEffect(() => { document.title = item.Name + Nullable.Value(server, "", (s) => ` | ${s.ServerName}`); }, [item, server]);
 
-	return props.isEditing && Nullable.HasValue(props.editableItem)
-		? <TextField field={props.editableItem.Name} fontSizeREM={1.75} grow px=".25em" />
-		: <Layout direction="row" fontSizeREM={1.75} elementType="h1">{props.item.Name}</Layout>;
+	return isEditing && Nullable.HasValue(editableItem)
+		? <TextField field={editableItem.Name} fontSizeREM={1.75} grow px=".25em" />
+		: <Layout direction="row" fontSizeREM={1.75} elementType="h1" alignItems="center">{item.Name}{suppressFavorite !== true && <ItemFavoriteIcon item={item} size="1.5rem" mx=".5rem" />}</Layout>;
 };

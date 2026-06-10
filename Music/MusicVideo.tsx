@@ -18,7 +18,7 @@ import { ItemGenres } from "Items/ItemGenres";
 import { ItemStudios } from "Items/ItemStudios";
 import { ItemPageTitle } from "Items/ItemPageTitle";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
-import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
+import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
@@ -64,13 +64,13 @@ export const MusicVideo: React.FC = () => {
 				receivers={[ItemService.Instance.FindOrCreateItemData(musicVideoId).Item, LoginService.Instance.User]}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(musicVideo, user) => <LoadedMusicVideo musicVideo={musicVideo} user={user} />}
+				whenReceived={(musicVideo, user) => <LoadedMusicVideo musicVideo={musicVideo} user={user} reloadMusicVideo={() => ItemService.Instance.FindOrCreateItemData(musicVideo.Id!).LoadItemWithAbort(true)} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const LoadedMusicVideo: React.FC<{ user: UserDto, musicVideo: BaseItemDto }> = ({ user, musicVideo }) => {
+const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloadMusicVideo: () => void; }> = ({ user, musicVideo, reloadMusicVideo }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(musicVideo, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
@@ -126,10 +126,11 @@ const LoadedMusicVideo: React.FC<{ user: UserDto, musicVideo: BaseItemDto }> = (
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={musicVideo} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
-						<ItemActionsMenu items={[musicVideo]} actions={[
+						<ItemActionsMenu reloadItems={() => reloadMusicVideo()} items={[musicVideo]} actions={[
 							[ // User-based actions
 								PlayVideoAction,
 								AddToFavoritesAction,
+								RemoveFromFavoritesAction,
 								MarkPlayedAction,
 								AddToCollectionAction,
 								AddToPlaylistAction,

@@ -19,6 +19,10 @@ export class ItemCacheResetService {
 		});
 	}
 
+	public ResetItems(items: BaseItemDto[]): void {
+		items.forEach((i) => this.ResetItem(i));
+	}
+
 	public ResetItem(item: BaseItemDto): void {
 		this.ResetItemById(item.Id!);
 	}

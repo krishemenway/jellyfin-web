@@ -17,7 +17,7 @@ import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { ItemOverview } from "Items/ItemOverview";
 import { LoginService } from "Users/LoginService";
-import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
+import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { ItemPageTitle } from "Items/ItemPageTitle";
 import { Virtuoso } from "react-virtuoso";
 import { DateTime, Linq, Nullable } from "Common/MissingJavascriptFunctions";
@@ -67,13 +67,13 @@ export const Person: React.FC = () => {
 				receivers={[personData.Item, personData.Children, LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(person, creditedItems, user) => <LoadedPerson person={person} creditedItems={creditedItems} user={user} />}
+				whenReceived={(person, creditedItems, user) => <LoadedPerson person={person} creditedItems={creditedItems} user={user} reloadPerson={() => personData.LoadItemWithAbort(true)} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const LoadedPerson: React.FC<{ person: BaseItemDto; creditedItems: BaseItemDto[]; user: UserDto }> = ({ person, creditedItems, user }) => {
+const LoadedPerson: React.FC<{ person: BaseItemDto; creditedItems: BaseItemDto[]; user: UserDto; reloadPerson: () => void; }> = ({ person, creditedItems, user, reloadPerson }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(person, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
@@ -102,8 +102,9 @@ const LoadedPerson: React.FC<{ person: BaseItemDto; creditedItems: BaseItemDto[]
 					<Layout direction="row" gap="1rem">
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
-						<ItemActionsMenu items={[person]} user={user} actions={[[
+						<ItemActionsMenu reloadItems={() => reloadPerson()} items={[person]} user={user} actions={[[
 							AddToFavoritesAction,
+							RemoveFromFavoritesAction,
 							AddToCollectionAction,
 							EditItemAction,
 						]]} />

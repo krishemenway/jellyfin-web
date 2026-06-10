@@ -30,7 +30,7 @@ import { ItemRefreshButton } from "Items/ItemRefreshButton";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
-import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
+import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { LoginService } from "Users/LoginService";
 import { MusicAlbumSongs } from "Music/MusicAlbumSongs";
 import { ItemPremiereDate } from "Items/ItemPremiereDate";
@@ -62,13 +62,13 @@ export const MusicAlbum: React.FC = () => {
 				receivers={[ItemService.Instance.FindOrCreateItemData(albumId).Item, ItemService.Instance.FindOrCreateItemData(albumId).Children, LoginService.Instance.User]}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(album, allAlbumItems, user) => <LoadedMusicAlbums album={album} allAlbumItems={allAlbumItems} user={user} />}
+				whenReceived={(album, allAlbumItems, user) => <LoadedMusicAlbums album={album} allAlbumItems={allAlbumItems} user={user} reloadAlbum={() => ItemService.Instance.FindOrCreateItemData(albumId).LoadItemWithAbort(true)} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemDto[]; user: UserDto }> = ({ album, allAlbumItems, user }) => {
+const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemDto[]; user: UserDto; reloadAlbum: () => void; }> = ({ album, allAlbumItems, user, reloadAlbum }) => {
 	const allSongs = React.useMemo(() => allAlbumItems.filter((i) => i.Type === "Audio"), [allAlbumItems]);
 	const allMusicVideos = React.useMemo(() => allAlbumItems.filter((i) => i.Type === "MusicVideo"), [allAlbumItems]);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
@@ -85,8 +85,8 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemD
 							<ItemRating item={album} position="absolute" bottom=".5em" right=".5em" libraryId={album.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 						</Layout>
 	
-						<ChangeImageButton item={album} imageType="Primary" label="ButtonChangeImage" onChanged={() => ItemService.Instance.FindOrCreateItemData(album.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
-						<ChangeImageButton item={album} imageType="Backdrop" label="ButtonChangeBackdrop" onChanged={() => ItemService.Instance.FindOrCreateItemData(album.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
+						<ChangeImageButton item={album} imageType="Primary" label="ButtonChangeImage" onChanged={() => reloadAlbum()} isEditing={isEditing} />
+						<ChangeImageButton item={album} imageType="Backdrop" label="ButtonChangeBackdrop" onChanged={() => reloadAlbum()} isEditing={isEditing} />
 					</Layout>
 
 					<ItemStudios
@@ -126,9 +126,10 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemD
 							{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
 							<Button type="button" alignItems="center" px=".5em" py=".5em" icon={<PlayIcon />} title={{ Key: "HeaderPlayAll" }} onClick={() => MusicPlayerService.Instance.ClearAndPlay(allSongs)} />
 		
-							<ItemActionsMenu items={[album]} user={user} actions={[
+							<ItemActionsMenu reloadItems={() => reloadAlbum()} items={[album]} user={user} actions={[
 								[
 									AddToFavoritesAction,
+									RemoveFromFavoritesAction,
 									MarkPlayedAction,
 									AddToCollectionAction,
 									AddToPlaylistAction,

@@ -14,6 +14,7 @@ export interface ItemActionProps extends StyleLayoutProps {
 	actions: ItemMenuAction[][];
 	user: UserDto;
 	items: BaseItemDto[];
+	reloadItems: () => void;
 }
 
 export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
@@ -23,7 +24,7 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 
 	const filteredActions = React.useMemo(() => {
 		return props.actions
-			.map((group) => group.filter((action) => Nullable.Value(action.visible, () => true, a => a)(props.user)))
+			.map((group) => group.filter((action) => Nullable.Value(action.visible, () => true, a => a)(props.user, props.items)))
 			.filter((group) => group.length > 0);
 	}, [props.user, props.actions]);
 
@@ -48,12 +49,12 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 					forEachItem={(group, index) => (
 						<ListOf
 							key={index.toString()}
-							items={group.filter(((a) => (a.visible ?? (() => true))(props.user)))}
+							items={group.filter(((a) => (a.visible ?? (() => true))(props.user, props.items)))}
 							direction="column"
 							forEachItem={(action) => (
 								<Button
 									key={action.textKey}
-									type="button" onClick={() => { closeNavigation(); action.action(props.items, navigate); }}
+									type="button" onClick={() => { closeNavigation(); action.action(props.items, navigate, props.reloadItems); }}
 									direction="row" px=".5em" py=".5em" gap=".5em" alignItems="center"
 									icon={action.icon({ size: "1em" })}
 									label={action.textKey}

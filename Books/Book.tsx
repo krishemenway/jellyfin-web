@@ -18,7 +18,7 @@ import { ItemOverview } from "Items/ItemOverview";
 import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
 import { ItemPageTitle } from "Items/ItemPageTitle";
-import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
+import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
@@ -50,13 +50,13 @@ export const Book: React.FC = () => {
 				receivers={[ItemService.Instance.FindOrCreateItemData(bookId).Item, LoginService.Instance.User]}
 				whenNotStarted={<PageIsLoading />} whenLoading={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(book, user) => <LoadedBook book={book} user={user} />}
+				whenReceived={(book, user) => <LoadedBook book={book} user={user} reloadBook={() => ItemService.Instance.FindOrCreateItemData(bookId).LoadItemWithAbort(true)} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-export const LoadedBook: React.FC<{ user: UserDto, book: BaseItemDto }> = ({ user, book }) => {
+export const LoadedBook: React.FC<{ user: UserDto; book: BaseItemDto; reloadBook: () => void; }> = ({ user, book, reloadBook }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(book, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
@@ -73,8 +73,8 @@ export const LoadedBook: React.FC<{ user: UserDto, book: BaseItemDto }> = ({ use
 							<ItemRating item={book} position="absolute" bottom=".5em" right=".5em" libraryId={book.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 						</Layout>
 	
-						<ChangeImageButton item={book} imageType="Primary" label="ButtonChangeImage" onChanged={() => ItemService.Instance.FindOrCreateItemData(book.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
-						<ChangeImageButton item={book} imageType="Backdrop" label="ButtonChangeBackdrop" onChanged={() => ItemService.Instance.FindOrCreateItemData(book.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
+						<ChangeImageButton item={book} imageType="Primary" label="ButtonChangeImage" onChanged={() => reloadBook()} isEditing={isEditing} />
+						<ChangeImageButton item={book} imageType="Backdrop" label="ButtonChangeBackdrop" onChanged={() => reloadBook()} isEditing={isEditing} />
 					</Layout>
 
 					<ItemExternalLinks
@@ -111,10 +111,11 @@ export const LoadedBook: React.FC<{ user: UserDto, book: BaseItemDto }> = ({ use
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={book} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
-						<ItemActionsMenu items={[book]} user={user} actions={[
+						<ItemActionsMenu reloadItems={() => reloadBook()} items={[book]} user={user} actions={[
 							[ // User-based actions
 								PlayVideoAction,
 								AddToFavoritesAction,
+								RemoveFromFavoritesAction,
 								MarkPlayedAction,
 								AddToCollectionAction,
 								AddToPlaylistAction,

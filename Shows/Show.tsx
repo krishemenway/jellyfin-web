@@ -23,7 +23,7 @@ import { ItemStudios } from "Items/ItemStudios";
 import { TranslatedText } from "Common/TranslatedText";
 import { ItemOverview } from "Items/ItemOverview";
 import { LoginService } from "Users/LoginService";
-import { AddToFavoritesAction } from "MenuActions/AddToFavoritesAction";
+import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { MarkPlayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
@@ -48,6 +48,7 @@ import { ItemPremiereDate } from "Items/ItemPremiereDate";
 import { ChangeImageButton } from "Items/ChangeImageButton";
 import { ItemMediaInfo } from "Items/ItemMediaInfo";
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
+import { ItemFavoriteIcon } from "Items/ItemFavoriteIcon";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
@@ -57,8 +58,16 @@ export const Show: React.FC = () => {
 		return <PageWithNavigation icon="Series"><NotFound /></PageWithNavigation>;
 	}
 
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(showId).LoadItemWithAbort(), [showId]);
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(showId).LoadChildrenWithAbort(true, { recursive: true }), [showId]);
+	const loadShow = (forceRefresh: boolean) => {
+		const disposes = [
+			ItemService.Instance.FindOrCreateItemData(showId).LoadItemWithAbort(forceRefresh),
+			ItemService.Instance.FindOrCreateItemData(showId).LoadChildrenWithAbort(true, { recursive: true }, undefined, forceRefresh),
+		];
+
+		return () => disposes.forEach((dispose) => dispose());
+	};
+
+	React.useEffect(() => loadShow(false), [showId]);
 
 	return (
 		<PageWithNavigation icon="Series">
@@ -67,14 +76,14 @@ export const Show: React.FC = () => {
 				whenNotStarted={<PageIsLoading />} whenLoading={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(show, children, user) => !Nullable.StringHasValue(routeParams.episodeId)
-					? <LoadedShow show={show} children={children} user={user} />
-					: <LoadedEpisode show={show} children={children} user={user} seasonId={routeParams.seasonId} episodeId={routeParams.episodeId} />}
+					? <LoadedShow show={show} children={children} user={user} reloadShow={() => loadShow(true)} />
+					: <LoadedEpisode show={show} children={children} user={user} seasonId={routeParams.seasonId} episodeId={routeParams.episodeId} reloadShow={() => loadShow(true)} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; }> = ({ show, children, user }) => {
+const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; reloadShow: () => void }> = ({ show, children, user, reloadShow }) => {
 	const background = useBackgroundStyles();
 	const leftPanelItemsPerRow = useBreakpointValues(1, 1, 3, 3);
 	const editableItem = useEditableItem(show, user);
@@ -93,8 +102,8 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 						<ItemRating item={show} position="absolute" bottom=".5em" right=".5em" libraryId={show.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 					</Layout>
 
-					<ChangeImageButton item={show} imageType="Primary" label="ButtonChangeImage" onChanged={() => ItemService.Instance.FindOrCreateItemData(show.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
-					<ChangeImageButton item={show} imageType="Backdrop" label="ButtonChangeBackdrop" onChanged={() => ItemService.Instance.FindOrCreateItemData(show.Id!).LoadItemWithAbort(true)} isEditing={isEditing} />
+					<ChangeImageButton item={show} imageType="Primary" label="ButtonChangeImage" onChanged={() => reloadShow()} isEditing={isEditing} />
+					<ChangeImageButton item={show} imageType="Backdrop" label="ButtonChangeBackdrop" onChanged={() => reloadShow()} isEditing={isEditing} />
 				</Layout>
 
 				<ItemStudios
@@ -124,12 +133,12 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 				/>
 			</Layout>
 
-			<ShowDetails show={show} user={user} seasons={seasons} allEpisodes={allEpisodes} isEditing={isEditing} editableItem={editableItem} />
+			<ShowDetails show={show} user={user} seasons={seasons} allEpisodes={allEpisodes} isEditing={isEditing} editableItem={editableItem} reloadShow={reloadShow} />
 		</Layout>
 	);
 };
 
-const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; seasonId?: string; episodeId?: string; }> = ({ show, children, user, episodeId }) => {
+const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; seasonId?: string; episodeId?: string; reloadShow: () => void; }> = ({ show, children, user, episodeId, reloadShow }) => {
 	const background = useBackgroundStyles();
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 	const allEpisodes = React.useMemo(() => children.filter((i) => i.Type === "Episode"), [children]);
@@ -148,7 +157,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 						<ItemRating item={selectedEpisode} position="absolute" bottom=".5em" right=".5em" libraryId={selectedEpisode.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 					</Layout>
 
-					<ChangeImageButton item={selectedEpisode} imageType="Primary" label="ButtonChangeImage" onChanged={() => ItemService.Instance.FindOrCreateItemData(show.Id!).LoadChildrenWithAbort(true, { recursive: true }, undefined, true)} isEditing={isEditing} />
+					<ChangeImageButton item={selectedEpisode} imageType="Primary" label="ButtonChangeImage" onChanged={() => reloadShow()} isEditing={isEditing} />
 				</Layout>
 
 				<ItemStudios
@@ -178,12 +187,12 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 				/>
 			</Layout>
 
-			{Nullable.Value(selectedEpisode, undefined, (episode) => <EpisodeDetails episode={episode} show={show} user={user} isEditing={isEditing} remainingEpisodes={remainingEpisodes} />)}
+			{Nullable.Value(selectedEpisode, undefined, (episode) => <EpisodeDetails episode={episode} show={show} user={user} isEditing={isEditing} remainingEpisodes={remainingEpisodes} reloadShow={reloadShow} />)}
 		</Layout>
 	);
 };
 
-const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto; allEpisodes: BaseItemDto[] }&EditableItemProps> = ({ show, seasons, user, allEpisodes, isEditing, editableItem }) => {
+const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto; allEpisodes: BaseItemDto[]; reloadShow: () => void; }&EditableItemProps> = ({ show, seasons, user, allEpisodes, isEditing, editableItem, reloadShow }) => {
 	const background = useBackgroundStyles();
 
 	return (
@@ -195,9 +204,10 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 					{isEditing && <ItemRefreshButton item={show} />}
 					{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
 
-					<ItemActionsMenu items={[show]} user={user} actions={[
+					<ItemActionsMenu reloadItems={reloadShow} items={[show]} user={user} actions={[
 						[
 							AddToFavoritesAction,
+							RemoveFromFavoritesAction,
 							MarkPlayedAction,
 							AddToCollectionAction,
 							AddToPlaylistAction,
@@ -240,23 +250,24 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 	)
 };
 
-const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: UserDto; remainingEpisodes: BaseItemDto[] }&EditableItemProps> = ({ episode, show, user, isEditing, remainingEpisodes }) => {
+const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: UserDto; remainingEpisodes: BaseItemDto[]; reloadShow: () => void; }&EditableItemProps> = ({ episode, show, user, isEditing, remainingEpisodes, reloadShow }) => {
 	const editableEpisode = useEditableItem(episode, user);
 	const background = useBackgroundStyles();
 	return (
 		<Layout direction="column" grow gap="1.5em">
 			<Layout direction="column" gap=".5em">
 				<Layout direction="row" justifyContent="space-between" gap="1rem">
-					<ItemPageTitle item={show} editableItem={undefined} isEditing={false} />
+					<ItemPageTitle item={show} editableItem={undefined} isEditing={false} suppressFavorite />
 					<Layout direction="row" gap=".5em">
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={episode} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
 						{!isEditing && <Button type="button" icon={<PlayIcon />} alignItems="center" px=".5em" py=".5em" onClick={() => VideoPlayerService.Instance.ClearAndPlay([episode].concat(remainingEpisodes))} />}
-						<ItemActionsMenu items={[episode]} user={user} actions={[
+						<ItemActionsMenu reloadItems={reloadShow} items={[episode]} user={user} actions={[
 							[
 								PlayVideoAction,
 								AddToFavoritesAction,
+								RemoveFromFavoritesAction,
 								MarkPlayedAction,
 								AddToCollectionAction,
 								AddToPlaylistAction,
@@ -313,7 +324,10 @@ const EpisodeTitle: React.FC<{ episode: BaseItemDto; }&EditableItemProps> = ({ e
 	}
 
 	return (
-		<Layout direction="row" fontSizeREM={1.3} elementType="h2">{episode.SeasonName} <TranslatedText textKey="Episode" /> {episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}</Layout>
+		<Layout direction="row" fontSizeREM={1.3} elementType="h2">{episode.SeasonName} <TranslatedText textKey="Episode" />
+			{episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}
+			<ItemFavoriteIcon item={episode} size="1.5rem" mx=".5rem" />
+		</Layout>
 	);
 }
 
