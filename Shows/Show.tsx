@@ -146,7 +146,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 	const editableItem = useEditableItem(selectedEpisode, user);
 	const remainingEpisodes = allEpisodes.filter((i) => (i.PremiereDate ?? "") > (selectedEpisode.PremiereDate ?? "")).sort(SortByPremiereDate.sortFunc);
 
-	React.useEffect(() => BackdropService.Instance.SetWithDispose(selectedEpisode), [selectedEpisode]);
+	React.useEffect(() => BackdropService.Instance.SetWithDispose(show), [show]);
 
 	return (
 		<Layout direction="row" gap="1em" py="1em">
