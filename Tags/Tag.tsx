@@ -22,6 +22,8 @@ import { FilterByHasEnded } from "ItemList/ItemFilterTypes/FilterByHasEnded";
 import { FilterByHasPlayed } from "ItemList/ItemFilterTypes/FilterByHasPlayed";
 import { FilterByContinueWatching } from "ItemList/ItemFilterTypes/FilterByContinueWatching";
 import { FilterByIsFavorite } from "ItemList/ItemFilterTypes/FilterByIsFavorite";
+import { FilterByType } from "ItemList/ItemFilterTypes/FilterByType";
+import { FilterByTag } from "ItemList/ItemFilterTypes/FilterByTag";
 import { ItemSortOption } from "ItemList/ItemSortOption";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { SortByDatePlayed } from "ItemList/ItemSortTypes/SortByDatePlayed";
@@ -84,6 +86,8 @@ const TagFilterTypes: ItemFilterType[] = [
 	FilterByHasPlayed,
 	FilterByContinueWatching,
 	FilterByIsFavorite,
+	FilterByType,
+	FilterByTag,
 ];
 
 const TagSortTypes: ItemSortOption[] = [

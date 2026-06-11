@@ -11,6 +11,7 @@ import { FilterByOfficialRating } from "ItemList/ItemFilterTypes/FilterByOfficia
 import { FilterByProductionYear } from "ItemList/ItemFilterTypes/FilterByProductionYear";
 import { FilterByStudio } from "ItemList/ItemFilterTypes/FilterByStudio";
 import { FilterByTag } from "ItemList/ItemFilterTypes/FilterByTag";
+import { FilterByType } from "ItemList/ItemFilterTypes/FilterByType";
 
 export class ItemFilterTypeStore {
 	public FindOrThrow(filterType: string): ItemFilterType {
@@ -35,6 +36,7 @@ export class ItemFilterTypeStore {
 		FilterByProductionYear,
 		FilterByStudio,
 		FilterByTag,
+		FilterByType,
 	], (t) => t.type);
 	
 	static get Instance(): ItemFilterTypeStore {
