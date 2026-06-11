@@ -15,7 +15,6 @@ import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { useComputed, useObservable } from "@residualeffect/rereactor/lib";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { HyperLink } from "Common/HyperLink";
-import { TranslatedText } from "Common/TranslatedText";
 import { UserViewStore } from "Users/UserViewStore";
 import { ServerService } from "Servers/ServerService";
 import { EditIcon } from "CommonIcons/EditIcon";
@@ -177,22 +176,21 @@ const HomeSectionWithLoadedItems: React.FC<{ label: string; itemsFromList: BaseI
 
 	return (
 		<Layout direction="column" gap=".25rem" width="100%">
-			<Layout direction="row" justifyContent="space-between">
-				<Layout direction="row" fontSizeREM={1.3} alignItems="end">{label}</Layout>
+			<Layout direction="row" justifyContent="space-between" fontSizeREM={1.3}>
+				<HyperLink to={listUrl} direction="row" px=".25rem" py=".25rem" alignItems="end" children={label} />
 				{isEditing && (
 					<Layout direction="row" gap="1rem">
 						{onMoveDown && (
-							<Button type="button" onClick={onMoveDown} icon={<ArrowDownIcon />} px=".25em" py=".25em" />
+							<Button type="button" onClick={onMoveDown} icon={<ArrowDownIcon />} alignItems="center" justifyContent="center" px=".4rem" />
 						)}
 
 						{onMoveUp && (
-							<Button type="button" onClick={onMoveUp} icon={<ArrowUpIcon />} px=".25em" py=".25em" />
+							<Button type="button" onClick={onMoveUp} icon={<ArrowUpIcon />} alignItems="center" justifyContent="center" px=".4rem" />
 						)}
 
-						<Button type="button" onClick={onDeleted} icon={<DeleteIcon />} px=".25em" py=".25em" />
+						<Button type="button" onClick={onDeleted} icon={<DeleteIcon />} alignItems="center" justifyContent="center" px=".4rem" />
 					</Layout>
 				)}
-				{!isEditing && <ShowMoreLibraryLink filteredItems={filteredAndSortedItems} itemsPerRow={itemsPerRow} listUrl={listUrl} />}
 			</Layout>
 
 			<ListOf
@@ -209,12 +207,4 @@ const HomeSectionWithLoadedItems: React.FC<{ label: string; itemsFromList: BaseI
 			/>
 		</Layout>
 	);
-};
-
-const ShowMoreLibraryLink: React.FC<{ filteredItems: BaseItemDto[]; itemsPerRow: number; listUrl: string; }> = ({ filteredItems: allItems, itemsPerRow, listUrl }) => {
-	if (allItems.length <= itemsPerRow) {
-		return <></>;
-	}
-
-	return <HyperLink to={listUrl!} direction="row" px=".5em" py=".5em"><TranslatedText textKey="ShowMore" /></HyperLink>;
 };
