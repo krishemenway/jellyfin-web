@@ -4,7 +4,7 @@ import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRat
 import { SortByCriticRating } from "ItemList/ItemSortTypes/SortByCriticRating";
 import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
 import { SortByDatePlayed } from "ItemList/ItemSortTypes/SortByDatePlayed";
-import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
+import { SortByIndexNumber, SortByParentIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { SortByOfficialRating } from "ItemList/ItemSortTypes/SortByOfficialRating";
 import { SortByPlayCount } from "ItemList/ItemSortTypes/SortByPlayCount";
@@ -21,6 +21,7 @@ export class ItemSortOptionStore {
 			SortByDateCreated,
 			SortByDatePlayed,
 			SortByIndexNumber,
+			SortByParentIndexNumber,
 			SortByName,
 			SortByOfficialRating,
 			SortByPlayCount,
