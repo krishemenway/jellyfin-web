@@ -33,7 +33,7 @@ export class ItemDataService {
 		const baseRequest: Partial<ItemsApiGetItemsRequest> = { enableUserData: true,
 			userId: ServerService.Instance.CurrentUserId.Value,
 			parentId: withParentId !== false ? this.Id : undefined,
-			fields: ["Overview", "Tags", "ExternalUrls", "Genres", "Studios", "People", "ProductionLocations", "MediaSourceCount", "MediaSources"],
+			fields: ["Overview", "Tags", "ExternalUrls", "Genres", "Studios", "People", "ProductionLocations", "MediaSourceCount", "MediaSources", "ProviderIds"],
 			sortBy: ["PremiereDate"],
 			sortOrder: ["Ascending"],
 		};
