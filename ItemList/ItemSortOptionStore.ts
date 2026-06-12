@@ -12,6 +12,7 @@ import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYear";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
+import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
 
 export class ItemSortOptionStore {
 	constructor() {
@@ -29,6 +30,7 @@ export class ItemSortOptionStore {
 			SortByProductionYear,
 			SortByRandom,
 			SortByRuntime,
+			SortByTagCount,
 		];
 	}
 

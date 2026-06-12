@@ -20,6 +20,7 @@ import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByOfficialRating } from "ItemList/ItemSortTypes/SortByOfficialRating";
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYear";
+import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
 
 export const ShowService: BaseItemKindService = {
 	kind: "Series",
@@ -49,5 +50,6 @@ export const ShowService: BaseItemKindService = {
 		SortByOfficialRating,
 		SortByPremiereDate,
 		SortByProductionYear,
+		SortByTagCount,
 	],
 };

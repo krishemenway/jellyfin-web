@@ -1,8 +1,8 @@
-import { BaseItemDto, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { SortFuncs } from "Common/Sort";
 
 export interface ItemSortOption {
-	field: ItemSortBy;
+	field: string;
 	labelKey: string;
 	getContent: (item: BaseItemDto) => string|undefined|null;
 	sortFunc: (a: BaseItemDto, b: BaseItemDto) => number;

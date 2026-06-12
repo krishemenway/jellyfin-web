@@ -20,6 +20,7 @@ import { SortByPlayCount } from "ItemList/ItemSortTypes/SortByPlayCount";
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
+import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 
 export const MusicVideoService: BaseItemKindService = {
@@ -50,5 +51,6 @@ export const MusicVideoService: BaseItemKindService = {
 		SortByPremiereDate,
 		SortByRuntime,
 		SortByRandom,
+		SortByTagCount,
 	],
 };
