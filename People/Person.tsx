@@ -101,7 +101,7 @@ const LoadedPerson: React.FC<{ person: BaseItemDto; creditedItems: BaseItemDto[]
 					<ItemPageTitle item={person} isEditing={isEditing} editableItem={editableItem} />
 					<Layout direction="row" gap="1rem">
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
-						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
+						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(reloadPerson); }} />}
 						<ItemActionsMenu reloadItems={() => reloadPerson()} items={[person]} user={user} actions={[[
 							AddToFavoritesAction,
 							RemoveFromFavoritesAction,

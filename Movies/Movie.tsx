@@ -113,7 +113,7 @@ const LoadedMovie: React.FC<{ user: UserDto; movie: BaseItemDto; reloadMovie: ()
 					<Layout direction="row" gap="1rem">
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={movie} />}
-						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(); }} />}
+						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(reloadMovie); }} />}
 						<ItemActionsMenu reloadItems={() => reloadMovie()} items={[movie]} user={user} actions={[
 							[ // User-based actions
 								PlayVideoAction,

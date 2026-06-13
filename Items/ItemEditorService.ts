@@ -7,7 +7,6 @@ import { BaseItemDto, MetadataEditorInfo, UserDto } from "@jellyfin/sdk/lib/gene
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { Receiver } from "Common/Receiver";
 import { useObservable } from "@residualeffect/rereactor";
-import { ItemService } from "Items/ItemsService";
 import { ItemCacheResetService } from "Items/ItemCacheResetService";
 
 export function useEditableItem(item: BaseItemDto, user: UserDto): EditableItem|undefined {
@@ -37,7 +36,7 @@ export class ItemEditorService {
 		this.MetadataInfo.Start((a) => getItemUpdateApi(ServerService.Instance.CurrentApi).getMetadataEditorInfo({ itemId: item.Id! }, { signal: a.signal }).then(response => response.data));
 	}
 
-	public Save(): void {
+	public Save(reloadItem: () => void): void {
 		this.ShowErrors.Value = true;
 
 		Nullable.TryExecute(this.CurrentEditableItem.Value, (editableItem) => {
@@ -52,7 +51,7 @@ export class ItemEditorService {
 					this.IsEditing.Value = false;
 					this.CurrentEditableItem.Value?.OnSaved();
 					ItemCacheResetService.Instance.ResetItem(editableItem.From);
-					ItemService.Instance.FindOrCreateItemData(editableItem.From.Id!).LoadItemWithAbort(true);
+					reloadItem();
 				}
 
 				return wasSuccessful;
