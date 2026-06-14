@@ -1,17 +1,26 @@
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { FilterOperation } from "ItemList/FilterOperation";
-import { EditableItemFilter } from "ItemList/EditableItemFilter";
-
-export interface ItemFilterTypeProps {
-	filter: EditableItemFilter;
-	items: BaseItemDto[];
-	currentOperation: FilterOperation;
-}
+import { Computed } from "@residualeffect/reactor";
+import { TranslationRequest } from "Common/TranslatedText";
+import { IEditableField } from "Common/EditableField";
+import { ItemFilterData } from "ItemList/ItemFilterTypeStore";
 
 export interface ItemFilterType {
-	type: string;
-	labelKey: string;
-	targetField: (item: BaseItemDto) => string[]|number[]|string|number|boolean|undefined|null;
-	operations: FilterOperation[];
-	editor: React.FC<ItemFilterTypeProps>;
+	FilterType: string;
+	Label: string;
+	CreateModel: (data?: ItemFilterData) => IFilterModel;
+}
+
+export interface FilterDisplayConfig {
+	Field: TranslationRequest;
+	Operation: TranslationRequest;
+}
+
+export interface IFilterModel {
+	Key: string;
+	FilterType: ItemFilterType;
+	Editor(items: BaseItemDto[]): React.ReactNode;
+	CreateRequest(): ItemFilterData;
+	Display: Computed<FilterDisplayConfig|undefined>;
+	Filter: Computed<(item: BaseItemDto) => boolean>;
+	AllFields: Computed<IEditableField[]>;
 }

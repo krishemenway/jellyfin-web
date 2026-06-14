@@ -24,6 +24,7 @@ export function ApplyIconPropsToSvg(props: IconProps): Partial<React.SVGProps<SV
 			marginLeft: props.mx,
 			marginRight: props.mx,
 			alignSelf: props.alignSelf,
+			opacity: props.opacity,
 		},
 	};
 }

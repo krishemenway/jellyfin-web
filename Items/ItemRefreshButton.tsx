@@ -67,14 +67,14 @@ export const ItemRefreshButton: React.FC<{ item: BaseItemDto }> = ({ item }) => 
 
 					{mode !== "Default" && (
 						<Layout direction="row" gap="1rem" fontSizeREM={.8} alignItems="center" px=".25rem">
-							<ToggleSwitch field={replaceImages} />
+							<ToggleSwitch field={replaceImages} px=".25em" py=".25em" />
 							<FieldLabel field={replaceImages} py=".5em" />
 						</Layout>
 					)}
 
 					{mode !== "Default" && (
 						<Layout direction="row" gap="1rem" fontSizeREM={.8} alignItems="center" px=".25rem">
-							<ToggleSwitch field={replaceTrickplayImages} />
+							<ToggleSwitch field={replaceTrickplayImages} px=".25em" py=".25em" />
 							<FieldLabel field={replaceTrickplayImages} py=".5em" />
 						</Layout>
 					)}

@@ -12,7 +12,6 @@ import { FilterByIsFavorite } from "ItemList/ItemFilterTypes/FilterByIsFavorite"
 import { FilterByProductionYear } from "ItemList/ItemFilterTypes/FilterByProductionYear";
 import { FilterByStudio } from "ItemList/ItemFilterTypes/FilterByStudio";
 import { FilterByTag } from "ItemList/ItemFilterTypes/FilterByTag";
-import { FilterByOfficialRating } from "ItemList/ItemFilterTypes/FilterByOfficialRating";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
 import { SortByOfficialRating } from "ItemList/ItemSortTypes/SortByOfficialRating";
@@ -39,7 +38,6 @@ export const BookService: BaseItemKindService = {
 		FilterByStudio,
 		FilterByTag,
 		FilterByGenre,
-		FilterByOfficialRating,
 	],
 	sortOptions: [
 		SortByName,

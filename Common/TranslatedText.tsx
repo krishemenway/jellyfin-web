@@ -69,7 +69,7 @@ export function useTranslatedText(request: TranslationRequest|undefined): string
 
 	let textFromStore = translations.ReceivedData[request.Key];
 
-	if (request.KeyProps !== undefined && request.KeyProps.length > 0) {
+	if (Nullable.HasValue(textFromStore) && Nullable.HasValue(request.KeyProps)) {
 		request.KeyProps.forEach((tp, i) => { textFromStore = textFromStore.replace(`{${i}}`, tp)})
 	}
 

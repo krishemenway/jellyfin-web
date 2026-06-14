@@ -10,7 +10,7 @@ import { FilterByStudio } from "ItemList/ItemFilterTypes/FilterByStudio";
 import { FilterByGenre } from "ItemList/ItemFilterTypes/FilterByGenre";
 import { FilterByTag } from "ItemList/ItemFilterTypes/FilterByTag";
 import { FilterByProductionYear } from "ItemList/ItemFilterTypes/FilterByProductionYear";
-import { FilterByOfficialRating } from "ItemList/ItemFilterTypes/FilterByOfficialRating";
+import { FilterByTagCount } from "ItemList/ItemFilterTypes/FilterByTagCount";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
@@ -39,7 +39,7 @@ export const MovieService: BaseItemKindService = {
 		FilterByStudio,
 		FilterByTag,
 		FilterByGenre,
-		FilterByOfficialRating,
+		FilterByTagCount,
 	],
 	sortOptions: [
 		SortByName,

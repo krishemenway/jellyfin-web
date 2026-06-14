@@ -3,33 +3,32 @@ import { EditableField } from "Common/EditableField";
 import { useObservable } from "@residualeffect/rereactor";
 import { Button } from "Common/Button";
 import { CheckIcon } from "CommonIcons/CheckIcon";
+import { StyleLayoutProps } from "Common/Layout";
 
-export interface ToggleSwitchProps {
-	field: EditableField<boolean>;
+interface BaseToggleSwitchProps extends StyleLayoutProps {
+	id?: string;
+	enabledIcon?: React.ReactNode;
+	disabledIcon?: React.ReactNode;
 	className?: string;
 }
 
-export const ToggleSwitch: React.FC<ToggleSwitchProps> = (props) => {
-	const value = useObservable(props.field.Current);
+export const ToggleSwitch: React.FC<BaseToggleSwitchProps&{ field: EditableField<boolean>; }> = ({ field, ...props }) => {
+	const value = useObservable(field.Current);
 
 	return (
 		<BaseToggleSwitch
+			{...props}
+			id={field.FieldId}
 			enabled={value}
-			id={props.field.FieldId}
-			onChange={(value) => props.field.OnChange(value)}
+			onChange={(value) => field.OnChange(value)}
 		/>
 	);
 };
 
-export const BaseToggleSwitch: React.FC<{ id?: string; enabled: boolean; onChange: (isEnabled: boolean) => void; }> = ({ id, enabled, onChange }) => {
+export const BaseToggleSwitch: React.FC<BaseToggleSwitchProps&{ enabled: boolean; onChange: (isEnabled: boolean) => void; }> = ({ enabled, onChange, enabledIcon, disabledIcon, ...props }) => {
 	return (
-		<Button
-			type="button"
-			width="1.5em" height="1.5em"
-			alignItems="center" justifyContent="center"
-			id={id}
-			onClick={() => onChange(!enabled)}>
-			{enabled ? <CheckIcon /> : <>&nbsp;</>}
+		<Button type="button" onClick={() => onChange(!enabled)} {...props}>
+			{enabled ? (enabledIcon ?? <CheckIcon />) : (disabledIcon ?? <CheckIcon opacity={0} />)}
 		</Button>
 	);
 };

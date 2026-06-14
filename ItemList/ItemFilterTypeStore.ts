@@ -1,17 +1,29 @@
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemFilterType } from "ItemList/ItemFilterType";
-import { FilterByContinueWatching } from "ItemList/ItemFilterTypes/FilterByContinueWatching";
-import { FilterByGenre } from "ItemList/ItemFilterTypes/FilterByGenre";
-import { FilterByHasEnded } from "ItemList/ItemFilterTypes/FilterByHasEnded";
-import { FilterByHasPlayed } from "ItemList/ItemFilterTypes/FilterByHasPlayed";
-import { FilterByHasSubtitles } from "ItemList/ItemFilterTypes/FilterByHasSubtitles";
-import { FilterByIsFavorite } from "ItemList/ItemFilterTypes/FilterByIsFavorite";
-import { FilterByName } from "ItemList/ItemFilterTypes/FilterByName";
-import { FilterByOfficialRating } from "ItemList/ItemFilterTypes/FilterByOfficialRating";
-import { FilterByProductionYear } from "ItemList/ItemFilterTypes/FilterByProductionYear";
-import { FilterByStudio } from "ItemList/ItemFilterTypes/FilterByStudio";
-import { FilterByTag } from "ItemList/ItemFilterTypes/FilterByTag";
-import { FilterByType } from "ItemList/ItemFilterTypes/FilterByType";
+import { FilterByContinueWatching, FilterByContinueWatchingData } from "ItemList/ItemFilterTypes/FilterByContinueWatching";
+import { FilterByGenre, FilterByGenreData } from "ItemList/ItemFilterTypes/FilterByGenre";
+import { FilterByHasEnded, FilterByHasEndedData } from "ItemList/ItemFilterTypes/FilterByHasEnded";
+import { FilterByHasPlayed, FilterByHasPlayedData } from "ItemList/ItemFilterTypes/FilterByHasPlayed";
+import { FilterByIsFavorite, FilterByIsFavoriteData } from "ItemList/ItemFilterTypes/FilterByIsFavorite";
+import { FilterByName, FilterByNameData } from "ItemList/ItemFilterTypes/FilterByName";
+import { FilterByProductionYear, FilterByProductionYearData } from "ItemList/ItemFilterTypes/FilterByProductionYear";
+import { FilterByStudio, FilterByStudioData } from "ItemList/ItemFilterTypes/FilterByStudio";
+import { FilterByTag, FilterByTagData } from "ItemList/ItemFilterTypes/FilterByTag";
+import { FilterByType, FilterByTypeData } from "ItemList/ItemFilterTypes/FilterByType";
+import { FilterByTagCount, FilterByTagCountData } from "ItemList/ItemFilterTypes/FilterByTagCount";
+
+export type ItemFilterData = 
+	FilterByTypeData
+	| FilterByTagData
+	| FilterByGenreData
+	| FilterByStudioData
+	| FilterByProductionYearData
+	| FilterByContinueWatchingData
+	| FilterByHasPlayedData
+	| FilterByHasEndedData
+	| FilterByIsFavoriteData
+	| FilterByNameData
+	| FilterByTagCountData;
 
 export class ItemFilterTypeStore {
 	public FindOrThrow(filterType: string): ItemFilterType {
@@ -29,15 +41,14 @@ export class ItemFilterTypeStore {
 		FilterByGenre,
 		FilterByHasEnded,
 		FilterByHasPlayed,
-		FilterByHasSubtitles,
 		FilterByIsFavorite,
 		FilterByName,
-		FilterByOfficialRating,
 		FilterByProductionYear,
 		FilterByStudio,
 		FilterByTag,
 		FilterByType,
-	], (t) => t.type);
+		FilterByTagCount,
+	], (t) => t.FilterType);
 	
 	static get Instance(): ItemFilterTypeStore {
 		return this._instance ?? (this._instance = new ItemFilterTypeStore());

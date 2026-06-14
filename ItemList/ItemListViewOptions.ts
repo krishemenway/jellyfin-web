@@ -2,13 +2,12 @@ import { BaseItemDto, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/mode
 import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByObjectsFunc, SortFuncs } from "Common/Sort";
-import { EditableItemFilter } from "ItemList/EditableItemFilter";
 import { CreateSortFunc, ItemSortOption } from "ItemList/ItemSortOption";
-import { ItemFilterType } from "ItemList/ItemFilterType";
+import { IFilterModel, ItemFilterType } from "ItemList/ItemFilterType";
 import { EditableField, ValueIsRequired } from "Common/EditableField";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { ItemSortOptionStore } from "ItemList/ItemSortOptionStore";
-import { ItemFilterTypeStore } from "ItemList/ItemFilterTypeStore";
+import { ItemFilterTypeStore, ItemFilterData } from "ItemList/ItemFilterTypeStore";
 
 export class ItemListViewOptions {
 	constructor(dataSource: ItemViewOptionDataSource, data?: ItemViewOptionsData, canSave?: boolean) {
@@ -20,20 +19,18 @@ export class ItemListViewOptions {
 		this.DataSource = data?.DataSource ?? dataSource;
 
 		this.NewFilter = new Observable(undefined);
-		this.Filters = new ObservableArray(Nullable.Value(data, [], (d) => d.Filters).map((d) => {
-			return new EditableItemFilter(ItemFilterTypeStore.Instance.FindOrThrow(d.FilterType), d.FilterValue, d.Operation);
-		}));
+		this.Filters = new ObservableArray(Nullable.Value(data, [], (d) => d.Filters).map((d) => ItemFilterTypeStore.Instance.FindOrThrow(d.Type).CreateModel(d)));
 
 		this.SortBy = new ObservableArray(Nullable.Value(data, [], (d) => d.Sorts).map(d => {
 			return CreateSortFunc(ItemSortOptionStore.Instance.FindOrThrow(d.SortType), d.Reversed, d.Hidden);
 		}));
 
-		this.FilterFunc = new Computed(() => (item) => this.Filters.Value.every((f) => f.ShowItem(item)))
+		this.FilterFunc = new Computed(() => (item) => this.Filters.Value.every(f => f.Filter.Value(item)))
 		this.SortByFunc = new Computed(() => SortByObjectsFunc(this.SortBy.Value.concat([CreateSortFunc(SortByName, false, false)])));
 	}
 
 	public CreateNewFilter(filterOption: ItemFilterType): void {
-		this.NewFilter.Value = new EditableItemFilter(filterOption);
+		this.NewFilter.Value = filterOption.CreateModel();
 	}
 
 	public ClearNewFilter(): void {
@@ -62,7 +59,7 @@ export class ItemListViewOptions {
 	public AddNewFilter(onAddedSuccessfully: () => void): void {
 		const newFilter = this.NewFilter.Value!;
 
-		if (newFilter.AllFields.every((f) => f.CanMakeRequest())) {
+		if (newFilter.AllFields.Value.every((f) => f.CanMakeRequest())) {
 			this.Filters.push(newFilter);
 			this.ClearNewFilter();
 			onAddedSuccessfully();
@@ -80,7 +77,7 @@ export class ItemListViewOptions {
 			Key: this.Key,
 			DataSource: this.DataSource,
 			Label: this.Label.Current.Value,
-			Filters: this.Filters.Value.map((i) => ({ FilterType: i.FilterType.type, FilterValue: i.FilterValue.Current.Value, Operation: i.Operation.Current.Value.Name })),
+			Filters: this.Filters.Value.map((i) => i.CreateRequest()),
 			Sorts: this.SortBy.Value.map((s) => ({ SortType: s.SortType, Reversed: s.Reversed, Hidden: s.Hidden }) as ItemViewOptionSortData),
 		};
 	}
@@ -96,9 +93,9 @@ export class ItemListViewOptions {
 	public ShowErrors: Observable<boolean>;
 	public DataSource: ItemViewOptionDataSource;
 
-	public NewFilter: Observable<EditableItemFilter|undefined>;
+	public NewFilter: Observable<IFilterModel|undefined>;
 
-	public Filters: ObservableArray<EditableItemFilter>;
+	public Filters: ObservableArray<IFilterModel>;
 	public SortBy: ObservableArray<SortFuncs<BaseItemDto>>;
 
 	public FilterFunc: Computed<(item: BaseItemDto) => boolean>;
@@ -126,6 +123,6 @@ export interface ItemViewOptionsData {
 	Label: string;
 	Key: string;
 	DataSource: ItemViewOptionDataSource;
-	Filters: ItemViewOptionFilterData[];
+	Filters: ItemFilterData[];
 	Sorts: ItemViewOptionSortData[];
 }

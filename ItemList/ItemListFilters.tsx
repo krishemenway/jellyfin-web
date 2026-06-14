@@ -13,11 +13,10 @@ import { ArrowUpIcon } from "CommonIcons/ArrowUpIcon";
 import { LoadViewOptionsIcon } from "ItemList/LoadViewOptionsIcon";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { ItemSortOption } from "ItemList/ItemSortOption";
-import { EditableItemFilter } from "ItemList/EditableItemFilter";
+import { IFilterModel } from "ItemList/ItemFilterType";
 import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { SortFuncs } from "Common/Sort";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
 import { Form } from "Common/Form";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { TextField } from "Common/TextField";
@@ -32,6 +31,7 @@ import { RadioUncheckedIcon } from "CommonIcons/RadioUncheckedIcon";
 import { FieldError } from "Common/FieldError";
 import { VisibleIcon } from "CommonIcons/VisibleIcon";
 import { HyperLink } from "Common/HyperLink";
+import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
 
 export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
@@ -116,16 +116,20 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 	);
 };
 
-const ConfiguredFilter: React.FC<{ filter: EditableItemFilter; listOptions: ItemListViewOptions }> = (props) => {
+const ConfiguredFilter: React.FC<{ filter: IFilterModel; listOptions: ItemListViewOptions }> = (props) => {
 	const background = useBackgroundStyles();
-	const displayValue = useObservable(props.filter.DisplayValue);
+	const displayValue = useObservable(props.filter.Display);
 
 	return (
 		<Layout direction="row" className={background.alternatePanel}>
 			<Layout direction="row" px="1em" py=".25em">
-				<TranslatedText textKey={props.filter.FilterType.labelKey} />
-				&nbsp;
-				<TranslatedText textKey={displayValue[0]} textProps={displayValue.slice(1)} />
+				{Nullable.Value(displayValue, <QuestionMarkIcon />, (config) => (
+					<>
+						<TranslatedText textKey={config.Field.Key} textProps={config.Field.KeyProps} />
+						&nbsp;
+						<TranslatedText textKey={config.Operation.Key} textProps={config.Operation.KeyProps} />
+					</>
+				))}
 			</Layout>
 
 			<Button type="button" onClick={() => props.listOptions.Filters.remove(props.filter)} icon={<DeleteIcon />} px=".25em" py=".25em" />
@@ -176,10 +180,10 @@ const PickFilterModal: React.FC<{ filterTypes: ItemFilterType[]; onPicked: (opti
 			items={props.filterTypes}
 			direction="row" wrap
 			px="1em" py="1em" gap="1em" grow width="25rem"
-			forEachItem={(filterOption) => (
+			forEachItem={(filterType) => (
 				<Button
-					key={filterOption.labelKey} label={filterOption.labelKey}
-					type="button" onClick={() => { props.onPicked(filterOption); props.onClosed(); }}
+					key={filterType.FilterType} label={{ Key: filterType.Label }}
+					type="button" onClick={() => { props.onPicked(filterType); props.onClosed(); }}
 					direction="column" width={{ itemsPerRow: itemsPerRow, gap: "1em" }} px=".5em" py=".5em"
 				/>
 			)}
@@ -187,20 +191,10 @@ const PickFilterModal: React.FC<{ filterTypes: ItemFilterType[]; onPicked: (opti
 	);
 };
 
-const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilter: EditableItemFilter; onClosed: () => void; items: BaseItemDto[]; }> = (props) => {
-	const operation = useObservable(props.newFilter.Operation.Current);
-	const FilterTypeEditor = props.newFilter.FilterType.editor;
-	const showErrors = useObservable(props.listOptions.ShowErrors);
-
+const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilter: IFilterModel; onClosed: () => void; items: BaseItemDto[]; }> = (props) => {
 	return (
 		<Form py="1em" px="1em" gap="1em" direction="column" onSubmit={() => { props.listOptions.AddNewFilter(() => props.onClosed()); }} minWidth="20em" maxWidth="26em">
-			<Layout direction="row" alignItems="center" justifyContent="center" gap="1em">
-				<Layout direction="column" fontSizeREM={1.2}><TranslatedText textKey={props.newFilter.FilterType.labelKey} /></Layout>
-				<AutoCompleteFieldEditor field={props.newFilter.Operation} allOptions={props.newFilter.FilterType.operations} getValue={(o) => o.Name} getLabel={(o) => <TranslatedText textKey={o.Name} />} grow />
-			</Layout>
-
-			<FilterTypeEditor {...props} filter={props.newFilter} currentOperation={operation} />
-			<FieldError field={props.newFilter.FilterValue} showErrors={showErrors} />
+			{props.newFilter.Editor(props.items)}
 
 			<Layout direction="row" gap="1em">
 				<Button type="button" justifyContent="center" py=".25em" onClick={() => { props.onClosed(); }} grow><TranslatedText textKey="ButtonCancel" /></Button>
