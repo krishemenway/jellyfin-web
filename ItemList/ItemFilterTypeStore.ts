@@ -11,6 +11,7 @@ import { FilterByStudio, FilterByStudioData } from "ItemList/ItemFilterTypes/Fil
 import { FilterByTag, FilterByTagData } from "ItemList/ItemFilterTypes/FilterByTag";
 import { FilterByType, FilterByTypeData } from "ItemList/ItemFilterTypes/FilterByType";
 import { FilterByTagCount, FilterByTagCountData } from "ItemList/ItemFilterTypes/FilterByTagCount";
+import { FilterByMissingField, FilterByMissingFieldData } from "ItemList/ItemFilterTypes/FilterByMissingField";
 
 export type ItemFilterData = 
 	FilterByTypeData
@@ -23,7 +24,8 @@ export type ItemFilterData =
 	| FilterByHasEndedData
 	| FilterByIsFavoriteData
 	| FilterByNameData
-	| FilterByTagCountData;
+	| FilterByTagCountData
+	| FilterByMissingFieldData;
 
 export class ItemFilterTypeStore {
 	public FindOrThrow(filterType: string): ItemFilterType {
@@ -48,6 +50,7 @@ export class ItemFilterTypeStore {
 		FilterByTag,
 		FilterByType,
 		FilterByTagCount,
+		FilterByMissingField,
 	], (t) => t.FilterType);
 	
 	static get Instance(): ItemFilterTypeStore {

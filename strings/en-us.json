@@ -830,6 +830,7 @@
     "LabelMinResumeDurationHelp": "The shortest video length in seconds that will save playback location and let you resume.",
     "LabelMinResumePercentage": "Minimum resume percentage",
     "LabelMinResumePercentageHelp": "Titles are assumed unplayed if stopped before this time.",
+    "LabelMissingFields": "Missing fields",
     "LabelMovieCategories": "Movie categories",
     "LabelMoviePrefix": "Movie prefix",
     "LabelMoviePrefixHelp": "If a prefix is applied to movie titles, enter it here so the server can handle it properly.",

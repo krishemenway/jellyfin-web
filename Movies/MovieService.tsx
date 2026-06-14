@@ -11,6 +11,7 @@ import { FilterByGenre } from "ItemList/ItemFilterTypes/FilterByGenre";
 import { FilterByTag } from "ItemList/ItemFilterTypes/FilterByTag";
 import { FilterByProductionYear } from "ItemList/ItemFilterTypes/FilterByProductionYear";
 import { FilterByTagCount } from "ItemList/ItemFilterTypes/FilterByTagCount";
+import { FilterByMissingField } from "ItemList/ItemFilterTypes/FilterByMissingField";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
@@ -40,6 +41,7 @@ export const MovieService: BaseItemKindService = {
 		FilterByTag,
 		FilterByGenre,
 		FilterByTagCount,
+		FilterByMissingField,
 	],
 	sortOptions: [
 		SortByName,

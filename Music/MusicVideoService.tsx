@@ -22,6 +22,7 @@ import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { FilterByMissingField } from "ItemList/ItemFilterTypes/FilterByMissingField";
 
 export const MusicVideoService: BaseItemKindService = {
 	kind: "MusicVideo",
@@ -39,6 +40,7 @@ export const MusicVideoService: BaseItemKindService = {
 		FilterByStudio,
 		FilterByTag,
 		FilterByTagCount,
+		FilterByMissingField,
 	],
 	sortOptions: [
 		SortByName,

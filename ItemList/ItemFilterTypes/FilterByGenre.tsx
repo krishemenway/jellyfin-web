@@ -81,7 +81,7 @@ const GenreEditor: React.FC<{ genreField: EditableField<string[]>; inverseField:
 
 			<Layout direction="row" justifyContent="stretch" gap=".5rem">
 				<ToggleSwitch field={inverseField} enabledIcon={<CircleSlashIcon />} disabledIcon={<CircleCheckmarkIcon />} alignItems="center" justifyContent="center" px=".5em" />
-				<MultiSelectEditor field={genreField} allOptions={genres} getValue={(tag) => tag} getLabel={(tag) => tag} />
+				<MultiSelectEditor field={genreField} allOptions={genres} getValue={(genre) => genre} getLabel={(genre) => genre} />
 			</Layout>
 		</>
 	);

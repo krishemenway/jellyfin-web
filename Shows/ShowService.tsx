@@ -11,6 +11,7 @@ import { FilterByProductionYear } from "ItemList/ItemFilterTypes/FilterByProduct
 import { FilterByIsFavorite } from "ItemList/ItemFilterTypes/FilterByIsFavorite";
 import { FilterByHasEnded } from "ItemList/ItemFilterTypes/FilterByHasEnded";
 import { FilterByTagCount } from "ItemList/ItemFilterTypes/FilterByTagCount";
+import { FilterByMissingField } from "ItemList/ItemFilterTypes/FilterByMissingField";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
 import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
@@ -38,6 +39,7 @@ export const ShowService: BaseItemKindService = {
 		FilterByIsFavorite,
 		FilterByHasEnded,
 		FilterByTagCount,
+		FilterByMissingField,
 	],
 	sortOptions: [
 		SortByName,

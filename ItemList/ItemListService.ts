@@ -19,7 +19,7 @@ export interface ItemListWithStats {
 	Stats: Record<string, Record<string, number>>;
 }
 
-const defaultLoadFunc = (a: AbortController, id: string) => (getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: id, fields: ["DateCreated", "Genres", "Tags", "SortName", "Studios"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((r) => r.data.Items ?? []));
+const defaultLoadFunc = (a: AbortController, id: string) => (getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: id, fields: ["DateCreated", "Genres", "Tags", "SortName", "Studios", "Overview", "People", "ProviderIds"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((r) => r.data.Items ?? []));
 const loadRequestForDataSource = (dataSource: ItemViewOptionDataSource, receiver: IReceiver): (a: AbortController) => Promise<BaseItemDto[]> => {
 	if (dataSource.DataSource === "Library") {
 		const [kind, libraryId] = dataSource.DataSourceKey.split("|");
