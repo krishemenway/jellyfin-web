@@ -25,7 +25,7 @@ export class EditableField<T> implements IEditableField {
 		this.Saved = new Observable(defaultValue);
 		this.Current = new Observable(this.Saved.Value);
 
-		this.HasChanged = new Computed(() => this.Current.Value !== this.Saved.Value);
+		this.HasChanged = new Computed(() => this.CurrentHasChangedFromSaved());
 		this.ServerErrorMessage = new Observable(undefined);
 
 		this.ErrorMessage = new Computed<string|undefined>(() => Linq.Coalesce([this.GetRequestBlockingErrorFunc(this.Current.Value), this.ServerErrorMessage.Value], "", m => Nullable.StringHasValue(m)));
@@ -52,6 +52,17 @@ export class EditableField<T> implements IEditableField {
 	public Revert(): void {
 		this.Current.Value = this.Saved.Value;
 		this.ServerErrorMessage.Value = "";
+	}
+
+	private CurrentHasChangedFromSaved(): boolean {
+		const current = this.Current.Value;
+		const saved = this.Saved.Value;
+		
+		if (Array.isArray(current) && Array.isArray(saved)) {
+			return current.some((value, index) => value !== saved[index]) || saved.some((value, index) => value !== current[index]);
+		}
+
+		return current !== saved;
 	}
 
 	public FieldId: string;
