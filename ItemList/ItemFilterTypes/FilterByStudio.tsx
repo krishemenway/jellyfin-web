@@ -74,7 +74,7 @@ export class FilterByStudiosModel implements IFilterModel {
 }
 
 const StudioEditor: React.FC<{ studiosField: EditableField<string[]>; inverseField: EditableField<boolean>; items: BaseItemDto[]; }> = ({ studiosField, inverseField, items }) => {
-	const studios = React.useMemo(() => Linq.Distinct(Linq.SelectMany(items, (i) => i.Studios ?? [])).sort(SortByString(s => s.Name)), [items]);
+	const studios = React.useMemo(() => Linq.Distinct(Linq.SelectMany(items, (i) => i.Studios?.map((s) => s.Name ?? "") ?? [])).sort(SortByString(s => s)), [items]);
 
 	return (
 		<>
@@ -84,7 +84,7 @@ const StudioEditor: React.FC<{ studiosField: EditableField<string[]>; inverseFie
 
 			<Layout direction="row" justifyContent="stretch" gap=".5rem">
 				<ToggleSwitch field={inverseField} enabledIcon={<CircleSlashIcon />} disabledIcon={<CircleCheckmarkIcon />} alignItems="center" justifyContent="center" px=".5em" />
-				<MultiSelectEditor field={studiosField} allOptions={studios.map((s) => s.Name ?? "")} getValue={(studioName) => studioName} getLabel={(studioName) => studioName} />
+				<MultiSelectEditor field={studiosField} allOptions={studios} getValue={(studioName) => studioName} getLabel={(studioName) => studioName} />
 			</Layout>
 		</>
 	);
