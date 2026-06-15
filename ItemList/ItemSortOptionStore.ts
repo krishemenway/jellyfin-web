@@ -1,5 +1,5 @@
-import { Linq } from "Common/MissingJavascriptFunctions";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { ItemSortType } from "ItemList/ItemSortType";
 import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
 import { SortByCriticRating } from "ItemList/ItemSortTypes/SortByCriticRating";
 import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
@@ -14,9 +14,9 @@ import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
 
-export class ItemSortOptionStore {
+export class ItemSortTypeStore {
 	constructor() {
-		this.SortOptions = [
+		this.All = Linq.ToRecord([
 			SortByCommunityRating,
 			SortByCriticRating,
 			SortByDateCreated,
@@ -31,18 +31,24 @@ export class ItemSortOptionStore {
 			SortByRandom,
 			SortByRuntime,
 			SortByTagCount,
-		];
+		], (sort) => sort.field);
 	}
 
-	public FindOrThrow(field: string): ItemSortOption {
-		return Linq.Single(this.SortOptions, (o) => o.field === field);
+	public FindOrThrow(type: string): ItemSortType {
+		const sort = this.All[type];
+
+		if (!Nullable.HasValue(sort)) {
+			throw new Error(`Unknown sort type ${type}`);
+		}
+
+		return sort;
 	}
 
-	public SortOptions: ItemSortOption[];
+	public All: Record<string, ItemSortType>;
 	
-	static get Instance(): ItemSortOptionStore {
-		return this._instance ?? (this._instance = new ItemSortOptionStore());
+	static get Instance(): ItemSortTypeStore {
+		return this._instance ?? (this._instance = new ItemSortTypeStore());
 	}
 
-	private static _instance: ItemSortOptionStore;
+	private static _instance: ItemSortTypeStore;
 }

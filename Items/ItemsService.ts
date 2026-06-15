@@ -1,7 +1,7 @@
 import { ItemDataService } from "Items/ItemDataService";
 import { ItemListService } from "ItemList/ItemListService";
 import { ItemViewOptionDataSource } from "ItemList/ItemListViewOptions";
-import { BaseItemKind } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
 
 export class ItemService {
 	constructor() {

@@ -1,8 +1,8 @@
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByString } from "Common/Sort";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { ItemSortType } from "ItemList/ItemSortType";
 
-export const SortByName: ItemSortOption = {
+export const SortByName: ItemSortType = {
 	labelKey: "LabelName",
 	field: "Name",
 	getContent: (i) => Nullable.StringValue(i.SortName, "-"),

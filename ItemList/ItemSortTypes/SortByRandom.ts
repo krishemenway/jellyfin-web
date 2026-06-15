@@ -1,7 +1,7 @@
 import { SortByNumber } from "Common/Sort";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { ItemSortType } from "ItemList/ItemSortType";
 
-export const SortByRandom: ItemSortOption = {
+export const SortByRandom: ItemSortType = {
 	labelKey: 'OptionRandom',
 	field: "Random",
 	getContent: (i) => FindOrCreateRandomValue(i.Id).toLocaleString(),

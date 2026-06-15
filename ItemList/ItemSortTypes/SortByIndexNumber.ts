@@ -1,14 +1,14 @@
 import { SortByNumber } from "Common/Sort";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { ItemSortType } from "ItemList/ItemSortType";
 
-export const SortByIndexNumber: ItemSortOption = {
+export const SortByIndexNumber: ItemSortType = {
 	labelKey: '',
 	field: "IndexNumber",
 	getContent: (i) => i.IndexNumber?.toString(),
 	sortFunc: SortByNumber((i) => i.IndexNumber),
 };
 
-export const SortByParentIndexNumber: ItemSortOption = {
+export const SortByParentIndexNumber: ItemSortType = {
 	labelKey: '',
 	field: "ParentIndexNumber",
 	getContent: (i) => i.ParentIndexNumber?.toString(),

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Layout } from "Common/Layout";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { CheckIcon } from "CommonIcons/CheckIcon";
-import { BaseItemDto } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { ProgressCircle } from "Common/ProgressBar";
 
 export const ItemPlayedMarker: React.FC<{ item: BaseItemDto }> = ( { item }) => {

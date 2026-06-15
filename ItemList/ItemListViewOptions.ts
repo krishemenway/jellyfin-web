@@ -2,11 +2,11 @@ import { BaseItemDto, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/mode
 import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByObjectsFunc, SortFuncs } from "Common/Sort";
-import { CreateSortFunc, ItemSortOption } from "ItemList/ItemSortOption";
+import { CreateSortFunc, ItemSortType } from "ItemList/ItemSortType";
 import { IFilterModel, ItemFilterType } from "ItemList/ItemFilterType";
 import { EditableField, ValueIsRequired } from "Common/EditableField";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
-import { ItemSortOptionStore } from "ItemList/ItemSortOptionStore";
+import { ItemSortTypeStore } from "ItemList/ItemSortOptionStore";
 import { ItemFilterTypeStore, ItemFilterData } from "ItemList/ItemFilterTypeStore";
 
 export class ItemListViewOptions {
@@ -22,7 +22,7 @@ export class ItemListViewOptions {
 		this.Filters = new ObservableArray(Nullable.Value(data, [], (d) => d.Filters).map((d) => ItemFilterTypeStore.Instance.FindOrThrow(d.Type).CreateModel(d)));
 
 		this.SortBy = new ObservableArray(Nullable.Value(data, [], (d) => d.Sorts).map(d => {
-			return CreateSortFunc(ItemSortOptionStore.Instance.FindOrThrow(d.SortType), d.Reversed, d.Hidden);
+			return CreateSortFunc(ItemSortTypeStore.Instance.FindOrThrow(d.SortType), d.Reversed, d.Hidden);
 		}));
 
 		this.FilterFunc = new Computed(() => (item) => this.Filters.Value.every(f => f.Filter.Value(item)))
@@ -38,8 +38,8 @@ export class ItemListViewOptions {
 		this.ShowErrors.Value = false;
 	}
 
-	public AddSort(sortFunc: ItemSortOption, reversed: boolean): void {
-		this.SortBy.unshift(CreateSortFunc(sortFunc, reversed, false));
+	public AddSort(sortType: ItemSortType, reversed: boolean): void {
+		this.SortBy.unshift(CreateSortFunc(sortType, reversed, false));
 	}
 
 	public ReverseSort(sort: SortFuncs<BaseItemDto>): void {

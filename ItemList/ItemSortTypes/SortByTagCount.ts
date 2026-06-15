@@ -1,7 +1,7 @@
 import { SortByNumber } from "Common/Sort";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { ItemSortType } from "ItemList/ItemSortType";
 
-export const SortByTagCount: ItemSortOption = {
+export const SortByTagCount: ItemSortType = {
 	labelKey: 'Tags',
 	field: "TagCount",
 	getContent: (i) => (i.Tags?.length ?? 0).toString(),

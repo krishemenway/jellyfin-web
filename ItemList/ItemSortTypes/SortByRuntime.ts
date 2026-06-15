@@ -1,8 +1,8 @@
 import { DateTime } from "Common/MissingJavascriptFunctions";
 import { SortByNumber } from "Common/Sort";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { ItemSortType } from "ItemList/ItemSortType";
 
-export const SortByRuntime: ItemSortOption = {
+export const SortByRuntime: ItemSortType = {
 	labelKey: 'Runtime',
 	field: "Runtime",
 	getContent: (i) => DateTime.ConvertTicksToDurationString(i.RunTimeTicks),

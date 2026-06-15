@@ -1,8 +1,8 @@
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByNumber } from "Common/Sort";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { ItemSortType } from "ItemList/ItemSortType";
 
-export const SortByOfficialRating: ItemSortOption = {
+export const SortByOfficialRating: ItemSortType = {
 	labelKey: 'OptionParentalRating',
 	field: "OfficialRating",
 	getContent: (i) => i.OfficialRating,

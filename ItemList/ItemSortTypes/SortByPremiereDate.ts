@@ -1,8 +1,8 @@
 import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByString } from "Common/Sort";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { ItemSortType } from "ItemList/ItemSortType";
 
-export const SortByPremiereDate: ItemSortOption = {
+export const SortByPremiereDate: ItemSortType = {
 	labelKey: 'OptionReleaseDate',
 	field: "PremiereDate",
 	getContent: (i) => Nullable.StringValue(i.PremiereDate, "—", (premiereDate) => DateTime.ParseWithoutZone(premiereDate).toLocaleDateString()),

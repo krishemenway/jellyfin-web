@@ -49,7 +49,7 @@ import { ChangeImageButton } from "Items/ChangeImageButton";
 import { ItemMediaInfo } from "Items/ItemMediaInfo";
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { ItemFavoriteIcon } from "Items/ItemFavoriteIcon";
-import { CreateSortFunc } from "ItemList/ItemSortOption";
+import { CreateSortFunc } from "ItemList/ItemSortType";
 import { SortByObjects } from "Common/Sort";
 
 export const Show: React.FC = () => {

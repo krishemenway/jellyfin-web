@@ -1,7 +1,7 @@
 import { SortByNumber } from "Common/Sort";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { ItemSortType } from "ItemList/ItemSortType";
 
-export const SortByCommunityRating: ItemSortOption = {
+export const SortByCommunityRating: ItemSortType = {
 	labelKey: 'OptionCommunityRating',
 	field: "CommunityRating",
 	getContent: (i) => i.CommunityRating?.toString(),

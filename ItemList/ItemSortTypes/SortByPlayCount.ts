@@ -1,7 +1,7 @@
 import { SortByNumber } from "Common/Sort";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { ItemSortType } from "ItemList/ItemSortType";
 
-export const SortByPlayCount: ItemSortOption = {
+export const SortByPlayCount: ItemSortType = {
 	labelKey: 'OptionPlayCount',
 	field: "PlayCount",
 	getContent: (i) => i.UserData?.PlayCount?.toString(),

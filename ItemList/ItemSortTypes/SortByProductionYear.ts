@@ -1,7 +1,7 @@
 import { SortByNumber } from "Common/Sort";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { ItemSortType } from "ItemList/ItemSortType";
 
-export const SortByProductionYear: ItemSortOption = {
+export const SortByProductionYear: ItemSortType = {
 	labelKey: 'LabelYear',
 	field: "ProductionYear",
 	getContent: (i) => i.ProductionYear?.toString(),

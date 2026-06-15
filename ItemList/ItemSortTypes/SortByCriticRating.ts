@@ -1,7 +1,7 @@
 import { SortByNumber } from "Common/Sort";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { ItemSortType } from "ItemList/ItemSortType";
 
-export const SortByCriticRating: ItemSortOption = {
+export const SortByCriticRating: ItemSortType = {
 	labelKey: 'OptionCriticRating',
 	field: "CriticRating",
 	getContent: (i) => i.CriticRating?.toString(),

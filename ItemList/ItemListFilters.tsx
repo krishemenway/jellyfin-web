@@ -12,7 +12,7 @@ import { ArrowDownIcon } from "CommonIcons/ArrowDownIcon";
 import { ArrowUpIcon } from "CommonIcons/ArrowUpIcon";
 import { LoadViewOptionsIcon } from "ItemList/LoadViewOptionsIcon";
 import { ItemFilterType } from "ItemList/ItemFilterType";
-import { ItemSortOption } from "ItemList/ItemSortOption";
+import { ItemSortType } from "ItemList/ItemSortType";
 import { IFilterModel } from "ItemList/ItemFilterType";
 import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { SortFuncs } from "Common/Sort";
@@ -37,7 +37,7 @@ export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
 	itemList: ItemListService;
 	user: UserDto;
-	sortTypes: ItemSortOption[];
+	sortTypes: ItemSortType[];
 	filterTypes: ItemFilterType[];
 	settings: Settings;
 	items: BaseItemDto[];
@@ -153,7 +153,7 @@ const ConfiguredSort: React.FC<{ sort: SortFuncs<BaseItemDto>; listOptions: Item
 	);
 };
 
-const PickSortOptionModal: React.FC<{ sortTypes: ItemSortOption[]; onPicked: (option: ItemSortOption, reversed: boolean) => void; onClosed: () => void; }> = (props) => {
+const PickSortOptionModal: React.FC<{ sortTypes: ItemSortType[]; onPicked: (option: ItemSortType, reversed: boolean) => void; onClosed: () => void; }> = (props) => {
 	const itemsPerRow = useBreakpointValues(1, 2, 2, 2);
 
 	return (

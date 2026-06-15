@@ -1,6 +1,6 @@
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { IReceiver } from "Common/Receiver";
-import { BaseItemDto } from "node_modules/@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 
 export class ItemCacheResetService {
 	constructor() {

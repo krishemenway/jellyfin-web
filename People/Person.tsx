@@ -27,7 +27,7 @@ import { IconForItem } from "Items/IconForItem";
 import { SortFuncs } from "Common/Sort";
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { ItemsApiGetItemsRequest } from "@jellyfin/sdk/lib/generated-client/api/items-api";
-import { CreateSortFunc } from "ItemList/ItemSortOption";
+import { CreateSortFunc } from "ItemList/ItemSortType";
 import { ChangeImageButton } from "Items/ChangeImageButton";
 import { useObservable } from "@residualeffect/rereactor";
 import { ItemEditorService, useEditableItem } from "Items/ItemEditorService";
