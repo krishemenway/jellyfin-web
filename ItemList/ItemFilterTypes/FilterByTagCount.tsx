@@ -10,7 +10,7 @@ import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
 
 export const FilterByTagCount: ItemFilterType = {
 	FilterType: "FilterByTagCount",
-	Label: "Tags",
+	Label: "TagCount",
 	CreateModel: (data) => new FilterByTagCountModel(data as FilterByTagCountData),
 };
 
