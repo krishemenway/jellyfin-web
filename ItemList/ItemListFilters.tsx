@@ -32,6 +32,7 @@ import { FieldError } from "Common/FieldError";
 import { VisibleIcon } from "CommonIcons/VisibleIcon";
 import { HyperLink } from "Common/HyperLink";
 import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
+import { EditIcon } from "CommonIcons/EditIcon";
 
 export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
@@ -72,7 +73,7 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 						<ListOf
 							items={filters}
 							direction="row" gap=".5em"
-							forEachItem={(filter) => <ConfiguredFilter key={filter.Key} filter={filter} listOptions={props.listOptions} />}
+							forEachItem={(filter) => <ConfiguredFilter key={filter.Key} filter={filter} listOptions={props.listOptions} items={props.items} />}
 						/>
 					</Layout>
 				)}
@@ -116,9 +117,10 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 	);
 };
 
-const ConfiguredFilter: React.FC<{ filter: IFilterModel; listOptions: ItemListViewOptions }> = (props) => {
+const ConfiguredFilter: React.FC<{ filter: IFilterModel; listOptions: ItemListViewOptions; items: BaseItemDto[]; }> = ({ filter, listOptions, items }) => {
+	const [editRef, setEditRef] = React.useState<HTMLButtonElement|null>(null);
 	const background = useBackgroundStyles();
-	const displayValue = useObservable(props.filter.Display);
+	const displayValue = useObservable(filter.Display);
 
 	return (
 		<Layout direction="row" className={background.alternatePanel}>
@@ -132,7 +134,14 @@ const ConfiguredFilter: React.FC<{ filter: IFilterModel; listOptions: ItemListVi
 				))}
 			</Layout>
 
-			<Button type="button" onClick={() => props.listOptions.Filters.remove(props.filter)} icon={<DeleteIcon />} px=".25em" py=".25em" />
+			<AnchoredModal anchorElement={editRef} open={editRef !== null} onClosed={() => { setEditRef(null); }} opensInDirection="left">
+				<Layout py="1em" px="1em" gap="1em" direction="column" minWidth="20em" maxWidth="26em">
+					{filter.Editor(items)}
+				</Layout>
+			</AnchoredModal>
+
+			<Button type="button" onClick={(button) => setEditRef(button)} icon={<EditIcon />} px=".25em" py=".25em" />
+			<Button type="button" onClick={() => listOptions.Filters.remove(filter)} icon={<DeleteIcon />} px=".25em" py=".25em" />
 		</Layout>
 	);
 };
