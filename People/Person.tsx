@@ -47,7 +47,7 @@ const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
 	includeItemTypes: [ "Audio", "Movie", "Episode", "AudioBook", "Photo", "Video", "MusicVideo"],
 };
 
-const CreditSortOrder: SortFuncs<BaseItemDto>[] = [CreateSortFunc(SortByPremiereDate, true, false), CreateSortFunc(SortByIndexNumber, true, false)];
+const CreditSortOrder: SortFuncs<BaseItemDto>[] = [CreateSortFunc(SortByPremiereDate, true), CreateSortFunc(SortByIndexNumber, true)];
 
 export const Person: React.FC = () => {
 	const personId = useParams().personId;

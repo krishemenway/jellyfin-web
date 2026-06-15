@@ -100,7 +100,7 @@ export class ItemListService {
 		SettingsStore.Instance.SaveSettings("usersettings", settings.CreateSaveRequestWithChangedKey(listOptions.BuildStorageKey(), listOptions.CreateSaveRequest()), () => {
 			SettingsStore.Instance.LoadSettings("usersettings", () => {
 				if (!this.ExistingOptions.Value.includes(listOptions)) {
-					listOptions.Label.OnSaved();
+					listOptions.OnSaved();
 					this.ExistingOptions.push(listOptions);
 				}
 

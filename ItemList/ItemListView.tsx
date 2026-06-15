@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BaseItemDto, BaseItemKind, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
 import { useComputed, useObservable } from "@residualeffect/rereactor";
 import { useBreakpointValues } from "AppStyles";
 import { Layout } from "Common/Layout";
@@ -14,7 +14,6 @@ import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigat
 import { useParams } from "react-router-dom";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
-import { LoginService } from "Users/LoginService";
 import { ItemListService } from "ItemList/ItemListService";
 import { UserViewStore } from "Users/UserViewStore";
 import { PageTitle } from "Common/PageTitle";
@@ -46,13 +45,13 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 	return (
 		<PageWithNavigation icon={itemKind}>
 			<Loading
-				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), LoginService.Instance.User, UserViewStore.Instance.FindOrCreateForUser(userId)]}
+				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), UserViewStore.Instance.FindOrCreateForUser(userId)]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(settings, user, libraries) => (
+				whenReceived={(settings, libraries) => (
 					<LoadedBasicItemListView
 						libraryId={libraryId} viewOptionsKey={viewOptionsKey} itemList={itemList} itemKindService={itemKindService}
-						settings={settings} user={user} libraries={libraries} key={libraryId}
+						settings={settings} libraries={libraries} key={libraryId}
 					/>
 				)}
 			/>
@@ -60,7 +59,7 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 	);
 };
 
-const LoadedBasicItemListView: React.FC<{ libraryId: string; viewOptionsKey?: string; settings: Settings; user: UserDto; itemList: ItemListService; libraries: BaseItemDto[]; itemKindService: BaseItemKindService }> = ({ itemList, libraries, ...props }) => {
+const LoadedBasicItemListView: React.FC<{ libraryId: string; viewOptionsKey?: string; settings: Settings; itemList: ItemListService; libraries: BaseItemDto[]; itemKindService: BaseItemKindService }> = ({ itemList, libraries, ...props }) => {
 	const listOptions = useObservable(itemList.ListOptions);
 	const library = Linq.Single(libraries, (l) => l.Id === props.libraryId);
 
@@ -83,7 +82,7 @@ const LoadedBasicItemListView: React.FC<{ libraryId: string; viewOptionsKey?: st
 };
 
 
-const LoadedItemsView: React.FC<{ library: BaseItemDto; items: BaseItemDto[]; listOptions: ItemListViewOptions; itemList: ItemListService; itemKindService: BaseItemKindService; settings: Settings; user: UserDto; }> = (props) => {
+const LoadedItemsView: React.FC<{ library: BaseItemDto; items: BaseItemDto[]; listOptions: ItemListViewOptions; itemList: ItemListService; itemKindService: BaseItemKindService; settings: Settings; }> = (props) => {
 	const sorts = useObservable(props.listOptions.SortBy);
 	const itemsPerRow = useBreakpointValues(2, 4, 7, 9);
 	const baseUrl = useUrlToItem(props.library);
@@ -101,7 +100,6 @@ const LoadedItemsView: React.FC<{ library: BaseItemDto; items: BaseItemDto[]; li
 	return (
 		<>
 			<ItemListFilters
-				user={props.user}
 				baseUrl={baseUrl}
 				listOptions={props.listOptions}
 				itemList={props.itemList}

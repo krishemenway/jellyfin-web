@@ -141,5 +141,5 @@ const sortPriorityByType: Record<PersonKind, number> = {
 };
 
 const CastAndCrewSortOrder: SortFuncs<BaseItemPerson>[] = [
-	{ LabelKey: "", Reversed: false, SortType: "PriorityOrder", Sort: SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"]), GetContent: () => "", Hidden: true },
+	{ Reversed: false, SortType: "PriorityOrder", Sort: SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"]) },
 ];

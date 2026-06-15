@@ -86,8 +86,8 @@ export const Show: React.FC = () => {
 };
 
 const episodeSortOrder = [
-	CreateSortFunc(SortByParentIndexNumber, false, true),
-	CreateSortFunc(SortByIndexNumber, false, true),
+	CreateSortFunc(SortByParentIndexNumber, false),
+	CreateSortFunc(SortByIndexNumber, false),
 ];
 
 const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; reloadShow: () => void }> = ({ show, children, user, reloadShow }) => {

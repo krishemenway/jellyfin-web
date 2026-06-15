@@ -4,17 +4,18 @@ import { useBackgroundStyles } from "AppStyles";
 import { ItemImage } from "Items/ItemImage";
 import { LinkToItem } from "Items/LinkToItem";
 import { Layout, LayoutWithoutChildrenProps } from "Common/Layout";
-import { SortFuncs } from "Common/Sort";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { PlaylistDragItemsFunc } from "MediaPlayer/MediaPlayerPlaylist";
 import { ItemPlayedMarker } from "Items/ItemPlayedMarker";
+import { ItemSortTypeModel } from "ItemList/ItemSortTypeModel";
+import { useObservable } from "@residualeffect/rereactor";
 
 interface ItemsGridItemProps {
 	item: BaseItemDto;
 	fallback?: BaseItemDto;
 	imageType?: ImageType;
 	itemsPerRow: number;
-	additionalFields?: readonly SortFuncs<BaseItemDto>[];
+	additionalFields?: readonly ItemSortTypeModel[];
 	getContent?: (item: BaseItemDto) => string|undefined;
 }
 
@@ -34,12 +35,22 @@ export const ItemsGridItem: React.FC<ItemsGridItemProps> = ({ item, fallback, im
 			<ItemPlayedMarker item={item} />
 			<ItemImage item={item} fallback={fallback} type={imageType ?? ImageType.Primary} lazy objectFit="cover" maxWidth="100%" grow />
 			<GridItemField item={item} getContent={getContent ?? ((i) => i.Name)} />
-			{(additionalFields ?? []).filter((f) => !f.Hidden).map((s) => <GridItemField key={`${item.Id + s.LabelKey}`} item={item} getContent={s.GetContent} fontSizeREM={.9} fontColor="Secondary" />)}
+			{(additionalFields ?? []).map((sortTypeModel) => <AdditionalField key={sortTypeModel.Key} sortTypeModel={sortTypeModel} item={item} fontSizeREM={.9} fontColor="Secondary" />)}
 		</LinkToItem>
 	);
 };
 
-const GridItemField: React.FC<{ item: BaseItemDto; getContent: (item: BaseItemDto) => string|undefined|null; }&LayoutWithoutChildrenProps> = (props) => {
-	const content = React.useMemo(() => props.getContent(props.item), [props.item, props.getContent]);
+const AdditionalField: React.FC<{ sortTypeModel: ItemSortTypeModel; item: BaseItemDto; }&LayoutWithoutChildrenProps> = ({ sortTypeModel, ...props }) => {
+	const hidden = useObservable(sortTypeModel.ContentHidden.Current);
+
+	if (hidden) {
+		return <></>;
+	}
+
+	return <GridItemField getContent={sortTypeModel.SortType.getContent} {...props} />
+}
+
+const GridItemField: React.FC<{ item: BaseItemDto; getContent: (item: BaseItemDto) => string|undefined|null; }&LayoutWithoutChildrenProps> = ({ item, getContent, ...props }) => {
+	const content = React.useMemo(() => getContent(item), [item, getContent]);
 	return <Layout direction="column" textAlign="center" {...props}>{Nullable.StringValue(content, "—")}</Layout>;
 };

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
-import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { TagIcon } from "Tags/TagIcon";
 import { Nullable } from "Common/MissingJavascriptFunctions";
@@ -37,7 +37,6 @@ import { useComputed, useObservable } from "@residualeffect/rereactor";
 import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { ItemListService } from "ItemList/ItemListService";
 import { Settings, SettingsStore } from "Users/SettingsStore";
-import { LoginService } from "Users/LoginService";
 
 export const Tag: React.FC = () => {
 	const tag = useParams().tag;
@@ -55,16 +54,16 @@ export const Tag: React.FC = () => {
 	return (
 		<PageWithNavigation icon={<TagIcon />}>
 			<Loading
-				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), LoginService.Instance.User, listService.List, ]}
+				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), listService.List, ]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(settings, user, items) => <TagListViewOptions tag={tag} viewOptionsKey={viewOptionsKey} items={items.List} listService={listService} settings={settings} user={user} />}
+				whenReceived={(settings, items) => <TagListViewOptions tag={tag} viewOptionsKey={viewOptionsKey} items={items.List} listService={listService} settings={settings} />}
 			/>
 		</PageWithNavigation>
 	);
 };
 
-const TagListViewOptions: React.FC<{ tag: string; viewOptionsKey?: string; items: BaseItemDto[]; listService: ItemListService; settings: Settings; user: UserDto; }> = ({ tag, listService, ...props }) => {
+const TagListViewOptions: React.FC<{ tag: string; viewOptionsKey?: string; items: BaseItemDto[]; listService: ItemListService; settings: Settings; }> = ({ tag, listService, ...props }) => {
 	const listOptions = useObservable(listService.ListOptions);
 
 	React.useEffect(() => { listService.LoadItemListViewOptionsOrNew(props.settings, props.viewOptionsKey, tag); }, [props.settings, props.viewOptionsKey]);
@@ -100,7 +99,7 @@ const TagSortTypes: ItemSortType[] = [
 	SortByRuntime,
 ];
 
-const ItemsViewWithOptions: React.FC<{ tag: string; items: BaseItemDto[]; listOptions: ItemListViewOptions; listService: ItemListService; settings: Settings; user: UserDto; }> = (props) => {
+const ItemsViewWithOptions: React.FC<{ tag: string; items: BaseItemDto[]; listOptions: ItemListViewOptions; listService: ItemListService; settings: Settings; }> = (props) => {
 	const sorts = useObservable(props.listOptions.SortBy);
 	const itemsPerRow = useBreakpointValues(2, 4, 7, 9);
 	const filteredAndSortedItems = useComputed(() => {
@@ -117,7 +116,6 @@ const ItemsViewWithOptions: React.FC<{ tag: string; items: BaseItemDto[]; listOp
 	return (
 		<>
 			<ItemListFilters
-				user={props.user}
 				baseUrl={`/Tags/${props.tag}`}
 				listOptions={props.listOptions}
 				itemList={props.listService}

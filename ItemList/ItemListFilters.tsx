@@ -15,8 +15,8 @@ import { ItemFilterType } from "ItemList/ItemFilterType";
 import { ItemSortType } from "ItemList/ItemSortType";
 import { IFilterModel } from "ItemList/ItemFilterType";
 import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
-import { SortFuncs } from "Common/Sort";
-import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { ItemSortTypeModel } from "ItemList/ItemSortTypeModel";
+import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Form } from "Common/Form";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { TextField } from "Common/TextField";
@@ -37,7 +37,6 @@ import { EditIcon } from "CommonIcons/EditIcon";
 export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
 	itemList: ItemListService;
-	user: UserDto;
 	sortTypes: ItemSortType[];
 	filterTypes: ItemFilterType[];
 	settings: Settings;
@@ -47,17 +46,17 @@ export interface ItemListFiltersProps {
 	baseUrl: string;
 }
 
-export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
+export const ItemListFilters: React.FC<ItemListFiltersProps> = ({ listOptions, itemList, sortTypes, filterTypes, items, remaining, additionalButtons, ...props }) => {
 	const [addFilterOpen, setAddFilterOpen] = React.useState(false);
 	const [addSortOpen, setAddSortOpen] = React.useState(false);
-	const sorts = useObservable(props.listOptions.SortBy);
-	const filters = useObservable(props.listOptions.Filters);
-	const newFilter = useObservable(props.listOptions.NewFilter);
+	const sorts = useObservable(listOptions.SortBy);
+	const filters = useObservable(listOptions.Filters);
+	const newFilter = useObservable(listOptions.NewFilter);
 	const [filterButtonRef, setFilterButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [sortButtonRef, setSortButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [optionsListButtonRef, setOptionsListButtonRef] = React.useState<HTMLButtonElement|null>(null);
-	const currentOptionLabel = useObservable(props.listOptions.Label.Current);
-	const confirmDelete = useObservable(props.itemList.ConfirmDeleteOptions);
+	const currentOptionLabel = useObservable(listOptions.Label.Current);
+	const confirmDelete = useObservable(itemList.ConfirmDeleteOptions);
 
 	return (
 		<>
@@ -66,52 +65,52 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = (props) => {
 
 				{Nullable.StringValue(currentOptionLabel, <></>, (label) => <Layout direction="column">{label}</Layout>)}
 
-				{props.filterTypes.length > 0 && (
+				{filterTypes.length > 0 && (
 					<Layout direction="row" gap=".5em" alignItems="center">
 						<TranslatedText textKey="Filters" elementType="div" formatText={(t) => `${t}:`} />
 						<Button px=".25em" py=".25em" type="button" onClick={() => setAddFilterOpen(true)} ref={(element) => { setFilterButtonRef(element); }} icon={<AddIcon />} />
 						<ListOf
 							items={filters}
 							direction="row" gap=".5em"
-							forEachItem={(filter) => <ConfiguredFilter key={filter.Key} filter={filter} listOptions={props.listOptions} items={props.items} />}
+							forEachItem={(filter) => <ConfiguredFilter key={filter.Key} filter={filter} listOptions={listOptions} items={items} />}
 						/>
 					</Layout>
 				)}
 
-				{props.sortTypes.length > 0 && (
+				{sortTypes.length > 0 && (
 					<Layout direction="row" gap=".5em" alignItems="center">
 						<TranslatedText textKey="HeaderSortBy" elementType="div" formatText={(t) => `${t}:`} />
 						<Button px=".25em" py=".25em" type="button" onClick={() => setAddSortOpen(true)} ref={(element) => { setSortButtonRef(element); }} icon={<AddIcon />} />
 						<ListOf
 							items={sorts}
 							direction="row" gap=".5em"
-							forEachItem={(sort) => <ConfiguredSort key={sort.LabelKey} sort={sort} listOptions={props.listOptions} />}
+							forEachItem={(sort) => <ConfiguredSort key={sort.Key} sort={sort} listOptions={listOptions} />}
 						/>
 					</Layout>
 				)}
 
-				<Layout direction="row">{props.items.length === props.remaining ? props.items.length : `${props.items.length} - ${props.items.length - props.remaining} = ${props.remaining}`}</Layout>
+				<Layout direction="row">{items.length === remaining ? items.length : `${items.length} - ${items.length - remaining} = ${remaining}`}</Layout>
 
 				<Layout direction="column" grow></Layout>
 
-				{props.additionalButtons}
+				{additionalButtons}
 			</Layout>
 
 			<AnchoredModal anchorElement={filterButtonRef} open={addFilterOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => { setAddFilterOpen(false); }}>
-				<PickFilterModal filterTypes={props.filterTypes} onPicked={(option) => props.listOptions.CreateNewFilter(option)} onClosed={() => { setAddFilterOpen(false); }} />
+				<PickFilterModal filterTypes={filterTypes} onPicked={(option) => listOptions.CreateNewFilter(option)} onClosed={() => { setAddFilterOpen(false); }} />
 			</AnchoredModal>
 
-			<AnchoredModal anchorElement={filterButtonRef} open={newFilter !== undefined} anchorAlignment="center" opensInDirection="right" onClosed={() => props.listOptions.ClearNewFilter()}>
-				{newFilter && <ConfigureFilterModal items={props.items} listOptions={props.listOptions} newFilter={newFilter} onClosed={() => props.listOptions.ClearNewFilter()} />}
+			<AnchoredModal anchorElement={filterButtonRef} open={newFilter !== undefined} anchorAlignment="center" opensInDirection="right" onClosed={() => listOptions.ClearNewFilter()}>
+				{newFilter && <ConfigureFilterModal items={items} listOptions={listOptions} newFilter={newFilter} onClosed={() => listOptions.ClearNewFilter()} />}
 			</AnchoredModal>
 
 			<AnchoredModal anchorElement={sortButtonRef} open={addSortOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => setAddSortOpen(false)} maxWidth="20%">
-				<PickSortOptionModal sortTypes={props.sortTypes} onPicked={(option, reversed) => props.listOptions.AddSort(option, reversed)} onClosed={() => setAddSortOpen(false)} />
+				<PickSortOptionModal sortTypes={sortTypes} onPicked={(option) => listOptions.AddSort(option)} onClosed={() => setAddSortOpen(false)} />
 			</AnchoredModal>
 
-			<AnchoredModal anchorElement={optionsListButtonRef} open={optionsListButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => { setOptionsListButtonRef(null); props.itemList.ConfirmDeleteOptions.Value = null; props.listOptions.ShowErrors.Value = false; }}>
-				{confirmDelete === null && <PickOptionsModal {...props} onClosed={() => setOptionsListButtonRef(null)} />}
-				{confirmDelete !== null && <ConfirmDelete {...props} options={confirmDelete} onClosed={() => { setOptionsListButtonRef(null); props.itemList.ConfirmDeleteOptions.Value = null; } } />}
+			<AnchoredModal anchorElement={optionsListButtonRef} open={optionsListButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => { setOptionsListButtonRef(null); itemList.ConfirmDeleteOptions.Value = null; listOptions.ShowErrors.Value = false; }}>
+				{confirmDelete === null && <PickOptionsModal {...props} itemList={itemList} onClosed={() => setOptionsListButtonRef(null)} />}
+				{confirmDelete !== null && <ConfirmDelete {...props} itemList={itemList} options={confirmDelete} onClosed={() => { setOptionsListButtonRef(null); itemList.ConfirmDeleteOptions.Value = null; } } />}
 			</AnchoredModal>
 		</>
 	);
@@ -141,39 +140,41 @@ const ConfiguredFilter: React.FC<{ filter: IFilterModel; listOptions: ItemListVi
 			</AnchoredModal>
 
 			<Button type="button" onClick={(button) => setEditRef(button)} icon={<EditIcon />} px=".25em" py=".25em" />
-			<Button type="button" onClick={() => listOptions.Filters.remove(filter)} icon={<DeleteIcon />} px=".25em" py=".25em" />
+			<Button type="button" onClick={() => listOptions.RemoveFilter(filter)} icon={<DeleteIcon />} px=".25em" py=".25em" />
 		</Layout>
 	);
 };
 
-const ConfiguredSort: React.FC<{ sort: SortFuncs<BaseItemDto>; listOptions: ItemListViewOptions }> = (props) => {
+const ConfiguredSort: React.FC<{ sort: ItemSortTypeModel; listOptions: ItemListViewOptions }> = ({ sort, listOptions }) => {
 	const background = useBackgroundStyles();
+	const reversed = useObservable(sort.Reversed.Current);
+	const hidden = useObservable(sort.ContentHidden.Current);
 
 	return (
 		<Layout direction="row" gap="1em" className={background.alternatePanel} alignItems="center">
-			<Button type="button" onClick={() => props.listOptions.ReverseSort(props.sort)} direction="row" px=".25em" py=".25em" icon={props.sort.Reversed ? <ArrowUpIcon /> : <ArrowDownIcon />} />
-			<TranslatedText textKey={props.sort.LabelKey} elementType="div" />
+			<Button type="button" onClick={() => sort.Reversed.OnChange(!reversed)} direction="row" px=".25em" py=".25em" icon={reversed ? <ArrowUpIcon /> : <ArrowDownIcon />} />
+			<TranslatedText textKey={sort.SortType.labelKey} elementType="div" />
 
 			<Layout direction="row">
-				<Button type="button" onClick={() => props.listOptions.SortBy.remove(props.sort)} icon={<DeleteIcon />} px=".25em" py=".25em" />
-				<Button type="button" onClick={() => props.listOptions.HideSort(props.sort)} px=".25em" py=".25em"><VisibleIcon visible={!props.sort.Hidden} /></Button>
+				<Button type="button" onClick={() => listOptions.RemoveSort(sort)} icon={<DeleteIcon />} px=".25em" py=".25em" />
+				<Button type="button" onClick={() => sort.ContentHidden.OnChange(!hidden)} px=".25em" py=".25em"><VisibleIcon visible={!hidden} /></Button>
 			</Layout>
 		</Layout>
 	);
 };
 
-const PickSortOptionModal: React.FC<{ sortTypes: ItemSortType[]; onPicked: (option: ItemSortType, reversed: boolean) => void; onClosed: () => void; }> = (props) => {
+const PickSortOptionModal: React.FC<{ sortTypes: ItemSortType[]; onPicked: (option: ItemSortType) => void; onClosed: () => void; }> = ({ sortTypes, onPicked, onClosed }) => {
 	const itemsPerRow = useBreakpointValues(1, 2, 2, 2);
 
 	return (
 		<ListOf
-			items={props.sortTypes}
+			items={sortTypes}
 			direction="row" wrap
 			px="1em" py="1em" gap="1em" width="25rem"
 			forEachItem={(sortOption) => (
 				<Button
 					key={sortOption.labelKey} label={{ Key: sortOption.labelKey }}
-					type="button" onClick={() => { props.onPicked(sortOption, false); props.onClosed(); }}
+					type="button" onClick={() => { onPicked(sortOption); onClosed(); }}
 					direction="column" width={{ itemsPerRow: itemsPerRow, gap: "1em" }} px=".25em" py=".5em"
 				/>
 			)}
@@ -200,34 +201,34 @@ const PickFilterModal: React.FC<{ filterTypes: ItemFilterType[]; onPicked: (opti
 	);
 };
 
-const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilter: IFilterModel; onClosed: () => void; items: BaseItemDto[]; }> = (props) => {
+const ConfigureFilterModal: React.FC<{ listOptions: ItemListViewOptions; newFilter: IFilterModel; onClosed: () => void; items: BaseItemDto[]; }> = ({ listOptions, newFilter, onClosed, items }) => {
 	return (
-		<Form py="1em" px="1em" gap="1em" direction="column" onSubmit={() => { props.listOptions.AddNewFilter(() => props.onClosed()); }} minWidth="20em" maxWidth="26em">
-			{props.newFilter.Editor(props.items)}
+		<Form py="1em" px="1em" gap="1em" direction="column" onSubmit={() => { listOptions.AddNewFilter(() => onClosed()); }} minWidth="20em" maxWidth="26em">
+			{newFilter.Editor(items)}
 
 			<Layout direction="row" gap="1em">
-				<Button type="button" justifyContent="center" py=".25em" onClick={() => { props.onClosed(); }} grow><TranslatedText textKey="ButtonCancel" /></Button>
+				<Button type="button" justifyContent="center" py=".25em" onClick={() => { onClosed(); }} grow><TranslatedText textKey="ButtonCancel" /></Button>
 				<Button type="submit" justifyContent="center" py=".25em" grow><TranslatedText textKey="Save" /></Button>
 			</Layout>
 		</Form>
 	);
 };
 
-const PickOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings; baseUrl: string; onClosed: () => void }> = (props) => {
-	const itemFilterOptions = useObservable(props.itemList.ExistingOptions);
-	const current = useObservable(props.itemList.ListOptions);
+const PickOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings; baseUrl: string; onClosed: () => void }> = ({ itemList, baseUrl, ...props }) => {
+	const itemFilterOptions = useObservable(itemList.ExistingOptions);
+	const current = useObservable(itemList.ListOptions);
 
 	return (
 		<Layout direction="column" py="1em" px="1em" gap="1em" minWidth="16rem">
 			<ListOf
 				direction="column"
 				items={itemFilterOptions}
-				forEachItem={(option) => <PickOptionsLink key={option.Key} itemListViewOptions={option} isSelected={option === current} {...props} />}
+				forEachItem={(option) => <PickOptionsLink itemList={itemList} baseUrl={baseUrl} key={option.Key} itemListViewOptions={option} isSelected={option === current} {...props} />}
 			/>
 
 			{!current?.IsUnsaved && (
 				<HyperLink
-					to={props.baseUrl}
+					to={baseUrl}
 					direction="row" px=".5em" py=".5em" gap=".5rem">
 					<RadioUncheckedIcon />
 					<TranslatedText textKey="New" />
@@ -235,25 +236,25 @@ const PickOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings
 			)}
 
 			{current?.IsUnsaved && (
-				<SaveNewOptions listOptions={current} {...props} />
+				<SaveNewOptions itemList={itemList} baseUrl={baseUrl} listOptions={current} {...props} />
 			)}
 		</Layout>
 	);
 };
 
-const SaveNewOptions: React.FC<{ itemList: ItemListService; settings: Settings; listOptions: ItemListViewOptions; baseUrl: string; onClosed: () => void }> = (props) => {
+const SaveNewOptions: React.FC<{ itemList: ItemListService; settings: Settings; listOptions: ItemListViewOptions; baseUrl: string; onClosed: () => void }> = ({ itemList, settings, listOptions, baseUrl, onClosed }) => {
 	const navigate = useNavigate();
 	const isBusy = useIsBusy(SettingsStore.Instance.SaveSettingsResult);
-	const showErrors = useObservable(props.listOptions.ShowErrors);
+	const showErrors = useObservable(listOptions.ShowErrors);
 
 	return (
 		<Form
 			direction="row" gap=".5rem" alignItems="start"
-			onSubmit={() => { props.itemList.SaveViewOptions(props.settings, props.listOptions, (newFilterLabelOrNull) => { props.onClosed(); Nullable.TryExecute(newFilterLabelOrNull, (label) => navigate(`${props.baseUrl}/${label}`)) }); }}>
+			onSubmit={() => { itemList.SaveViewOptions(settings, listOptions, (newFilterLabelOrNull) => { onClosed(); Nullable.TryExecute(newFilterLabelOrNull, (label) => navigate(`${baseUrl}/${label}`)) }); }}>
 
 			<Layout direction="column" grow>
-				<TextField field={props.listOptions.Label} py=".25em" px=".5em" grow placeholder={{ Key: "LabelNewName" }} />
-				<FieldError field={props.listOptions.Label} showErrors={showErrors} />
+				<TextField field={listOptions.Label} py=".25em" px=".5em" grow placeholder={{ Key: "LabelNewName" }} />
+				<FieldError field={listOptions.Label} showErrors={showErrors} />
 			</Layout>
 
 			<Button type="submit" justifyContent="center" px=".5em" py=".5em">
@@ -263,25 +264,36 @@ const SaveNewOptions: React.FC<{ itemList: ItemListService; settings: Settings; 
 	);
 };
 
-const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions: ItemListViewOptions; baseUrl: string; settings: Settings; isSelected: boolean }> = (props) => {
-	const label = useObservable(props.itemListViewOptions.Label.Current);
+const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions: ItemListViewOptions; baseUrl: string; settings: Settings; isSelected: boolean }> = ({ itemList, itemListViewOptions, baseUrl, settings, isSelected }) => {
+	const label = useObservable(itemListViewOptions.Label.Current);
+	const hasChanged = useObservable(itemListViewOptions.HasChanged);
 
 	return (
 		<Layout direction="row" justifyContent="space-between" gap=".5rem">
-			<HyperLink
-				key={label} to={`${props.baseUrl}/${props.itemListViewOptions.Key}`}
-				direction="row" px=".5em" py=".5em" grow gap=".5rem" alignItems="center">
-				{props.isSelected ? <RadioCheckedIcon /> : <RadioUncheckedIcon />}
-				{label}
-			</HyperLink>
+			{itemListViewOptions.CanSave && isSelected ? (
+				<Layout direction="row" grow px=".5em" gap=".5rem" alignItems="center">
+					<RadioCheckedIcon />
+					<TextField
+						field={itemListViewOptions.Label}
+						px=".25em" py=".25em"
+					/>
+				</Layout>
+			) : (
+				<HyperLink
+					key={label} to={`${baseUrl}/${itemListViewOptions.Key}`}
+					direction="row" px=".5em" py=".5em" grow gap=".5rem" alignItems="center">
+					{isSelected ? <RadioCheckedIcon /> : <RadioUncheckedIcon />}
+					{label}
+				</HyperLink>
+			)}
 
-			{props.itemListViewOptions.CanSave && (
-				<>
+			{itemListViewOptions.CanSave && isSelected && (
+				<Layout direction="row" gap=".25rem">
 					<Button
 						type="button"
 						px=".5em" py=".5em"
-						justifyContent="center" alignItems="center"
-						onClick={() => { props.itemList.SaveViewOptions(props.settings, props.itemListViewOptions, () => { }); }}
+						justifyContent="center" alignItems="center" disabled={!hasChanged}
+						onClick={() => { itemList.SaveViewOptions(settings, itemListViewOptions, () => { }); }}
 						icon={<SaveIcon />}
 					/>
 
@@ -289,26 +301,25 @@ const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions
 						type="button"
 						px=".5em" py=".5em"
 						justifyContent="center" alignItems="center"
-						onClick={() => props.itemList.ConfirmDeleteOptions.Value = props.itemListViewOptions}
+						onClick={() => itemList.ConfirmDeleteOptions.Value = itemListViewOptions}
 						icon={<DeleteIcon />}
 					/>
-				</>
+				</Layout>
 			)}
-
 		</Layout>
 	);
 };
 
-const ConfirmDelete: React.FC<{ itemList: ItemListService; settings: Settings; baseUrl: string; options: ItemListViewOptions; onClosed: () => void }> = (props) => {
+const ConfirmDelete: React.FC<{ itemList: ItemListService; settings: Settings; baseUrl: string; options: ItemListViewOptions; onClosed: () => void }> = ({ itemList, settings, baseUrl, options, onClosed }) => {
 	const navigate = useNavigate();
 
 	return (
 		<Layout direction="column" px="2rem" py="2rem" maxWidth="20rem" gap="1em">
-			<TranslatedText textKey="ConfirmDeleteFilterOption" textProps={[props.options.Label.Saved.Value]} />
+			<TranslatedText textKey="ConfirmDeleteFilterOption" textProps={[options.Label.Saved.Value]} />
 
 			<Layout direction="row" gap="1rem" width="100%" justifyContent="end">
-				<Button type="button" label="ButtonCancel" onClick={() => { props.onClosed() }} px="1em" py=".5em" />
-				<Button type="button" label="ButtonRemove" onClick={() => { props.itemList.RemoveViewOptions(props.settings, props.options, () => { props.onClosed(); navigate(props.baseUrl); }); }} px="1em" py=".5em" />
+				<Button type="button" label="ButtonCancel" onClick={() => { onClosed() }} px="1em" py=".5em" />
+				<Button type="button" label="ButtonRemove" onClick={() => { itemList.RemoveViewOptions(settings, options, () => { onClosed(); navigate(baseUrl); }); }} px="1em" py=".5em" />
 			</Layout>
 		</Layout>
 	);
