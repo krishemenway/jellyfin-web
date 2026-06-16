@@ -334,8 +334,8 @@ const EpisodeTitle: React.FC<{ episode: BaseItemDto; }&EditableItemProps> = ({ e
 	}
 
 	return (
-		<Layout direction="row" fontSizeREM={1.3} elementType="h2">{episode.SeasonName} <TranslatedText textKey="Episode" />
-			{episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}
+		<Layout direction="row" fontSizeREM={1.3} elementType="h2">
+			{episode.SeasonName}&nbsp;<TranslatedText textKey="Episode" />&nbsp;{episode.IndexNumber}&nbsp;&ndash;&nbsp;{episode.Name}
 			<ItemFavoriteIcon item={episode} size="1.5rem" mx=".5rem" />
 		</Layout>
 	);
