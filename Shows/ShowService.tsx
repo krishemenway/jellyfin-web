@@ -27,6 +27,7 @@ export const ShowService: BaseItemKindService = {
 	findIcon: (props) => <ShowIcon {...props} />,
 	findUrl: (item) => `/Show/${item.Id}`,
 	listUrl: (libraryId) => `/Shows/${libraryId}`,
+	nameWithContext: (item) => `${item.Name} (${item.ProductionYear})`,
 	relevantPersonKinds: ["Actor", "Director", "Writer", "GuestStar", "Producer", "Editor"],
 	filterOptions: [
 		FilterByName,

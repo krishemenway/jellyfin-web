@@ -202,6 +202,7 @@ const HomeSectionWithLoadedItems: React.FC<{ label: string; itemsFromList: BaseI
 						key={item.Id ?? index.toString()}
 						item={item}
 						itemsPerRow={itemsPerRow}
+						getContent={BaseItemKindServiceFactory.FindOrThrow(item.Type).nameWithContext}
 					/>
 				)}
 			/>

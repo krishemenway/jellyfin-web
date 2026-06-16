@@ -20,6 +20,7 @@ export const MusicAlbumService: BaseItemKindService = {
 	primaryShape: ImageShape.Square,
 	findIcon: (props) => <MusicAlbumIcon {...props} />,
 	findUrl: (item) => `/Music/Album/${item.Id}`,
+	nameWithContext: (item) => `${item.AlbumArtist} - ${item.Name}`,
 	sortOptions: [
 		SortByName,
 		SortByDatePlayed,

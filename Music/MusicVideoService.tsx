@@ -28,7 +28,8 @@ export const MusicVideoService: BaseItemKindService = {
 	kind: "MusicVideo",
 	findIcon: (props) => <MusicVideoIcon {...props} />,
 	listUrl: (libraryId) => `/MusicVideos/${libraryId}`,
-	playerSecondaryHeadline: (item) => Linq.Coalesce([item.Album, item.ProductionYear?.toString()], "", (v) => Nullable.StringHasValue(v)) + Nullable.StringValue(item.Artists?.join(", "), "", (artists) => " — " + artists),
+	nameWithContext: (item) => `${Nullable.StringValue(item.Artists?.join(", "), "", (artists) => artists + " - ")}${item.Name}`,
+	playerSecondaryHeadline: (item) => Linq.Coalesce([item.Album, item.ProductionYear?.toString()], "", (v) => Nullable.StringHasValue(v)) + Nullable.StringValue(item.Artists?.join(", "), "", (artists) => " - " + artists),
 	relevantPersonKinds: ["Actor", "Director", "Writer", "Producer", "Composer", "Editor"],
 	filterOptions: [
 		FilterByName,

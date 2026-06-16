@@ -15,7 +15,7 @@ import { InfinityIcon } from "NavigationBar/InfinityIcon";
 import { LinkToItem } from "Items/LinkToItem";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
+import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
 import { Virtuoso } from "react-virtuoso";
 import { TranslatedText } from "Common/TranslatedText";
 
@@ -92,11 +92,11 @@ const LoadedSearchResults: React.FC<{ className: string; results: SearchResults 
 };
 
 const SearchResult: React.FC<{ item: BaseItemDto }> = (props) => {
-	const searchResultNameFunc = BaseItemKindServiceFactory.FindOrNull(props.item.Type)?.searchResultName ?? ((item) => item.Name);
+	const nameFunc = BaseItemKindServiceFactory.FindOrNull(props.item.Type)?.nameWithContext ?? defaultNameFunc;
 
 	return (
 		<LinkToItem item={props.item} direction="row" alignItems="center" gap="1em" px=".5em" py=".5em" justifyContent="space-between" onClick={() => { SearchService.Instance.Clear(); }}>
-			<Layout direction="column">{searchResultNameFunc(props.item)}</Layout>
+			<Layout direction="column">{nameFunc(props.item)}</Layout>
 			<Layout direction="column"><IconForItemKind itemKind={props.item.Type} /></Layout>
 		</LinkToItem>
 	);

@@ -7,6 +7,5 @@ export const EpisodeService: BaseItemKindService = {
 	findIcon: (props) => <EpisodeIcon {...props} />,
 	findUrl: (item) => `/Show/${item.SeriesId}/Episode/${item.Id}`,
 	relevantPersonKinds: ["Actor", "Director", "Writer", "GuestStar", "Producer"],
-	personCreditName: (episode) => `${episode.SeriesName} - ${episode.Name}`,
-	searchResultName: (episode) => `${episode.SeriesName} - ${episode.Name}`,
+	nameWithContext: (episode) => `${episode.SeriesName} - ${episode.Name}`,
 };

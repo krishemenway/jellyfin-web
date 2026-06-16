@@ -37,6 +37,7 @@ import { useComputed, useObservable } from "@residualeffect/rereactor";
 import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { ItemListService } from "ItemList/ItemListService";
 import { Settings, SettingsStore } from "Users/SettingsStore";
+import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 export const Tag: React.FC = () => {
 	const tag = useParams().tag;
@@ -136,6 +137,7 @@ const ItemsViewWithOptions: React.FC<{ tag: string; items: BaseItemDto[]; listOp
 						item={item}
 						itemsPerRow={itemsPerRow}
 						additionalFields={sorts}
+						getContent={BaseItemKindServiceFactory.FindOrThrow(item.Type).nameWithContext}
 					/>
 				)}
 			/>

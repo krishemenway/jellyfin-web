@@ -9,6 +9,7 @@ import { PlaylistDragItemsFunc } from "MediaPlayer/MediaPlayerPlaylist";
 import { ItemPlayedMarker } from "Items/ItemPlayedMarker";
 import { ItemSortTypeModel } from "ItemList/ItemSortTypeModel";
 import { useObservable } from "@residualeffect/rereactor";
+import { defaultNameFunc } from "Items/BaseItemKindServiceFactory";
 
 interface ItemsGridItemProps {
 	item: BaseItemDto;
@@ -34,7 +35,7 @@ export const ItemsGridItem: React.FC<ItemsGridItemProps> = ({ item, fallback, im
 		>
 			<ItemPlayedMarker item={item} />
 			<ItemImage item={item} fallback={fallback} type={imageType ?? ImageType.Primary} lazy objectFit="cover" maxWidth="100%" grow />
-			<GridItemField item={item} getContent={getContent ?? ((i) => i.Name)} />
+			<GridItemField item={item} getContent={getContent ?? defaultNameFunc} />
 			{(additionalFields ?? []).map((sortTypeModel) => <AdditionalField key={sortTypeModel.Key} sortTypeModel={sortTypeModel} item={item} fontSizeREM={.9} fontColor="Secondary" />)}
 		</LinkToItem>
 	);

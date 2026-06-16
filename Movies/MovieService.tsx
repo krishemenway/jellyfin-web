@@ -27,7 +27,7 @@ import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
 export const MovieService: BaseItemKindService = {
 	kind: "Movie",
 	primaryShape: ImageShape.Portrait,
-	searchResultName: (item) => `${item.Name} (${item.ProductionYear})`,
+	nameWithContext: (item) => `${item.Name} (${item.ProductionYear})`,
 	relevantPersonKinds: ["Actor", "Director", "Writer", "Producer", "Editor"],
 	findIcon: (props) => <MovieIcon {...props} />,
 	listUrl: (libraryId) => `/Movies/${libraryId}`,

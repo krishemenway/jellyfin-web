@@ -1,4 +1,4 @@
-import { BaseItemKind, CollectionType } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemKind, CollectionType } from "@jellyfin/sdk/lib/generated-client/models";
 import { AudioBookService } from "Books/AudioBookService";
 import { BookService } from "Books/BookService";
 import { AggregateFolderService } from "Collections/AggregateFolderService";
@@ -35,6 +35,7 @@ import { ShowService } from "Shows/ShowService";
 import { StudioService } from "Studios/StudioService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 
+export const defaultNameFunc: (item: BaseItemDto) => string = (item) => item.Name ?? "";
 export class BaseItemKindServiceFactory {
 	public static FindOrThrow(kind?: BaseItemKind|string): BaseItemKindService {
 		const result = BaseItemKindServiceFactory.FindOrNull(kind);

@@ -21,6 +21,5 @@ export interface BaseItemKindService {
 
 	playerHeadline?: (item: BaseItemDto) => string;
 	playerSecondaryHeadline?: (item: BaseItemDto) => string;
-	personCreditName?: (item: BaseItemDto) => string;
-	searchResultName?: (item: BaseItemDto) => string;
+	nameWithContext?: (item: BaseItemDto) => string;
 }

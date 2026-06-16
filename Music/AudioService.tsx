@@ -40,6 +40,7 @@ export const AudioService: BaseItemKindService = {
 	findUrl: (item) => `/Music/Album/${item.AlbumId}`,
 	listUrl: (libraryId) => `/Music/Artists/${libraryId}`,
 	loadList: (a, id) => LoadMusicInBatches(a, id),
+	nameWithContext: (item) => `${item.AlbumArtist} - ${item.Name}`,
 	sortOptions: [
 		SortByDateCreated,
 	],

@@ -14,7 +14,7 @@ import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { useBackgroundStyles } from "AppStyles";
 import { LinkToItem } from "Items/LinkToItem";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
-import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
+import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
 import { ItemOverview } from "Items/ItemOverview";
 import { LoginService } from "Users/LoginService";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
@@ -125,7 +125,7 @@ const LoadedPerson: React.FC<{ person: BaseItemDto; creditedItems: BaseItemDto[]
 }
 
 const CreditedItem: React.FC<{ creditedItem: BaseItemDto, person: BaseItemDto }> = ({ creditedItem, person }) => {
-	const creditedNameFuncForType = BaseItemKindServiceFactory.FindOrNull(creditedItem.Type)?.personCreditName ?? ((i) => i.Name);
+	const nameFunc = BaseItemKindServiceFactory.FindOrNull(creditedItem.Type)?.nameWithContext ?? defaultNameFunc;
 	const personRecord = creditedItem.People?.find(x => x.Id === person.Id);
 
 	return (
@@ -133,7 +133,7 @@ const CreditedItem: React.FC<{ creditedItem: BaseItemDto, person: BaseItemDto }>
 			<Layout direction="column" px="1em" py=".25em"><IconForItem item={creditedItem} /></Layout>
 
 			<Layout direction="column" grow gap=".25em">
-				<Layout direction="row">{creditedNameFuncForType(creditedItem)}</Layout>
+				<Layout direction="row">{nameFunc(creditedItem)}</Layout>
 				<Layout direction="row">{Linq.Coalesce([personRecord?.Role, personRecord?.Type], "", (v) => Nullable.StringHasValue(v))}</Layout>
 			</Layout>
 
