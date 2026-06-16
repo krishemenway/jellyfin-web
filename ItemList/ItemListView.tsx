@@ -1,26 +1,22 @@
 import * as React from "react";
 import { BaseItemDto, BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
-import { useComputed, useObservable } from "@residualeffect/rereactor";
-import { useBreakpointValues } from "AppStyles";
+import { useObservable } from "@residualeffect/rereactor";
 import { Layout } from "Common/Layout";
-import { ListOf } from "Common/ListOf";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
-import { ItemListFilters } from "ItemList/ItemListFilters";
 import { ItemService } from "Items/ItemsService";
 import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { useParams } from "react-router-dom";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { ItemListService } from "ItemList/ItemListService";
+import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
 import { UserViewStore } from "Users/UserViewStore";
 import { PageTitle } from "Common/PageTitle";
 import { ItemFilterService } from "Items/ItemFilterService";
-import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ServerService } from "Servers/ServerService";
-import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 import { ItemRefreshButton } from "Items/ItemRefreshButton";
 import { ManageLibraryButton } from "Servers/ManageLibraryButton";
@@ -59,12 +55,22 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 	);
 };
 
-const LoadedBasicItemListView: React.FC<{ libraryId: string; viewOptionsKey?: string; settings: Settings; itemList: ItemListService; libraries: BaseItemDto[]; itemKindService: BaseItemKindService }> = ({ itemList, libraries, ...props }) => {
+interface LoadedBasicItemListViewProps {
+	libraryId: string;
+	viewOptionsKey?: string;
+	settings: Settings;
+	itemList: ItemListService;
+	libraries: BaseItemDto[];
+	itemKindService: BaseItemKindService;
+}
+
+const LoadedBasicItemListView: React.FC<LoadedBasicItemListViewProps> = ({ libraryId, itemList, libraries, settings, viewOptionsKey, itemKindService }) => {
 	const listOptions = useObservable(itemList.ListOptions);
-	const library = Linq.Single(libraries, (l) => l.Id === props.libraryId);
+	const library = Linq.Single(libraries, (l) => l.Id === libraryId);
+	const baseUrl = useUrlToItem(library);
 
 	React.useEffect(() => itemList.LoadWithAbort(), [itemList, libraries]);
-	React.useEffect(() => { itemList.LoadItemListViewOptionsOrNew(props.settings, props.viewOptionsKey, library.Name!); }, [props.settings, props.viewOptionsKey]);
+	React.useEffect(() => { itemList.LoadItemListViewOptionsOrNew(settings, viewOptionsKey, library.Name!); }, [settings, viewOptionsKey]);
 
 	return (
 		<Loading
@@ -74,61 +80,23 @@ const LoadedBasicItemListView: React.FC<{ libraryId: string; viewOptionsKey?: st
 			whenReceived={(items) => (
 				<Layout direction="column" gap="1em" py="1em">
 					<PageTitle text={library?.Name} suppressOnScreen />
-					<LoadedItemsView items={items.List} itemList={itemList} listOptions={listOptions} library={library} {...props} />
+					<ItemGridWithFilters
+						baseUrl={baseUrl}
+						items={items.List}
+						itemList={itemList}
+						listOptions={listOptions}
+						settings={settings}
+						filterTypes={itemKindService.filterOptions ?? []}
+						sortTypes={itemKindService.sortOptions ?? []}
+						additionalButtons={(
+							<>
+								<ItemRefreshButton item={library} />
+								<ManageLibraryButton libraryId={library.Id} px=".5em" py=".5em" />
+							</>
+						)}
+					/>
 				</Layout>
 			)}
 		/>
-	);
-};
-
-
-const LoadedItemsView: React.FC<{ library: BaseItemDto; items: BaseItemDto[]; listOptions: ItemListViewOptions; itemList: ItemListService; itemKindService: BaseItemKindService; settings: Settings; }> = (props) => {
-	const sorts = useObservable(props.listOptions.SortBy);
-	const itemsPerRow = useBreakpointValues(2, 4, 7, 9);
-	const baseUrl = useUrlToItem(props.library);
-	const filteredAndSortedItems = useComputed(() => {
-		if (props.listOptions === null) {
-			return props.items;
-		}
-
-		const filterFunc = props.listOptions.FilterFunc.Value;
-		const sortFunc = props.listOptions.SortByFunc.Value;
-
-		return props.items.filter(filterFunc).sort(sortFunc);
-	}, [props.items, props.listOptions]);
-
-	return (
-		<>
-			<ItemListFilters
-				baseUrl={baseUrl}
-				listOptions={props.listOptions}
-				itemList={props.itemList}
-				settings={props.settings}
-				items={props.items}
-				remaining={filteredAndSortedItems.length}
-				filterTypes={props.itemKindService.filterOptions ?? []}
-				sortTypes={props.itemKindService.sortOptions ?? []}
-				additionalButtons={(
-					<>
-						<ItemRefreshButton item={props.library} />
-						<ManageLibraryButton libraryId={props.library.Id} px=".5em" py=".5em" />
-					</>
-				)}
-			/>
-
-			<ListOf
-				items={filteredAndSortedItems}
-				direction="row" wrap gap=".5em"
-				forEachItem={(item, index) => (
-					<ItemsGridItem
-						key={item.Id ?? index.toString()}
-						item={item}
-						fallback={props.library}
-						itemsPerRow={itemsPerRow}
-						additionalFields={sorts}
-					/>
-				)}
-			/>
-		</>
 	);
 };

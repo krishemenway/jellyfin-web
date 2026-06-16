@@ -34,6 +34,11 @@ const loadRequestForDataSource = (dataSource: ItemViewOptionDataSource, receiver
 			ItemCacheResetService.Instance.LoadedItems(items, receiver);
 			return items;
 		});
+	} else if (dataSource.DataSource === "Resume") {
+		return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getResumeItems({ }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
+			ItemCacheResetService.Instance.LoadedItems(items, receiver);
+			return items;
+		});
 	} else {
 		throw new Error(`Unknown data source ${dataSource.DataSource}`);
 	}

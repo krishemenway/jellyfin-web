@@ -56,6 +56,7 @@ export class ItemListViewOptions {
 
 	public AddSort(sortType: ItemSortType): void {
 		this.SortBy.unshift(new ItemSortTypeModel(sortType));
+		this.SortKeys.OnChange(this.SortBy.Value.map(s => s.Key));
 	}
 
 	public AddNewFilter(onAddedSuccessfully: () => void): void {
@@ -69,6 +70,15 @@ export class ItemListViewOptions {
 		} else {
 			this.ShowErrors.Value = true;
 		}
+	}
+
+	public static CreateContinuing(): ItemListViewOptions {
+		const dataSource: ItemViewOptionDataSource = {
+			DataSource: "Resume",
+			DataSourceKey: "Resume",
+		};
+
+		return new ItemListViewOptions(dataSource, { Key: "Resume", Label: "Continue Watching", DataSource: dataSource, Filters: [], Sorts: [] }, false);
 	}
 
 	public static CreateRecentlyAdded(dataSource: ItemViewOptionDataSource, dataSourceName: string): ItemListViewOptions {
@@ -134,7 +144,7 @@ export interface ItemViewOptionSortData {
 }
 
 export interface ItemViewOptionDataSource {
-	DataSource: "Library"|"Tag";
+	DataSource: "Library"|"Tag"|"Resume";
 	DataSourceKey: string;
 }
 

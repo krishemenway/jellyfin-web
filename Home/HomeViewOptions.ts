@@ -42,7 +42,7 @@ export class HomeViewOptions {
 
 			all.push(ItemListViewOptions.CreateRecentlyAdded(dataSource, library.Name!));
 			return all;
-		}, [] as ItemListViewOptions[]);
+		}, [ItemListViewOptions.CreateContinuing()] as ItemListViewOptions[]);
 	}
 
 	public LoadHomeOptions(): ItemListViewOptions[] {

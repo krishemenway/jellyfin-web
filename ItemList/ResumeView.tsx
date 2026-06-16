@@ -3,8 +3,6 @@ import { useParams } from "react-router-dom";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { TagIcon } from "Tags/TagIcon";
-import { Nullable } from "Common/MissingJavascriptFunctions";
-import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { PageTitle } from "Common/PageTitle";
@@ -17,7 +15,6 @@ import { FilterByStudio } from "ItemList/ItemFilterTypes/FilterByStudio";
 import { FilterByGenre } from "ItemList/ItemFilterTypes/FilterByGenre";
 import { FilterByHasEnded } from "ItemList/ItemFilterTypes/FilterByHasEnded";
 import { FilterByHasPlayed } from "ItemList/ItemFilterTypes/FilterByHasPlayed";
-import { FilterByContinueWatching } from "ItemList/ItemFilterTypes/FilterByContinueWatching";
 import { FilterByIsFavorite } from "ItemList/ItemFilterTypes/FilterByIsFavorite";
 import { FilterByType } from "ItemList/ItemFilterTypes/FilterByType";
 import { FilterByTag } from "ItemList/ItemFilterTypes/FilterByTag";
@@ -34,17 +31,11 @@ import { ItemListService } from "ItemList/ItemListService";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
 
-export const Tag: React.FC = () => {
-	const tag = useParams().tag;
+export const ResumeView: React.FC = () => {
 	const viewOptionsKey = useParams().viewOptionsKey;
+	const itemList = ItemService.Instance.FindOrCreateListFromSource({ DataSource: "Resume", DataSourceKey: "Resume" });
 
-	if (!Nullable.HasValue(tag) || tag.length === 0) {
-		return <PageWithNavigation icon={<TagIcon />}><NotFound /></PageWithNavigation>;
-	}
-
-	const itemList = ItemService.Instance.FindOrCreateListFromSource({ DataSource: "Tag", DataSourceKey: tag });
-
-	React.useEffect(() => itemList.LoadWithAbort([]), [tag]);
+	React.useEffect(() => itemList.LoadWithAbort([]), []);
 	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
 
 	return (
@@ -53,7 +44,7 @@ export const Tag: React.FC = () => {
 				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), itemList.List]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(settings, items) => <TagListViewOptions tag={tag} viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} />}
+				whenReceived={(settings, items) => <ListViewOptions viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} />}
 			/>
 		</PageWithNavigation>
 	);
@@ -66,7 +57,6 @@ const FilterTypes: ItemFilterType[] = [
 	FilterByGenre,
 	FilterByHasEnded,
 	FilterByHasPlayed,
-	FilterByContinueWatching,
 	FilterByIsFavorite,
 	FilterByType,
 	FilterByTag,
@@ -82,26 +72,18 @@ const SortTypes: ItemSortType[] = [
 	SortByRuntime,
 ];
 
-interface TagListViewOptionsProps {
-	tag: string;
-	viewOptionsKey?: string;
-	items: BaseItemDto[];
-	itemList: ItemListService;
-	settings: Settings;
-}
-
-const TagListViewOptions: React.FC<TagListViewOptionsProps> = ({ tag, viewOptionsKey, items, itemList, settings }) => {
+const ListViewOptions: React.FC<{ viewOptionsKey?: string; items: BaseItemDto[]; itemList: ItemListService; settings: Settings; }> = ({ viewOptionsKey, items, itemList, settings }) => {
 	const listOptions = useObservable(itemList.ListOptions);
 
-	React.useEffect(() => { itemList.LoadItemListViewOptionsOrNew(settings, viewOptionsKey, tag); }, [settings, viewOptionsKey]);
+	React.useEffect(() => { itemList.LoadItemListViewOptionsOrNew(settings, viewOptionsKey, "Resume"); }, [settings, viewOptionsKey]);
 	
 	return (
 		<Layout direction="column" gap="1em" py="1em" height="100%">
-			<PageTitle text={tag} />
+			<PageTitle text={{ Key: "ContinueWatching" }} />
 			<ItemGridWithFilters
 				items={items}
 				settings={settings}
-				baseUrl={`/Tags/${tag}`}
+				baseUrl="/Resume"
 				itemList={itemList}
 				listOptions={listOptions}
 				filterTypes={FilterTypes}

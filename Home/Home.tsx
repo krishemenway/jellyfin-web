@@ -162,6 +162,9 @@ function showMoreLink(viewOptions: ItemListViewOptions): string {
 		case "Tag": {
 			return `/Tags/${viewOptions.DataSource.DataSourceKey}/${viewOptions.Key}`;
 		}
+		case "Resume": {
+			return `/Resume${viewOptions.CanSave ? "/" + viewOptions.Key : ""}`;
+		}
 	}
 }
 
