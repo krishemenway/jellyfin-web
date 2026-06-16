@@ -9,6 +9,8 @@ import { EditableField, IEditableField } from "Common/EditableField";
 import { ToggleSwitch } from "Common/ToggleSwitch";
 import { Computed } from "@residualeffect/reactor";
 import { TranslatedText } from "Common/TranslatedText";
+import { CircleSlashIcon } from "CommonIcons/CircleSlashIcon";
+import { CircleCheckmarkIcon } from "CommonIcons/CircleCheckmarkIcon";
 
 export const FilterByType: ItemFilterType = {
 	FilterType: "FilterByType",
@@ -83,9 +85,9 @@ const TypeEditor: React.FC<{ typesField: EditableField<string[]>; inverseField: 
 				<TranslatedText textKey={FilterByType.Label} elementType="div" layout={{ fontSizeREM: 1.2 }} />
 			</Layout>
 
-			<Layout direction="column">
+			<Layout direction="row" justifyContent="stretch" gap=".5rem">
+				<ToggleSwitch field={inverseField} enabledIcon={<CircleSlashIcon />} disabledIcon={<CircleCheckmarkIcon />} alignItems="center" justifyContent="center" px=".5em" />
 				<MultiSelectEditor field={typesField} allOptions={types} getValue={(type) => type} getLabel={(type) => type} />
-				<ToggleSwitch field={inverseField} />
 			</Layout>
 		</>
 	);
