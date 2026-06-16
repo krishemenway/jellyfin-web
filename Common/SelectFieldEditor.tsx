@@ -112,33 +112,6 @@ export function MultiSelectEditor<TOption>(props: MultiSelectEditorProps<TOption
 	}
 };
 
-const SplitCharacter = "|";
-export function MultiSelectWithSplitEditor(props: SelectFieldEditorProps<string>): React.ReactNode {
-	const theme = useObservable(ThemeService.Instance.CurrentTheme);
-	const currentValues = useObservable(props.field.Current).split(SplitCharacter);
-
-	const allOptions = React.useMemo(() => props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) })), [props.allOptions]);
-	const selectedOptions = React.useMemo(() => allOptions.filter((o) => currentValues.includes(o.value)), [allOptions, currentValues]);
-
-	return (
-		<Select
-			className={props.className}
-			isMulti={true}
-			options={allOptions}
-			value={selectedOptions}
-			onChange={(newValue) => props.field.OnChange(newValue.map((v) => v.value).join(SplitCharacter))}
-			components={{ MenuList: MenuList }}
-			styles={{
-				container: (base) => ({ ...base, width: "100%" }),
-				multiValueLabel: (base) => ({ ...base, color: "inherit", padding: ".5em" }),
-				multiValue: (base) => ({ ...base, backgroundColor: theme.AlternateBackgroundColor, color: theme.PrimaryTextColor }),
-				menu: (base) => ({ ...base, backgroundColor: theme.PanelBackgroundColor }),
-				option: (base, p) => ({ ...base, backgroundColor: (p.isSelected ? (p.isFocused ? theme.ButtonSelected.Hover : theme.ButtonSelected.Idle) : p.isFocused ? theme.Button.Hover : theme.Button.Idle).BackgroundColor }),
-			}}
-		/>
-	);
-};
-
 const MenuList = ({ children, maxHeight }: MenuListProps<{ value: string; label: React.ReactNode }>) => {
 	const ref = React.useRef<VirtuosoHandle>(null);
 
