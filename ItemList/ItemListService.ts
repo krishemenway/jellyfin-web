@@ -83,7 +83,7 @@ export class ItemListService {
 		this.ExistingOptions.Value = settings.AllKeys()
 			.filter((k) => k.startsWith(`ViewOption|`))
 			.map((key) => settings.ReadAsJsonOrThrow<ItemViewOptionsData>(key))
-			.filter((optionData) => optionData.DataSource.DataSource !== this.DataSource.DataSource || optionData.DataSource.DataSourceKey !== this.DataSource.DataSourceKey)
+			.filter((optionData) => optionData.DataSource.DataSource === this.DataSource.DataSource && optionData.DataSource.DataSourceKey === this.DataSource.DataSourceKey)
 			.map((optionData) => new ItemListViewOptions(this.DataSource, optionData, true))
 			.concat([ ItemListViewOptions.CreateRecentlyAdded(this.DataSource, contextName) ]);
 
