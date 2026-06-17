@@ -72,7 +72,7 @@ const HomeWithSettings: React.FC<{ settings: Settings; libraries: BaseItemDto[] 
 			{isEditing && (
 				<Layout direction="column" minHeight="6rem" width="50%" gap="1rem" alignItems="center">
 					<Layout direction="row" gap="1rem" width="50%">
-						<AddHomeSectionButton homeViewOptions={homeViewOptions} libraries={libraries} />
+						<AddHomeSectionButton currentOptions={current} homeViewOptions={homeViewOptions} />
 					</Layout>
 
 					<Layout direction="row" width="50%" gap=".5rem" alignItems="center" justifyContent="center">
@@ -85,14 +85,15 @@ const HomeWithSettings: React.FC<{ settings: Settings; libraries: BaseItemDto[] 
 	);
 };
 
-const AddHomeSectionButton: React.FC<{ homeViewOptions: HomeViewOptions; libraries: BaseItemDto[] }> = ({ homeViewOptions }) => {
+const AddHomeSectionButton: React.FC<{ currentOptions: ItemListViewOptions[]; homeViewOptions: HomeViewOptions; }> = ({ currentOptions, homeViewOptions }) => {
 	const allOptions = useObservable(homeViewOptions.AllViewOptions);
+	const filtered = React.useMemo(() => allOptions.filter((o) => !currentOptions.map(co => co.Key).includes(o.Key)), [allOptions, currentOptions]);
 	const field = React.useMemo(() => new EditableField<ItemListViewOptions>("AddHomeSection", allOptions[0]), [homeViewOptions]);
 
 	return (
 		<>
 			<AutoCompleteFieldEditor
-				allOptions={allOptions}
+				allOptions={filtered}
 				field={field}
 				getLabel={(o) => o.Label.Current.Value}
 				getValue={(o) => o.Key}
