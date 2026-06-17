@@ -33,6 +33,7 @@ import { useObservable } from "@residualeffect/rereactor";
 import { ItemListService } from "ItemList/ItemListService";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
+import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
 
 export const Tag: React.FC = () => {
 	const tag = useParams().tag;
@@ -106,6 +107,7 @@ const TagListViewOptions: React.FC<TagListViewOptionsProps> = ({ tag, viewOption
 				listOptions={listOptions}
 				filterTypes={FilterTypes}
 				sortTypes={SortTypes}
+				getContent={(i) => (BaseItemKindServiceFactory.FindOrThrow(i.Type).nameWithContext ?? defaultNameFunc)(i)}
 			/>
 		</Layout>
 	);

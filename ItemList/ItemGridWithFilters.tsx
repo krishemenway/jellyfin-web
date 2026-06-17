@@ -22,9 +22,10 @@ interface LoadedItemsViewProps {
 	sortTypes: ItemSortType[];
 	additionalButtons?: React.ReactNode;
 	fallbackItem?: (item: BaseItemDto) => BaseItemDto;
+	getContent?: (item: BaseItemDto) => string|undefined;
 }
 
-export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, itemList, items, listOptions, settings, filterTypes, sortTypes, additionalButtons, fallbackItem }) => {
+export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, itemList, items, listOptions, settings, filterTypes, sortTypes, additionalButtons, fallbackItem, getContent }) => {
 	const sorts = useObservable(listOptions.SortBy);
 	const itemsPerRow = useBreakpointValues(2, 4, 7, 9);
 	const filteredAndSortedItems = useComputed(() => {
@@ -62,6 +63,7 @@ export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, i
 						fallback={Nullable.Value(fallbackItem, undefined, (fallbackItemFunc) => fallbackItemFunc(item))}
 						itemsPerRow={itemsPerRow}
 						additionalFields={sorts}
+						getContent={getContent}
 					/>
 				)}
 			/>
