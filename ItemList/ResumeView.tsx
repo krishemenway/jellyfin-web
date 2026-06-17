@@ -31,6 +31,7 @@ import { ItemListService } from "ItemList/ItemListService";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
 import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
+import { ContinuingSorts } from "ItemList/ItemListViewOptions";
 
 export const ResumeView: React.FC = () => {
 	const viewOptionsKey = useParams().viewOptionsKey;
@@ -76,7 +77,7 @@ const SortTypes: ItemSortType[] = [
 const ListViewOptions: React.FC<{ viewOptionsKey?: string; items: BaseItemDto[]; itemList: ItemListService; settings: Settings; }> = ({ viewOptionsKey, items, itemList, settings }) => {
 	const listOptions = useObservable(itemList.ListOptions);
 
-	React.useEffect(() => { itemList.LoadItemListViewOptionsOrNew(settings, viewOptionsKey, "Resume"); }, [settings, viewOptionsKey]);
+	React.useEffect(() => itemList.LoadItemListViewOptionsOrNew(settings, viewOptionsKey, "Resume", { Sorts: ContinuingSorts }), [settings, viewOptionsKey]);
 	
 	return (
 		<Layout direction="column" gap="1em" py="1em" height="100%">

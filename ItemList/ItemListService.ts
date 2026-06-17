@@ -79,23 +79,18 @@ export class ItemListService {
 		return () => this.List.ResetIfLoading();
 	}
 
-	public LoadItemListViewOptionsOrNew(settings: Settings, viewOptionsKey: string|undefined, contextName: string): void {
-		this.ExistingOptions.Value = settings.AllKeys().filter((k) => k.startsWith(`ViewOption|`)).map((key) => {
-			const optionData = settings.ReadAsJsonOrThrow<ItemViewOptionsData>(key);
-
-			if (optionData.DataSource.DataSource !== this.DataSource.DataSource || optionData.DataSource.DataSourceKey !== this.DataSource.DataSourceKey) {
-				return undefined;
-			}
-
-			return new ItemListViewOptions(this.DataSource, optionData, true);
-		}).filter((o) => o !== undefined).concat([
-			ItemListViewOptions.CreateRecentlyAdded(this.DataSource, contextName),
-		]);
+	public LoadItemListViewOptionsOrNew(settings: Settings, viewOptionsKey: string|undefined, contextName: string, dataForNew?: Partial<ItemViewOptionsData>): void {
+		this.ExistingOptions.Value = settings.AllKeys()
+			.filter((k) => k.startsWith(`ViewOption|`))
+			.map((key) => settings.ReadAsJsonOrThrow<ItemViewOptionsData>(key))
+			.filter((optionData) => optionData.DataSource.DataSource !== this.DataSource.DataSource || optionData.DataSource.DataSourceKey !== this.DataSource.DataSourceKey)
+			.map((optionData) => new ItemListViewOptions(this.DataSource, optionData, true))
+			.concat([ ItemListViewOptions.CreateRecentlyAdded(this.DataSource, contextName) ]);
 
 		if (Nullable.HasValue(viewOptionsKey)) {
-			this.ListOptions.Value = Linq.First(this.ExistingOptions.Value, (o) => o.Key == viewOptionsKey) ?? new ItemListViewOptions(this.DataSource, undefined);
+			this.ListOptions.Value = Linq.First(this.ExistingOptions.Value, (o) => o.Key == viewOptionsKey) ?? new ItemListViewOptions(this.DataSource, dataForNew);
 		} else {
-			this.ListOptions.Value = new ItemListViewOptions(this.DataSource, undefined);
+			this.ListOptions.Value = new ItemListViewOptions(this.DataSource, dataForNew);
 		}
 	}
 

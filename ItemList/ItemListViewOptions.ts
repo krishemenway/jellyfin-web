@@ -9,22 +9,23 @@ import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { ItemSortTypeStore } from "ItemList/ItemSortOptionStore";
 import { ItemFilterTypeStore, ItemFilterData } from "ItemList/ItemFilterTypeStore";
 import { ItemSortTypeModel } from "ItemList/ItemSortTypeModel";
+import { SortByDatePlayed } from "ItemList/ItemSortTypes/SortByDatePlayed";
 
 export class ItemListViewOptions {
-	constructor(dataSource: ItemViewOptionDataSource, data?: ItemViewOptionsData, canSave?: boolean) {
+	constructor(dataSource: ItemViewOptionDataSource, data?: Partial<ItemViewOptionsData>, canSave?: boolean) {
 		this.Key = Nullable.Value(data?.Key, self.crypto.randomUUID(), k => k);
-		this.IsUnsaved = !Nullable.HasValue(data);
+		this.IsUnsaved = !Nullable.HasValue(data?.Key);
 		this.CanSave = canSave ?? true;
-		this.Label = new EditableField("Filter", Nullable.Value(data, "", (d) => d.Label), (v) => ValueIsRequired(v));
+		this.Label = new EditableField("Filter", data?.Label ?? "", (v) => ValueIsRequired(v));
 		this.ShowErrors = new Observable(false);
 		this.DataSource = data?.DataSource ?? dataSource;
 		this.HasChanged = new Computed(() => this.AllFields().map((f) => f.HasChanged.Value).some((hc) => hc));
 
 		this.NewFilter = new Observable(undefined);
-		this.Filters = new ObservableArray(Nullable.Value(data, [], (d) => d.Filters).map((d) => ItemFilterTypeStore.Instance.FindOrThrow(d.Type).CreateModel(d)));
+		this.Filters = new ObservableArray(Nullable.Value(data?.Filters, [], (d) => d).map((d) => ItemFilterTypeStore.Instance.FindOrThrow(d.Type).CreateModel(d)));
 		this.FilterKeys = new EditableField<string[]>("FilterKeys", this.Filters.Value.map((f) => f.Key));
 
-		this.SortBy = new ObservableArray(Nullable.Value(data, [], (d) => d.Sorts).map(d => new ItemSortTypeModel(ItemSortTypeStore.Instance.FindOrThrow(d.SortType), d)));
+		this.SortBy = new ObservableArray(Nullable.Value(data?.Sorts, [], (d) => d).map(d => new ItemSortTypeModel(ItemSortTypeStore.Instance.FindOrThrow(d.SortType), d)));
 		this.SortKeys = new EditableField<string[]>("SortKeys", this.SortBy.Value.map(s => s.Key));
 
 		this.FilterFunc = new Computed(() => (item) => this.Filters.Value.every(f => f.Filter.Value(item)))
@@ -54,8 +55,8 @@ export class ItemListViewOptions {
 		this.ShowErrors.Value = false;
 	}
 
-	public AddSort(sortType: ItemSortType): void {
-		this.SortBy.unshift(new ItemSortTypeModel(sortType));
+	public AddSort(sortType: ItemSortType, data?: ItemViewOptionSortData): void {
+		this.SortBy.unshift(new ItemSortTypeModel(sortType, data));
 		this.SortKeys.OnChange(this.SortBy.Value.map(s => s.Key));
 	}
 
@@ -73,12 +74,8 @@ export class ItemListViewOptions {
 	}
 
 	public static CreateContinuing(): ItemListViewOptions {
-		const dataSource: ItemViewOptionDataSource = {
-			DataSource: "Resume",
-			DataSourceKey: "Resume",
-		};
-
-		return new ItemListViewOptions(dataSource, { Key: "Resume", Label: "Continue Watching", DataSource: dataSource, Filters: [], Sorts: [] }, false);
+		const dataSource: ItemViewOptionDataSource = { DataSource: "Resume", DataSourceKey: "", };
+		return new ItemListViewOptions(dataSource, { Key: "Resume", Label: "Continue Watching", DataSource: dataSource, Filters: [], Sorts: ContinuingSorts }, false);
 	}
 
 	public static CreateRecentlyAdded(dataSource: ItemViewOptionDataSource, dataSourceName: string): ItemListViewOptions {
@@ -130,6 +127,10 @@ export class ItemListViewOptions {
 	public FilterFunc: Computed<(item: BaseItemDto) => boolean>;
 	public SortByFunc: Computed<(a: BaseItemDto, b: BaseItemDto) => number>;
 }
+
+export const ContinuingSorts: ItemViewOptionSortData[] = [
+	{ Hidden: false, Reversed: true, SortType: SortByDatePlayed.field },
+];
 
 export interface ItemViewOptionFilterData {
 	FilterType: string;
