@@ -78,8 +78,8 @@ export const Show: React.FC = () => {
 				whenNotStarted={<PageIsLoading />} whenLoading={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(show, children, user) => !Nullable.StringHasValue(routeParams.episodeId)
-					? <LoadedShow show={show} children={children} user={user} reloadShow={() => loadShow(true)} />
-					: <LoadedEpisode show={show} children={children} user={user} seasonId={routeParams.seasonId} episodeId={routeParams.episodeId} reloadShow={() => loadShow(true)} />}
+					? <LoadedShow show={show} seasonId={routeParams.seasonId} children={children} user={user} reloadShow={() => loadShow(true)} />
+					: <LoadedEpisode show={show} children={children} user={user} episodeId={routeParams.episodeId} reloadShow={() => loadShow(true)} />}
 			/>
 		</PageWithNavigation>
 	);
@@ -90,7 +90,7 @@ const episodeSortOrder = [
 	CreateSortFunc(SortByIndexNumber, false),
 ];
 
-const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; reloadShow: () => void }> = ({ show, children, user, reloadShow }) => {
+const LoadedShow: React.FC<{ show: BaseItemDto; seasonId?: string; children: BaseItemDto[]; user: UserDto; reloadShow: () => void }> = ({ show, seasonId, children, user, reloadShow }) => {
 	const background = useBackgroundStyles();
 	const leftPanelItemsPerRow = useBreakpointValues(1, 1, 3, 3);
 	const editableItem = useEditableItem(show, user);
@@ -140,12 +140,12 @@ const LoadedShow: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: U
 				/>
 			</Layout>
 
-			<ShowDetails show={show} user={user} seasons={seasons} allEpisodes={allEpisodes} isEditing={isEditing} editableItem={editableItem} reloadShow={reloadShow} />
+			<ShowDetails show={show} user={user} seasons={seasons} startSeasonOpened={seasonId} allEpisodes={allEpisodes} isEditing={isEditing} editableItem={editableItem} reloadShow={reloadShow} />
 		</Layout>
 	);
 };
 
-const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; seasonId?: string; episodeId?: string; reloadShow: () => void; }> = ({ show, children, user, episodeId, reloadShow }) => {
+const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user: UserDto; episodeId?: string; reloadShow: () => void; }> = ({ show, children, user, episodeId, reloadShow }) => {
 	const background = useBackgroundStyles();
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 	const allEpisodes = React.useMemo(() => children.filter((i) => i.Type === "Episode"), [children]);
@@ -199,7 +199,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 	);
 };
 
-const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto; allEpisodes: BaseItemDto[]; reloadShow: () => void; }&EditableItemProps> = ({ show, seasons, user, allEpisodes, isEditing, editableItem, reloadShow }) => {
+const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto; startSeasonOpened?: string; allEpisodes: BaseItemDto[]; reloadShow: () => void; }&EditableItemProps> = ({ show, seasons, startSeasonOpened, user, allEpisodes, isEditing, editableItem, reloadShow }) => {
 	const background = useBackgroundStyles();
 	const nextUpEpisode = React.useMemo(() => Nullable.Value(Linq.Max(allEpisodes, (e) => e.UserData?.LastPlayedDate ?? ""), undefined, (e) => allEpisodes[allEpisodes.indexOf(e)+1]), [allEpisodes]);
 
@@ -253,7 +253,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 			<ListOf
 				items={seasons}
 				direction="column" gap=".5em"
-				forEachItem={(season) => <SeasonForShow key={season.Id} show={show} season={season} allEpisodes={allEpisodes} nextUpEpisode={nextUpEpisode} />}
+				forEachItem={(season) => <SeasonForShow key={season.Id} show={show} season={season} allEpisodes={allEpisodes} startSeasonOpened={startSeasonOpened !== undefined ? startSeasonOpened === season.Id : undefined} nextUpEpisode={nextUpEpisode} />}
 			/>
 		</Layout>
 	)
@@ -341,7 +341,11 @@ const EpisodeTitle: React.FC<{ episode: BaseItemDto; }&EditableItemProps> = ({ e
 	);
 }
 
-function startSeasonOpen(show: BaseItemDto, season: BaseItemDto, episodesInSeason: BaseItemDto[], nextUpEpisode: BaseItemDto|undefined) {
+function startSeasonOpen(show: BaseItemDto, season: BaseItemDto, episodesInSeason: BaseItemDto[], startSeasonOpened: boolean|undefined, nextUpEpisode: BaseItemDto|undefined) {
+	if (startSeasonOpened !== undefined) {
+		return startSeasonOpened;
+	}
+
 	if (show.UserData?.Played === true && season.IndexNumber === 1) {
 		return true;
 	}
@@ -357,9 +361,9 @@ function startSeasonOpen(show: BaseItemDto, season: BaseItemDto, episodesInSeaso
 	return false;
 }
 
-const SeasonForShow: React.FC<{ show: BaseItemDto; season: BaseItemDto; allEpisodes: BaseItemDto[]; nextUpEpisode: BaseItemDto|undefined; }> = ({ show, season, allEpisodes, nextUpEpisode }) => {
+const SeasonForShow: React.FC<{ show: BaseItemDto; season: BaseItemDto; allEpisodes: BaseItemDto[]; startSeasonOpened?: boolean; nextUpEpisode: BaseItemDto|undefined; }> = ({ show, season, allEpisodes, startSeasonOpened, nextUpEpisode }) => {
 	const episodes = React.useMemo(() => allEpisodes.filter((e) => e.SeasonId === season.Id).sort(SortByIndexNumber.sortFunc), [season, allEpisodes]);
-	const [seasonOpen, setSeasonOpen] = React.useState(startSeasonOpen(show, season, episodes, nextUpEpisode));
+	const [seasonOpen, setSeasonOpen] = React.useState(startSeasonOpen(show, season, episodes, startSeasonOpened, nextUpEpisode));
 
 	return (
 		<Layout direction="column" minWidth="100%">
