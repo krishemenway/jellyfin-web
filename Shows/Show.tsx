@@ -51,6 +51,8 @@ import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { ItemFavoriteIcon } from "Items/ItemFavoriteIcon";
 import { CreateSortFunc } from "ItemList/ItemSortType";
 import { SortByObjects } from "Common/Sort";
+import { PageTitle } from "Common/PageTitle";
+import { LinkToItem } from "Items/LinkToItem";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
@@ -266,7 +268,8 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 		<Layout direction="column" grow gap="1.5em">
 			<Layout direction="column" gap=".5em">
 				<Layout direction="row" justifyContent="space-between" gap="1rem">
-					<ItemPageTitle item={show} editableItem={undefined} isEditing={false} suppressFavorite />
+					<LinkToItem item={show} direction="row"><PageTitle text={show.Name} /></LinkToItem>
+
 					<Layout direction="row" gap=".5em">
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={episode} />}
