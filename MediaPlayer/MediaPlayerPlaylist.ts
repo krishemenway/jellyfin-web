@@ -116,7 +116,7 @@ export class MediaPlayerPlaylist {
 		}
 	}
 
-	public ClearAndPlay(items: BaseItemDto[]): void {
+	public ClearAndPlay(items: readonly BaseItemDto[]): void {
 		this.ItemsInOrder.clear();
 		this.AddRangeOfPlaylistItems(items.map((item) => this.CreateItem(item)));
 		this.GoIndex(0);

@@ -51,13 +51,17 @@ export class ItemListService {
 		this.ListOptions = new Observable(new ItemListViewOptions(this.DataSource, undefined));
 		this.ExistingOptions = new ObservableArray([]);
 		this.ConfirmDeleteOptions = new Observable(null);
+
+		this.SelectedItems = new ObservableArray([]);
+		this.SelectModeEnabled = new Observable(false);
 	}
 
-	public LoadWithAbort(statConfigs?: ItemListStatConfig[]): () => void {
-		if (this.List.HasData.Value) {
+	public LoadWithAbort(statConfigs?: ItemListStatConfig[], forceRefresh?: boolean): () => void {
+		if (this.List.HasData.Value && forceRefresh !== true) {
 			return () => { };
 		}
 
+		this.SelectedItems.clear();
 		this.List.Start((a) => loadRequestForDataSource(this.DataSource, this.List)(a).then(result => {
 			return {
 				List: result,
@@ -74,7 +78,7 @@ export class ItemListService {
 					return stats;
 				}, {} as Record<string, Record<string, number>>),
 			};
-		}));
+		}), forceRefresh === true);
 
 		return () => this.List.ResetIfLoading();
 	}
@@ -124,4 +128,7 @@ export class ItemListService {
 	public ListOptions: Observable<ItemListViewOptions>;
 	public ExistingOptions: ObservableArray<ItemListViewOptions>;
 	public ConfirmDeleteOptions: Observable<ItemListViewOptions|null>;
+
+	public SelectedItems: ObservableArray<BaseItemDto>;
+	public SelectModeEnabled: Observable<boolean>;
 }

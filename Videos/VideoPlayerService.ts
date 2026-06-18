@@ -42,7 +42,7 @@ export class VideoPlayerService {
 		this.Video?.fastSeek(newProgress);
 	}
 
-	public ClearAndPlay(items: BaseItemDto[]): void {
+	public ClearAndPlay(items: readonly BaseItemDto[]): void {
 		this.Playlist.ClearAndPlay(items);
 		this.MakeControlsVisible();
 	}

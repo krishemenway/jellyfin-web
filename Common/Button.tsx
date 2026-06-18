@@ -18,11 +18,13 @@ interface BaseButtonProps extends StyleLayoutProps {
 	disabled?: boolean;
 	selected?: boolean;
 	transparent?: boolean;
+
+	onDragStart?: (evt: React.DragEvent<HTMLElement>) => void;
 }
 
 export interface ButtonProps extends BaseButtonProps {
 	type: "button";
-	onClick: (element: HTMLButtonElement) => void;
+	onClick: (element: HTMLButtonElement, clickEvent: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 export interface SubmitButtonProps extends BaseButtonProps {
@@ -39,14 +41,15 @@ const ForwardedButton: React.ForwardRefRenderFunction<HTMLButtonElement, ButtonP
 
 	return (
 		<button
-			onClick={(evt) => props.type === "button" ? props.onClick(evt.currentTarget) : undefined}
+			onClick={(evt) => props.type === "button" ? props.onClick(evt.currentTarget, evt) : undefined}
 			style={ApplyLayoutStyleProps(props)}
 			className={props.className ?? (props.selected === true ? background.selected : props.transparent === true ? background.transparent : background.button)}
 			ref={ref}
 			id={props.id}
 			type={props.type}
 			disabled={props.disabled}
-			title={title}>
+			title={title}
+			onDragStart={(evt) => Nullable.TryExecute(props.onDragStart, (ods) => ods(evt))}>
 			{Nullable.HasValue(props.icon) && props.icon}
 			{Nullable.HasValue(props.label) && (typeof props.label === "string" ? <TranslatedText textKey={props.label} /> : <TranslatedText textKey={props.label.Key} textProps={props.label.KeyProps} />)}
 			{Nullable.HasValue(props.children) && <>{React.Children.map(props.children, (c) => c)}</>}

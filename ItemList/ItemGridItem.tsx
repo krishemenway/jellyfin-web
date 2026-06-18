@@ -10,6 +10,8 @@ import { ItemPlayedMarker } from "Items/ItemPlayedMarker";
 import { ItemSortTypeModel } from "ItemList/ItemSortTypeModel";
 import { useObservable } from "@residualeffect/rereactor";
 import { defaultNameFunc } from "Items/BaseItemKindServiceFactory";
+import { Button } from "Common/Button";
+import { CheckIcon } from "CommonIcons/CheckIcon";
 
 interface ItemsGridItemProps {
 	item: BaseItemDto;
@@ -18,15 +20,38 @@ interface ItemsGridItemProps {
 	itemsPerRow: number;
 	additionalFields?: readonly ItemSortTypeModel[];
 	getContent?: (item: BaseItemDto) => string|undefined;
+	selectModeEnabled: boolean;
+	selectedItems: readonly BaseItemDto[];
+	toggleSelectedItem: (item: BaseItemDto) => void;
 }
 
-export const ItemsGridItem: React.FC<ItemsGridItemProps> = ({ item, fallback, imageType, itemsPerRow, additionalFields, getContent }) => {
+export const ItemsGridItem: React.FC<ItemsGridItemProps> = ({ item, fallback, imageType, itemsPerRow, additionalFields, getContent, selectModeEnabled, selectedItems, toggleSelectedItem }) => {
 	const background = useBackgroundStyles();
+
+	if (selectModeEnabled) {
+		return (
+			<Button
+				type="button" onClick={() => toggleSelectedItem(item)}
+				className={background.button}
+				direction="column" position="relative"
+				py=".5em" px=".5em" gap=".25em"
+				justifyContent="space-between" alignItems="center"
+				width={{ itemsPerRow: itemsPerRow, gap: ".5em" }}
+				onDragStart={PlaylistDragItemsFunc(() => [item])}
+			>
+				<ItemIsSelectedMarker selectedItems={selectedItems} item={item} />
+				<ItemPlayedMarker item={item} />
+				<ItemImage item={item} fallback={fallback} type={imageType ?? ImageType.Primary} lazy objectFit="cover" maxWidth="100%" grow />
+				<GridItemField item={item} getContent={getContent ?? defaultNameFunc} />
+				{(additionalFields ?? []).map((sortTypeModel) => <AdditionalField key={sortTypeModel.Key} sortTypeModel={sortTypeModel} item={item} fontSizeREM={.9} fontColor="Secondary" />)}
+			</Button>
+		)
+	}
 
 	return (
 		<LinkToItem
 			item={item}
-			className={`${background.button}`}
+			className={background.button}
 			direction="column" position="relative"
 			py=".5em" px=".5em" gap=".25em"
 			justifyContent="space-between" alignItems="center"
@@ -54,4 +79,22 @@ const AdditionalField: React.FC<{ sortTypeModel: ItemSortTypeModel; item: BaseIt
 const GridItemField: React.FC<{ item: BaseItemDto; getContent: (item: BaseItemDto) => string|undefined|null; }&LayoutWithoutChildrenProps> = ({ item, getContent, ...props }) => {
 	const content = React.useMemo(() => getContent(item), [item, getContent]);
 	return <Layout direction="column" textAlign="center" {...props}>{Nullable.StringValue(content, "—")}</Layout>;
+};
+
+const ItemIsSelectedMarker: React.FC<{ selectedItems: readonly BaseItemDto[]; item: BaseItemDto; }> = ({ selectedItems, item }) => {
+	const background = useBackgroundStyles();
+	const isSelected = selectedItems.some((i) => i.Id === item.Id);
+
+	return (
+		<Layout
+			className={background.alternatePanel}
+			direction="row" position="absolute"
+			top="-1px" left="-1px" px=".25rem" py=".25rem"
+			alignItems="center" justifyContent="center"
+		>
+			<Layout direction="column" className={background.panel}>
+				<CheckIcon opacity={isSelected ? 100 : 0} />
+			</Layout>
+		</Layout>
+	);
 };

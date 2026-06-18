@@ -13,7 +13,7 @@ export interface ItemActionProps extends StyleLayoutProps {
 	className?: string;
 	actions: ItemMenuAction[][];
 	user: UserDto;
-	items: BaseItemDto[];
+	items: readonly BaseItemDto[];
 	reloadItems: () => void;
 }
 

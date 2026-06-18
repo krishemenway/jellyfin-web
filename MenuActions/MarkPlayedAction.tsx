@@ -9,7 +9,7 @@ import { RevertIcon } from "CommonIcons/RevertIcon";
 export const MarkPlayedAction: ItemMenuAction = {
 	icon: (p) => <ItemPlayedIcon {...p} />,
 	textKey: "MarkPlayed",
-	visible: (_, items) => items.some((i) => i.UserData?.Played !== true),
+	visible: (_, items) => items.some((i) => i.UserData?.Played !== true) && items.some((i) => i.Type !== "CollectionFolder"),
 	action: (items, _, reloadItems) => {
 		Promise.all(items.map((item) => getPlaystateApi(ServerService.Instance.CurrentApi).markPlayedItem({ itemId: item.Id!, userId: ServerService.Instance.CurrentUserId.Value }))).then(() => {
 			ItemCacheResetService.Instance.ResetItems(items);

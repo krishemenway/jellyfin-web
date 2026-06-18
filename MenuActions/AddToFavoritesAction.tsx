@@ -8,7 +8,7 @@ import { ItemCacheResetService } from "Items/ItemCacheResetService";
 export const AddToFavoritesAction: ItemMenuAction = {
 	icon: (p) => <FavoriteIcon {...p} />,
 	textKey: "AddToFavorites",
-	visible: (_, items) => items.some((i) => i.UserData?.IsFavorite !== true),
+	visible: (_, items) => items.some((i) => i.UserData?.IsFavorite !== true) && items.some((i) => i.Type !== "CollectionFolder"),
 	action: (items, _, reloadItems) => {
 		Promise.all(items.map((item) => getUserLibraryApi(ServerService.Instance.CurrentApi).markFavoriteItem({ itemId: item.Id ?? "", userId: ServerService.Instance.CurrentUserId.Value }))).then(() => {
 			ItemCacheResetService.Instance.ResetItems(items);
@@ -20,7 +20,7 @@ export const AddToFavoritesAction: ItemMenuAction = {
 export const RemoveFromFavoritesAction: ItemMenuAction = {
 	icon: (p) => <FavoriteIcon {...p} />,
 	textKey: "RemoveFromFavorites",
-	visible: (_, items) => items.some((i) => i.UserData?.IsFavorite === true),
+	visible: (_, items) => items.some((i) => i.UserData?.IsFavorite === true) && items.some((i) => i.Type !== "CollectionFolder"),
 	action: (items, _, reloadItems) => {
 		Promise.all(items.map((item) => getUserLibraryApi(ServerService.Instance.CurrentApi).unmarkFavoriteItem({ itemId: item.Id ?? "", userId: ServerService.Instance.CurrentUserId.Value }))).then(() => {
 			ItemCacheResetService.Instance.ResetItems(items);

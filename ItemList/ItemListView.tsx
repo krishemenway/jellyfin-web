@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BaseItemDto, BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemKind, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { useObservable } from "@residualeffect/rereactor";
 import { Layout } from "Common/Layout";
 import { Loading } from "Common/Loading";
@@ -19,8 +19,16 @@ import { ItemFilterService } from "Items/ItemFilterService";
 import { ServerService } from "Servers/ServerService";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 import { ItemRefreshButton } from "Items/ItemRefreshButton";
-import { ManageLibraryButton } from "Servers/ManageLibraryButton";
 import { useUrlToItem } from "Items/LinkToItem";
+import { ItemActionsMenu } from "Items/ItemActionsMenu";
+import { ManageLibraryAction } from "MenuActions/ManageLIbraryAction";
+import { LoginService } from "Users/LoginService";
+import { ItemMenuAction } from "Items/ItemMenuAction";
+import { ArrowSelectIcon } from "CommonIcons/ArrowSelectIcon";
+import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
+import { PlayVideoAction } from "MenuActions/PlayVideoAction";
+import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
+import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 
 export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = ({ paramName, itemKind }) => {
 	const routeParams = useParams();
@@ -41,13 +49,13 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 	return (
 		<PageWithNavigation icon={itemKind}>
 			<Loading
-				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), UserViewStore.Instance.FindOrCreateForUser(userId)]}
+				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), UserViewStore.Instance.FindOrCreateForUser(userId), LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(settings, libraries) => (
+				whenReceived={(settings, libraries, user) => (
 					<LoadedBasicItemListView
 						libraryId={libraryId} viewOptionsKey={viewOptionsKey} itemList={itemList} itemKindService={itemKindService}
-						settings={settings} libraries={libraries} key={libraryId}
+						settings={settings} libraries={libraries} key={libraryId} user={user}
 					/>
 				)}
 			/>
@@ -62,12 +70,20 @@ interface LoadedBasicItemListViewProps {
 	itemList: ItemListService;
 	libraries: BaseItemDto[];
 	itemKindService: BaseItemKindService;
+	user: UserDto;
 }
 
-const LoadedBasicItemListView: React.FC<LoadedBasicItemListViewProps> = ({ libraryId, itemList, libraries, settings, viewOptionsKey, itemKindService }) => {
+const LoadedBasicItemListView: React.FC<LoadedBasicItemListViewProps> = ({ libraryId, itemList, libraries, settings, viewOptionsKey, itemKindService, user }) => {
 	const listOptions = useObservable(itemList.ListOptions);
 	const library = Linq.Single(libraries, (l) => l.Id === libraryId);
 	const baseUrl = useUrlToItem(library);
+	const selectMode = useObservable(itemList.SelectModeEnabled);
+	const selectedItems = useObservable(itemList.SelectedItems);
+	const ToggleBulkSelectModeEnabledAction: ItemMenuAction = {
+		icon: (p) => <ArrowSelectIcon {...p} />,
+		textKey: "ButtonSelectView",
+		action: () => { itemList.SelectModeEnabled.Value = !itemList.SelectModeEnabled.Value; },
+	};
 
 	React.useEffect(() => itemList.LoadWithAbort(), [itemList, libraries]);
 	React.useEffect(() => { itemList.LoadItemListViewOptionsOrNew(settings, viewOptionsKey, library.Name!); }, [settings, viewOptionsKey]);
@@ -91,7 +107,22 @@ const LoadedBasicItemListView: React.FC<LoadedBasicItemListViewProps> = ({ libra
 						additionalButtons={(
 							<>
 								<ItemRefreshButton item={library} />
-								<ManageLibraryButton libraryId={library.Id} px=".5em" py=".5em" />
+								<ItemActionsMenu
+									items={selectMode ? selectedItems : [library]}
+									reloadItems={() => itemList.LoadWithAbort(undefined, true)}
+									user={user}
+									actions={[
+										[
+											ManageLibraryAction,
+											ToggleBulkSelectModeEnabledAction,
+											AddToCollectionAction,
+											AddToPlaylistAction,
+											PlayVideoAction,
+											MarkPlayedAction,
+											MarkUnplayedAction,
+										],
+									]}
+								/>
 							</>
 						)}
 					/>

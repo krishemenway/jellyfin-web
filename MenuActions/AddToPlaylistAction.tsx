@@ -12,11 +12,12 @@ const IsOpen = new Observable(false);
 export const AddToPlaylistAction: ItemMenuAction = {
 	icon: (p) => <AddToPlaylistIcon {...p} />,
 	textKey: "AddToPlaylist",
+	visible: (_, items) => items.some((i) => i.Type !== "CollectionFolder"),
 	action: () => { IsOpen.Value = true; },
 	modal: (items) => <Modal key={"AddToPlaylistAction" + items.map((i) => i.Id).join("")} items={items} />,
 }
 
-const Modal: React.FC<{ items: BaseItemDto[] }> = (props) => {
+const Modal: React.FC<{ items: readonly BaseItemDto[] }> = (props) => {
 	const isOpen = useObservable(IsOpen);
 
 	return (
