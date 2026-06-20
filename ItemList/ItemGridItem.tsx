@@ -20,15 +20,15 @@ interface ItemsGridItemProps {
 	itemsPerRow: number;
 	additionalFields?: readonly ItemSortTypeModel[];
 	getContent?: (item: BaseItemDto) => string|undefined;
-	selectModeEnabled: boolean;
-	selectedItems: readonly BaseItemDto[];
-	toggleSelectedItem: (item: BaseItemDto) => void;
+	selectModeEnabled?: boolean;
+	selectedItems?: readonly BaseItemDto[];
+	toggleSelectedItem?: (item: BaseItemDto) => void;
 }
 
 export const ItemsGridItem: React.FC<ItemsGridItemProps> = ({ item, fallback, imageType, itemsPerRow, additionalFields, getContent, selectModeEnabled, selectedItems, toggleSelectedItem }) => {
 	const background = useBackgroundStyles();
 
-	if (selectModeEnabled) {
+	if (selectModeEnabled === true && Nullable.HasValue(toggleSelectedItem) && Nullable.HasValue(selectedItems)) {
 		return (
 			<Button
 				type="button" onClick={() => toggleSelectedItem(item)}
