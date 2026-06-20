@@ -9,7 +9,7 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { TranslatedText } from "Common/TranslatedText";
 import { ItemImage } from "Items/ItemImage";
 import { ItemService } from "Items/ItemsService";
-import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { useBackgroundStyles } from "AppStyles";
 import { LinkToItem } from "Items/LinkToItem";

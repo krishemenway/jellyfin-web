@@ -6,7 +6,7 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemService } from "Items/ItemsService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { LoginService } from "Users/LoginService";
-import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 
 export const PlaylistView: React.FC = () => {

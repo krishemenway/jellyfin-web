@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ItemProps, TableProps, TableVirtuoso } from "react-virtuoso";
 import { useParams } from "react-router-dom";
-import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { Loading } from "Common/Loading";
 import { ItemService } from "Items/ItemsService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";

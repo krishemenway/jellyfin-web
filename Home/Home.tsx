@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { HomeIcon } from "Home/HomeIcon";
 import { PageTitle } from "Common/PageTitle";
 import { Settings, SettingsStore } from "Users/SettingsStore";

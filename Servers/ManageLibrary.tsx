@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Layout } from "Common/Layout";
 import { useParams } from "react-router";
-import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { ServerIcon } from "Servers/ServerIcon";
 import { Loading, useDataOrNull } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";

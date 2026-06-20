@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { TagIcon } from "Tags/TagIcon";
 import { Loading } from "Common/Loading";
 import { ItemFilterService } from "Items/ItemFilterService";

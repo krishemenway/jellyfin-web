@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation } from "PageWithNavigation";
 import { Layout } from "Common/Layout";
 import { ChangePassword } from "Users/ChangePassword";
 import { ChangeTheme } from "Users/ChangeTheme";

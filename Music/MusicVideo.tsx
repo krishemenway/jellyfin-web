@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { useParams } from "react-router-dom";
 import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";

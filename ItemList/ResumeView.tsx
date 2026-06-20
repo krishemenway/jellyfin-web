@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { TagIcon } from "Tags/TagIcon";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";

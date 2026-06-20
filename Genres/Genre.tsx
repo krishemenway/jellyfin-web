@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { GenreIcon } from "Genres/GenreIcon";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";

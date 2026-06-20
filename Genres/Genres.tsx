@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { Loading } from "Common/Loading";
 import { ItemFilterService } from "Items/ItemFilterService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";

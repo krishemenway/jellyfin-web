@@ -7,7 +7,7 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
 import { ItemService } from "Items/ItemsService";
-import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { useParams } from "react-router-dom";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";

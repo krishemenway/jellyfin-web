@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
-import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { ItemService } from "Items/ItemsService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";

@@ -1,17 +1,24 @@
 import * as React from "react";
+import { Layout, StyleLayoutProps } from "Common/Layout";
+import { IconForItemKind } from "Items/IconForItemKind";
+import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
+import { useObservable } from "@residualeffect/rereactor";
+import { BackdropService } from "Common/BackdropService";
+import { ThemeService } from "Themes/ThemeService";
+import { Nullable } from "Common/MissingJavascriptFunctions";
+import { LoadingIcon } from "Common/LoadingIcon";
 import { BaseItemDto, SystemInfo, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { useBackgroundStyles } from "AppStyles";
 import { Button } from "Common/Button";
 import { EditIcon } from "CommonIcons/EditIcon";
 import { HyperLink } from "Common/HyperLink";
 import { JellyfinIcon } from "CommonIcons/JellyfinIcon";
-import { Layout, StyleLayoutProps } from "Common/Layout";
 import { Loading } from "Common/Loading";
 import { AnchoredModal, CenteredModal } from "Common/Modal";
 import { TranslatedText } from "Common/TranslatedText";
 import { IconForItem } from "Items/IconForItem";
-import { MenuIcon } from "NavigationBar/MenuIcon";
-import { Search } from "NavigationBar/Search";
+import { MenuIcon } from "CommonIcons/MenuIcon";
+import { Search } from "Search/Search";
 import { ServerIcon } from "Servers/ServerIcon";
 import { ServerService } from "Servers/ServerService";
 import { AuthorizeQuickConnect } from "Users/AuthorizeQuickConnect";
@@ -22,9 +29,26 @@ import { UserViewStore } from "Users/UserViewStore";
 import { LinkToItem } from "Items/LinkToItem";
 import { ChangeServerButton } from "Servers/ChangeServerButton";
 import { QuickConnectService } from "Users/QuickConnect";
-import { useObservable } from "@residualeffect/rereactor";
 
-export const NavigationBar: React.FC<{ icon?: React.ReactElement; }> = (props) => {
+export const PageWithNavigation: React.FC<{ icon: React.ReactElement|BaseItemKind; children?: React.ReactNode; matchHeight?: boolean }> = (props) => {
+	const backdropUrl = useObservable(BackdropService.Instance.CurrentBackdropImageUrl);
+	const theme = useObservable(ThemeService.Instance.CurrentTheme);
+
+	return (
+		<Layout key="page-with-navigation" direction="column" backgroundRepeat="no-repeat" backgroundSize="cover" backgroundUrl={backdropUrl} height="100%">
+			<Layout key="backdrop-suppressor" direction="column" px="2em" py="1em" backgroundColor={Nullable.HasValue(backdropUrl) ? theme.BackdropSuppressorColor : undefined} height="100%">
+				<NavigationBar key="navigation-bar" icon={typeof props.icon === "string" ? <IconForItemKind itemKind={props.icon} /> : props.icon} />
+				<Layout key="page-content" direction="column" gap="1em" className="page-content" children={props.children} grow height={(props.matchHeight ?? false) ? "100%" : undefined} />
+			</Layout>
+		</Layout>
+	);
+};
+
+export const PageIsLoading: React.FC = () => (
+	<Layout direction="column" justifyContent="center" height="100%"><LoadingIcon alignSelf="center" size="4em" /></Layout>
+);
+
+const NavigationBar: React.FC<{ icon?: React.ReactElement; }> = (props) => {
 	const background = useBackgroundStyles();
 	const userId = useObservable(ServerService.Instance.CurrentUserId);
 

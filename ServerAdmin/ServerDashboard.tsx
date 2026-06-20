@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PageWithNavigation } from "NavigationBar/PageWithNavigation";
+import { PageWithNavigation } from "PageWithNavigation";
 import { ServerIcon } from "Servers/ServerIcon";
 import { PageTitle } from "Common/PageTitle";
 import { Loading } from "Common/Loading";
