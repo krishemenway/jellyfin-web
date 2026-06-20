@@ -48,7 +48,14 @@ export const NavigationBar: React.FC<{ icon?: React.ReactElement; }> = (props) =
 };
 
 const NavigationButton: React.FC<{ onClick?: (element: HTMLButtonElement) => void; }> = (props) => {
-	return <Button transparent direction="row" type="button" disabled={props.onClick === undefined} onClick={props.onClick ?? (() => { })} py=".25em" px=".25em"><MenuIcon size="1.5em" /></Button>;
+	return (
+		<Button
+			type="button" onClick={props.onClick ?? (() => { })}
+			icon={<MenuIcon />} fontSizeREM={1.5}
+			disabled={props.onClick === undefined}
+			py=".25em" px=".25em" transparent
+		/>
+	);
 }
 
 const NavigationMenuLinkStyles: Partial<StyleLayoutProps> = { width: "100%", px: "1em", py: "1em", gap: ".5em" };
