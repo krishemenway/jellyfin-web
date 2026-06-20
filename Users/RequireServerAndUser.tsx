@@ -11,7 +11,7 @@ export const RequireServerAndUser: React.FC<{ children: React.ReactNode }> = (pr
 	const servers = useObservable(ServerService.Instance.Servers);
 	const currentServer = useObservable(ServerService.Instance.CurrentServer);
 
-	React.useEffect(() => LoginService.Instance.LoadUser(), [servers]);
+	React.useEffect(() => LoginService.Instance.LoadUser(), [servers, currentServer?.AccessToken]);
 
 	if (Nullable.HasValue(currentServer) && Nullable.StringHasValue(currentServer?.UserId)) {
 		return <>{React.Children.map(props.children, (c) => c)}</>;
