@@ -127,6 +127,7 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ path: "/Movies/:libraryId", element: <ItemListView itemKind="Movie" paramName="libraryId" /> },
 						{ path: "/Movie/:movieId", element: <Movie /> },
 
+						{ path: "/Studio/:studioId/:viewOptionsKey", element: <Studio /> },
 						{ path: "/Studio/:studioId", element: <Studio /> },
 
 						{ path: "/Collections/:collectionsId/:viewOptionsKey", element: <ItemListView itemKind="BoxSet" paramName="collectionsId" /> },

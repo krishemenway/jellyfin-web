@@ -1,54 +1,149 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
+import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
-import { ItemService } from "Items/ItemsService";
-import { NotFound } from "Common/NotFound";
+import { StudioIcon } from "Studios/StudioIcon";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { Layout } from "Common/Layout";
+import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { PageTitle } from "Common/PageTitle";
-import { ListOf } from "Common/ListOf";
-import { ItemsGridItem } from "ItemList/ItemGridItem";
-import { useBreakpointValues } from "AppStyles";
+import { Layout } from "Common/Layout";
+import { ItemService } from "Items/ItemsService";
+import { ItemFilterType } from "ItemList/ItemFilterType";
+import { FilterByName } from "ItemList/ItemFilterTypes/FilterByName";
+import { FilterByProductionYear } from "ItemList/ItemFilterTypes/FilterByProductionYear";
+import { FilterByStudio } from "ItemList/ItemFilterTypes/FilterByStudio";
+import { FilterByGenre } from "ItemList/ItemFilterTypes/FilterByGenre";
+import { FilterByHasEnded } from "ItemList/ItemFilterTypes/FilterByHasEnded";
+import { FilterByHasPlayed } from "ItemList/ItemFilterTypes/FilterByHasPlayed";
+import { FilterByContinueWatching } from "ItemList/ItemFilterTypes/FilterByContinueWatching";
+import { FilterByIsFavorite } from "ItemList/ItemFilterTypes/FilterByIsFavorite";
+import { FilterByType } from "ItemList/ItemFilterTypes/FilterByType";
+import { FilterByTag } from "ItemList/ItemFilterTypes/FilterByTag";
+import { ItemSortType } from "ItemList/ItemSortType";
+import { SortByName } from "ItemList/ItemSortTypes/SortByName";
+import { SortByDatePlayed } from "ItemList/ItemSortTypes/SortByDatePlayed";
+import { SortByDateCreated } from "ItemList/ItemSortTypes/SortByDateCreated";
+import { SortByPlayCount } from "ItemList/ItemSortTypes/SortByPlayCount";
+import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
+import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
+import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
+import { useObservable } from "@residualeffect/rereactor";
+import { ItemListService } from "ItemList/ItemListService";
+import { Settings, SettingsStore } from "Users/SettingsStore";
+import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
+import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
+import { ItemActionsMenu } from "Items/ItemActionsMenu";
+import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
+import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
+import { PlayVideoAction } from "MenuActions/PlayVideoAction";
+import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
+import { ArrowSelectIcon } from "CommonIcons/ArrowSelectIcon";
+import { ItemMenuAction } from "Items/ItemMenuAction";
+import { LoginService } from "Users/LoginService";
 
 export const Studio: React.FC = () => {
-	const studiosPerRow = useBreakpointValues(2, 6, 9, 9);
 	const studioId = useParams().studioId;
+	const viewOptionsKey = useParams().viewOptionsKey;
 
-	if (!Nullable.HasValue(studioId)) {
-		return <PageWithNavigation icon="Studio"><NotFound /></PageWithNavigation>;
+	if (!Nullable.HasValue(studioId) || studioId.length === 0) {
+		return <PageWithNavigation icon={<StudioIcon />}><NotFound /></PageWithNavigation>;
 	}
 
-	const studioData = ItemService.Instance.FindOrCreateItemData(studioId);
+	const studio = ItemService.Instance.FindOrCreateItemData(studioId);
+	const itemList = ItemService.Instance.FindOrCreateListFromSource({ DataSource: "Studio", DataSourceKey: studioId });
 
-	React.useEffect(() => studioData.LoadItemWithAbort(), [studioId]);
-	React.useEffect(() => studioData.LoadChildrenWithAbort(false, { recursive: true, studioIds: [ studioId ] }), [studioId]);
+	React.useEffect(() => studio.LoadItemWithAbort(), [studioId]);
+	React.useEffect(() => itemList.LoadWithAbort([]), [studioId]);
+	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
 
 	return (
-		<PageWithNavigation icon="Studio">
+		<PageWithNavigation icon={<StudioIcon />}>
 			<Loading
-				receivers={[studioData.Item, studioData.Children]}
-				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
+				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), itemList.List, LoginService.Instance.User, studio.Item]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(studio, items) => (
-					<Layout direction="column" gap="1em" py="1em" height="100%">
-						<PageTitle text={studio.Name} />
-
-						<ListOf
-							items={items}
-							direction="row" wrap gap=".5em"
-							forEachItem={(item, index) => (
-								<ItemsGridItem
-									key={item.Id ?? index.toString()}
-									item={item}
-									itemsPerRow={studiosPerRow}
-								/>
-							)}
-						/>
-					</Layout>
-				)}
+				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
+				whenReceived={(settings, items, user, studio) => <ListViewOptions studio={studio} viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} user={user} />}
 			/>
 		</PageWithNavigation>
-	)
+	);
+};
+
+const FilterTypes: ItemFilterType[] = [
+	FilterByName,
+	FilterByProductionYear,
+	FilterByStudio,
+	FilterByGenre,
+	FilterByHasEnded,
+	FilterByHasPlayed,
+	FilterByContinueWatching,
+	FilterByIsFavorite,
+	FilterByType,
+	FilterByTag,
+];
+
+const SortTypes: ItemSortType[] = [
+	SortByName,
+	SortByDatePlayed,
+	SortByDateCreated,
+	SortByPlayCount,
+	SortByPremiereDate,
+	SortByRandom,
+	SortByRuntime,
+];
+
+interface ListViewOptionsProps {
+	viewOptionsKey?: string;
+	items: BaseItemDto[];
+	itemList: ItemListService;
+	settings: Settings;
+	user: UserDto;
+	studio: BaseItemDto;
+}
+
+const ListViewOptions: React.FC<ListViewOptionsProps> = ({ studio, viewOptionsKey, items, itemList, settings, user }) => {
+	const listOptions = useObservable(itemList.ListOptions);
+	const selectModeEnabled = useObservable(itemList.SelectModeEnabled);
+	const selectedItems = useObservable(itemList.SelectedItems);
+	const ToggleBulkSelectModeEnabledAction: ItemMenuAction = {
+		icon: (p) => <ArrowSelectIcon {...p} />,
+		textKey: "ButtonSelectView",
+		action: () => { itemList.SelectModeEnabled.Value = !itemList.SelectModeEnabled.Value; },
+	};
+
+	React.useEffect(() => { itemList.LoadItemListViewOptionsOrNew(settings, viewOptionsKey, studio.Name!); }, [settings, viewOptionsKey]);
+	
+	return (
+		<Layout direction="column" gap="1em" py="1em" height="100%">
+			<PageTitle text={studio.Name} />
+			<ItemGridWithFilters
+				items={items}
+				settings={settings}
+				baseUrl={`/Studio/${studio.Id}`}
+				itemList={itemList}
+				listOptions={listOptions}
+				filterTypes={FilterTypes}
+				sortTypes={SortTypes}
+				getContent={(i) => (BaseItemKindServiceFactory.FindOrThrow(i.Type).nameWithContext ?? defaultNameFunc)(i)}
+				additionalButtons={(
+					<ItemActionsMenu
+						items={selectModeEnabled ? selectedItems : []}
+						reloadItems={() => itemList.LoadWithAbort([], true)}
+						user={user}
+						actions={[
+							[
+								ToggleBulkSelectModeEnabledAction,
+								AddToCollectionAction,
+								AddToPlaylistAction,
+								PlayVideoAction,
+								MarkPlayedAction,
+								MarkUnplayedAction,
+							],
+						]}
+					/>
+				)}
+			/>
+		</Layout>
+	);
 };

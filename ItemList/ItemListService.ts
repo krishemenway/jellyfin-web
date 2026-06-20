@@ -44,6 +44,11 @@ const loadRequestForDataSource = (dataSource: ItemViewOptionDataSource, receiver
 			ItemCacheResetService.Instance.LoadedItems(items, receiver);
 			return items;
 		});
+	} else if (dataSource.DataSource === "Studio") {
+		return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, studioIds: [dataSource.DataSourceKey] }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
+			ItemCacheResetService.Instance.LoadedItems(items, receiver);
+			return items;
+		});
 	} else {
 		throw new Error(`Unknown data source ${dataSource.DataSource}`);
 	}
