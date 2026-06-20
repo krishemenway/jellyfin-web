@@ -166,6 +166,15 @@ function showMoreLink(viewOptions: ItemListViewOptions): string {
 		case "Resume": {
 			return `/Resume${viewOptions.CanSave ? "/" + viewOptions.Key : ""}`;
 		}
+		case "Collection": {
+			return `/Collection/${viewOptions.DataSource.DataSourceKey}/${viewOptions.Key}`;
+		}
+		case "Genre": {
+			return `/Genres/${viewOptions.DataSource.DataSourceKey}/${viewOptions.Key}`;
+		}
+		case "Studio": {
+			return `/Studio/${viewOptions.DataSource.DataSourceKey}/${viewOptions.Key}`;
+		}
 	}
 }
 
