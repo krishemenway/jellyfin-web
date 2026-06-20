@@ -145,7 +145,7 @@ export interface ItemViewOptionSortData {
 }
 
 export interface ItemViewOptionDataSource {
-	DataSource: "Library"|"Tag"|"Resume";
+	DataSource: "Library"|"Tag"|"Resume"|"Genre";
 	DataSourceKey: string;
 }
 

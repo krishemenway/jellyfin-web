@@ -137,6 +137,7 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ path: "/Tags/:tag", element: <Tag /> },
 						{ path: "/Tags", element: <Tags /> },
 
+						{ path: "/Genres/:genre/:viewOptionsKey", element: <Genre /> },
 						{ path: "/Genres/:genre", element: <Genre /> },
 						{ path: "/Genres", element: <Genres /> },
 
