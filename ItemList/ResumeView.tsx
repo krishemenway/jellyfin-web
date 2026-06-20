@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
-import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { PageWithNavigation, PageIsLoading } from "NavigationBar/PageWithNavigation";
 import { TagIcon } from "Tags/TagIcon";
 import { Loading } from "Common/Loading";
@@ -32,6 +32,14 @@ import { Settings, SettingsStore } from "Users/SettingsStore";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
 import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
 import { ContinuingSorts } from "ItemList/ItemListViewOptions";
+import { ItemActionsMenu } from "Items/ItemActionsMenu";
+import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
+import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
+import { PlayVideoAction } from "MenuActions/PlayVideoAction";
+import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
+import { ArrowSelectIcon } from "CommonIcons/ArrowSelectIcon";
+import { ItemMenuAction } from "Items/ItemMenuAction";
+import { LoginService } from "Users/LoginService";
 
 export const ResumeView: React.FC = () => {
 	const viewOptionsKey = useParams().viewOptionsKey;
@@ -43,10 +51,10 @@ export const ResumeView: React.FC = () => {
 	return (
 		<PageWithNavigation icon={<TagIcon />}>
 			<Loading
-				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), itemList.List]}
+				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), itemList.List, LoginService.Instance.User]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(settings, items) => <ListViewOptions viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} />}
+				whenReceived={(settings, items, user) => <ListViewOptions viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} user={user} />}
 			/>
 		</PageWithNavigation>
 	);
@@ -74,8 +82,15 @@ const SortTypes: ItemSortType[] = [
 	SortByRuntime,
 ];
 
-const ListViewOptions: React.FC<{ viewOptionsKey?: string; items: BaseItemDto[]; itemList: ItemListService; settings: Settings; }> = ({ viewOptionsKey, items, itemList, settings }) => {
+const ListViewOptions: React.FC<{ viewOptionsKey?: string; items: BaseItemDto[]; itemList: ItemListService; settings: Settings; user: UserDto }> = ({ viewOptionsKey, items, itemList, settings, user }) => {
 	const listOptions = useObservable(itemList.ListOptions);
+	const selectModeEnabled = useObservable(itemList.SelectModeEnabled);
+	const selectedItems = useObservable(itemList.SelectedItems);
+	const ToggleBulkSelectModeEnabledAction: ItemMenuAction = {
+		icon: (p) => <ArrowSelectIcon {...p} />,
+		textKey: "ButtonSelectView",
+		action: () => { itemList.SelectModeEnabled.Value = !itemList.SelectModeEnabled.Value; },
+	};
 
 	React.useEffect(() => itemList.LoadItemListViewOptionsOrNew(settings, viewOptionsKey, "Resume", { Sorts: ContinuingSorts }), [settings, viewOptionsKey]);
 	
@@ -91,6 +106,23 @@ const ListViewOptions: React.FC<{ viewOptionsKey?: string; items: BaseItemDto[];
 				filterTypes={FilterTypes}
 				sortTypes={SortTypes}
 				getContent={(i) => (BaseItemKindServiceFactory.FindOrThrow(i.Type).nameWithContext ?? defaultNameFunc)(i)}
+				additionalButtons={(
+					<ItemActionsMenu
+						items={selectModeEnabled ? selectedItems : []}
+						reloadItems={() => itemList.LoadWithAbort([], true)}
+						user={user}
+						actions={[
+							[
+								ToggleBulkSelectModeEnabledAction,
+								AddToCollectionAction,
+								AddToPlaylistAction,
+								PlayVideoAction,
+								MarkPlayedAction,
+								MarkUnplayedAction,
+							],
+						]}
+					/>
+				)}
 			/>
 		</Layout>
 	);
