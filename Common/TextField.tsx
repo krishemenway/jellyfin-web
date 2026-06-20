@@ -13,7 +13,7 @@ interface TextFieldProps extends BaseInputFieldProps {
 }
 
 interface NumberFieldProps extends BaseInputFieldProps {
-	field: EditableField<number|undefined|null>;
+	field: EditableField<number|undefined|null> | EditableField<number|undefined>;
 }
 
 interface InputFieldProps extends BaseInputFieldProps {
@@ -45,7 +45,7 @@ const ForwardedTimeField: React.ForwardRefRenderFunction<HTMLInputElement, TextF
 
 const ForwardedNumberField: React.ForwardRefRenderFunction<HTMLInputElement, NumberFieldProps> = (props, ref) => {
 	const currentValue = useObservable(props.field.Current);
-	return <InputField {...props} id={props.field.FieldId} type="number" value={currentValue?.toString() ?? ""} onChange={(newValue) => props.field.OnChange(parseFloat(newValue))} ref={ref} />;
+	return <InputField {...props} id={props.field.FieldId} type="number" value={currentValue?.toString() ?? ""} onChange={(newValue) => props.field.OnChange(Nullable.StringValue(newValue, undefined, nv => parseFloat(nv)))} ref={ref} />;
 };
 
 const ForwardedTextField: React.ForwardRefRenderFunction<HTMLInputElement, TextFieldProps> = (props, ref) => {

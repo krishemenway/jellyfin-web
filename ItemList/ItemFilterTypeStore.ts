@@ -12,6 +12,7 @@ import { FilterByTag, FilterByTagData } from "ItemList/ItemFilterTypes/FilterByT
 import { FilterByType, FilterByTypeData } from "ItemList/ItemFilterTypes/FilterByType";
 import { FilterByTagCount, FilterByTagCountData } from "ItemList/ItemFilterTypes/FilterByTagCount";
 import { FilterByMissingField, FilterByMissingFieldData } from "ItemList/ItemFilterTypes/FilterByMissingField";
+import { FilterByDuration, FilterByDurationData } from "ItemList/ItemFilterTypes/FilterByDuration";
 
 export type ItemFilterData = 
 	FilterByTypeData
@@ -25,7 +26,8 @@ export type ItemFilterData =
 	| FilterByIsFavoriteData
 	| FilterByNameData
 	| FilterByTagCountData
-	| FilterByMissingFieldData;
+	| FilterByMissingFieldData
+	| FilterByDurationData;
 
 export class ItemFilterTypeStore {
 	public FindOrThrow(filterType: string): ItemFilterType {
@@ -39,18 +41,19 @@ export class ItemFilterTypeStore {
 	}
 
 	private _filterTypes: Record<string, ItemFilterType> = Linq.ToRecord([
-		FilterByContinueWatching,
+		FilterByType,
+		FilterByTag,
 		FilterByGenre,
-		FilterByHasEnded,
+		FilterByStudio,
+		FilterByProductionYear,
+		FilterByContinueWatching,
 		FilterByHasPlayed,
+		FilterByHasEnded,
 		FilterByIsFavorite,
 		FilterByName,
-		FilterByProductionYear,
-		FilterByStudio,
-		FilterByTag,
-		FilterByType,
 		FilterByTagCount,
 		FilterByMissingField,
+		FilterByDuration,
 	], (t) => t.FilterType);
 	
 	static get Instance(): ItemFilterTypeStore {

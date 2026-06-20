@@ -133,7 +133,7 @@ const ConfiguredFilter: React.FC<{ filter: IFilterModel; listOptions: ItemListVi
 				))}
 			</Layout>
 
-			<AnchoredModal anchorElement={editRef} open={editRef !== null} onClosed={() => { setEditRef(null); }} opensInDirection="left">
+			<AnchoredModal anchorElement={editRef} open={editRef !== null} onClosed={() => { setEditRef(null); }} opensInDirection="right">
 				<Layout py="1em" px="1em" gap="1em" direction="column" minWidth="20em" maxWidth="26em">
 					{filter.Editor(items)}
 				</Layout>

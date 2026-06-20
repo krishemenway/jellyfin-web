@@ -188,6 +188,24 @@ export class DateTime {
 		return new Date(date.slice(0, lastDash));
 	}
 
+	public static ToTicks(seconds?: number, minutes?: number, hours?: number): number|undefined {
+		let ticks: number|undefined = undefined;
+
+		if (Nullable.HasValue(seconds)) {
+			ticks = (ticks ?? 0) + seconds * this.TicksPerSecond;
+		}
+
+		if (Nullable.HasValue(minutes)) {
+			ticks = (ticks ?? 0) + minutes * this.TicksPerMinute;
+		}
+
+		if (Nullable.HasValue(hours)) {
+			ticks = (ticks ?? 0) + hours * this.TicksPerHour;
+		}
+
+		return ticks;
+	}
+
 	public static ConvertTicksToDurationString(ticks: number|null|undefined): string {
 		const parts = [];
 

@@ -83,6 +83,9 @@ export const useGlobalStyles = createUseStyles({
 		"input": {
 			boxSizing: "content-box",
 		},
+		"input[type=number]": {
+			MozAppearance: "textfield",
+		},
 		"html": {
 			lineHeight: "normal",
 			background: "var(--PageBackgroundColor)",
