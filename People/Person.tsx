@@ -20,7 +20,7 @@ import { LoginService } from "Users/LoginService";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { ItemPageTitle } from "Items/ItemPageTitle";
 import { Virtuoso } from "react-virtuoso";
-import { DateTime, Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
 import { IconForItem } from "Items/IconForItem";
@@ -134,7 +134,7 @@ const CreditedItem: React.FC<{ creditedItem: BaseItemDto, person: BaseItemDto }>
 
 			<Layout direction="column" grow gap=".25em">
 				<Layout direction="row">{nameFunc(creditedItem)}</Layout>
-				<Layout direction="row">{Linq.Coalesce([personRecord?.Role, personRecord?.Type], "", (v) => Nullable.StringHasValue(v))}</Layout>
+				<Layout direction="row">{[personRecord?.Role, personRecord?.Type].coalesce("", (v) => Nullable.StringHasValue(v))}</Layout>
 			</Layout>
 
 			<Layout direction="column" width="5%" px="1em" alignItems="end" justifyContent="center">{creditedItem.ProductionYear}</Layout>

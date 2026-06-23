@@ -5,7 +5,7 @@ import { ServerService } from "Servers/ServerService";
 import { ItemListViewOptions, ItemViewOptionDataSource, ItemViewOptionsData } from "ItemList/ItemListViewOptions";
 import { Observable, ObservableArray } from "@residualeffect/reactor";
 import { Settings, SettingsStore } from "Users/SettingsStore";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { ItemCacheResetService } from "Items/ItemCacheResetService";
 
@@ -107,7 +107,7 @@ export class ItemListService {
 			.concat([ ItemListViewOptions.CreateRecentlyAdded(this.DataSource, contextName) ]);
 
 		if (Nullable.HasValue(viewOptionsKey)) {
-			this.ListOptions.Value = Linq.First(this.ExistingOptions.Value, (o) => o.Key == viewOptionsKey) ?? new ItemListViewOptions(this.DataSource, dataForNew);
+			this.ListOptions.Value = this.ExistingOptions.Value.first((o) => o.Key == viewOptionsKey) ?? new ItemListViewOptions(this.DataSource, dataForNew);
 		} else {
 			this.ListOptions.Value = new ItemListViewOptions(this.DataSource, dataForNew);
 		}

@@ -2,7 +2,7 @@ import * as React from "react";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Layout, StyleLayoutProps } from "Common/Layout";
 import { useBackgroundStyles } from "AppStyles";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
 import { EditableItemProps } from "Items/EditableItemProps";
 import { LoadingIcon } from "Common/LoadingIcon";
@@ -12,7 +12,7 @@ import { Loading } from "Common/Loading";
 export const ItemRating: React.FC<{ item: BaseItemDto; libraryId: string; }&EditableItemProps&StyleLayoutProps> = (props) => {
 	const background = useBackgroundStyles();
 	const combined = {...{px: ".25em", py: ".25em" } as StyleLayoutProps, ...props as StyleLayoutProps};
-	const rating = Linq.Coalesce([props.item.CustomRating, props.item.OfficialRating], "", (r) => Nullable.StringHasValue(r));
+	const rating = [props.item.CustomRating, props.item.OfficialRating].coalesce("", (r) => Nullable.StringHasValue(r));
 
 	if (props.isEditing && Nullable.HasValue(props.editableItem) && Nullable.HasValue(props.libraryId)) {
 		return (

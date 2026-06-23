@@ -1,4 +1,4 @@
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemSortType } from "ItemList/ItemSortType";
 import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
 import { SortByCriticRating } from "ItemList/ItemSortTypes/SortByCriticRating";
@@ -16,7 +16,7 @@ import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
 
 export class ItemSortTypeStore {
 	constructor() {
-		this.All = Linq.ToRecord([
+		this.All = [
 			SortByCommunityRating,
 			SortByCriticRating,
 			SortByDateCreated,
@@ -31,7 +31,7 @@ export class ItemSortTypeStore {
 			SortByRandom,
 			SortByRuntime,
 			SortByTagCount,
-		], (sort) => sort.field);
+		].toRecord((sort) => sort.field);
 	}
 
 	public FindOrThrow(type: string): ItemSortType {

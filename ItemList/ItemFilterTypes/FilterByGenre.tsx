@@ -2,7 +2,6 @@ import * as React from "react";
 import { MultiSelectEditor } from "Common/SelectFieldEditor";
 import { Layout } from "Common/Layout";
 import { FilterDisplayConfig, IFilterModel, ItemFilterType } from "ItemList/ItemFilterType";
-import { Linq } from "Common/MissingJavascriptFunctions";
 import { SortByString } from "Common/Sort";
 import { EditableField, IEditableField } from "Common/EditableField";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
@@ -71,7 +70,7 @@ export class FilterByGenreModel implements IFilterModel {
 }
 
 const GenreEditor: React.FC<{ genreField: EditableField<string[]>; inverseField: EditableField<boolean>; items: BaseItemDto[]; }> = ({ genreField, inverseField, items }) => {
-	const genres = React.useMemo(() => Linq.Distinct(Linq.SelectMany(items, (i) => i.Genres ?? [])).sort(SortByString(g => g)), [items]);
+	const genres = React.useMemo(() => items.selectMany(i => i.Genres ?? []).distinct().sort(SortByString(g => g)), [items]);
 
 	return (
 		<>

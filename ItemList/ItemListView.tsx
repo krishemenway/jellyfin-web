@@ -4,7 +4,7 @@ import { useObservable } from "@residualeffect/rereactor";
 import { Layout } from "Common/Layout";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
 import { ItemService } from "Items/ItemsService";
 import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
@@ -75,7 +75,7 @@ interface LoadedBasicItemListViewProps {
 
 const LoadedBasicItemListView: React.FC<LoadedBasicItemListViewProps> = ({ libraryId, itemList, libraries, settings, viewOptionsKey, itemKindService, user }) => {
 	const listOptions = useObservable(itemList.ListOptions);
-	const library = Linq.Single(libraries, (l) => l.Id === libraryId);
+	const library = libraries.single((l) => l.Id === libraryId);
 	const baseUrl = useUrlToItem(library);
 	const selectMode = useObservable(itemList.SelectModeEnabled);
 	const selectedItems = useObservable(itemList.SelectedItems);

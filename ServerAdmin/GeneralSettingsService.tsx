@@ -18,7 +18,6 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
 import { LocalizationOptionsStore } from "ServerAdmin/LocalizationOptionsStore";
-import { Linq } from "Common/MissingJavascriptFunctions";
 import { ToggleSwitch } from "Common/ToggleSwitch";
 
 export class GeneralSettingsService {
@@ -49,7 +48,7 @@ class EditableGeneralSettings {
 	constructor(config: ServerConfiguration, localizationOptions: LocalizationOption[]) {
 		this._originalConfig = config;
 		this.ServerName = new EditableField("LabelServerName", this._originalConfig.ServerName ?? "");
-		this.PreferredDisplayLanguage = new EditableField("LabelPreferredDisplayLanguage", Linq.Single(localizationOptions, (o) => o.Value === this._originalConfig.UICulture));
+		this.PreferredDisplayLanguage = new EditableField("LabelPreferredDisplayLanguage", localizationOptions.single((o) => o.Value === this._originalConfig.UICulture));
 
 		this.QuickConnectAvailable = new EditableField("EnableQuickConnect", this._originalConfig.QuickConnectAvailable ?? false);
 

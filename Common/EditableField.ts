@@ -1,5 +1,5 @@
 import { Computed, Observable } from "@residualeffect/reactor";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 
 export interface IEditableField {
 	FieldId: string;
@@ -28,7 +28,7 @@ export class EditableField<T> implements IEditableField {
 		this.HasChanged = new Computed(() => this.CurrentHasChangedFromSaved());
 		this.ServerErrorMessage = new Observable(undefined);
 
-		this.ErrorMessage = new Computed<string|undefined>(() => Linq.Coalesce([this.GetRequestBlockingErrorFunc(this.Current.Value), this.ServerErrorMessage.Value], "", m => Nullable.StringHasValue(m)));
+		this.ErrorMessage = new Computed<string|undefined>(() => [this.GetRequestBlockingErrorFunc(this.Current.Value), this.ServerErrorMessage.Value].coalesce(undefined, m => Nullable.StringHasValue(m)));
 	}
 
 	public CanMakeRequest(): boolean {

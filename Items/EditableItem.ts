@@ -1,7 +1,7 @@
 import { BaseItemDto, DayOfWeek, MetadataField, NameGuidPair, Video3DFormat } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed, ObservableArray } from "@residualeffect/reactor";
 import { EditableField, IEditableField } from "Common/EditableField";
-import { DateTime, Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { EditablePersonCredit } from "Items/EditablePersonCredit";
 import { EditableItemProvider } from "Items/EditableItemProvider";
 import { formatISO } from "date-fns";
@@ -32,7 +32,7 @@ export class EditableItem {
 
 		this.Album = new EditableField("Album", Nullable.Value(item, undefined, (i) => i.Album));
 		this.AlbumArtists = new EditableField("AlbumArtists", Nullable.Value(item, undefined, (i) => i.AlbumArtists));
-		this.ArtistItems = new EditableField("Artists", Nullable.Value(item, [], (i) => Linq.Distinct((i.ArtistItems ?? []).map((ai) => ai.Name!).concat(i.Artists ?? []))).map((a) => ({ Id: undefined, Name: a }) as NameGuidPair));
+		this.ArtistItems = new EditableField("Artists", Nullable.Value(item, [], (i) => (i.ArtistItems ?? []).map((ai) => ai.Name!).concat(i.Artists ?? []).distinct()).map((a) => ({ Id: undefined, Name: a }) as NameGuidPair));
 
 		this.Status = new EditableField("Status", Nullable.Value(item, undefined, (i) => i.Status));
 

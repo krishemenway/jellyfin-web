@@ -4,7 +4,7 @@ import CreatableSelect from "react-select/creatable";
 import { useObservable } from "@residualeffect/rereactor";
 import { ApplyLayoutStyleProps, LayoutWithoutChildrenProps } from "Common/Layout";
 import { ThemeService } from "Themes/ThemeService";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { EditableField } from "Common/EditableField";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
@@ -63,7 +63,7 @@ export function MultiSelectEditor<TOption>(props: MultiSelectEditorProps<TOption
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 	const currentValues = useObservable(props.field.Current);
 
-	const allOptionsByValue = React.useMemo(() => Linq.ToRecord(props.allOptions, (o) => props.getValue(o)), [props.allOptions, props.getValue])
+	const allOptionsByValue = React.useMemo(() => props.allOptions.toRecord((o) => props.getValue(o)), [props.allOptions, props.getValue])
 	const allOptions = React.useMemo(() => props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) })), [props.allOptions, props.getLabel, props.getValue]);
 	const selectedOptions = React.useMemo(() => currentValues.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) })), [currentValues, props.getLabel, props.getValue]);
 

@@ -9,7 +9,7 @@ import { Receiver } from "Common/Receiver";
 import { TaskInfo } from "@jellyfin/sdk/lib/generated-client/models";
 import { ServerService } from "Servers/ServerService";
 import { getScheduledTasksApi } from "@jellyfin/sdk/lib/utils/api";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { Button } from "Common/Button";
 import { PlayIcon } from "MediaPlayer/PlayIcon";
 import { TranslatedText } from "Common/TranslatedText";
@@ -22,7 +22,7 @@ class ScheduledTasksService {
 	}
 
 	public LoadTasks(): () => void {
-		this.ScheduledTasks.Start((a) => getScheduledTasksApi(ServerService.Instance.CurrentApi).getTasks({ isHidden: false }, { signal: a.signal }).then(r => Linq.GroupBy(r.data, (t) => t.Category!)));
+		this.ScheduledTasks.Start((a) => getScheduledTasksApi(ServerService.Instance.CurrentApi).getTasks({ isHidden: false }, { signal: a.signal }).then(r => r.data.groupBy((t) => t.Category!)));
 		return () => this.ScheduledTasks.ResetIfLoading();
 	}
 

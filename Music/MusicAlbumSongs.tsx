@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Layout } from "Common/Layout";
-import { DateTime, Linq } from "Common/MissingJavascriptFunctions";
+import { DateTime } from "Common/MissingJavascriptFunctions";
 import { Button } from "Common/Button";
 import { PlayIcon } from "MediaPlayer/PlayIcon";
 import { MusicPlayerService } from "Music/MusicPlayerService";
@@ -13,7 +13,7 @@ import { useBackgroundStyles } from "AppStyles";
 import { PlaylistDragItemsFunc } from "MediaPlayer/MediaPlayerPlaylist";
 
 export const MusicAlbumSongs: React.FC<{ addFromChildOfId: string; allSongs: BaseItemDto[] }> = ({ addFromChildOfId, allSongs }) => {
-	const tracksByDiscNumber = React.useMemo(() => Linq.GroupBy(allSongs.sort(SortByIndexNumber.sortFunc), (t) => t.ParentIndexNumber ?? 0), [allSongs]);
+	const tracksByDiscNumber = React.useMemo(() => allSongs.sort(SortByIndexNumber.sortFunc).groupBy((t) => t.ParentIndexNumber ?? 0), [allSongs]);
 	const discs = Object.keys(tracksByDiscNumber).map((n) => parseInt(n));
 
 	if (discs.length > 1) {

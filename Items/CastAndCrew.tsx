@@ -5,7 +5,7 @@ import { SortByNumber, SortByObjects, SortFuncs } from "Common/Sort";
 import { ListOf } from "Common/ListOf";
 import { LinkToPerson } from "People/LinkToPerson";
 import { Layout, StyleLayoutProps } from "Common/Layout";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { TranslatedText } from "Common/TranslatedText";
 import { EditableItemProps } from "Items/EditableItemProps";
 import { useObservable } from "@residualeffect/rereactor";
@@ -51,7 +51,7 @@ const ReadOnlyCastAndCrew: React.FC<{ orderedCastAndCrew: BaseItemPerson[]; link
 		<ListOf
 			items={orderedCastAndCrew}
 			direction="row" className={background.panel}
-			forEachItem={((person) => <CastAndCrewCredit key={person.Id + Linq.Coalesce([person.Role, person.Type?.toString()], "Unknown", (s) => Nullable.StringHasValue(s))} person={person} {...linkProps} />)}
+			forEachItem={((person) => <CastAndCrewCredit key={person.Id + [person.Role, person.Type?.toString()].coalesce("Unknown", (s) => Nullable.StringHasValue(s))} person={person} {...linkProps} />)}
 			{...props}
 		/>
 	);

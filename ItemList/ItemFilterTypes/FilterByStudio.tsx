@@ -2,7 +2,7 @@ import * as React from "react";
 import { FilterDisplayConfig, IFilterModel, ItemFilterType } from "ItemList/ItemFilterType";
 import { Layout } from "Common/Layout";
 import { MultiSelectEditor } from "Common/SelectFieldEditor";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByString } from "Common/Sort";
 import { Computed } from "@residualeffect/reactor";
 import { EditableField, IEditableField } from "Common/EditableField";
@@ -74,7 +74,7 @@ export class FilterByStudiosModel implements IFilterModel {
 }
 
 const StudioEditor: React.FC<{ studiosField: EditableField<string[]>; inverseField: EditableField<boolean>; items: BaseItemDto[]; }> = ({ studiosField, inverseField, items }) => {
-	const studios = React.useMemo(() => Linq.Distinct(Linq.SelectMany(items, (i) => i.Studios?.map((s) => s.Name ?? "") ?? [])).sort(SortByString(s => s)), [items]);
+	const studios = React.useMemo(() => items.selectMany(i => i.Studios?.map((s) => s.Name ?? "") ?? []).sort(SortByString(s => s)), [items]);
 
 	return (
 		<>

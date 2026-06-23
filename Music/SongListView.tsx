@@ -6,7 +6,7 @@ import { Loading } from "Common/Loading";
 import { ItemService } from "Items/ItemsService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
-import { DateTime, Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { LoginService } from "Users/LoginService";
 import { Layout } from "Common/Layout";
@@ -56,7 +56,7 @@ interface Column {
 
 export const SongListViewContent: React.FC<{ libraryId: string; libraries: BaseItemDto[]; user: UserDto; settings: Settings; }> = ({ libraryId, libraries }) => {
 	const background = useBackgroundStyles();
-	const library = Linq.Single(libraries, (l) => l.Id === libraryId);
+	const library = libraries.single((l) => l.Id === libraryId);
 
 	const albumList = ItemService.Instance.FindOrCreateListFromLibrary(libraryId, "MusicAlbum");
 	const artistList = ItemService.Instance.FindOrCreateListFromLibrary(libraryId, "MusicArtist");
@@ -173,7 +173,7 @@ const LoadedItems: React.FC<{ libraryId: string; items: BaseItemDto[]; columns: 
 	};
 
 	const filteredItems = React.useMemo(() => props.items.filter((i) => Nullable.Value(props.filters, true, (f) => f.length === 0 || f.some((filter) => filter(i) || props.selectedKeys.includes(props.getSelectedKey(i))))), [props.items, props.filters, props.selectedKeys, props.getSelectedKey]);
-	const sortedItems = React.useMemo(() => SortByObjects(filteredItems, [{ SortType: sortField.name, LabelKey: sortField.name, Sort: sortField.getSortFunc(props.stats ?? []), Reversed: sortReversed, GetContent: () => "", Hidden: true }]), [filteredItems, sortField, sortReversed]);
+	const sortedItems = React.useMemo(() => SortByObjects(filteredItems, [{ SortType: sortField.name, Sort: sortField.getSortFunc(props.stats ?? []), Reversed: sortReversed }]), [filteredItems, sortField, sortReversed]);
 
 	return (
 		<TableVirtuoso

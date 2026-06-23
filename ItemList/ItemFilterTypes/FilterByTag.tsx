@@ -2,7 +2,6 @@ import * as React from "react";
 import { MultiSelectEditor } from "Common/SelectFieldEditor";
 import { Layout } from "Common/Layout";
 import { FilterDisplayConfig, IFilterModel, ItemFilterType } from "ItemList/ItemFilterType";
-import { Linq } from "Common/MissingJavascriptFunctions";
 import { SortByString } from "Common/Sort";
 import { EditableField, IEditableField } from "Common/EditableField";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
@@ -71,7 +70,7 @@ export class FilterByTagModel implements IFilterModel {
 }
 
 const TagEditor: React.FC<{ tagsField: EditableField<string[]>; inverseField: EditableField<boolean>; items: BaseItemDto[]; }> = ({ tagsField, inverseField, items }) => {
-	const tags = React.useMemo(() => Linq.Distinct(Linq.SelectMany(items, (i) => i.Tags ?? [])).sort(SortByString(s => s)), [items]);
+	const tags = React.useMemo(() => items.selectMany(i => i.Tags ?? []).sort(SortByString(s => s)), [items]);
 
 	return (
 		<>

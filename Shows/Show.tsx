@@ -10,7 +10,7 @@ import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { ItemImage } from "Items/ItemImage";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemTags } from "Items/ItemTags";
 import { ItemRating } from "Items/ItemRating";
 import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
@@ -151,7 +151,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 	const background = useBackgroundStyles();
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 	const allEpisodes = React.useMemo(() => children.filter((i) => i.Type === "Episode"), [children]);
-	const selectedEpisode = Linq.Single(allEpisodes, (e) => e.Id === episodeId);
+	const selectedEpisode = allEpisodes.single((e) => e.Id === episodeId);
 	const editableItem = useEditableItem(selectedEpisode, user);
 	const remainingEpisodes = allEpisodes.filter((i) => (i.PremiereDate ?? "") > (selectedEpisode.PremiereDate ?? "")).sort(SortByPremiereDate.sortFunc);
 
@@ -196,14 +196,14 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 				/>
 			</Layout>
 
-			{Nullable.Value(selectedEpisode, undefined, (episode) => <EpisodeDetails episode={episode} show={show} user={user} isEditing={isEditing} remainingEpisodes={remainingEpisodes} reloadShow={reloadShow} />)}
+			<EpisodeDetails episode={selectedEpisode} show={show} user={user} isEditing={isEditing} remainingEpisodes={remainingEpisodes} reloadShow={reloadShow} />
 		</Layout>
 	);
 };
 
 const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto; startSeasonOpened?: string; allEpisodes: BaseItemDto[]; reloadShow: () => void; }&EditableItemProps> = ({ show, seasons, startSeasonOpened, user, allEpisodes, isEditing, editableItem, reloadShow }) => {
 	const background = useBackgroundStyles();
-	const nextUpEpisode = React.useMemo(() => Nullable.Value(Linq.Max(allEpisodes, (e) => e.UserData?.LastPlayedDate ?? ""), undefined, (e) => allEpisodes[allEpisodes.indexOf(e)+1]), [allEpisodes]);
+	const nextUpEpisode = React.useMemo(() => Nullable.Value(allEpisodes.max((e) => e.UserData?.LastPlayedDate ?? ""), undefined, (e) => allEpisodes[allEpisodes.indexOf(e)+1]), [allEpisodes]);
 
 	return (
 		<Layout direction="column" grow gap="1.5rem">
@@ -407,8 +407,8 @@ const EpisodesInSeason: React.FC<EpisodesInSeasonProps> = (props) => {
 
 const ProductionYearRangeForEpisodes: React.FC<{ episodes: BaseItemDto[] }> = (props) => {
 	const allYears = React.useMemo(() => props.episodes.filter((e) => Nullable.HasValue(e.ProductionYear)).map((e) => e.ProductionYear), [props.episodes]);
-	const earliest = React.useMemo(() => Linq.Min(allYears, (e) => e), [allYears]);
-	const newest = React.useMemo(() => Linq.Max(allYears, (e) => e), [allYears]);
+	const earliest = React.useMemo(() => allYears.min(y => y), [allYears]);
+	const newest = React.useMemo(() => allYears.max(y => y), [allYears]);
 
 	return <>({earliest !== newest ? `${earliest} - ${newest}` : earliest})</>;
 };

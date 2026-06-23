@@ -1,4 +1,3 @@
-import { Linq } from "Common/MissingJavascriptFunctions";
 import { Browser } from "Device/Browser";
 
 export class DeviceService {
@@ -28,7 +27,7 @@ export class DeviceService {
 	}
 
 	private CreateDeviceName(): string {
-		let deviceName = Linq.First(this._browsersToCheck, (c) => c.checkFunc()).name;
+		let deviceName = this._browsersToCheck.first((c) => c.checkFunc()).name;
 
 		if (Browser.ipad) {
 			deviceName += " iPad";

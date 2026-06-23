@@ -28,7 +28,7 @@ import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { HomeViewOptions } from "Home/HomeViewOptions";
 import { ArrowDownIcon } from "CommonIcons/ArrowDownIcon";
 import { ArrowUpIcon } from "CommonIcons/ArrowUpIcon";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 export const Home: React.FC = () => {
@@ -127,7 +127,7 @@ const HomeSection: React.FC<{ viewOptions: ItemListViewOptions; itemsPerRow: num
 
 const LoadingSection: React.FC<{ label: string; itemsPerRow: number; viewOptions: ItemListViewOptions }> = ({ label, itemsPerRow, viewOptions }) => {
 	const listUrl = showMoreLink(viewOptions);
-	const items = React.useMemo(() => Linq.Sequence(0, itemsPerRow),[itemsPerRow]);
+	const items = React.useMemo(() => [].addCount(itemsPerRow),[itemsPerRow]);
 	const background = useBackgroundStyles();
 
 	return (

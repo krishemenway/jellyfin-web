@@ -1,11 +1,10 @@
 import { EditableField, IEditableField } from "Common/EditableField";
-import { Linq } from "Common/MissingJavascriptFunctions";
 import { LibraryTypeOptionsDto, TypeOptions } from "@jellyfin/sdk/lib/generated-client/models";
 
 export class EditableLibraryItemTypeOptions {
 	constructor(typeOptionDto: LibraryTypeOptionsDto, allTypeOptions?: TypeOptions[]) {
 		this.TypeOptionDto = typeOptionDto;
-		const relevantTypeOption = Linq.First(allTypeOptions ?? [], (to) => to.Type === typeOptionDto.Type);
+		const relevantTypeOption = (allTypeOptions ?? []).single((to) => to.Type === typeOptionDto.Type);
 
 		this.Type = relevantTypeOption.Type!;
 		this.MetadataFetchers = new EditableField(`${this.Type}-MetadataFetchers`, relevantTypeOption.MetadataFetchers ?? typeOptionDto.MetadataFetchers?.filter((f) => f.DefaultEnabled).map((l) => l.Name!) ?? []);

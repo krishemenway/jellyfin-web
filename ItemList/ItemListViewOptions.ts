@@ -1,6 +1,6 @@
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByObjectsFunc } from "Common/Sort";
 import { CreateSortFunc, ItemSortType } from "ItemList/ItemSortType";
 import { IFilterModel, ItemFilterType } from "ItemList/ItemFilterType";
@@ -97,8 +97,8 @@ export class ItemListViewOptions {
 	}
 
 	private AllFields(): IEditableField[] {
-		const allFieldsFromFilters = Linq.SelectMany(this.Filters.Value.map((f) => f.AllFields.Value), (f) => f);
-		const allFieldsFromSorts = Linq.SelectMany(this.SortBy.Value.map((f) => f.AllFields.Value), (f) => f);
+		const allFieldsFromFilters = this.Filters.Value.selectMany((filterModel) => filterModel.AllFields.Value);
+		const allFieldsFromSorts = this.SortBy.Value.selectMany((sortModel) => sortModel.AllFields.Value);
 		const fields: IEditableField[] = [
 			this.Label,
 			this.FilterKeys,

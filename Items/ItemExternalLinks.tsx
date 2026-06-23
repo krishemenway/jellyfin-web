@@ -4,7 +4,7 @@ import { ListOf, BaseListProps } from "Common/ListOf";
 import { HyperLink } from "Common/HyperLink";
 import { Layout, StyleLayoutProps } from "Common/Layout";
 import { EditableItemProps } from "Items/EditableItemProps";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemEditorService } from "Items/ItemEditorService";
 import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
@@ -45,7 +45,7 @@ export const ItemExternalLinks: React.FC<{ item: BaseItemDto, linkLayout?: Style
 
 const ExternalProviderEditors: React.FC<{ metadataInfo: MetadataEditorInfo; linkLayout?: StyleLayoutProps }&EditableItemProps&BaseListProps> = (props) => {
 	const editableItemProviders = useObservable(props.editableItem!.ProviderIds);
-	const getName = (key: string) => Linq.First(props.metadataInfo.ExternalIdInfos ?? [], i => i.Key === key)?.Name;
+	const getName = (key: string) => (props.metadataInfo.ExternalIdInfos ?? []).single(i => i.Key === key).Name;
 	const editableItemProviderKeys = editableItemProviders.map(p => p.Key);
 	const remainingProviders = props.metadataInfo.ExternalIdInfos?.filter((info) => editableItemProviderKeys.indexOf(info.Key ?? "") === -1) ?? [];
 	const [selectNewProviderField] = React.useState(new EditableField<ExternalIdInfo>("AddProviderOptions", remainingProviders[0]));

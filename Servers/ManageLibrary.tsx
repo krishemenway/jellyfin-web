@@ -9,7 +9,7 @@ import { getLibraryApi, getLibraryStructureApi } from "@jellyfin/sdk/lib/utils/a
 import { EditableLibrary } from "Servers/EditableLibrary";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { NotFound } from "Common/NotFound";
 import { CollectionType, EmbeddedSubtitleOptions } from "@jellyfin/sdk/lib/generated-client/models";
 import { BaseToggleSwitch, ToggleSwitch } from "Common/ToggleSwitch";
@@ -39,7 +39,7 @@ class LibraryManager {
 
 	public LoadWithAbort(libraryId: string): () => void {
 		this.EditableLibrary.Start((a) => getLibraryStructureApi(ServerService.Instance.CurrentApi).getVirtualFolders({ signal: a.signal }).then(async response => {
-			const library = Linq.First(response.data, (f) => f.ItemId === libraryId);
+			const library = response.data.single((l) => l.ItemId === libraryId);
 			const libraryOptions = await getLibraryApi(ServerService.Instance.CurrentApi).getLibraryOptionsInfo({ libraryContentType: library.CollectionType as CollectionType, isNewLibrary: false }, { signal: a.signal }).then((r) => r.data);
 
 			return new EditableLibrary(libraryOptions, library);
@@ -180,13 +180,13 @@ const EditableTypeOptions: React.FC<{ typeOption: EditableLibraryItemTypeOptions
 				direction="column" gap=".5rem" px="1rem" py=".5rem"
 				forEachItem={(fetcher, index) => (
 					<Layout key={fetcher} direction="row" gap="1rem" alignItems="center" justifyContent="space-between" maxWidth="25rem">
-						<BaseToggleSwitch enabled={enabledFetchers.indexOf(fetcher) > -1} onChange={() => typeOption.MetadataFetchers.OnChange(Linq.ToggleItem(enabledFetchers, fetcher))} />
+						<BaseToggleSwitch enabled={enabledFetchers.indexOf(fetcher) > -1} onChange={() => typeOption.MetadataFetchers.OnChange(enabledFetchers.toggleItem(fetcher))} />
 
 						<Layout direction="row">{fetcher}</Layout>
 
 						<Layout direction="row" gap=".25rem">
-							<Button type="button" onClick={() => { typeOption.MetadataFetcherOrder.OnChange(Linq.Swap(fetcherOrder, index, index - 1)); }} icon={<ArrowUpIcon />} px=".25em" py=".25em" />
-							<Button type="button" onClick={() => { typeOption.MetadataFetcherOrder.OnChange(Linq.Swap(fetcherOrder, index, index + 1)); }} icon={<ArrowDownIcon />} px=".25em" py=".25em" />
+							<Button type="button" onClick={() => { typeOption.MetadataFetcherOrder.OnChange(fetcherOrder.swap(index, index - 1)); }} icon={<ArrowUpIcon />} px=".25em" py=".25em" />
+							<Button type="button" onClick={() => { typeOption.MetadataFetcherOrder.OnChange(fetcherOrder.swap(index, index + 1)); }} icon={<ArrowDownIcon />} px=".25em" py=".25em" />
 						</Layout>
 					</Layout>
 				)}
@@ -202,7 +202,7 @@ const EditableTypeOptions: React.FC<{ typeOption: EditableLibraryItemTypeOptions
 const LanguageSelector: React.FC<{ languageField: EditableField<string> }> = ({ languageField }) => {
 	const allLanguages = [LocalizationOptionsStore.Instance.EmptyCulture].concat(useDataOrNull(LocalizationOptionsStore.Instance.LocalizationCultures) ?? []);
 	const allLanguageCodes = React.useMemo(() => allLanguages.map((d) => d.TwoLetterISOLanguageName!), [allLanguages]);
-	const languageByCode = React.useMemo(() => Linq.ToRecord(allLanguages, (l) => l.TwoLetterISOLanguageName ?? ""), [allLanguages]);
+	const languageByCode = React.useMemo(() => allLanguages.toRecord((l) => l.TwoLetterISOLanguageName ?? ""), [allLanguages]);
 
 	React.useEffect(() => LocalizationOptionsStore.Instance.LoadCultures(), []);
 
@@ -220,7 +220,7 @@ const LanguageSelector: React.FC<{ languageField: EditableField<string> }> = ({ 
 const CountrySelector: React.FC<{ countryField: EditableField<string> }> = ({ countryField }) => {
 	const allCountries = [LocalizationOptionsStore.Instance.EmptyCountry].concat(useDataOrNull(LocalizationOptionsStore.Instance.LocalizationCountries) ?? []);
 	const allCountryCodes = React.useMemo(() => allCountries.map((d) => d.TwoLetterISORegionName!), [allCountries]);
-	const countriesByCode = React.useMemo(() => Linq.ToRecord(allCountries, (country) => country.TwoLetterISORegionName ?? ""), [allCountries]);
+	const countriesByCode = React.useMemo(() => allCountries.toRecord((country) => country.TwoLetterISORegionName ?? ""), [allCountries]);
 
 	React.useEffect(() => LocalizationOptionsStore.Instance.LoadCountries(), []);
 

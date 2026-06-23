@@ -5,7 +5,7 @@ import { CloseIcon } from "CommonIcons/CloseIcon";
 import { VideoPlayerService } from "Videos/VideoPlayerService";
 import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
-import { DateTime, Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { useBackgroundStyles } from "AppStyles";
 import { MediaSourceInfo, PlaybackInfoResponse } from "@jellyfin/sdk/lib/generated-client/models";
 import { ServerService } from "Servers/ServerService";
@@ -68,7 +68,7 @@ export const VideoPlayer: React.FC = () => {
 
 const VideoElement: React.FC<{ playbackInfo: PlaybackInfoResponse; fullscreen: boolean; controlsVisible: boolean; }> = ({ playbackInfo, fullscreen, controlsVisible }) => {
 	const background = useBackgroundStyles();
-	const mediaSource = Linq.First(playbackInfo.MediaSources ?? []);
+	const mediaSource = (playbackInfo.MediaSources ?? []).first();
 	const url = getUrlFromMediaSource(mediaSource);
 
 	return (

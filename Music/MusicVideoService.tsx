@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 import { MusicVideoIcon } from "Music/MusicVideoIcon";
 import { FilterByName } from "ItemList/ItemFilterTypes/FilterByName";
@@ -10,6 +11,8 @@ import { FilterByStudio } from "ItemList/ItemFilterTypes/FilterByStudio";
 import { FilterByTag } from "ItemList/ItemFilterTypes/FilterByTag";
 import { FilterByTagCount } from "ItemList/ItemFilterTypes/FilterByTagCount";
 import { FilterByGenre } from "ItemList/ItemFilterTypes/FilterByGenre";
+import { FilterByMissingField } from "ItemList/ItemFilterTypes/FilterByMissingField";
+import { FilterByDuration } from "ItemList/ItemFilterTypes/FilterByDuration";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
 import { SortByCommunityRating } from "ItemList/ItemSortTypes/SortByCommunityRating";
 import { SortByOfficialRating } from "ItemList/ItemSortTypes/SortByOfficialRating";
@@ -21,16 +24,13 @@ import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
-import { FilterByMissingField } from "ItemList/ItemFilterTypes/FilterByMissingField";
-import { FilterByDuration } from "ItemList/ItemFilterTypes/FilterByDuration";
 
 export const MusicVideoService: BaseItemKindService = {
 	kind: "MusicVideo",
 	findIcon: (props) => <MusicVideoIcon {...props} />,
 	listUrl: (libraryId) => `/MusicVideos/${libraryId}`,
 	nameWithContext: (item) => `${Nullable.StringValue(item.Artists?.join(", "), "", (artists) => artists + " - ")}${item.Name}`,
-	playerSecondaryHeadline: (item) => Linq.Coalesce([item.Album, item.ProductionYear?.toString()], "", (v) => Nullable.StringHasValue(v)) + Nullable.StringValue(item.Artists?.join(", "), "", (artists) => " - " + artists),
+	playerSecondaryHeadline: (item) => [item.Album, item.ProductionYear?.toString()].coalesce("", (v) => Nullable.StringHasValue(v)) + Nullable.StringValue(item.Artists?.join(", "), "", (artists) => " - " + artists),
 	relevantPersonKinds: ["Actor", "Director", "Writer", "Producer", "Composer", "Editor"],
 	filterOptions: [
 		FilterByName,

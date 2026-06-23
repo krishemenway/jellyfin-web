@@ -1,4 +1,4 @@
-import { Linq, Nullable } from "Common/MissingJavascriptFunctions";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { FilterByContinueWatching, FilterByContinueWatchingData } from "ItemList/ItemFilterTypes/FilterByContinueWatching";
 import { FilterByGenre, FilterByGenreData } from "ItemList/ItemFilterTypes/FilterByGenre";
@@ -40,7 +40,7 @@ export class ItemFilterTypeStore {
 		return found;
 	}
 
-	private _filterTypes: Record<string, ItemFilterType> = Linq.ToRecord([
+	private _filterTypes: Record<string, ItemFilterType> = [
 		FilterByType,
 		FilterByTag,
 		FilterByGenre,
@@ -54,7 +54,7 @@ export class ItemFilterTypeStore {
 		FilterByTagCount,
 		FilterByMissingField,
 		FilterByDuration,
-	], (t) => t.FilterType);
+	].toRecord((t) => t.FilterType);
 	
 	static get Instance(): ItemFilterTypeStore {
 		return this._instance ?? (this._instance = new ItemFilterTypeStore());
