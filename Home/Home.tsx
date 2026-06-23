@@ -118,21 +118,22 @@ const HomeSection: React.FC<{ viewOptions: ItemListViewOptions; itemsPerRow: num
 		<Loading
 			receivers={[list.List]}
 			whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-			whenLoading={<LoadingSection label={label} itemsPerRow={itemsPerRow} />}
-			whenNotStarted={<LoadingSection label={label} itemsPerRow={itemsPerRow} />}
+			whenLoading={<LoadingSection label={label} itemsPerRow={itemsPerRow} viewOptions={viewOptions} />}
+			whenNotStarted={<LoadingSection label={label} itemsPerRow={itemsPerRow} viewOptions={viewOptions} />}
 			whenReceived={(itemWithStats) => <HomeSectionWithLoadedItems label={label} itemsFromList={itemWithStats.List} itemsPerRow={itemsPerRow} viewOptions={viewOptions} isEditing={isEditing} onDeleted={onDeleted} onMoveDown={onMoveDown} onMoveUp={onMoveUp} />}
 		/>
 	);
 };
 
-const LoadingSection: React.FC<{ label: string; itemsPerRow: number }> = ({ label, itemsPerRow }) => {
+const LoadingSection: React.FC<{ label: string; itemsPerRow: number; viewOptions: ItemListViewOptions }> = ({ label, itemsPerRow, viewOptions }) => {
+	const listUrl = showMoreLink(viewOptions);
 	const items = React.useMemo(() => Linq.Sequence(0, itemsPerRow),[itemsPerRow]);
 	const background = useBackgroundStyles();
 
 	return (
 		<Layout direction="column" gap=".25rem" width="100%">
-			<Layout direction="row" justifyContent="space-between">
-				<Layout direction="row" fontSizeREM={1.3} alignItems="end">{label}</Layout>
+			<Layout direction="row" justifyContent="space-between" fontSizeREM={1.3}>
+				<HyperLink to={listUrl} direction="row" px=".25rem" py=".25rem" alignItems="end" children={label} />
 			</Layout>
 
 			<ListOf
