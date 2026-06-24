@@ -4,7 +4,7 @@ export const LoadArrayPrototype = true;
 
 declare global {
 	interface ReadonlyArray<T> {
-		distinct(): Array<T>;
+		distinct<TKey extends string|number|symbol>(getKeyFunc?: (item: T) => TKey): Array<T>;
 		selectMany<T2 = T>(select: (t: T) => T2[]): T2[];
 		groupBy<TKey extends string|number|symbol, TValue = T>(keyFunc: (arrayValue: TValue) => TKey): Record<TKey, TValue[]>;
 		toRecord<TKey extends string|number|symbol = string>(getKey: (value: T) => TKey): Record<TKey, T>;
@@ -20,7 +20,7 @@ declare global {
 		toggleItem<T>(item: T): T[];
 		addCount<T>(count: number, getItem?: (index: number) => T): T[];
 
-		distinct(): Array<T>;
+		distinct<TKey extends string|number|symbol>(getKeyFunc?: (item: T) => TKey): Array<T>;
 		selectMany<T2 = T>(select: (t: T) => T2[]): T2[];
 		groupBy<TKey extends string|number|symbol, TValue = T>(keyFunc: (arrayValue: TValue) => TKey): Record<TKey, TValue[]>;
 		toRecord<TKey extends string|number|symbol = string>(getKey: (value: T) => TKey): Record<TKey, T>;
@@ -32,9 +32,10 @@ declare global {
 	}
 }
 
-Array.prototype.distinct = function distinct<T>(): T[] {
-	const array = this as T[];
-	return array.filter((value, index, all) => all.indexOf(value) === index);
+Array.prototype.distinct = function distinct<TValue, TKey extends string|number|symbol>(getKeyFunc?: (item: TValue) => TKey): TValue[] {
+	const array = this as TValue[];
+	const arrayAsRecord = array.toRecord(getKeyFunc ?? ((i) => i as string|number|symbol));
+	return Object.keys(arrayAsRecord).map((a) => arrayAsRecord[a]);
 }
 
 Array.prototype.selectMany = function selectMany<T, T2>(select: (t: T) => T2[]): T2[] {

@@ -1,5 +1,5 @@
 import { BaseItemDto, BaseItemKind, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
-import { getItemsApi } from "@jellyfin/sdk/lib/utils/api";
+import { getItemsApi, getTvShowsApi } from "@jellyfin/sdk/lib/utils/api";
 import { IReceiver, Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { ItemListViewOptions, ItemViewOptionDataSource, ItemViewOptionsData } from "ItemList/ItemListViewOptions";
@@ -35,7 +35,7 @@ const loadRequestForDataSource = (dataSource: ItemViewOptionDataSource, receiver
 			return items;
 		});
 	} else if (dataSource.DataSource === "Resume") {
-		return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getResumeItems({ }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
+		return (a: AbortController) => Promise.all([getItemsApi(ServerService.Instance.CurrentApi).getResumeItems({ }, { signal: a.signal }), getTvShowsApi(ServerService.Instance.CurrentApi).getNextUp({ })]).then(([resume, nextUp]) => (resume.data.Items ?? []).concat(nextUp.data.Items ?? []).distinct((i) => i.Id!)).then((items) => {
 			ItemCacheResetService.Instance.LoadedItems(items, receiver);
 			return items;
 		});
