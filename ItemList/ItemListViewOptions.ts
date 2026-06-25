@@ -1,8 +1,8 @@
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { SortByObjectsFunc } from "Common/Sort";
-import { CreateSortFunc, ItemSortType } from "ItemList/ItemSortType";
+import { SortByObjectsFunc } from "Common/ArrayPrototype";
+import { ItemSortType } from "ItemList/ItemSortType";
 import { IFilterModel, ItemFilterType } from "ItemList/ItemFilterType";
 import { EditableField, IEditableField, ValueIsRequired } from "Common/EditableField";
 import { SortByName } from "ItemList/ItemSortTypes/SortByName";
@@ -29,7 +29,7 @@ export class ItemListViewOptions {
 		this.SortKeys = new EditableField<string[]>("SortKeys", this.SortBy.Value.map(s => s.Key));
 
 		this.FilterFunc = new Computed(() => (item) => this.Filters.Value.every(f => f.Filter.Value(item)))
-		this.SortByFunc = new Computed(() => SortByObjectsFunc(this.SortBy.Value.map((sb) => sb.SortFunc.Value).concat([CreateSortFunc(SortByName, false)])));
+		this.SortByFunc = new Computed(() => SortByObjectsFunc(this.SortBy.Value.map((sb) => sb.SortFunc.Value).concat([SortByName.sortFunc])));
 	}
 
 	public OnSaved(): void {

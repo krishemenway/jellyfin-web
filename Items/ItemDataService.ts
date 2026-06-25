@@ -2,7 +2,7 @@ import { ItemsApiGetItemsRequest } from "@jellyfin/sdk/lib/generated-client/api/
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { getItemsApi, getUserLibraryApi } from "@jellyfin/sdk/lib/utils/api";
 import { Receiver } from "Common/Receiver";
-import { SortByObjects, SortFuncs } from "Common/Sort";
+import { SortFunc } from "Common/ArrayPrototype";
 import { ServerService } from "Servers/ServerService";
 import { ItemCacheResetService } from "Items/ItemCacheResetService";
 
@@ -25,7 +25,7 @@ export class ItemDataService {
 		return () => this.Item.ResetIfLoading();
 	}
 
-	public LoadChildrenWithAbort(withParentId?: boolean, request?: Partial<ItemsApiGetItemsRequest>, sortFuncs?: SortFuncs<BaseItemDto>[], forceRefresh?: boolean): () => void {
+	public LoadChildrenWithAbort(withParentId?: boolean, request?: Partial<ItemsApiGetItemsRequest>, sortFuncs?: SortFunc<BaseItemDto>[], forceRefresh?: boolean): () => void {
 		if (forceRefresh !== true && this.Children.HasData.Value) {
 			return () => { };
 		}
@@ -38,7 +38,7 @@ export class ItemDataService {
 			sortOrder: ["Ascending"],
 		};
 
-		this.Children.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ...baseRequest, ...request }, { signal: a.signal }).then((r) => SortByObjects(r.data.Items ?? [], sortFuncs ?? [])).then((items) => {
+		this.Children.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ...baseRequest, ...request }, { signal: a.signal }).then((r) => r.data.Items?.sortBy(sortFuncs) ?? []).then((items) => {
 			ItemCacheResetService.Instance.LoadedItems(items, this.Children);
 			return items;
 		}), forceRefresh === true);

@@ -1,5 +1,5 @@
 import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
-import { SortByString } from "Common/Sort";
+import { SortByString } from "Common/ArrayPrototype";
 import { ItemSortType } from "ItemList/ItemSortType";
 
 export const SortByPremiereDate: ItemSortType = {

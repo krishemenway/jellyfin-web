@@ -49,8 +49,6 @@ import { ChangeImageButton } from "Items/ChangeImageButton";
 import { ItemMediaInfo } from "Items/ItemMediaInfo";
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { ItemFavoriteIcon } from "Items/ItemFavoriteIcon";
-import { CreateSortFunc } from "ItemList/ItemSortType";
-import { SortByObjects } from "Common/Sort";
 import { PageTitle } from "Common/PageTitle";
 import { LinkToItem } from "Items/LinkToItem";
 
@@ -88,8 +86,8 @@ export const Show: React.FC = () => {
 };
 
 const episodeSortOrder = [
-	CreateSortFunc(SortByParentIndexNumber, false),
-	CreateSortFunc(SortByIndexNumber, false),
+	SortByParentIndexNumber.sortFunc,
+	SortByIndexNumber.sortFunc,
 ];
 
 const LoadedShow: React.FC<{ show: BaseItemDto; seasonId?: string; children: BaseItemDto[]; user: UserDto; reloadShow: () => void }> = ({ show, seasonId, children, user, reloadShow }) => {
@@ -98,7 +96,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; seasonId?: string; children: Bas
 	const editableItem = useEditableItem(show, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
 	const seasons = React.useMemo(() => children.filter((i) => i.Type === "Season").sort(sortSeasons), [children]);
-	const allEpisodes = React.useMemo(() => SortByObjects(children.filter((i) => i.Type === "Episode"), episodeSortOrder), [children]);
+	const allEpisodes = React.useMemo(() => children.filter((i) => i.Type === "Episode").sortBy(episodeSortOrder), [children]);
 
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(show), [show]);
 

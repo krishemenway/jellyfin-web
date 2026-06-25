@@ -17,7 +17,7 @@ import { Button } from "Common/Button";
 import { useObservable } from "@residualeffect/rereactor";
 import { PageTitle } from "Common/PageTitle";
 import { UserViewStore } from "Users/UserViewStore";
-import { SortByNumber, SortByObjects, SortByString } from "Common/Sort";
+import { ReverseSort, SortByNumber, SortByString } from "Common/ArrayPrototype";
 import { ObservableArray } from "@residualeffect/reactor";
 import { ServerService } from "Servers/ServerService";
 import { MusicPlayerService } from "Music/MusicPlayerService";
@@ -62,6 +62,8 @@ export const SongListViewContent: React.FC<{ libraryId: string; libraries: BaseI
 	const artistList = ItemService.Instance.FindOrCreateListFromLibrary(libraryId, "MusicArtist");
 	const audioList = ItemService.Instance.FindOrCreateListFromLibrary(libraryId, "Audio");
 
+	React.useEffect(() => artistList.LoadWithAbort(), [artistList]);
+	React.useEffect(() => albumList.LoadWithAbort([{ Key: "AlbumCountByArtistId", GetKeysForItem: (i) => i.AlbumArtists?.map((a) => a.Id) ?? [] }]), [albumList]);
 	React.useEffect(() => audioList.LoadWithAbort([{ Key: "SongCountByArtistId", GetKeysForItem: (i) => i.Artists?.map((a) => a) ?? [] }, { Key: "SongCountByAlbumId", GetKeysForItem: (i) => [i.AlbumId] }]), [audioList]);
 
 	const observableArtists = React.useMemo(() => new ObservableArray<string>([]), [libraryId]);
@@ -173,7 +175,7 @@ const LoadedItems: React.FC<{ libraryId: string; items: BaseItemDto[]; columns: 
 	};
 
 	const filteredItems = React.useMemo(() => props.items.filter((i) => Nullable.Value(props.filters, true, (f) => f.length === 0 || f.some((filter) => filter(i) || props.selectedKeys.includes(props.getSelectedKey(i))))), [props.items, props.filters, props.selectedKeys, props.getSelectedKey]);
-	const sortedItems = React.useMemo(() => SortByObjects(filteredItems, [{ SortType: sortField.name, Sort: sortField.getSortFunc(props.stats ?? []), Reversed: sortReversed }]), [filteredItems, sortField, sortReversed]);
+	const sortedItems = React.useMemo(() => filteredItems.sortBy([sortReversed ? ReverseSort(sortField.getSortFunc(props.stats ?? [])) : sortField.getSortFunc(props.stats ?? [])]), [filteredItems, sortField, sortReversed]);
 
 	return (
 		<TableVirtuoso

@@ -1,7 +1,6 @@
 import * as React from "react";
 import { BaseItemDto, BaseItemPerson, PersonKind } from "@jellyfin/sdk/lib/generated-client/models";
 import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
-import { SortByNumber, SortByObjects, SortFuncs } from "Common/Sort";
 import { ListOf } from "Common/ListOf";
 import { LinkToPerson } from "People/LinkToPerson";
 import { Layout, StyleLayoutProps } from "Common/Layout";
@@ -18,12 +17,13 @@ import { Button } from "Common/Button";
 import { AddIcon } from "CommonIcons/AddIcon";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { Collapsible } from "Common/Collapsible";
+import { SortByNumber } from "Common/ArrayPrototype";
 
 export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; className?: string; linkProps?: StyleLayoutProps; startOpen?: boolean; }&EditableItemProps&StyleLayoutProps> = (props) => {
 	const [open, setOpen] = React.useState(props.startOpen ?? false);
 	const itemsPerRow = useBreakpointValues(1, 2, 3, 5);
 	const relevantPersonKinds = BaseItemKindServiceFactory.FindOrThrow(props.itemWithPeople.Type).relevantPersonKinds ?? [];
-	const orderedCastAndCrew = React.useMemo(() => SortByObjects(props.itemWithPeople.People ?? [], CastAndCrewSortOrder), [props.itemWithPeople.People]);
+	const orderedCastAndCrew = React.useMemo(() => (props.itemWithPeople.People ?? []).sort(SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"])), [props.itemWithPeople.People]);
 
 	if (!props.isEditing && orderedCastAndCrew.length === 0) {
 		return <></>;
@@ -139,7 +139,3 @@ const sortPriorityByType: Record<PersonKind, number> = {
 	"Translator": 50,
 	"Unknown": 100,
 };
-
-const CastAndCrewSortOrder: SortFuncs<BaseItemPerson>[] = [
-	{ Reversed: false, SortType: "PriorityOrder", Sort: SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"]) },
-];

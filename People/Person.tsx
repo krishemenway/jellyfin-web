@@ -24,10 +24,8 @@ import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
 import { IconForItem } from "Items/IconForItem";
-import { SortFuncs } from "Common/Sort";
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { ItemsApiGetItemsRequest } from "@jellyfin/sdk/lib/generated-client/api/items-api";
-import { CreateSortFunc } from "ItemList/ItemSortType";
 import { ChangeImageButton } from "Items/ChangeImageButton";
 import { useObservable } from "@residualeffect/rereactor";
 import { ItemEditorService, useEditableItem } from "Items/ItemEditorService";
@@ -39,6 +37,7 @@ import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
 import { DateField, TextField } from "Common/TextField";
 import { FieldLabel } from "Common/FieldLabel";
 import { ItemTags } from "Items/ItemTags";
+import { ReverseSort, SortFunc } from "Common/ArrayPrototype";
 
 const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
 	imageTypeLimit: 1,
@@ -47,7 +46,7 @@ const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
 	includeItemTypes: [ "Audio", "Movie", "Episode", "AudioBook", "Photo", "Video", "MusicVideo"],
 };
 
-const CreditSortOrder: SortFuncs<BaseItemDto>[] = [CreateSortFunc(SortByPremiereDate, true), CreateSortFunc(SortByIndexNumber, true)];
+const CreditSortOrder: SortFunc<BaseItemDto>[] = [ReverseSort(SortByPremiereDate.sortFunc), ReverseSort(SortByIndexNumber.sortFunc)];
 
 export const Person: React.FC = () => {
 	const personId = useParams().personId;

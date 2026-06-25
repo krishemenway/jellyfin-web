@@ -1,4 +1,4 @@
-import { SortByNumber } from "Common/Sort";
+import { SortByNumber } from "Common/ArrayPrototype";
 import { ItemSortType } from "ItemList/ItemSortType";
 
 export const SortByIndexNumber: ItemSortType = {

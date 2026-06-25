@@ -1,7 +1,7 @@
 import { QueryFiltersLegacy } from "@jellyfin/sdk/lib/generated-client/models";
 import { getFilterApi } from "@jellyfin/sdk/lib/utils/api";
 import { Receiver } from "Common/Receiver";
-import { SortByNumber, SortByString } from "Common/Sort";
+import { SortByNumber, SortByString } from "Common/ArrayPrototype";
 import { ServerService } from "Servers/ServerService";
 
 export class ItemFilterService {

@@ -1,6 +1,6 @@
 import { Nullable } from "Common/MissingJavascriptFunctions";
 
-export const LoadArrayPrototype = true;
+export type SortFunc<T> = (a: T, b: T) => number;
 
 declare global {
 	interface ReadonlyArray<T> {
@@ -13,6 +13,7 @@ declare global {
 		max(valueSelector: (t: T) => string|number|null|undefined): T|null;
 		min(valueSelector: (t: T) => string|number|null|undefined): T|null;
 		coalesce<TIn, TOut>(lastResort: TOut, hasValueFunc?: (value: TIn) => boolean): TOut;
+		sortBy(sortFuncs: Array<SortFunc<T>>|undefined): Array<T>;
 	}
 
 	interface Array<T> {
@@ -29,6 +30,7 @@ declare global {
 		max(valueSelector: (t: T) => string|number|null|undefined): T|null;
 		min(valueSelector: (t: T) => string|number|null|undefined): T|null;
 		coalesce<TIn = T, TOut = T>(lastResort: TOut, hasValueFunc?: (value: TIn) => boolean): TOut;
+		sortBy(sortFuncs: Array<SortFunc<T>>|undefined): Array<T>;
 	}
 }
 
@@ -134,3 +136,46 @@ Array.prototype.addCount = function addCount<T>(count: number, getItem?: (index:
 	array.push(...[...Array(count).keys()].map((v, index) => itemFunc(index)));
 	return array;
 }
+
+export function SortByNumber<T>(findNumberFunc: (x: T) => number|undefined|null): SortFunc<T> {
+	return (a, b) => (findNumberFunc(a) ?? 0) - (findNumberFunc(b) ?? 0);
+}
+
+export function SortByString<T>(findStringFunc: (x: T) => string|undefined|null): SortFunc<T> {
+	return (a, b) => (findStringFunc(a) ?? "").localeCompare(findStringFunc(b) ?? "");
+}
+
+export function ReverseSort<T>(func: SortFunc<T>): SortFunc<T> {
+	return (a, b) => func(a, b) * -1;
+}
+
+export function SortByObjectsFunc<T>(sortFuncs: ReadonlyArray<SortFunc<T>>): SortFunc<T> {
+	return (a, b) : number => {
+		let result = 0;
+
+		// Array.some will quit when returns true
+		sortFuncs.some((sortFunc) => {
+			result = sortFunc(a, b);
+
+			if (result === 0) {
+				return false;
+			}
+
+			return true;
+		});
+
+		return result;
+	};
+};
+
+Array.prototype.sortBy = function sortBy<T>(sortFuncs: Array<SortFunc<T>>|undefined): Array<T> {
+	const array = this as T[];
+
+	if (array.length === 0 || sortFuncs === undefined || sortFuncs.length === 0) {
+		return array;
+	}
+
+	return array.sort(SortByObjectsFunc(sortFuncs));
+}
+
+export const LoadArrayPrototype = true; // App needs something to reference to be included, it doesn't matter what this is

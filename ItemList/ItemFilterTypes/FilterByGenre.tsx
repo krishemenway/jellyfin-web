@@ -2,7 +2,7 @@ import * as React from "react";
 import { MultiSelectEditor } from "Common/SelectFieldEditor";
 import { Layout } from "Common/Layout";
 import { FilterDisplayConfig, IFilterModel, ItemFilterType } from "ItemList/ItemFilterType";
-import { SortByString } from "Common/Sort";
+import { SortByString } from "Common/ArrayPrototype";
 import { EditableField, IEditableField } from "Common/EditableField";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
 import { Computed } from "@residualeffect/reactor";

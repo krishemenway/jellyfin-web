@@ -3,7 +3,7 @@ import { FilterDisplayConfig, IFilterModel, ItemFilterType } from "ItemList/Item
 import { Layout } from "Common/Layout";
 import { MultiSelectEditor } from "Common/SelectFieldEditor";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { SortByString } from "Common/Sort";
+import { SortByString } from "Common/ArrayPrototype";
 import { Computed } from "@residualeffect/reactor";
 import { EditableField, IEditableField } from "Common/EditableField";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
