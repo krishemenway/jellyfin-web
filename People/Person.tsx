@@ -134,7 +134,7 @@ const CreditedItem: React.FC<{ creditedItem: BaseItemDto, person: BaseItemDto }>
 
 			<Layout direction="column" grow gap=".25em">
 				<Layout direction="row">{nameFunc(creditedItem)}</Layout>
-				<Layout direction="row">{[personRecord?.Role, personRecord?.Type].coalesce("", (v) => Nullable.StringHasValue(v))}</Layout>
+				<Layout direction="row">{[personRecord?.Role, personRecord?.Type].coalesce("", Nullable.StringHasValue)}</Layout>
 			</Layout>
 
 			<Layout direction="column" width="5%" px="1em" alignItems="end" justifyContent="center">{creditedItem.ProductionYear}</Layout>

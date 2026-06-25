@@ -28,7 +28,7 @@ export class EditableField<T> implements IEditableField {
 		this.HasChanged = new Computed(() => this.CurrentHasChangedFromSaved());
 		this.ServerErrorMessage = new Observable(undefined);
 
-		this.ErrorMessage = new Computed<string|undefined>(() => [this.GetRequestBlockingErrorFunc(this.Current.Value), this.ServerErrorMessage.Value].coalesce(undefined, m => Nullable.StringHasValue(m)));
+		this.ErrorMessage = new Computed<string|undefined>(() => [this.GetRequestBlockingErrorFunc(this.Current.Value), this.ServerErrorMessage.Value].coalesce(undefined, Nullable.StringHasValue));
 	}
 
 	public CanMakeRequest(): boolean {

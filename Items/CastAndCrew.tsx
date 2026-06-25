@@ -51,7 +51,7 @@ const ReadOnlyCastAndCrew: React.FC<{ orderedCastAndCrew: BaseItemPerson[]; link
 		<ListOf
 			items={orderedCastAndCrew}
 			direction="row" className={background.panel}
-			forEachItem={((person) => <CastAndCrewCredit key={person.Id + [person.Role, person.Type?.toString()].coalesce("Unknown", (s) => Nullable.StringHasValue(s))} person={person} {...linkProps} />)}
+			forEachItem={((person) => <CastAndCrewCredit key={person.Id + [person.Role, person.Type?.toString()].coalesce("Unknown", Nullable.StringHasValue)} person={person} {...linkProps} />)}
 			{...props}
 		/>
 	);

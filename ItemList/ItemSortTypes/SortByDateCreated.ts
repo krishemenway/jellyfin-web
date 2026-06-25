@@ -5,6 +5,6 @@ import { ItemSortType } from "ItemList/ItemSortType";
 export const SortByDateCreated: ItemSortType = {
 	labelKey: 'OptionDateAdded',
 	field: "DateCreated",
-	getContent: (i) => Nullable.StringValue([i.DateLastMediaAdded, i.DateCreated].coalesce(undefined, (v) => Nullable.StringHasValue(v)), "—", (date) => new Date(date).toLocaleString()),
+	getContent: (i) => Nullable.StringValue([i.DateLastMediaAdded, i.DateCreated].coalesce(undefined, Nullable.StringHasValue), "—", (date) => new Date(date).toLocaleString()),
 	sortFunc: SortByString((i) => i.DateLastMediaAdded ?? i.DateCreated),
 };

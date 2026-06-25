@@ -4,7 +4,7 @@ export class Nullable {
 	}
 
 	public static StringHasValue(value: string|undefined|null) {
-		return this.HasValue(value) && value.length > 0;
+		return Nullable.HasValue(value) && value.length > 0;
 	}
 
 	public static TryExecute<T>(value: T|undefined|null, action: (value: T) => void, otherwise?: () => void) {

@@ -12,7 +12,7 @@ import { Loading } from "Common/Loading";
 export const ItemRating: React.FC<{ item: BaseItemDto; libraryId: string; }&EditableItemProps&StyleLayoutProps> = (props) => {
 	const background = useBackgroundStyles();
 	const combined = {...{px: ".25em", py: ".25em" } as StyleLayoutProps, ...props as StyleLayoutProps};
-	const rating = [props.item.CustomRating, props.item.OfficialRating].coalesce("", (r) => Nullable.StringHasValue(r));
+	const rating = [props.item.CustomRating, props.item.OfficialRating].coalesce("", Nullable.StringHasValue);
 
 	if (props.isEditing && Nullable.HasValue(props.editableItem) && Nullable.HasValue(props.libraryId)) {
 		return (
