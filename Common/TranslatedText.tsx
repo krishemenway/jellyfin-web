@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Computed, Observable } from "@residualeffect/reactor";
-import { useObservable } from "@residualeffect/rereactor";
+import { Loading, useDataOrNull } from "Common/Loading";
 import { Receiver } from "Common/Receiver";
 import * as defaultLanguage from "strings/en-us.json";
 import { ApplyLayoutStyleProps, StyleLayoutProps } from "Common/Layout";
@@ -58,16 +58,13 @@ export class TranslationService {
 }
 
 export function useTranslatedText(request: TranslationRequest|undefined): string|undefined {
-	if (!Nullable.HasValue(request)) {
+	const translations = useDataOrNull(TranslationService.Instance.Translations);
+
+	if (translations === null || !Nullable.HasValue(request)) {
 		return undefined;
 	}
 
-	const translations = useObservable(TranslationService.Instance.Translations.Data);
-	if (translations.ReceivedData === null) {
-		return undefined;
-	}
-
-	let textFromStore = translations.ReceivedData[request.Key];
+	let textFromStore = translations[request.Key];
 
 	if (Nullable.HasValue(textFromStore) && Nullable.HasValue(request.KeyProps)) {
 		request.KeyProps.forEach((tp, i) => { textFromStore = textFromStore.replace(`{${i}}`, tp)})
@@ -76,20 +73,37 @@ export function useTranslatedText(request: TranslationRequest|undefined): string
 	return textFromStore;
 }
 
-export const TranslatedText: React.FC<{ textKey: string, textProps?: string[], formatText?: (translatedText?: string) => string, elementType?: string, layout?: StyleLayoutProps, className?: string }> = (props) => {
-	let translated = useTranslatedText({ Key: props.textKey, KeyProps: props.textProps });
+interface TranslatedTextProps {
+	textKey: string;
+	textProps?: string[];
+	formatText?: (translatedText?: string) => string;
+	elementType?: string;
+	layout?: StyleLayoutProps;
+	className?: string
+}
+
+export const TranslatedText: React.FC<TranslatedTextProps> = ({ textKey, textProps, formatText, className, elementType, layout }) => {
+	let translated = useTranslatedText({ Key: textKey, KeyProps: textProps });
 
 	if (translated === undefined) {
-		console.warn(`Missing text key: '${props.textKey}'`);
+		console.warn(`Missing text key: '${textKey}'`);
 	}
 
-	if (props.formatText !== undefined) {
-		translated = props.formatText(translated);
+	if (formatText !== undefined) {
+		translated = formatText(translated);
 	}
 
-	if (props.elementType !== undefined) {
-		return React.createElement(props.elementType, { className: props.className, style: ApplyLayoutStyleProps(props.layout) }, <>{translated}</>);
+	if (elementType !== undefined) {
+		return React.createElement(elementType, { className: className, style: ApplyLayoutStyleProps(layout) }, <>{translated}</>);
 	} else {
 		return <>{translated}</>;
 	}
-}
+};
+
+export const RequiresTranslationsLoaded: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+	<Loading
+		receivers={[TranslationService.Instance.Translations]}
+		whenError={() => <></>} whenLoading={<></>} whenNotStarted={<></>}
+		whenReceived={() => React.Children.map(children, (c) => c)}
+	/>
+);

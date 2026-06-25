@@ -21,7 +21,7 @@ export class ItemDataService {
 		}
 
 		const user = ServerService.Instance.CurrentUserId.Value;
-		this.Item.Start((a) => getUserLibraryApi(ServerService.Instance.CurrentApi).getItem({ itemId: this.Id, userId: user }, { signal: a.signal }).then(r => r.data), forceRefresh === true);
+		this.Item.Start((a) => getUserLibraryApi(ServerService.Instance.CurrentApi).getItem({ itemId: this.Id, userId: user }, { signal: a.signal }).then(ServerService.HandleResponse), forceRefresh === true);
 		return () => this.Item.ResetIfLoading();
 	}
 
@@ -38,7 +38,7 @@ export class ItemDataService {
 			sortOrder: ["Ascending"],
 		};
 
-		this.Children.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ...baseRequest, ...request }, { signal: a.signal }).then((r) => r.data.Items?.sortBy(sortFuncs) ?? []).then((items) => {
+		this.Children.Start((a) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ ...baseRequest, ...request }, { signal: a.signal }).then(ServerService.HandleResponse).then((r) => r.Items?.sortBy(sortFuncs) ?? []).then((items) => {
 			ItemCacheResetService.Instance.LoadedItems(items, this.Children);
 			return items;
 		}), forceRefresh === true);

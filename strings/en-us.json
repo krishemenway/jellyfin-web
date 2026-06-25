@@ -583,6 +583,8 @@
     "Inker": "Inker",
     "InstallingPackage": "Installing {0} (version {1})",
     "InstantMix": "Instant mix",
+    "InternalServerError": "Something went wrong on the server. Try again later.",
+    "InvalidRequest": "Something was wrong with this request.",
     "IsBetween": "Is Between",
     "IsBetweenFilterDisplay": "Is Between {0} and {1}",
     "IsEmpty": "Is Empty",

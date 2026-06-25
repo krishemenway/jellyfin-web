@@ -45,32 +45,29 @@ import { Genres } from "Genres/Genres";
 
 import { SongListView } from "Music/SongListView";
 import { MusicVideo } from "Music/MusicVideo";
-import { Loading } from "Common/Loading";
-import { TranslationService } from "Common/TranslatedText";
+import { RequiresTranslationsLoaded } from "Common/TranslatedText";
 import { MediaPlayer } from "MediaPlayer/MediaPlayer";
+import { PageWithNavigation } from "PageWithNavigation";
+import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
 
-const Layout: React.FC = () => {
+const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
 	const [breakpoint, ResponsiveProvider] = useCalculatedBreakpoint();
 
 	return (
 		<ResponsiveProvider value={breakpoint}>
 			<RequireServerAndUser>
-				<Loading
-					receivers={[TranslationService.Instance.Translations]}
-					whenError={() => <></>} whenLoading={<></>} whenNotStarted={<></>}
-					whenReceived={() => (
-						<ErrorBoundary fallback={<LoadingErrorMessages errorTextKeys={["UnknownError"]} />}>
-							<Outlet />
-							<MediaPlayer />
-						</ErrorBoundary>
-					)}
-				/>
+				<RequiresTranslationsLoaded>
+					<ErrorBoundary fallback={<LoadingErrorMessages errorTextKeys={["UnknownError"]} />}>
+						<Outlet />{React.Children.map(children, c => c)}
+						<MediaPlayer />
+					</ErrorBoundary>
+				</RequiresTranslationsLoaded>
 			</RequireServerAndUser>
 
 			<ResetModalOnLocationChange />
 		</ResponsiveProvider>
 	);
-}
+};
 
 const App: React.FC<{ basePath: string }> = (props) => {
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
@@ -151,7 +148,7 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ index: true, element: <Home /> },
 					]
 				},
-				{ path: "*", element: <NotFound /> },
+				{ path: "*", element: <Layout><PageWithNavigation icon={<QuestionMarkIcon />}><NotFound /></PageWithNavigation></Layout> },
 			], { basename: props.basePath })}
 		/>
 	)
@@ -163,4 +160,4 @@ if (!LoadArrayPrototype || !LoadNumberPrototype) {
 
  /* Pass in the DOM element to render inside of into the initialize function and watch react do it's thing. */
 declare global { interface Window { initialize?: (element: Element, basePath: string) => void; } }
-	window.initialize = window.initialize ?? ((element, basePath) => { createRoot(element).render(<App basePath={basePath} />); document.body.className = "jellyfin-base"; });
+window.initialize = window.initialize ?? ((element, basePath) => { createRoot(element).render(<App basePath={basePath} />); document.body.className = "jellyfin-base"; });

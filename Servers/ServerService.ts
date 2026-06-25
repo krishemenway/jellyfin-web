@@ -6,6 +6,7 @@ import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SystemInfo } from "@jellyfin/sdk/lib/generated-client/models";
 import { DeviceService } from "Device/DeviceService";
+import type { AxiosResponse } from 'axios';
 
 interface JellyfinCredentials {
 	Servers: ServerConnection[]
@@ -42,6 +43,18 @@ export class ServerService {
 		this.ServerInfo = new Receiver("UnknownError");
 		this.CurrentUserId = new Computed(() => this.CurrentServer.Value?.UserId ?? "");
 		this._apis = {};
+	}
+
+	public static HandleResponse<T>(response: AxiosResponse<T, unknown, unknown>): T {
+		if (response.status >= 400 && response.status < 500) {
+			throw Error("InvalidRequest");
+		}
+
+		if (response.status >= 500) {
+			throw Error("InternalServerError");
+		}
+
+		return response.data;
 	}
 
 	public get CurrentApi(): Api {
