@@ -1,5 +1,5 @@
 import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
-import { DateTime, Nullable, NumberLimits } from "Common/MissingJavascriptFunctions";
+import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { MediaPlaylistItem } from "MediaPlayer/MediaPlaylistItem";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { MediaPlayState } from "MediaPlayer/MediaPlayState";
@@ -134,7 +134,7 @@ export class MediaPlayerPlaylist {
 		if (this.Shuffle.Value) {
 			this.GoShuffle();
 		} else if (this.Repeat.Value) {
-			this.GoIndex(NumberLimits.NoGreaterThan(this.CurrentIndex() + 1, this.ItemsInOrder.length - 1, 0));
+			this.GoIndex((this.CurrentIndex() + 1).noGreaterThan(this.ItemsInOrder.length - 1, 0));
 		} else {
 			this.GoIndex(this.CurrentIndex() + 1);
 		}
@@ -144,7 +144,7 @@ export class MediaPlayerPlaylist {
 		if (this.Shuffle.Value) {
 			this.GoShuffle();
 		} else if (this.Repeat.Value) {
-			this.GoIndex(NumberLimits.NoLessThan(this.CurrentIndex() - 1, 0, this.ItemsInOrder.length - 1));
+			this.GoIndex((this.CurrentIndex() - 1).noLessThan(0, this.ItemsInOrder.length - 1));
 		} else {
 			this.GoIndex(this.CurrentIndex() - 1);
 		}
