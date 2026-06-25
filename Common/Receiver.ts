@@ -118,9 +118,9 @@ export class Receiver<TReceivedData> implements IReceiver {
 	public DefaultErrorTextKey: string;
 	public OnReceived: ((data: TReceivedData) => void)[];
 
-	private static NotStarted = { ReceivedData: null, State: LoadState.NotStarted, ErrorMessage: "" };
-	private static Loading = { ReceivedData: null, State: LoadState.Loading, ErrorMessage: "" };
-	private static Unloaded = { ReceivedData: null, State: LoadState.Unloaded, ErrorMessage: "" };
+	private static NotStarted = { ReceivedData: null, State: LoadState.NotStarted, ErrorMessage: undefined };
+	private static Loading = { ReceivedData: null, State: LoadState.Loading, ErrorMessage: undefined };
+	private static Unloaded = { ReceivedData: null, State: LoadState.Unloaded, ErrorMessage: undefined };
 
 	private WritableData: Observable<ReceiverData<TReceivedData>>;
 	private Abort: AbortController;
