@@ -29,16 +29,52 @@ import { UserViewStore } from "Users/UserViewStore";
 import { LinkToItem } from "Items/LinkToItem";
 import { ChangeServerButton } from "Servers/ChangeServerButton";
 import { QuickConnectService } from "Users/QuickConnect";
+import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
+import { Settings, SettingsStore } from "Users/SettingsStore";
 
-export const PageWithNavigation: React.FC<{ icon: React.ReactElement|BaseItemKind; children?: React.ReactNode; matchHeight?: boolean }> = (props) => {
+export const PageWithNavigation: React.FC<{ icon: React.ReactNode|BaseItemKind; content: (libraries: BaseItemDto[], user: UserDto, settings: Settings, server: SystemInfo) => React.ReactNode; matchHeight?: boolean }> = ({ icon, content }) => {
+	const userId = useObservable(ServerService.Instance.CurrentUserId);
+
+	React.useEffect(() => UserViewStore.Instance.LoadUserViewsWithAbort(userId), [userId]);
+	React.useEffect(() => ServerService.Instance.LoadServerInfoWithAbort(), [userId]);
+	React.useEffect(() => QuickConnectService.Instance.LoadQuickConnectEnabled(), [userId]);
+	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), [userId]);
+
+	const reload = () => {
+		UserViewStore.Instance.LoadUserViewsWithAbort(userId);
+		ServerService.Instance.LoadServerInfoWithAbort();
+		QuickConnectService.Instance.LoadQuickConnectEnabled();
+		SettingsStore.Instance.LoadSettings("usersettings");
+	};
+
+	return (
+		<Loading
+			receivers={[UserViewStore.Instance.FindOrCreateForUser(userId), ServerService.Instance.ServerInfo, QuickConnectService.Instance.QuickConnectEnabled, LoginService.Instance.User, SettingsStore.Instance.ReceiverFor("usersettings")]}
+			whenNotStarted={<PageWrapper icon={icon} navigationButton={<BaseNavigationButton />} content={<PageIsLoading />} disabledSearch />}
+			whenLoading={<PageWrapper icon={icon} navigationButton={<BaseNavigationButton />} content={<PageIsLoading />} disabledSearch />}
+			whenError={(errors) => <PageWrapper icon={icon} navigationButton={<BaseNavigationButton />} content={<LoadingErrorMessages errorTextKeys={errors} retryAction={() => reload()} />} disabledSearch />}
+			whenReceived={(libraries, server, quickConnectEnabled, user, settings) => (
+				<PageWrapper
+					icon={icon}
+					navigationButton={<OpenNavigationButton libraries={libraries} server={server} quickConnectEnabled={quickConnectEnabled} user={user} />}
+					content={content(libraries, user, settings, server)}
+				/>
+			)}
+		/>
+	);
+};
+
+const PageWrapper: React.FC<{ icon: React.ReactNode|BaseItemKind; matchHeight?: boolean; navigationButton: React.ReactNode; content: React.ReactNode; disabledSearch?: boolean; }> = ({ icon, matchHeight, navigationButton, content, disabledSearch }) => {
 	const backdropUrl = useObservable(BackdropService.Instance.CurrentBackdropImageUrl);
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 
 	return (
 		<Layout key="page-with-navigation" direction="column" backgroundRepeat="no-repeat" backgroundSize="cover" backgroundUrl={backdropUrl} height="100%">
 			<Layout key="backdrop-suppressor" direction="column" px="2em" py="1em" backgroundColor={Nullable.HasValue(backdropUrl) ? theme.BackdropSuppressorColor : undefined} height="100%">
-				<NavigationBar key="navigation-bar" icon={typeof props.icon === "string" ? <IconForItemKind itemKind={props.icon} /> : props.icon} />
-				<Layout key="page-content" direction="column" gap="1em" className="page-content" children={props.children} grow height={(props.matchHeight ?? false) ? "100%" : undefined} />
+				<NavigationBar key="navigation-bar" icon={typeof icon === "string" ? <IconForItemKind itemKind={icon as BaseItemKind} /> : icon} navigationButton={navigationButton} disabledSearch={disabledSearch} />
+				<Layout key="page-content" direction="column" gap="1em" className="page-content" grow height={(matchHeight ?? false) ? "100%" : undefined}>
+					{content}
+				</Layout>
 			</Layout>
 		</Layout>
 	);
@@ -48,30 +84,19 @@ export const PageIsLoading: React.FC = () => (
 	<Layout direction="column" justifyContent="center" height="100%"><LoadingIcon alignSelf="center" size="4em" /></Layout>
 );
 
-const NavigationBar: React.FC<{ icon?: React.ReactElement; }> = (props) => {
+const NavigationBar: React.FC<{ icon?: React.ReactNode; navigationButton: React.ReactNode; disabledSearch?: boolean; }> = ({ icon, navigationButton, disabledSearch }) => {
 	const background = useBackgroundStyles();
-	const userId = useObservable(ServerService.Instance.CurrentUserId);
-
-	React.useEffect(() => UserViewStore.Instance.LoadUserViewsWithAbort(userId), [userId]);
-	React.useEffect(() => ServerService.Instance.LoadServerInfoWithAbort(), [userId]);
-	React.useEffect(() => QuickConnectService.Instance.LoadQuickConnectEnabled(), [userId]);
 
 	return (
 		<Layout className={background.panel} direction="row" gap="1em" px="1em" py=".5em" width="calc(100% + 2em)" mx="-1em">
-			<Loading
-				receivers={[UserViewStore.Instance.FindOrCreateForUser(userId), ServerService.Instance.ServerInfo, QuickConnectService.Instance.QuickConnectEnabled, LoginService.Instance.User]}
-				whenNotStarted={<NavigationButton />}
-				whenLoading={<NavigationButton />}
-				whenError={() => <NavigationButton />}
-				whenReceived={(libraries, server, quickConnectEnabled, user) => <OpenNavigationButton libraries={libraries} server={server} quickConnectEnabled={quickConnectEnabled} user={user} />}
-			/>
-			{props.icon && (<Layout direction="row" alignItems="center" fontSizeREM={1.5}>{props.icon}</Layout>)}
-			<Layout direction="row" alignItems="center"><Search /></Layout>
+			{navigationButton}
+			{icon && (<Layout direction="row" alignItems="center" fontSizeREM={1.5}>{icon}</Layout>)}
+			<Layout direction="row" alignItems="center"><Search disabled={disabledSearch} /></Layout>
 		</Layout>
 	);
 };
 
-const NavigationButton: React.FC<{ onClick?: (element: HTMLButtonElement) => void; }> = (props) => {
+const BaseNavigationButton: React.FC<{ onClick?: (element: HTMLButtonElement) => void; }> = (props) => {
 	return (
 		<Button
 			type="button" onClick={props.onClick ?? (() => { })}
@@ -89,7 +114,7 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[]; server: SystemI
 
 	return (
 		<>
-			<NavigationButton onClick={(element) => { setOpenAnchor(element); }} />
+			<BaseNavigationButton onClick={(element) => { setOpenAnchor(element); }} />
 			<AnchoredModal alternatePanel open={anchor !== null} onClosed={closeNavigation} opensInDirection="right" anchorElement={anchor}>
 				<Layout direction="column" maxWidth="20em">
 					<HyperLink direction="row" to="/" gap="1em" py="1em" px="1em">

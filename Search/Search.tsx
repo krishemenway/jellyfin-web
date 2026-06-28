@@ -19,7 +19,7 @@ import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindS
 import { Virtuoso } from "react-virtuoso";
 import { TranslatedText } from "Common/TranslatedText";
 
-export const Search: React.FC = () => {
+export const Search: React.FC<{ disabled?: boolean; }> = ({ disabled }) => {
 	const [textRef, setTextRef] = React.useState<HTMLInputElement|null>(null);
 	const resultsVisible = useObservable(SearchService.Instance.ResultsVisible);
 	const background = useBackgroundStyles();
@@ -28,7 +28,7 @@ export const Search: React.FC = () => {
 	return (
 		<Layout direction="row" alignItems="center" position="relative">
 			<SearchIcon className={searchStyles.searchIcon} size="20" />
-			<TextField px="2em" py=".25em" className={`${background.field} ${searchStyles.queryField}`} field={SearchService.Instance.SearchTermField} ref={(r) => { setTextRef(r); }} />
+			<TextField px="2em" py=".25em" className={`${background.field} ${searchStyles.queryField}`} field={SearchService.Instance.SearchTermField} ref={(r) => { setTextRef(r); }} disabled={disabled} />
 
 			<AnchoredModal
 				anchorElement={textRef}

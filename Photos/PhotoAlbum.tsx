@@ -5,22 +5,16 @@ import { Layout } from "Common/Layout";
 import { ItemService } from "Items/ItemsService";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { NotFound } from "Common/NotFound";
-import { Nullable } from "Common/MissingJavascriptFunctions";
 import { PageTitle } from "Common/PageTitle";
 
 export const PhotoAlbum: React.FC = () => {
-	const albumId = useParams().albumId;
-
-	if (!Nullable.HasValue(albumId)) {
-		return <PageWithNavigation icon="PhotoAlbum"><NotFound /></PageWithNavigation>;
-	}
+	const albumId = useParams().albumId!;
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(albumId).LoadItemWithAbort(), [albumId]);
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(albumId).LoadChildrenWithAbort(), [albumId]);
 
 	return (
-		<PageWithNavigation icon="PhotoAlbum">
+		<PageWithNavigation icon="PhotoAlbum" content={() => (
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(albumId).Item, ItemService.Instance.FindOrCreateItemData(albumId).Children]}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
@@ -32,6 +26,6 @@ export const PhotoAlbum: React.FC = () => {
 					</Layout>
 				)}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };

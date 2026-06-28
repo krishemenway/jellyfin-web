@@ -28,7 +28,7 @@ import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { useObservable } from "@residualeffect/rereactor";
 import { ItemListService } from "ItemList/ItemListService";
-import { Settings, SettingsStore } from "Users/SettingsStore";
+import { Settings } from "Users/SettingsStore";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
 import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
 import { ContinuingSorts } from "ItemList/ItemListViewOptions";
@@ -39,24 +39,22 @@ import { PlayVideoAction } from "MenuActions/PlayVideoAction";
 import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
 import { ArrowSelectIcon } from "CommonIcons/ArrowSelectIcon";
 import { ItemMenuAction } from "Items/ItemMenuAction";
-import { LoginService } from "Users/LoginService";
 
 export const ResumeView: React.FC = () => {
 	const viewOptionsKey = useParams().viewOptionsKey;
 	const itemList = ItemService.Instance.FindOrCreateListFromSource({ DataSource: "Resume", DataSourceKey: "Resume" });
 
 	React.useEffect(() => itemList.LoadWithAbort([]), []);
-	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
 
 	return (
-		<PageWithNavigation icon={<TagIcon />}>
+		<PageWithNavigation icon={<TagIcon />} content={(_, user, settings) => (
 			<Loading
-				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), itemList.List, LoginService.Instance.User]}
+				receivers={[itemList.List]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(settings, items, user) => <ListViewOptions viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} user={user} />}
+				whenReceived={(items) => <ListViewOptions viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} user={user} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

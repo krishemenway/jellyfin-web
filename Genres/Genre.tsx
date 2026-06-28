@@ -3,8 +3,6 @@ import { useParams } from "react-router-dom";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { GenreIcon } from "Genres/GenreIcon";
-import { Nullable } from "Common/MissingJavascriptFunctions";
-import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { PageTitle } from "Common/PageTitle";
@@ -31,7 +29,7 @@ import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { useObservable } from "@residualeffect/rereactor";
 import { ItemListService } from "ItemList/ItemListService";
-import { Settings, SettingsStore } from "Users/SettingsStore";
+import { Settings } from "Users/SettingsStore";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
 import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
@@ -41,30 +39,24 @@ import { PlayVideoAction } from "MenuActions/PlayVideoAction";
 import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
 import { ArrowSelectIcon } from "CommonIcons/ArrowSelectIcon";
 import { ItemMenuAction } from "Items/ItemMenuAction";
-import { LoginService } from "Users/LoginService";
 
 export const Genre: React.FC = () => {
-	const genre = useParams().genre;
+	const genre = useParams().genre!;
 	const viewOptionsKey = useParams().viewOptionsKey;
-
-	if (!Nullable.HasValue(genre) || genre.length === 0) {
-		return <PageWithNavigation icon={<GenreIcon />}><NotFound /></PageWithNavigation>;
-	}
 
 	const itemList = ItemService.Instance.FindOrCreateListFromSource({ DataSource: "Genre", DataSourceKey: genre });
 
 	React.useEffect(() => itemList.LoadWithAbort([]), [genre]);
-	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
 
 	return (
-		<PageWithNavigation icon={<GenreIcon />}>
+		<PageWithNavigation icon={<GenreIcon />} content={(_, user, settings) => (
 			<Loading
-				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), itemList.List, LoginService.Instance.User]}
+				receivers={[itemList.List]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(settings, items, user) => <ListViewOptions genre={genre} viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} user={user} />}
+				whenReceived={(items) => <ListViewOptions genre={genre} viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} user={user} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

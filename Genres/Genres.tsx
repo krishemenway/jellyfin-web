@@ -3,30 +3,20 @@ import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { Loading } from "Common/Loading";
 import { ItemFilterService } from "Items/ItemFilterService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { UserViewStore } from "Users/UserViewStore";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { ListOf } from "Common/ListOf";
 import { HyperLink } from "Common/HyperLink";
 import { PageTitle } from "Common/PageTitle";
 import { Layout } from "Common/Layout";
-import { useObservable } from "@residualeffect/rereactor";
-import { ServerService } from "Servers/ServerService";
 
 export const Genres: React.FC = () => {
-	const user = useObservable(ServerService.Instance.CurrentUserId);
-
 	return (
-		<PageWithNavigation icon="Genre">
+		<PageWithNavigation icon="Genre" content={(libraries) => (
 			<Layout direction="column" gap="2em" py="1em">
 				<PageTitle text={{ Key: "Genres" }} />
-				<Loading
-					receivers={[UserViewStore.Instance.FindOrCreateForUser(user)]}
-					whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-					whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-					whenReceived={(libraries) => <GenresForLibraries libraries={libraries} />}
-				/>
+				<GenresForLibraries libraries={libraries} />
 			</Layout>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

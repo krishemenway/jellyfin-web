@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Layout } from "Common/Layout";
 import { Loading } from "Common/Loading";
-import { NotFound } from "Common/NotFound";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { TranslatedText } from "Common/TranslatedText";
 import { ItemImage } from "Items/ItemImage";
@@ -16,7 +15,6 @@ import { LinkToItem } from "Items/LinkToItem";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
 import { ItemOverview } from "Items/ItemOverview";
-import { LoginService } from "Users/LoginService";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { ItemPageTitle } from "Items/ItemPageTitle";
 import { Virtuoso } from "react-virtuoso";
@@ -49,26 +47,21 @@ const BaseCreditRequestData: Partial<ItemsApiGetItemsRequest> = {
 const CreditSortOrder: SortFunc<BaseItemDto>[] = [ReverseSort(SortByPremiereDate.sortFunc), ReverseSort(SortByIndexNumber.sortFunc)];
 
 export const Person: React.FC = () => {
-	const personId = useParams().personId;
-
-	if (!Nullable.HasValue(personId)) {
-		return <PageWithNavigation icon="Person"><NotFound /></PageWithNavigation>;
-	}
-
+	const personId = useParams().personId!;
 	const personData = ItemService.Instance.FindOrCreateItemData(personId);
 
 	React.useEffect(() => personData.LoadItemWithAbort(), [personData]);
 	React.useEffect(() => personData.LoadChildrenWithAbort(false, { ...BaseCreditRequestData, ...{ personIds: [ personId ] }}, CreditSortOrder), [personData]);
 
 	return (
-		<PageWithNavigation icon="Person" key={personId} matchHeight>
+		<PageWithNavigation icon="Person" key={personId} matchHeight content={(_, user) => (
 			<Loading
-				receivers={[personData.Item, personData.Children, LoginService.Instance.User]}
+				receivers={[personData.Item, personData.Children]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(person, creditedItems, user) => <LoadedPerson person={person} creditedItems={creditedItems} user={user} reloadPerson={() => personData.LoadItemWithAbort(true)} />}
+				whenReceived={(person, creditedItems) => <LoadedPerson person={person} creditedItems={creditedItems} user={user} reloadPerson={() => personData.LoadItemWithAbort(true)} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

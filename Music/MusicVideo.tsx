@@ -1,13 +1,11 @@
 import * as React from "react";
 import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { useParams } from "react-router-dom";
-import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemService } from "Items/ItemsService";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { LoginService } from "Users/LoginService";
 import { Layout } from "Common/Layout";
 import { useBackgroundStyles } from "AppStyles";
 import { BackdropService } from "Common/BackdropService";
@@ -50,23 +48,19 @@ import { ItemMediaInfo } from "Items/ItemMediaInfo";
 
 export const MusicVideo: React.FC = () => {
 	const routeParams = useParams<{ musicVideoId: string }>();
-	const musicVideoId = routeParams.musicVideoId;
-
-	if (!Nullable.HasValue(musicVideoId)) {
-		return <PageWithNavigation icon="MusicVideo"><NotFound /></PageWithNavigation>;
-	}
+	const musicVideoId = routeParams.musicVideoId!;
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(musicVideoId).LoadItemWithAbort(), [musicVideoId]);
 
 	return (
-		<PageWithNavigation icon="Series">
+		<PageWithNavigation icon="Series" content={(_, user) => (
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(musicVideoId).Item, LoginService.Instance.User]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(musicVideoId).Item]}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(musicVideo, user) => <LoadedMusicVideo musicVideo={musicVideo} user={user} reloadMusicVideo={() => ItemService.Instance.FindOrCreateItemData(musicVideo.Id!).LoadItemWithAbort(true)} />}
+				whenReceived={(musicVideo) => <LoadedMusicVideo musicVideo={musicVideo} user={user} reloadMusicVideo={() => ItemService.Instance.FindOrCreateItemData(musicVideo.Id!).LoadItemWithAbort(true)} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

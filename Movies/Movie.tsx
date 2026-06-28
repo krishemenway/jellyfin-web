@@ -1,7 +1,6 @@
 import * as React from "react";
 import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { useParams } from "react-router-dom";
-import { NotFound } from "Common/NotFound";
 import { ItemService } from "Items/ItemsService";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
@@ -12,10 +11,8 @@ import { ItemStudios } from "Items/ItemStudios";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { ItemGenres } from "Items/ItemGenres";
 import { useBackgroundStyles } from "AppStyles";
-import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { ItemOverview } from "Items/ItemOverview";
-import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
 import { ItemPageTitle } from "Items/ItemPageTitle";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
@@ -39,23 +36,20 @@ import { ChangeImageButton } from "Items/ChangeImageButton";
 import { ItemMediaInfo } from "Items/ItemMediaInfo";
 
 export const Movie: React.FC = () => {
-	const movieId = useParams<{ movieId: string }>().movieId;
+	const movieId = useParams<{ movieId: string }>().movieId!;
 
-	if (!Nullable.HasValue(movieId)) {
-		return <PageWithNavigation icon="Movie"><NotFound /></PageWithNavigation>;
-	}
-
+	const reloadMovie = () => ItemService.Instance.FindOrCreateItemData(movieId).LoadItemWithAbort(true);
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(movieId).LoadItemWithAbort(), [movieId]);
 
 	return (
-		<PageWithNavigation icon="Movie">
+		<PageWithNavigation icon="Movie" content={(_, user) => (
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(movieId).Item, LoginService.Instance.User]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(movieId).Item]}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(movie, user) => <LoadedMovie movie={movie} user={user} reloadMovie={() => ItemService.Instance.FindOrCreateItemData(movieId).LoadItemWithAbort(true)} />}
+				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} retryAction={reloadMovie} />}
+				whenReceived={(movie) => <LoadedMovie movie={movie} user={user} reloadMovie={reloadMovie} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

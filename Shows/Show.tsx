@@ -2,7 +2,6 @@ import * as React from "react";
 import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { useParams } from "react-router-dom";
 import { Layout } from "Common/Layout";
-import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemService } from "Items/ItemsService";
@@ -22,7 +21,6 @@ import { ItemGenres } from "Items/ItemGenres";
 import { ItemStudios } from "Items/ItemStudios";
 import { TranslatedText } from "Common/TranslatedText";
 import { ItemOverview } from "Items/ItemOverview";
-import { LoginService } from "Users/LoginService";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
@@ -54,11 +52,7 @@ import { LinkToItem } from "Items/LinkToItem";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
-	const showId = routeParams.showId;
-
-	if (!Nullable.HasValue(showId)) {
-		return <PageWithNavigation icon="Series"><NotFound /></PageWithNavigation>;
-	}
+	const showId = routeParams.showId!;
 
 	const loadShow = (forceRefresh: boolean) => {
 		const disposes = [
@@ -72,16 +66,16 @@ export const Show: React.FC = () => {
 	React.useEffect(() => loadShow(false), [showId]);
 
 	return (
-		<PageWithNavigation icon="Series">
+		<PageWithNavigation icon="Series" content={(_, user) => (
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(showId).Item, ItemService.Instance.FindOrCreateItemData(showId).Children, LoginService.Instance.User]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(showId).Item, ItemService.Instance.FindOrCreateItemData(showId).Children]}
 				whenNotStarted={<PageIsLoading />} whenLoading={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(show, children, user) => !Nullable.StringHasValue(routeParams.episodeId)
+				whenReceived={(show, children) => !Nullable.StringHasValue(routeParams.episodeId)
 					? <LoadedShow show={show} seasonId={routeParams.seasonId} children={children} user={user} reloadShow={() => loadShow(true)} />
 					: <LoadedEpisode show={show} children={children} user={user} episodeId={routeParams.episodeId} reloadShow={() => loadShow(true)} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

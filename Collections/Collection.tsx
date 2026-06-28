@@ -2,9 +2,6 @@ import * as React from "react";
 import { useParams } from "react-router-dom";
 import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { ItemService } from "Items/ItemsService";
-import { Nullable } from "Common/MissingJavascriptFunctions";
-import { NotFound } from "Common/NotFound";
-import { CollectionIcon } from "Collections/CollectionIcon";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Layout } from "Common/Layout";
@@ -24,9 +21,8 @@ import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
 import { BaseItemDto, UserDto } from "node_modules/@jellyfin/sdk/lib/generated-client";
-import { LoginService } from "Users/LoginService";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
-import { Settings, SettingsStore } from "Users/SettingsStore";
+import { Settings } from "Users/SettingsStore";
 import { ArrowSelectIcon } from "CommonIcons/ArrowSelectIcon";
 import { ItemMenuAction } from "Items/ItemMenuAction";
 import { ItemListService } from "ItemList/ItemListService";
@@ -52,29 +48,24 @@ import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
 
 export const Collection: React.FC = () => {
-	const collectionId = useParams().collectionId;
+	const collectionId = useParams().collectionId!;
 	const viewOptionsKey = useParams().viewOptionsKey;
-	
-	if (!Nullable.HasValue(collectionId) || collectionId.length === 0) {
-		return <PageWithNavigation icon={<CollectionIcon />}><NotFound /></PageWithNavigation>;
-	}
 
 	const collectionService = ItemService.Instance.FindOrCreateItemData(collectionId);
 	const itemList = ItemService.Instance.FindOrCreateListFromSource({ DataSource: "Collection", DataSourceKey: collectionId });
 
 	React.useEffect(() => collectionService.LoadItemWithAbort(), [collectionService]);
 	React.useEffect(() => itemList.LoadWithAbort([]), [collectionId]);
-	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
 
 	return (
-		<PageWithNavigation icon="BoxSet">
+		<PageWithNavigation icon="BoxSet" content={(_, user, settings) => (
 			<Loading
-				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), collectionService.Item, itemList.List, LoginService.Instance.User]}
+				receivers={[collectionService.Item, itemList.List]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(settings, collection, collectionItems, user) => <LoadedCollection itemList={itemList} viewOptionsKey={viewOptionsKey} settings={settings} collection={collection} collectionItems={collectionItems.List} user={user} reload={() => collectionService.LoadItemWithAbort(true)} />}
+				whenReceived={(collection, collectionItems) => <LoadedCollection itemList={itemList} viewOptionsKey={viewOptionsKey} settings={settings} collection={collection} collectionItems={collectionItems.List} user={user} reload={() => collectionService.LoadItemWithAbort(true)} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

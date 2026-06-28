@@ -9,8 +9,6 @@ import { getLibraryApi, getLibraryStructureApi } from "@jellyfin/sdk/lib/utils/a
 import { EditableLibrary } from "Servers/EditableLibrary";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
-import { Nullable } from "Common/MissingJavascriptFunctions";
-import { NotFound } from "Common/NotFound";
 import { CollectionType, EmbeddedSubtitleOptions } from "@jellyfin/sdk/lib/generated-client/models";
 import { BaseToggleSwitch, ToggleSwitch } from "Common/ToggleSwitch";
 import { PageTitle } from "Common/PageTitle";
@@ -58,23 +56,19 @@ class LibraryManager {
 }
 
 export const ManageLibrary: React.FC = () => {
-	const libraryId = useParams<{ libraryId: string }>().libraryId;
-
-	if (!Nullable.HasValue(libraryId)) {
-		return <PageWithNavigation icon={<ServerIcon />}><NotFound /></PageWithNavigation>;
-	}
+	const libraryId = useParams<{ libraryId: string }>().libraryId!;
 
 	React.useEffect(() => LibraryManager.Instance.LoadWithAbort(libraryId), [libraryId])
 
 	return (
-		<PageWithNavigation icon={<ServerIcon />}>
+		<PageWithNavigation icon={<ServerIcon />} content={() => (
 			<Loading
 				receivers={[LibraryManager.Instance.EditableLibrary]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenReceived={(editableLibrary) => <LoadedLibraryManager editableLibrary={editableLibrary} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

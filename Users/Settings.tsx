@@ -8,15 +8,18 @@ import { PageTitle } from "Common/PageTitle";
 
 export const Settings: React.FC = () => {
 	return (
-		<PageWithNavigation icon={<SettingsIcon />}>
-			<PageTitle text={({ Key: "Settings" })} />
+		<PageWithNavigation icon={<SettingsIcon />} content={() => (
+				<>
+					<PageTitle text={({ Key: "Settings" })} />
 
-			<Layout direction="column">
-				<Layout direction="row" gap="1em">
-					<ChangePassword />
-					<ChangeTheme />
-				</Layout>
-			</Layout>
-		</PageWithNavigation>
+					<Layout direction="column">
+						<Layout direction="row" gap="1em">
+							<ChangePassword />
+							<ChangeTheme />
+						</Layout>
+					</Layout>
+				</>
+			)}
+		/>
 	);
 };

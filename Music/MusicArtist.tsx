@@ -6,8 +6,6 @@ import { ItemService } from "Items/ItemsService";
 import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { NotFound } from "Common/NotFound";
-import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemImage } from "Items/ItemImage";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { BackdropService } from "Common/BackdropService";
@@ -16,7 +14,6 @@ import { Button } from "Common/Button";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
 import { ItemEditorService, useEditableItem } from "Items/ItemEditorService";
-import { LoginService } from "Users/LoginService";
 import { useObservable } from "@residualeffect/rereactor";
 import { RevertIcon } from "CommonIcons/RevertIcon";
 import { SaveIcon } from "CommonIcons/SaveIcon";
@@ -35,24 +32,20 @@ import { ChangeImageButton } from "Items/ChangeImageButton";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 
 export const MusicArtist: React.FC = () => {
-	const artistId = useParams().artistId;
-
-	if (!Nullable.HasValue(artistId)) {
-		return <PageWithNavigation icon="MusicArtist"><NotFound /></PageWithNavigation>;
-	}
+	const artistId = useParams().artistId!;
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(artistId).LoadItemWithAbort(), [artistId]);
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(artistId).LoadChildrenWithAbort(false, { artistIds: [artistId], includeItemTypes: ["MusicVideo", "MusicAlbum", "Audio"], recursive: true }), [artistId]);
 
 	return (
-		<PageWithNavigation icon="MusicArtist">
+		<PageWithNavigation icon="MusicArtist" content={(_, user) => (
 			<Loading
-				receivers={[LoginService.Instance.User, ItemService.Instance.FindOrCreateItemData(artistId).Item]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(artistId).Item]}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(user, artist) => <LoadedMusicArtist user={user} artist={artist} reloadArtist={() => ItemService.Instance.FindOrCreateItemData(artistId).LoadItemWithAbort(true)} />}
+				whenReceived={(artist) => <LoadedMusicArtist user={user} artist={artist} reloadArtist={() => ItemService.Instance.FindOrCreateItemData(artistId).LoadItemWithAbort(true)} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

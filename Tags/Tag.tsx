@@ -3,8 +3,6 @@ import { useParams } from "react-router-dom";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { TagIcon } from "Tags/TagIcon";
-import { Nullable } from "Common/MissingJavascriptFunctions";
-import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { PageTitle } from "Common/PageTitle";
@@ -31,7 +29,7 @@ import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { useObservable } from "@residualeffect/rereactor";
 import { ItemListService } from "ItemList/ItemListService";
-import { Settings, SettingsStore } from "Users/SettingsStore";
+import { Settings } from "Users/SettingsStore";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
 import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
@@ -41,30 +39,23 @@ import { PlayVideoAction } from "MenuActions/PlayVideoAction";
 import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
 import { ArrowSelectIcon } from "CommonIcons/ArrowSelectIcon";
 import { ItemMenuAction } from "Items/ItemMenuAction";
-import { LoginService } from "Users/LoginService";
 
 export const Tag: React.FC = () => {
-	const tag = useParams().tag;
+	const tag = useParams().tag!;
 	const viewOptionsKey = useParams().viewOptionsKey;
 
-	if (!Nullable.HasValue(tag) || tag.length === 0) {
-		return <PageWithNavigation icon={<TagIcon />}><NotFound /></PageWithNavigation>;
-	}
-
 	const itemList = ItemService.Instance.FindOrCreateListFromSource({ DataSource: "Tag", DataSourceKey: tag });
-
 	React.useEffect(() => itemList.LoadWithAbort([]), [tag]);
-	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
 
 	return (
-		<PageWithNavigation icon={<TagIcon />}>
+		<PageWithNavigation icon={<TagIcon />} content={(_, user, settings) => (
 			<Loading
-				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), itemList.List, LoginService.Instance.User]}
+				receivers={[itemList.List]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(settings, items, user) => <TagListViewOptions tag={tag} viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} user={user} />}
+				whenReceived={(items) => <TagListViewOptions tag={tag} viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} user={user} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

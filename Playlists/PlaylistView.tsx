@@ -1,34 +1,26 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
-import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemService } from "Items/ItemsService";
-import { Nullable } from "Common/MissingJavascriptFunctions";
-import { LoginService } from "Users/LoginService";
 import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 
 export const PlaylistView: React.FC = () => {
-	const routeParams = useParams<{ playlistId: string; }>();
-	const playlistId = routeParams.playlistId;
-
-	if (!Nullable.HasValue(playlistId)) {
-		return <PageWithNavigation icon="Playlist"><NotFound /></PageWithNavigation>;
-	}
+	const playlistId = useParams<{ playlistId: string; }>().playlistId!;
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(playlistId).LoadItemWithAbort(), [playlistId]);
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(playlistId).LoadChildrenWithAbort(true, { recursive: true }), [playlistId]);
 
 	return (
-		<PageWithNavigation icon="Playlist">
+		<PageWithNavigation icon="Playlist" content={(_, user) => (
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(playlistId).Item, ItemService.Instance.FindOrCreateItemData(playlistId).Children, LoginService.Instance.User]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(playlistId).Item, ItemService.Instance.FindOrCreateItemData(playlistId).Children]}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(playlist, children, user) => <LoadedPlaylist playlist={playlist} children={children} user={user} />}
+				whenReceived={(playlist, children) => <LoadedPlaylist playlist={playlist} children={children} user={user} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

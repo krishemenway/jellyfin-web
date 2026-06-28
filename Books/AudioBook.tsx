@@ -1,7 +1,6 @@
 import * as React from "react";
 import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { useParams } from "react-router-dom";
-import { NotFound } from "Common/NotFound";
 import { ItemService } from "Items/ItemsService";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
@@ -12,10 +11,8 @@ import { ItemStudios } from "Items/ItemStudios";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { ItemGenres } from "Items/ItemGenres";
 import { useBackgroundStyles } from "AppStyles";
-import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { ItemOverview } from "Items/ItemOverview";
-import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
 import { ItemPageTitle } from "Items/ItemPageTitle";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
@@ -36,23 +33,20 @@ import { RevertIcon } from "CommonIcons/RevertIcon";
 import { ChangeImageButton } from "Items/ChangeImageButton";
 
 export const AudioBook: React.FC = () => {
-	const audioBookId = useParams<{ audioBookId: string }>().audioBookId;
+	const audioBookId = useParams<{ audioBookId: string }>().audioBookId!;
 
-	if (!Nullable.HasValue(audioBookId)) {
-		return <PageWithNavigation icon="AudioBook"><NotFound /></PageWithNavigation>;
-	}
-
+	const reloadAudioBook = () => ItemService.Instance.FindOrCreateItemData(audioBookId).LoadItemWithAbort(true);
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(audioBookId).LoadItemWithAbort(), [audioBookId]);
 
 	return (
-		<PageWithNavigation icon="AudioBook">
+		<PageWithNavigation icon="AudioBook" content={(_, user) => (
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(audioBookId).Item, LoginService.Instance.User]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(audioBookId).Item]}
 				whenNotStarted={<PageIsLoading />} whenLoading={<PageIsLoading />}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(audioBook, user) => <LoadedAudioBook audioBook={audioBook} user={user} reloadAudioBook={() => ItemService.Instance.FindOrCreateItemData(audioBookId).LoadItemWithAbort(true)} />}
+				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} retryAction={reloadAudioBook} />}
+				whenReceived={(audioBook) => <LoadedAudioBook audioBook={audioBook} user={user} reloadAudioBook={reloadAudioBook} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

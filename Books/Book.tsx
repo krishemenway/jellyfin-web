@@ -1,7 +1,6 @@
 import * as React from "react";
 import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { useParams } from "react-router-dom";
-import { NotFound } from "Common/NotFound";
 import { ItemService } from "Items/ItemsService";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
@@ -12,10 +11,8 @@ import { ItemStudios } from "Items/ItemStudios";
 import { ItemExternalLinks } from "Items/ItemExternalLinks";
 import { ItemGenres } from "Items/ItemGenres";
 import { useBackgroundStyles } from "AppStyles";
-import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { ItemOverview } from "Items/ItemOverview";
-import { LoginService } from "Users/LoginService";
 import { ItemTags } from "Items/ItemTags";
 import { ItemPageTitle } from "Items/ItemPageTitle";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
@@ -36,23 +33,19 @@ import { RevertIcon } from "CommonIcons/RevertIcon";
 import { ChangeImageButton } from "Items/ChangeImageButton";
 
 export const Book: React.FC = () => {
-	const bookId = useParams<{ bookId: string }>().bookId;
-
-	if (!Nullable.HasValue(bookId)) {
-		return <PageWithNavigation icon="Book"><NotFound /></PageWithNavigation>;
-	}
+	const bookId = useParams<{ bookId: string }>().bookId!;
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(bookId).LoadItemWithAbort(), [bookId]);
 
 	return (
-		<PageWithNavigation icon="Book">
+		<PageWithNavigation icon="Book" content={(_, user) => (
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(bookId).Item, LoginService.Instance.User]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(bookId).Item]}
 				whenNotStarted={<PageIsLoading />} whenLoading={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(book, user) => <LoadedBook book={book} user={user} reloadBook={() => ItemService.Instance.FindOrCreateItemData(bookId).LoadItemWithAbort(true)} />}
+				whenReceived={(book) => <LoadedBook book={book} user={user} reloadBook={() => ItemService.Instance.FindOrCreateItemData(bookId).LoadItemWithAbort(true)} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 
@@ -149,5 +142,5 @@ export const LoadedBook: React.FC<{ user: UserDto; book: BaseItemDto; reloadBook
 				/>
 			</Layout>
 		</Layout>
-	)
-}
+	);
+};

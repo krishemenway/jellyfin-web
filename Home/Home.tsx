@@ -1,8 +1,8 @@
 import * as React from "react";
-import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
+import { PageWithNavigation } from "PageWithNavigation";
 import { HomeIcon } from "Home/HomeIcon";
 import { PageTitle } from "Common/PageTitle";
-import { Settings, SettingsStore } from "Users/SettingsStore";
+import { Settings } from "Users/SettingsStore";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
@@ -15,8 +15,6 @@ import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { useComputed, useObservable } from "@residualeffect/rereactor/lib";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { HyperLink } from "Common/HyperLink";
-import { UserViewStore } from "Users/UserViewStore";
-import { ServerService } from "Servers/ServerService";
 import { EditIcon } from "CommonIcons/EditIcon";
 import { Button } from "Common/Button";
 import { SaveIcon } from "CommonIcons/SaveIcon";
@@ -32,20 +30,11 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 export const Home: React.FC = () => {
-	const userId = useObservable(ServerService.Instance.CurrentUserId);
-
-	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
-
 	return (
-		<PageWithNavigation icon={<HomeIcon />}>
-			<PageTitle text={({ Key: "Home" })} suppressOnScreen />
-			<Loading
-				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), UserViewStore.Instance.FindOrCreateForUser(userId)]}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(settings, libraries) => <HomeWithSettings settings={settings} libraries={libraries} />}
-			/>
-		</PageWithNavigation>
+		<PageWithNavigation
+			icon={<HomeIcon />}
+			content={(libraries, _, settings) => <HomeWithSettings settings={settings} libraries={libraries} />}
+		/>
 	);
 };
 
@@ -57,6 +46,7 @@ const HomeWithSettings: React.FC<{ settings: Settings; libraries: BaseItemDto[] 
 
 	return (
 		<Layout direction="column" py="1rem" gap="1rem" alignItems="center">
+			<PageTitle text={({ Key: "Home" })} suppressOnScreen />
 			{current.map((config, sectionIndex) => (
 				<HomeSection
 					key={config.Key}

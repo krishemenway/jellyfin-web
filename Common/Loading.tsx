@@ -27,7 +27,7 @@ export function useIsBusy<T>(receiver: Receiver<T>): boolean {
 /**
  * Used for subscribing to a receiver to check for it is busy. Good for disabling buttons.
  * @param receiver Receiver to observe for state changes.
- * @returns If the receiver is busy loading data.
+ * @returns The current error for the receiver or undefined.
  */
 export function useError<T>(receiver: Receiver<T>): string|undefined {
 	return useObservable(receiver.Data).ErrorMessage;
@@ -36,10 +36,26 @@ export function useError<T>(receiver: Receiver<T>): string|undefined {
 /**
  * Used for subscribing to a receiver to check for it is busy. Good for disabling buttons.
  * @param receiver Receiver to observe for state changes.
- * @returns If the receiver is busy loading data.
+ * @returns The current received data or null when not available.
  */
 export function useDataOrNull<T>(receiver: Receiver<T>): T|null {
 	return useObservable(receiver.Data).ReceivedData;
+}
+
+/**
+ * Used for subscribing to a receiver to check for it is busy. Good for disabling buttons.
+ * @param receiver Receiver to observe for state changes.
+ * @returns The current received data or an error is thrown 
+ */
+export function useDataOrThrow<T>(receiver: Receiver<T>): T {
+	const value = useDataOrNull(receiver);
+
+	if (!Nullable.HasValue(value)) {
+		console.error("Missing data when it was expected for receiver", receiver);
+		throw Error("UnknownError");
+	}
+
+	return value;
 }
 
 function LoadingComponent<A>(props: { receivers: [Receiver<A>], whenReceived: (a: A) => React.ReactNode } & BaseLoadingComponentProps): React.ReactNode;

@@ -3,8 +3,6 @@ import { useParams } from "react-router-dom";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { StudioIcon } from "Studios/StudioIcon";
-import { Nullable } from "Common/MissingJavascriptFunctions";
-import { NotFound } from "Common/NotFound";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { PageTitle } from "Common/PageTitle";
@@ -31,7 +29,7 @@ import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { useObservable } from "@residualeffect/rereactor";
 import { ItemListService } from "ItemList/ItemListService";
-import { Settings, SettingsStore } from "Users/SettingsStore";
+import { Settings } from "Users/SettingsStore";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
 import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
@@ -41,32 +39,26 @@ import { PlayVideoAction } from "MenuActions/PlayVideoAction";
 import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
 import { ArrowSelectIcon } from "CommonIcons/ArrowSelectIcon";
 import { ItemMenuAction } from "Items/ItemMenuAction";
-import { LoginService } from "Users/LoginService";
 
 export const Studio: React.FC = () => {
-	const studioId = useParams().studioId;
+	const studioId = useParams().studioId!;
 	const viewOptionsKey = useParams().viewOptionsKey;
-
-	if (!Nullable.HasValue(studioId) || studioId.length === 0) {
-		return <PageWithNavigation icon={<StudioIcon />}><NotFound /></PageWithNavigation>;
-	}
 
 	const studio = ItemService.Instance.FindOrCreateItemData(studioId);
 	const itemList = ItemService.Instance.FindOrCreateListFromSource({ DataSource: "Studio", DataSourceKey: studioId });
 
 	React.useEffect(() => studio.LoadItemWithAbort(), [studioId]);
 	React.useEffect(() => itemList.LoadWithAbort([]), [studioId]);
-	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
 
 	return (
-		<PageWithNavigation icon={<StudioIcon />}>
+		<PageWithNavigation icon={<StudioIcon />} content={(_, user, settings) => (
 			<Loading
-				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), itemList.List, LoginService.Instance.User, studio.Item]}
+				receivers={[itemList.List, studio.Item]}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(settings, items, user, studio) => <ListViewOptions studio={studio} viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} user={user} />}
+				whenReceived={(items, studio) => <ListViewOptions studio={studio} viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} user={user} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 

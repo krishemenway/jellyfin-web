@@ -50,19 +50,19 @@ import { MediaPlayer } from "MediaPlayer/MediaPlayer";
 import { PageWithNavigation } from "PageWithNavigation";
 import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
 
-const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+const AppWrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
 	const [breakpoint, ResponsiveProvider] = useCalculatedBreakpoint();
 
 	return (
 		<ResponsiveProvider value={breakpoint}>
-			<RequireServerAndUser>
-				<RequiresTranslationsLoaded>
-					<ErrorBoundary fallback={<LoadingErrorMessages errorTextKeys={["UnknownError"]} />}>
-						<Outlet />{React.Children.map(children, c => c)}
-						<MediaPlayer />
-					</ErrorBoundary>
-				</RequiresTranslationsLoaded>
-			</RequireServerAndUser>
+			<RequiresTranslationsLoaded>
+				<RequireServerAndUser>
+						<ErrorBoundary fallback={<LoadingErrorMessages errorTextKeys={["UnknownError"]} />}>
+							<Outlet />{React.Children.map(children, c => c)}
+							<MediaPlayer />
+						</ErrorBoundary>
+				</RequireServerAndUser>
+			</RequiresTranslationsLoaded>
 
 			<ResetModalOnLocationChange />
 		</ResponsiveProvider>
@@ -80,7 +80,7 @@ const App: React.FC<{ basePath: string }> = (props) => {
 			router={createBrowserRouter([
 				{
 					path: "/",
-					element: <Layout />,
+					element: <AppWrapper />,
 					errorElement: <LoadingErrorMessages errorTextKeys={["UnknownError"]}/>,
 					children: [
 						{ path: "/Library/:libraryId", element: <ManageLibrary /> },
@@ -148,7 +148,7 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ index: true, element: <Home /> },
 					]
 				},
-				{ path: "*", element: <Layout><PageWithNavigation icon={<QuestionMarkIcon />}><NotFound /></PageWithNavigation></Layout> },
+				{ path: "*", element: <AppWrapper><PageWithNavigation icon={<QuestionMarkIcon />} content={() => <NotFound />} /></AppWrapper> },
 			], { basename: props.basePath })}
 		/>
 	)

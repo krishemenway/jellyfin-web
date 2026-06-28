@@ -9,20 +9,16 @@ import { NotFound } from "Common/NotFound";
 import { ItemService } from "Items/ItemsService";
 import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
 import { useParams } from "react-router-dom";
-import { Settings, SettingsStore } from "Users/SettingsStore";
+import { Settings } from "Users/SettingsStore";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { ItemListService } from "ItemList/ItemListService";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
-import { UserViewStore } from "Users/UserViewStore";
 import { PageTitle } from "Common/PageTitle";
-import { ItemFilterService } from "Items/ItemFilterService";
-import { ServerService } from "Servers/ServerService";
 import { BaseItemKindService } from "Items/BaseItemKindService";
 import { ItemRefreshButton } from "Items/ItemRefreshButton";
 import { useUrlToItem } from "Items/LinkToItem";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { ManageLibraryAction } from "MenuActions/ManageLIbraryAction";
-import { LoginService } from "Users/LoginService";
 import { ItemMenuAction } from "Items/ItemMenuAction";
 import { ArrowSelectIcon } from "CommonIcons/ArrowSelectIcon";
 import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
@@ -32,34 +28,29 @@ import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 
 export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind }> = ({ paramName, itemKind }) => {
 	const routeParams = useParams();
-	const userId = useObservable(ServerService.Instance.CurrentUserId);
 	const libraryId = routeParams[paramName];
 	const viewOptionsKey = routeParams.viewOptionsKey;
 	const itemKindService = BaseItemKindServiceFactory.FindOrThrow(itemKind);
 
 	if (!Nullable.HasValue(libraryId)) {
-		return <PageWithNavigation icon={itemKind}><NotFound /></PageWithNavigation>;
+		return <PageWithNavigation icon={itemKind} content={() => <NotFound />} />;
 	}
 
 	const itemList = React.useMemo(() => ItemService.Instance.FindOrCreateListFromLibrary(libraryId, itemKind), [libraryId]);
 
-	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
-	React.useEffect(() => ItemFilterService.Instance.LoadFiltersWithAbort([libraryId]), [libraryId]);
-
 	return (
-		<PageWithNavigation icon={itemKind}>
-			<Loading
-				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), UserViewStore.Instance.FindOrCreateForUser(userId), LoginService.Instance.User]}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(settings, libraries, user) => (
-					<LoadedBasicItemListView
-						libraryId={libraryId} viewOptionsKey={viewOptionsKey} itemList={itemList} itemKindService={itemKindService}
-						settings={settings} libraries={libraries} key={libraryId} user={user}
-					/>
-				)}
+		<PageWithNavigation icon={itemKind} content={(libraries, user, settings) => (
+			<LoadedBasicItemListView
+				key={libraryId}
+				libraryId={libraryId}
+				viewOptionsKey={viewOptionsKey}
+				itemList={itemList}
+				itemKindService={itemKindService}
+				libraries={libraries}
+				user={user}
+				settings={settings}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 
@@ -73,7 +64,7 @@ interface LoadedBasicItemListViewProps {
 	user: UserDto;
 }
 
-const LoadedBasicItemListView: React.FC<LoadedBasicItemListViewProps> = ({ libraryId, itemList, libraries, settings, viewOptionsKey, itemKindService, user }) => {
+const LoadedBasicItemListView: React.FC<LoadedBasicItemListViewProps> = ({ libraries, user, settings, libraryId, itemList, viewOptionsKey, itemKindService }) => {
 	const listOptions = useObservable(itemList.ListOptions);
 	const library = libraries.single((l) => l.Id === libraryId);
 	const baseUrl = useUrlToItem(library);

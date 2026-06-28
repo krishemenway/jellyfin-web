@@ -1,48 +1,30 @@
 import * as React from "react";
 import { ItemProps, TableProps, TableVirtuoso } from "react-virtuoso";
 import { useParams } from "react-router-dom";
-import { PageWithNavigation, PageIsLoading } from "PageWithNavigation";
+import { PageWithNavigation } from "PageWithNavigation";
 import { Loading } from "Common/Loading";
 import { ItemService } from "Items/ItemsService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
-import { Settings, SettingsStore } from "Users/SettingsStore";
-import { LoginService } from "Users/LoginService";
+import { Settings } from "Users/SettingsStore";
 import { Layout } from "Common/Layout";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { NotFound } from "Common/NotFound";
 import { useBackgroundStyles } from "AppStyles";
 import { Button } from "Common/Button";
 import { useObservable } from "@residualeffect/rereactor";
 import { PageTitle } from "Common/PageTitle";
-import { UserViewStore } from "Users/UserViewStore";
 import { ReverseSort, SortByNumber, SortByString } from "Common/ArrayPrototype";
 import { ObservableArray } from "@residualeffect/reactor";
-import { ServerService } from "Servers/ServerService";
 import { MusicPlayerService } from "Music/MusicPlayerService";
 import { PlaylistDragItemsFunc } from "MediaPlayer/MediaPlayerPlaylist";
 import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
 
 export const SongListView: React.FC = () => {
-	const libraryId = useParams().libraryId;
-	const userId = useObservable(ServerService.Instance.CurrentUserId);
-
-	if (!Nullable.HasValue(libraryId)) {
-		return <PageWithNavigation icon="Audio" matchHeight><NotFound /></PageWithNavigation>;
-	}
-
-	React.useEffect(() => SettingsStore.Instance.LoadSettings("usersettings"), []);
+	const libraryId = useParams().libraryId!;
 
 	return (
-		<PageWithNavigation icon="Audio" matchHeight>
-			<Loading
-				receivers={[SettingsStore.Instance.ReceiverFor("usersettings"), LoginService.Instance.User, UserViewStore.Instance.FindOrCreateForUser(userId)]}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenReceived={(settings, user, libraries) => <SongListViewContent libraryId={libraryId} settings={settings} user={user} libraries={libraries} />}
-			/>
-		</PageWithNavigation>
+		<PageWithNavigation icon="Audio" matchHeight content={(libraries, user, settings) => <SongListViewContent libraryId={libraryId} settings={settings} user={user} libraries={libraries} />} />
 	);
 };
 

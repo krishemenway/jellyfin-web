@@ -5,7 +5,6 @@ import { Layout } from "Common/Layout";
 import { ItemService } from "Items/ItemsService";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { NotFound } from "Common/NotFound";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemPageTitle } from "Items/ItemPageTitle";
 import { Button } from "Common/Button";
@@ -31,7 +30,6 @@ import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
-import { LoginService } from "Users/LoginService";
 import { MusicAlbumSongs } from "Music/MusicAlbumSongs";
 import { ItemPremiereDate } from "Items/ItemPremiereDate";
 import { EditableItemProps } from "Items/EditableItemProps";
@@ -47,24 +45,20 @@ import { ChangeImageButton } from "Items/ChangeImageButton";
 
 export const MusicAlbum: React.FC = () => {
 	const routeParams = useParams<{ albumId: string; songId?: string; }>();
-	const albumId = routeParams.albumId;
-
-	if (!Nullable.HasValue(albumId)) {
-		return <PageWithNavigation icon="MusicAlbum"><NotFound /></PageWithNavigation>;
-	}
+	const albumId = routeParams.albumId!;
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(albumId).LoadItemWithAbort(), [albumId]);
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(albumId).LoadChildrenWithAbort(false, { albumIds: [albumId], includeItemTypes: ["Audio", "MusicVideo"], recursive: true }), [albumId]);
 
 	return (
-		<PageWithNavigation icon="MusicAlbum">
+		<PageWithNavigation icon="MusicAlbum" content={(_, user) => (
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(albumId).Item, ItemService.Instance.FindOrCreateItemData(albumId).Children, LoginService.Instance.User]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(albumId).Item, ItemService.Instance.FindOrCreateItemData(albumId).Children]}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(album, allAlbumItems, user) => <LoadedMusicAlbums album={album} allAlbumItems={allAlbumItems} user={user} reloadAlbum={() => ItemService.Instance.FindOrCreateItemData(albumId).LoadItemWithAbort(true)} />}
+				whenReceived={(album, allAlbumItems) => <LoadedMusicAlbums album={album} allAlbumItems={allAlbumItems} user={user} reloadAlbum={() => ItemService.Instance.FindOrCreateItemData(albumId).LoadItemWithAbort(true)} />}
 			/>
-		</PageWithNavigation>
+		)} />
 	);
 };
 
