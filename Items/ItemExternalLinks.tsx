@@ -45,7 +45,7 @@ export const ItemExternalLinks: React.FC<{ item: BaseItemDto, linkLayout?: Style
 
 const ExternalProviderEditors: React.FC<{ metadataInfo: MetadataEditorInfo; linkLayout?: StyleLayoutProps }&EditableItemProps&BaseListProps> = (props) => {
 	const editableItemProviders = useObservable(props.editableItem!.ProviderIds);
-	const getName = (key: string) => (props.metadataInfo.ExternalIdInfos ?? []).single(i => i.Key === key).Name;
+	const getName = (key: string) => (props.metadataInfo.ExternalIdInfos ?? []).first(i => i.Key === key)?.Name ?? key;
 	const editableItemProviderKeys = editableItemProviders.map(p => p.Key);
 	const remainingProviders = props.metadataInfo.ExternalIdInfos?.filter((info) => editableItemProviderKeys.indexOf(info.Key ?? "") === -1) ?? [];
 	const [selectNewProviderField] = React.useState(new EditableField<ExternalIdInfo>("AddProviderOptions", remainingProviders[0]));
