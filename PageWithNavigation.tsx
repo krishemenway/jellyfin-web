@@ -32,7 +32,7 @@ import { QuickConnectService } from "Users/QuickConnect";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 
-export const PageWithNavigation: React.FC<{ icon: React.ReactNode|BaseItemKind; content: (libraries: BaseItemDto[], user: UserDto, settings: Settings, server: SystemInfo) => React.ReactNode; matchHeight?: boolean }> = ({ icon, content }) => {
+export const PageWithNavigation: React.FC<{ icon: React.ReactNode|BaseItemKind; content: (libraries: BaseItemDto[], user: UserDto, settings: Settings, server: SystemInfo) => React.ReactNode; matchHeight?: boolean }> = ({ icon, content, matchHeight }) => {
 	const userId = useObservable(ServerService.Instance.CurrentUserId);
 
 	React.useEffect(() => UserViewStore.Instance.LoadUserViewsWithAbort(userId), [userId]);
@@ -56,6 +56,7 @@ export const PageWithNavigation: React.FC<{ icon: React.ReactNode|BaseItemKind; 
 			whenReceived={(libraries, server, quickConnectEnabled, user, settings) => (
 				<PageWrapper
 					icon={icon}
+					matchHeight={matchHeight}
 					navigationButton={<OpenNavigationButton libraries={libraries} server={server} quickConnectEnabled={quickConnectEnabled} user={user} />}
 					content={content(libraries, user, settings, server)}
 				/>
