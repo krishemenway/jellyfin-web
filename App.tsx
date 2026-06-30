@@ -57,10 +57,10 @@ const AppWrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
 		<ResponsiveProvider value={breakpoint}>
 			<RequiresTranslationsLoaded>
 				<RequireServerAndUser>
-						<ErrorBoundary fallback={<LoadingErrorMessages errorTextKeys={["UnknownError"]} />}>
-							<Outlet />{React.Children.map(children, c => c)}
-							<MediaPlayer />
-						</ErrorBoundary>
+					<ErrorBoundary fallback={<LoadingErrorMessages errorTextKeys={["UnknownError"]} retryAction={() => window.location.reload()} />}>
+						<Outlet />{React.Children.map(children, c => c)}
+						<MediaPlayer />
+					</ErrorBoundary>
 				</RequireServerAndUser>
 			</RequiresTranslationsLoaded>
 
