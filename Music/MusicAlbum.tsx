@@ -44,8 +44,12 @@ import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ChangeImageButton } from "Items/ChangeImageButton";
 
 export const MusicAlbum: React.FC = () => {
-	const routeParams = useParams<{ albumId: string; songId?: string; }>();
-	const albumId = routeParams.albumId!;
+	const albumId = useParams<{ albumId: string; songId?: string; }>().albumId!;
+
+	const retryLoad = React.useCallback(() => {
+		ItemService.Instance.FindOrCreateItemData(albumId).LoadItemWithAbort();
+		ItemService.Instance.FindOrCreateItemData(albumId).LoadChildrenWithAbort(false, { albumIds: [albumId], includeItemTypes: ["Audio", "MusicVideo"], recursive: true });
+	}, [albumId]);
 
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(albumId).LoadItemWithAbort(), [albumId]);
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(albumId).LoadChildrenWithAbort(false, { albumIds: [albumId], includeItemTypes: ["Audio", "MusicVideo"], recursive: true }), [albumId]);
@@ -55,7 +59,7 @@ export const MusicAlbum: React.FC = () => {
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(albumId).Item, ItemService.Instance.FindOrCreateItemData(albumId).Children]}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
+				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} retryAction={retryLoad} />}
 				whenReceived={(album, allAlbumItems) => <LoadedMusicAlbums album={album} allAlbumItems={allAlbumItems} user={user} reloadAlbum={() => ItemService.Instance.FindOrCreateItemData(albumId).LoadItemWithAbort(true)} />}
 			/>
 		)} />
@@ -120,7 +124,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemD
 							{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(reloadAlbum); }} />}
 							<Button type="button" alignItems="center" px=".5em" py=".5em" icon={<PlayIcon />} title={{ Key: "HeaderPlayAll" }} onClick={() => MusicPlayerService.Instance.ClearAndPlay(allSongs)} />
 		
-							<ItemActionsMenu reloadItems={() => reloadAlbum()} items={[album]} user={user} actions={[
+							<ItemActionsMenu reloadItems={() => reloadAlbum()} filteredItems={[album]} user={user} actions={[
 								[
 									AddToFavoritesAction,
 									RemoveFromFavoritesAction,

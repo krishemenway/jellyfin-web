@@ -45,6 +45,7 @@ import { ItemPremiereDate } from "Items/ItemPremiereDate";
 import { ItemDuration } from "Items/ItemDuration";
 import { ChangeImageButton } from "Items/ChangeImageButton";
 import { ItemMediaInfo } from "Items/ItemMediaInfo";
+import { ItemSortName } from "Items/ItemSortName";
 
 export const MusicVideo: React.FC = () => {
 	const routeParams = useParams<{ musicVideoId: string }>();
@@ -120,7 +121,7 @@ const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloa
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={musicVideo} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(reloadMusicVideo); }} />}
-						<ItemActionsMenu reloadItems={() => reloadMusicVideo()} items={[musicVideo]} actions={[
+						<ItemActionsMenu reloadItems={() => reloadMusicVideo()} filteredItems={[musicVideo]} actions={[
 							[ // User-based actions
 								PlayVideoAction,
 								AddToFavoritesAction,
@@ -147,6 +148,7 @@ const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloa
 					<ItemDuration item={musicVideo} />
 				</Layout>
 
+				<ItemSortName isEditing={isEditing} editableItem={editableItem} />
 				<ItemOverview item={musicVideo} isEditing={isEditing} editableItem={editableItem} />
 
 				<ItemTags

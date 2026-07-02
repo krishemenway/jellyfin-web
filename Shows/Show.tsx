@@ -54,26 +54,23 @@ export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
 	const showId = routeParams.showId!;
 
-	const loadShow = (forceRefresh: boolean) => {
-		const disposes = [
-			ItemService.Instance.FindOrCreateItemData(showId).LoadItemWithAbort(forceRefresh),
-			ItemService.Instance.FindOrCreateItemData(showId).LoadChildrenWithAbort(true, { recursive: true }, undefined, forceRefresh),
-		];
-
-		return () => disposes.forEach((dispose) => dispose());
+	const reloadShow = (forceRefresh: boolean) => {
+		ItemService.Instance.FindOrCreateItemData(showId).LoadItemWithAbort(forceRefresh);
+		ItemService.Instance.FindOrCreateItemData(showId).LoadChildrenWithAbort(true, { recursive: true }, undefined, forceRefresh);
 	};
 
-	React.useEffect(() => loadShow(false), [showId]);
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(showId).LoadItemWithAbort(), [showId]);
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(showId).LoadChildrenWithAbort(true, { recursive: true }), [showId]);
 
 	return (
 		<PageWithNavigation icon="Series" content={(_, user) => (
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(showId).Item, ItemService.Instance.FindOrCreateItemData(showId).Children]}
 				whenNotStarted={<PageIsLoading />} whenLoading={<PageIsLoading />}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
+				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} retryAction={() => reloadShow(false)} />}
 				whenReceived={(show, children) => !Nullable.StringHasValue(routeParams.episodeId)
-					? <LoadedShow show={show} seasonId={routeParams.seasonId} children={children} user={user} reloadShow={() => loadShow(true)} />
-					: <LoadedEpisode show={show} children={children} user={user} episodeId={routeParams.episodeId} reloadShow={() => loadShow(true)} />}
+					? <LoadedShow show={show} seasonId={routeParams.seasonId} children={children} user={user} reloadShow={() => reloadShow(true)} />
+					: <LoadedEpisode show={show} children={children} user={user} episodeId={routeParams.episodeId} reloadShow={() => reloadShow(true)} />}
 			/>
 		)} />
 	);
@@ -206,7 +203,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 					{isEditing && <ItemRefreshButton item={show} />}
 					{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(reloadShow); }} />}
 
-					<ItemActionsMenu reloadItems={reloadShow} items={[show]} user={user} actions={[
+					<ItemActionsMenu reloadItems={reloadShow} filteredItems={[show]} user={user} actions={[
 						[
 							AddToFavoritesAction,
 							RemoveFromFavoritesAction,
@@ -267,7 +264,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 						{isEditing && <ItemRefreshButton item={episode} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(reloadShow); }} />}
 						{!isEditing && <Button type="button" icon={<PlayIcon />} alignItems="center" px=".5em" py=".5em" onClick={() => VideoPlayerService.Instance.ClearAndPlay([episode].concat(remainingEpisodes))} />}
-						<ItemActionsMenu reloadItems={reloadShow} items={[episode]} user={user} actions={[
+						<ItemActionsMenu reloadItems={reloadShow} filteredItems={[episode]} user={user} actions={[
 							[
 								PlayVideoAction,
 								AddToFavoritesAction,

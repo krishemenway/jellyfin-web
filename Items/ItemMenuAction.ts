@@ -5,7 +5,8 @@ import { NavigateFunction } from "react-router-dom";
 export interface ItemMenuAction {
 	icon: (props: IconProps) => React.ReactNode,
 	textKey: string;
-	action: (items: readonly BaseItemDto[], navigate: NavigateFunction, reloadItems: () => void) => void;
+	action: (items: readonly BaseItemDto[], navigate: NavigateFunction, reloadItems: () => void, filteredItems: readonly BaseItemDto[]) => void;
 	visible?: (policy: UserDto, items: readonly BaseItemDto[]) => boolean;
-	modal?: (items: readonly BaseItemDto[]) => React.ReactNode,
+	enabled?: (policy: UserDto, items: readonly BaseItemDto[]) => boolean;
+	modal?: (filteredItems: readonly BaseItemDto[]) => React.ReactNode,
 }

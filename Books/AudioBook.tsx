@@ -105,7 +105,7 @@ const LoadedAudioBook: React.FC<{ user: UserDto; audioBook: BaseItemDto; reloadA
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={audioBook} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(reloadAudioBook); }} />}
-						<ItemActionsMenu reloadItems={() => reloadAudioBook()} items={[audioBook]} user={user} actions={[
+						<ItemActionsMenu reloadItems={() => reloadAudioBook()} filteredItems={[audioBook]} user={user} actions={[
 							[ // User-based actions
 								PlayVideoAction,
 								AddToFavoritesAction,

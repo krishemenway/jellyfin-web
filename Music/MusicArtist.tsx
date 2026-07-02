@@ -34,6 +34,9 @@ import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/Add
 export const MusicArtist: React.FC = () => {
 	const artistId = useParams().artistId!;
 
+	const reloadArtist = React.useCallback(() => ItemService.Instance.FindOrCreateItemData(artistId).LoadItemWithAbort(true),[artistId])
+	const reloadChildren = React.useCallback(() => ItemService.Instance.FindOrCreateItemData(artistId).LoadChildrenWithAbort(false, { artistIds: [artistId], includeItemTypes: ["MusicVideo", "MusicAlbum", "Audio"], recursive: true }), [artistId]);
+
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(artistId).LoadItemWithAbort(), [artistId]);
 	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(artistId).LoadChildrenWithAbort(false, { artistIds: [artistId], includeItemTypes: ["MusicVideo", "MusicAlbum", "Audio"], recursive: true }), [artistId]);
 
@@ -42,14 +45,14 @@ export const MusicArtist: React.FC = () => {
 			<Loading
 				receivers={[ItemService.Instance.FindOrCreateItemData(artistId).Item]}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(artist) => <LoadedMusicArtist user={user} artist={artist} reloadArtist={() => ItemService.Instance.FindOrCreateItemData(artistId).LoadItemWithAbort(true)} />}
+				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} retryAction={reloadArtist} />}
+				whenReceived={(artist) => <LoadedMusicArtist user={user} artist={artist} reloadArtist={reloadArtist} reloadChildren={reloadChildren} />}
 			/>
 		)} />
 	);
 };
 
-const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; reloadArtist: () => void; }> = ({ user, artist, reloadArtist }) => {
+const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; reloadArtist: () => void; reloadChildren: () => void; }> = ({ user, artist, reloadArtist, reloadChildren }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(artist, user);
 	const genresPerRow = useBreakpointValues(1, 3, 3, 3);
@@ -91,7 +94,7 @@ const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; reloadAr
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={artist} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(reloadArtist); }} />}
-						<ItemActionsMenu reloadItems={() => reloadArtist()} items={[artist]} user={user} actions={[
+						<ItemActionsMenu reloadItems={() => { reloadArtist(); reloadChildren(); }} filteredItems={[artist]} user={user} actions={[
 							[
 								EditItemAction,
 								AddToFavoritesAction,
@@ -107,7 +110,7 @@ const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; reloadAr
 					receivers={[ItemService.Instance.FindOrCreateItemData(artist.Id!).Children]}
 					whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
 					whenLoading={<LoadingIcon alignSelf="center" size="4em" />}
-					whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
+					whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} retryAction={reloadChildren} />}
 					whenReceived={(relatedItemsToArtist) => <Albums artist={artist} relatedItemsToArtist={relatedItemsToArtist} />}
 				/>
 			</Layout>

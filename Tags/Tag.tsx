@@ -32,26 +32,24 @@ import { ItemListService } from "ItemList/ItemListService";
 import { Settings } from "Users/SettingsStore";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
 import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
-import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { PlayVideoAction } from "MenuActions/PlayVideoAction";
 import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
-import { ArrowSelectIcon } from "CommonIcons/ArrowSelectIcon";
-import { ItemMenuAction } from "Items/ItemMenuAction";
 
 export const Tag: React.FC = () => {
 	const tag = useParams().tag!;
 	const viewOptionsKey = useParams().viewOptionsKey;
 
 	const itemList = ItemService.Instance.FindOrCreateListFromSource({ DataSource: "Tag", DataSourceKey: tag });
-	React.useEffect(() => itemList.LoadWithAbort([]), [tag]);
+	const loadTagItems = () => itemList.LoadWithAbort([]);
+	React.useEffect(loadTagItems, [tag]);
 
 	return (
 		<PageWithNavigation icon={<TagIcon />} content={(_, user, settings) => (
 			<Loading
 				receivers={[itemList.List]}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
+				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} retryAction={loadTagItems} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenReceived={(items) => <TagListViewOptions tag={tag} viewOptionsKey={viewOptionsKey} items={items.List} itemList={itemList} settings={settings} user={user} />}
 			/>
@@ -93,14 +91,6 @@ interface TagListViewOptionsProps {
 
 const TagListViewOptions: React.FC<TagListViewOptionsProps> = ({ tag, viewOptionsKey, items, itemList, settings, user }) => {
 	const listOptions = useObservable(itemList.ListOptions);
-	const selectModeEnabled = useObservable(itemList.SelectModeEnabled);
-	const selectedItems = useObservable(itemList.SelectedItems);
-	const ToggleBulkSelectModeEnabledAction: ItemMenuAction = {
-		icon: (p) => <ArrowSelectIcon {...p} />,
-		textKey: "ButtonSelectView",
-		action: () => { itemList.SelectModeEnabled.Value = !itemList.SelectModeEnabled.Value; },
-	};
-	
 
 	React.useEffect(() => { itemList.LoadItemListViewOptionsOrNew(settings, viewOptionsKey, tag); }, [settings, viewOptionsKey]);
 	
@@ -116,23 +106,15 @@ const TagListViewOptions: React.FC<TagListViewOptionsProps> = ({ tag, viewOption
 				filterTypes={FilterTypes}
 				sortTypes={SortTypes}
 				getContent={(i) => (BaseItemKindServiceFactory.FindOrThrow(i.Type).nameWithContext ?? defaultNameFunc)(i)}
-				additionalButtons={(
-					<ItemActionsMenu
-						items={selectModeEnabled ? selectedItems : []}
-						reloadItems={() => itemList.LoadWithAbort([], true)}
-						user={user}
-						actions={[
-							[
-								ToggleBulkSelectModeEnabledAction,
-								AddToCollectionAction,
-								AddToPlaylistAction,
-								PlayVideoAction,
-								MarkPlayedAction,
-								MarkUnplayedAction,
-							],
-						]}
-					/>
-				)}
+				reloadItems={() => itemList.LoadWithAbort([], true)}
+				user={user}
+				menuActions={[[
+					AddToCollectionAction,
+					AddToPlaylistAction,
+					PlayVideoAction,
+					MarkPlayedAction,
+					MarkUnplayedAction,
+				]]}
 			/>
 		</Layout>
 	);

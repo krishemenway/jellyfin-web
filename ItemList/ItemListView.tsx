@@ -15,12 +15,8 @@ import { ItemListService } from "ItemList/ItemListService";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
 import { PageTitle } from "Common/PageTitle";
 import { BaseItemKindService } from "Items/BaseItemKindService";
-import { ItemRefreshButton } from "Items/ItemRefreshButton";
 import { useUrlToItem } from "Items/LinkToItem";
-import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { ManageLibraryAction } from "MenuActions/ManageLIbraryAction";
-import { ItemMenuAction } from "Items/ItemMenuAction";
-import { ArrowSelectIcon } from "CommonIcons/ArrowSelectIcon";
 import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
 import { PlayVideoAction } from "MenuActions/PlayVideoAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
@@ -68,13 +64,6 @@ const LoadedBasicItemListView: React.FC<LoadedBasicItemListViewProps> = ({ libra
 	const listOptions = useObservable(itemList.ListOptions);
 	const library = libraries.single((l) => l.Id === libraryId);
 	const baseUrl = useUrlToItem(library);
-	const selectMode = useObservable(itemList.SelectModeEnabled);
-	const selectedItems = useObservable(itemList.SelectedItems);
-	const ToggleBulkSelectModeEnabledAction: ItemMenuAction = {
-		icon: (p) => <ArrowSelectIcon {...p} />,
-		textKey: "ButtonSelectView",
-		action: () => { itemList.SelectModeEnabled.Value = !itemList.SelectModeEnabled.Value; },
-	};
 
 	React.useEffect(() => itemList.LoadWithAbort(), [itemList, libraries]);
 	React.useEffect(() => { itemList.LoadItemListViewOptionsOrNew(settings, viewOptionsKey, library.Name!); }, [settings, viewOptionsKey]);
@@ -95,27 +84,16 @@ const LoadedBasicItemListView: React.FC<LoadedBasicItemListViewProps> = ({ libra
 						settings={settings}
 						filterTypes={itemKindService.filterOptions ?? []}
 						sortTypes={itemKindService.sortOptions ?? []}
-						additionalButtons={(
-							<>
-								<ItemRefreshButton item={library} />
-								<ItemActionsMenu
-									items={selectMode ? selectedItems : [library]}
-									reloadItems={() => itemList.LoadWithAbort(undefined, true)}
-									user={user}
-									actions={[
-										[
-											ManageLibraryAction,
-											ToggleBulkSelectModeEnabledAction,
-											AddToCollectionAction,
-											AddToPlaylistAction,
-											PlayVideoAction,
-											MarkPlayedAction,
-											MarkUnplayedAction,
-										],
-									]}
-								/>
-							</>
-						)}
+						user={user}
+						reloadItems={() => itemList.LoadWithAbort(undefined, true)}
+						menuActions={[[
+							ManageLibraryAction,
+							AddToCollectionAction,
+							AddToPlaylistAction,
+							PlayVideoAction,
+							MarkPlayedAction,
+							MarkUnplayedAction,
+						]]}
 					/>
 				</Layout>
 			)}

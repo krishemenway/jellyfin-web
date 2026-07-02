@@ -13,7 +13,6 @@ import { ItemEditorService, useEditableItem } from "Items/ItemEditorService";
 import { Button } from "Common/Button";
 import { RevertIcon } from "CommonIcons/RevertIcon";
 import { SaveIcon } from "CommonIcons/SaveIcon";
-import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { PlayVideoAction } from "MenuActions/PlayVideoAction";
 import { AddToFavoritesAction, RemoveFromFavoritesAction } from "MenuActions/AddToFavoritesAction";
 import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
@@ -23,8 +22,6 @@ import { EditItemAction } from "MenuActions/EditItemAction";
 import { BaseItemDto, UserDto } from "node_modules/@jellyfin/sdk/lib/generated-client";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
 import { Settings } from "Users/SettingsStore";
-import { ArrowSelectIcon } from "CommonIcons/ArrowSelectIcon";
-import { ItemMenuAction } from "Items/ItemMenuAction";
 import { ItemListService } from "ItemList/ItemListService";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { FilterByName } from "ItemList/ItemFilterTypes/FilterByName";
@@ -95,14 +92,7 @@ const SortTypes: ItemSortType[] = [
 const LoadedCollection: React.FC<{ collection: BaseItemDto; itemList: ItemListService; collectionItems: BaseItemDto[]; user: UserDto; reload: () => void; settings: Settings; viewOptionsKey?: string; }> = ({ collection, itemList, collectionItems, user, reload: reloadCollection, settings, viewOptionsKey }) => {
 	const listOptions = useObservable(itemList.ListOptions);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
-	const selectModeEnabled = useObservable(itemList.SelectModeEnabled);
-	const selectedItems = useObservable(itemList.SelectedItems);
 	const editableItem = useEditableItem(collection, user);
-	const ToggleBulkSelectModeEnabledAction: ItemMenuAction = {
-		icon: (p) => <ArrowSelectIcon {...p} />,
-		textKey: "ButtonSelectView",
-		action: () => { itemList.SelectModeEnabled.Value = !itemList.SelectModeEnabled.Value; },
-	};
 
 	React.useEffect(() => { itemList.LoadItemListViewOptionsOrNew(settings, viewOptionsKey, collection.Name!); }, [settings, viewOptionsKey]);
 
@@ -124,28 +114,22 @@ const LoadedCollection: React.FC<{ collection: BaseItemDto; itemList: ItemListSe
 				filterTypes={FilterTypes}
 				sortTypes={SortTypes}
 				getContent={(i) => (BaseItemKindServiceFactory.FindOrThrow(i.Type).nameWithContext ?? defaultNameFunc)(i)}
+				reloadItems={() => itemList.LoadWithAbort([], true)}
+				user={user}
+				menuActions={[[
+					EditItemAction,
+					AddToCollectionAction,
+					AddToPlaylistAction,
+					PlayVideoAction,
+					AddToFavoritesAction,
+					RemoveFromFavoritesAction,
+					MarkPlayedAction,
+					MarkUnplayedAction,
+				]]}
 				additionalButtons={(
 					<>
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(reloadCollection); }} />}
-						<ItemActionsMenu
-							items={selectModeEnabled ? selectedItems : [collection]}
-							reloadItems={() => itemList.LoadWithAbort([], true)}
-							user={user}
-							actions={[
-								[
-									EditItemAction,
-									ToggleBulkSelectModeEnabledAction,
-									AddToCollectionAction,
-									AddToPlaylistAction,
-									PlayVideoAction,
-									AddToFavoritesAction,
-									RemoveFromFavoritesAction,
-									MarkPlayedAction,
-									MarkUnplayedAction,
-								],
-							]}
-						/>
 					</>
 				)}
 			/>

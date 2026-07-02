@@ -13,7 +13,8 @@ export interface ItemActionProps extends StyleLayoutProps {
 	className?: string;
 	actions: ItemMenuAction[][];
 	user: UserDto;
-	items: readonly BaseItemDto[];
+	filteredItems: readonly BaseItemDto[];
+	selectedItems?: readonly BaseItemDto[];
 	reloadItems: () => void;
 }
 
@@ -24,7 +25,7 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 
 	const filteredActions = React.useMemo(() => {
 		return props.actions
-			.map((group) => group.filter((action) => Nullable.Value(action.visible, () => true, a => a)(props.user, props.items)))
+			.map((group) => group.filter((action) => Nullable.Value(action.visible, () => true, a => a)(props.user, props.filteredItems)))
 			.filter((group) => group.length > 0);
 	}, [props.user, props.actions]);
 
@@ -40,7 +41,7 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 				alignItems="center" px=".5em" py=".5em" {...props}
 			/>
 
-			{filteredActions.flat().map((action) => Nullable.Value(action.modal, undefined, (m) => m(props.items)))}
+			{filteredActions.flat().map((action) => Nullable.Value(action.modal, undefined, (m) => m(props.filteredItems)))}
 
 			<AnchoredModal alternatePanel anchorAlignment="center" opensInDirection="left" anchorElement={anchor} open={anchor !== null} onClosed={closeNavigation}>
 				<ListOf
@@ -49,12 +50,12 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 					forEachItem={(group, index) => (
 						<ListOf
 							key={index.toString()}
-							items={group.filter(((a) => (a.visible ?? (() => true))(props.user, props.items)))}
+							items={group.filter(((a) => (a.visible ?? (() => true))(props.user, props.filteredItems)))}
 							direction="column"
 							forEachItem={(action) => (
 								<Button
 									key={action.textKey}
-									type="button" onClick={() => { closeNavigation(); action.action(props.items, navigate, props.reloadItems); }}
+									type="button" onClick={() => { closeNavigation(); action.action(props.selectedItems ?? props.filteredItems, navigate, props.reloadItems, props.filteredItems); }}
 									direction="row" px=".5em" py=".5em" gap=".5em" alignItems="center"
 									icon={action.icon({ size: "1em" })}
 									label={action.textKey}

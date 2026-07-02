@@ -108,7 +108,7 @@ const LoadedMovie: React.FC<{ user: UserDto; movie: BaseItemDto; reloadMovie: ()
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={movie} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(reloadMovie); }} />}
-						<ItemActionsMenu reloadItems={() => reloadMovie()} items={[movie]} user={user} actions={[
+						<ItemActionsMenu reloadItems={() => reloadMovie()} filteredItems={[movie]} user={user} actions={[
 							[ // User-based actions
 								PlayVideoAction,
 								AddToFavoritesAction,

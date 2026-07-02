@@ -64,7 +64,7 @@ export const ManageLibrary: React.FC = () => {
 		<PageWithNavigation icon={<ServerIcon />} content={() => (
 			<Loading
 				receivers={[LibraryManager.Instance.EditableLibrary]}
-				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
+				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} retryAction={() => LibraryManager.Instance.LoadWithAbort(libraryId)} />}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenReceived={(editableLibrary) => <LoadedLibraryManager editableLibrary={editableLibrary} />}
 			/>

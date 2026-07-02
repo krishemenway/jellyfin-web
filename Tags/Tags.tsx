@@ -20,15 +20,15 @@ export const Tags: React.FC = () => {
 };
 
 const TagsForLibraries: React.FC<{ libraries: BaseItemDto[] }> = (props) => {
-	const receiver = ItemFilterService.Instance.FindOrCreateFiltersReceiver(props.libraries.map((l) => l.Id ?? ""));
+	const loadTags = () => ItemFilterService.Instance.LoadFiltersWithAbort(props.libraries.map((l) => l.Id ?? ""));
 
-	React.useEffect(() => ItemFilterService.Instance.LoadFiltersWithAbort(props.libraries.map((l) => l.Id ?? "")), [props.libraries])
+	React.useEffect(() => loadTags(), [props.libraries])
 
 	return (
 		<Loading
-			receivers={[receiver]}
+			receivers={[ItemFilterService.Instance.FindOrCreateFiltersReceiver(props.libraries.map((l) => l.Id ?? ""))]}
 			whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
-			whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
+			whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} retryAction={loadTags} />}
 			whenReceived={(filters) => (
 				<ListOf
 					direction="row" wrap gap=".5em" py="1em"

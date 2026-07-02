@@ -71,6 +71,11 @@ export class ItemListService {
 		this.SelectModeEnabled = new Observable(false);
 	}
 
+	public ToggleSelectMode(): void {
+		this.SelectModeEnabled.Value = !this.SelectModeEnabled.Value;
+		this.SelectedItems.clear();
+	}
+
 	public LoadWithAbort(statConfigs?: ItemListStatConfig[], forceRefresh?: boolean): () => void {
 		if (this.List.HasData.Value && forceRefresh !== true) {
 			return () => { };

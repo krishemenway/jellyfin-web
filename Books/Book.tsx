@@ -104,7 +104,7 @@ export const LoadedBook: React.FC<{ user: UserDto; book: BaseItemDto; reloadBook
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={book} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(reloadBook); }} />}
-						<ItemActionsMenu reloadItems={() => reloadBook()} items={[book]} user={user} actions={[
+						<ItemActionsMenu reloadItems={() => reloadBook()} filteredItems={[book]} user={user} actions={[
 							[ // User-based actions
 								PlayVideoAction,
 								AddToFavoritesAction,

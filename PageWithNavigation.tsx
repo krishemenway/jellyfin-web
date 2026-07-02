@@ -32,7 +32,13 @@ import { QuickConnectService } from "Users/QuickConnect";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 
-export const PageWithNavigation: React.FC<{ icon: React.ReactNode|BaseItemKind; content: (libraries: BaseItemDto[], user: UserDto, settings: Settings, server: SystemInfo) => React.ReactNode; matchHeight?: boolean }> = ({ icon, content, matchHeight }) => {
+interface PageWithNavigationProps {
+	icon: React.ReactNode|BaseItemKind;
+	content: (libraries: BaseItemDto[], user: UserDto, settings: Settings, server: SystemInfo) => React.ReactNode;
+	matchHeight?: boolean;
+}
+
+export function PageWithNavigation({ icon, content, matchHeight }: PageWithNavigationProps): React.ReactNode {
 	const userId = useObservable(ServerService.Instance.CurrentUserId);
 
 	React.useEffect(() => UserViewStore.Instance.LoadUserViewsWithAbort(userId), [userId]);
@@ -111,7 +117,7 @@ const BaseNavigationButton: React.FC<{ onClick?: (element: HTMLButtonElement) =>
 const NavigationMenuLinkStyles: Partial<StyleLayoutProps> = { width: "100%", px: "1em", py: "1em", gap: ".5em" };
 const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[]; server: SystemInfo; quickConnectEnabled: boolean; user: UserDto }> = ({ libraries, server, quickConnectEnabled, user }) => {
 	const [anchor, setOpenAnchor] = React.useState<HTMLElement|null>(null);
-	const closeNavigation = () => { setOpenAnchor(null); };
+	const closeNavigation = React.useCallback(() => { setOpenAnchor(null); }, []);
 
 	return (
 		<>
@@ -169,19 +175,19 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[]; server: SystemI
 
 const AuthorizeQuickConnectButton: React.FC<{ onOpened: () => void }> = (props) => {
 	const [authorizeQuickConnectOpen, setAuthorizeQuickConnectOpen] = React.useState(false);
-
-	// TODO check if the server supports quick connect and bail early if it doesn't
+	const onOpened = React.useCallback(() => { props.onOpened(); setAuthorizeQuickConnectOpen(true); }, [props.onOpened]);
+	const onClosed = React.useCallback(() => { QuickConnectService.Instance.ResetFormOnClosed(); setAuthorizeQuickConnectOpen(false); }, []);
 
 	return (
 		<>
 			<NavigationMenuItemButton
 				icon={<EditIcon />}
 				text={<TranslatedText textKey="QuickConnect" />}
-				onClick={() => { props.onOpened(); setAuthorizeQuickConnectOpen(true); }}
+				onClick={onOpened}
 			/>
 
-			<CenteredModal open={authorizeQuickConnectOpen} onClosed={() => { setAuthorizeQuickConnectOpen(false); }}>
-				<AuthorizeQuickConnect open={authorizeQuickConnectOpen} onClose={() => { setAuthorizeQuickConnectOpen(false); }} />
+			<CenteredModal open={authorizeQuickConnectOpen} onClosed={onClosed}>
+				<AuthorizeQuickConnect open={authorizeQuickConnectOpen} onClose={onClosed} />
 			</CenteredModal>
 		</>
 	);
