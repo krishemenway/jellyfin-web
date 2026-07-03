@@ -32,16 +32,6 @@ interface BaseInputFieldProps extends LayoutWithoutChildrenProps {
 	onBlur?: () => void;
 }
 
-const ForwardedDateField: React.ForwardRefRenderFunction<HTMLInputElement, TextFieldProps> = (props, ref) => {
-	const currentValue = useObservable(props.field.Current);
-	return <InputField {...props} id={props.field.FieldId} type="date" value={currentValue ?? ""} onChange={(newValue) => props.field.OnChange(newValue)} ref={ref} />;
-};
-
-const ForwardedTimeField: React.ForwardRefRenderFunction<HTMLInputElement, TextFieldProps> = (props, ref) => {
-	const currentValue = useObservable(props.field.Current);
-	return <InputField {...props} id={props.field.FieldId} type="time" value={currentValue ?? ""} onChange={(newValue) => props.field.OnChange(newValue)} ref={ref} />;
-};
-
 const ForwardedNumberField: React.ForwardRefRenderFunction<HTMLInputElement, NumberFieldProps> = (props, ref) => {
 	const currentValue = useObservable(props.field.Current);
 	return <InputField {...props} id={props.field.FieldId} type="number" value={currentValue?.toString() ?? ""} onChange={(newValue) => props.field.OnChange(Nullable.StringValue(newValue, undefined, nv => parseFloat(nv)))} ref={ref} />;
@@ -96,8 +86,6 @@ const ForwardedTextAreaField: React.ForwardRefRenderFunction<HTMLTextAreaElement
 	);
 };
 
-export const DateField = React.forwardRef(ForwardedDateField);
-export const TimeField = React.forwardRef(ForwardedTimeField);
 export const NumberField = React.forwardRef(ForwardedNumberField);
 export const InputField = React.forwardRef(ForwardedInputField);
 export const TextAreaField = React.forwardRef(ForwardedTextAreaField);

@@ -32,7 +32,8 @@ import { Button } from "Common/Button";
 import { RevertIcon } from "CommonIcons/RevertIcon";
 import { SaveIcon } from "CommonIcons/SaveIcon";
 import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
-import { DateField, TextField } from "Common/TextField";
+import { TextField } from "Common/TextField";
+import { DateField } from "Common/DateField";
 import { FieldLabel } from "Common/FieldLabel";
 import { ItemTags } from "Items/ItemTags";
 import { ReverseSort, SortFunc } from "Common/ArrayPrototype";
@@ -167,12 +168,12 @@ const PersonDetails: React.FC<{ person: BaseItemDto }&EditableItemProps> = ({ pe
 			)}
 
 			{Nullable.HasValue(editableItem) && isEditing ? (
-				<Layout direction="row" className="deathDateAndDeathAge">
+				<Layout direction="row" className="deathDateAndDeathAge" alignItems="center" gap=".5em">
 					<FieldLabel field={editableItem.EndDate} textKey="LabelDeathDate" />
 					<DateField field={editableItem.EndDate} px=".5em" py=".25em" bt br bb bl backgroundColor="Field" />
 				</Layout>
 			) : Nullable.HasValue(person.EndDate) ? (
-				<Layout direction="row" className="deathDateAndDeathAge">
+				<Layout direction="row" className="deathDateAndDeathAge" alignItems="center" gap=".5em">
 					<TranslatedText textKey="DeathDateValue" textProps={[deathOrNow.toLocaleDateString()]} />
 					<TranslatedText textKey="AgeValue" textProps={[ageAtDeathOrNow.years?.toString() ?? ""]} />
 				</Layout>

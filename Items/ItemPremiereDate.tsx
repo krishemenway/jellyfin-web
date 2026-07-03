@@ -5,7 +5,7 @@ import { EditableItemProps } from "Items/EditableItemProps";
 import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { FieldLabel } from "Common/FieldLabel";
 import { TranslatedText } from "Common/TranslatedText";
-import { DateField } from "Common/TextField";
+import { DateField } from "Common/DateField";
 import { formatDate } from "date-fns";
 
 export const ItemPremiereDate: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {
@@ -14,8 +14,8 @@ export const ItemPremiereDate: React.FC<{ item: BaseItemDto; }&EditableItemProps
 	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
 		return (
 			<Layout direction="row" gap=".5em" alignItems="center">
-				<FieldLabel field={props.editableItem!.PremiereDate} />
-				<DateField field={props.editableItem!.PremiereDate} px=".5em" py=".25em" />
+				<FieldLabel field={props.editableItem.PremiereDate} />
+				<DateField field={props.editableItem.PremiereDate} px=".5em" py=".25em" bt br bb bl backgroundColor="Field" />
 			</Layout>
 		);
 	}
