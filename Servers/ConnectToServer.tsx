@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useBackgroundStyles } from "AppStyles";
 import { TranslatedText } from "Common/TranslatedText";
 import { TextField } from "Common/TextField";
 import { Layout, StyleLayoutProps } from "Common/Layout";
@@ -14,19 +13,18 @@ import { Receiver } from "Common/Receiver";
 import { RequestError } from "Common/RequestError";
 
 export const ConnectToServer: React.FC<{ open: boolean; onClosed: () => void; }&StyleLayoutProps> = ({ open, onClosed, ...props }) => {
-	const background = useBackgroundStyles();
 	const showErrors = useObservable(ServerService.Instance.TryAddServerErrorMessagesShown);
 	const submitError = useError(ServerService.Instance.TryAddServerResult as Receiver<unknown>);
 
 	React.useEffect(() => ServerService.Instance.ResetTryAddServer(), [open]);
 
 	return (
-		<Form onSubmit={() => { ServerService.Instance.TryAddServer(onClosed); }} direction="column" justifyContent="center" gap="2em" className={background.panel} px="1em" py="1em" {...props}>
+		<Form onSubmit={() => { ServerService.Instance.TryAddServer(onClosed); }} direction="column" justifyContent="center" gap="2em" backgroundColor="Panel" px="1em" py="1em" {...props}>
 			<Layout elementType="h2" direction="row" fontSizeREM={1.2}><TranslatedText textKey="HeaderConnectToServer" /></Layout>
 
 			<Layout direction="column" gap=".5em">
 				<FieldLabel field={ServerService.Instance.TryAddServerHost} />
-				<TextField field={ServerService.Instance.TryAddServerHost} placeholder={{ Key: "LabelServerHostHelp" }} px=".5em" py=".5em" />
+				<TextField field={ServerService.Instance.TryAddServerHost} placeholder={{ Key: "LabelServerHostHelp" }} px=".5em" py=".5em" bt br bb bl backgroundColor="Field" />
 				<FieldError field={ServerService.Instance.TryAddServerHost} showErrors={showErrors} />
 			</Layout>
 

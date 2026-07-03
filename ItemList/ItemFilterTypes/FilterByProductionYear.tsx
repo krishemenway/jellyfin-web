@@ -105,12 +105,14 @@ const FilterByProductionYearEditor: React.FC<{ greaterThanNumber: EditableField<
 					field={greaterThanNumber}
 					grow basis="0" px=".5em" py=".25em" minWidth={0}
 					placeholder={{ Key: "LabelFrom" }}
+					bt br bb bl backgroundColor="Field"
 				/>
 
 				<NumberField
 					field={lessThanYear}
 					grow basis="0" px=".5em" py=".25em" minWidth={0}
 					placeholder={{ Key: "LabelTo" }}
+					bt br bb bl backgroundColor="Field"
 				/>
 			</Layout>
 		</>

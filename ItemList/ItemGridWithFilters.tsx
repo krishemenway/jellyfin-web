@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { useComputed, useObservable } from "@residualeffect/rereactor";
-import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
+import { useBreakpointValues } from "AppStyles";
 import { ListOf } from "Common/ListOf";
 import { ItemListFilters } from "ItemList/ItemListFilters";
 import { Settings } from "Users/SettingsStore";
@@ -35,7 +35,6 @@ interface LoadedItemsViewProps {
 }
 
 export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, itemList, items, listOptions, settings, filterTypes, sortTypes, additionalButtons, fallbackItem, getContent, menuActions, user, reloadItems }) => {
-	const background = useBackgroundStyles();
 	const sorts = useObservable(listOptions.SortBy);
 	const itemsPerRow = useBreakpointValues(2, 4, 7, 9);
 	const selectModeEnabled = useObservable(itemList.SelectModeEnabled);
@@ -55,7 +54,7 @@ export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, i
 	return (
 		<>
 			{selectModeEnabled && (
-				<Layout direction="row" className={background.alternatePanel} width="100%" alignItems="center" justifyContent="center" gap="1em" py=".25rem">
+				<Layout direction="row" backgroundColor="AlternatePanel" bt br bb bl width="100%" alignItems="center" justifyContent="center" gap="1em" py=".25rem">
 					<TranslatedText textKey="SelectModeEnabledMessage" textProps={[selectedItems.length.toString()]} />
 					<Button type="button" onClick={() => itemList.ToggleSelectMode()} label="Disable" px=".25em" py=".25em" />
 				</Layout>

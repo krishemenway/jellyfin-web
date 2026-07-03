@@ -1,6 +1,5 @@
 import * as React from "react";
 import { ListOf } from "Common/ListOf";
-import { useBackgroundStyles } from "AppStyles";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
@@ -33,8 +32,6 @@ class ServerDevicesService {
 }
 
 export const ServerDevices: React.FC = () => {
-	const background = useBackgroundStyles();
-
 	React.useEffect(() => ServerDevicesService.Instance.LoadDevices(), []);
 
 	return (
@@ -44,7 +41,7 @@ export const ServerDevices: React.FC = () => {
 			whenLoading={<LoadingIcon alignSelf="center" size="3em" />}
 			whenNotStarted={<LoadingIcon alignSelf="center" size="3em" />}
 			whenReceived={(devices) => (
-				<Layout direction="column" className={background.panel} gap="1rem" py="1rem" px="1rem">
+				<Layout direction="column" backgroundColor="Panel" bt br bb bl gap="1rem" py="1rem" px="1rem">
 					<Layout direction="row" fontSizeREM={1.1}><TranslatedText textKey="HeaderDevices" /></Layout>
 					<ListOf
 						direction="column" gap="1em"

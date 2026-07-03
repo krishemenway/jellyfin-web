@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BaseItemDto, BaseItemPerson, PersonKind } from "@jellyfin/sdk/lib/generated-client/models";
-import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
+import { useBreakpointValues } from "AppStyles";
 import { ListOf } from "Common/ListOf";
 import { LinkToPerson } from "People/LinkToPerson";
 import { Layout, StyleLayoutProps } from "Common/Layout";
@@ -45,12 +45,10 @@ export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; className?: st
 };
 
 const ReadOnlyCastAndCrew: React.FC<{ orderedCastAndCrew: BaseItemPerson[]; linkProps?: StyleLayoutProps }&StyleLayoutProps> = ({ orderedCastAndCrew, linkProps, ...props }) => {
-	const background = useBackgroundStyles();
-
 	return (
 		<ListOf
 			items={orderedCastAndCrew}
-			direction="row" className={background.panel}
+			direction="row" backgroundColor="Panel" bt br bb bl
 			forEachItem={((person) => <CastAndCrewCredit key={person.Id + [person.Role, person.Type?.toString()].coalesce("Unknown", Nullable.StringHasValue)} person={person} {...linkProps} />)}
 			{...props}
 		/>
@@ -81,7 +79,7 @@ const EditPersonCredit: React.FC<{ person: EditablePersonCredit; onDelete: () =>
 	return (
 		<Layout direction="column" width={{ itemsPerRow: props.itemsPerRow, gap: ".25rem" }} gap=".25rem">
 			<Layout direction="row" gap=".25rem">
-				<TextField field={props.person.Name} width="100%" minWidth="50px" px=".25em" />
+				<TextField field={props.person.Name} width="100%" minWidth="50px" px=".25em" bt br bb bl backgroundColor="Field" />
 				<Button type="button" onClick={props.onDelete} icon={<DeleteIcon />} px=".25em" py=".25em" />
 			</Layout>
 
@@ -93,7 +91,7 @@ const EditPersonCredit: React.FC<{ person: EditablePersonCredit; onDelete: () =>
 					getLabel={(p) => p.toString()}
 				/>
 
-				<Layout direction="row" grow><TextField field={props.person.Role} width="100%" /></Layout>
+				<Layout direction="row" grow><TextField field={props.person.Role} width="100%" bt br bb bl backgroundColor="Field" /></Layout>
 			</Layout>
 		</Layout>
 	);

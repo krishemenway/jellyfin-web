@@ -75,7 +75,7 @@ const FilterByNameEditor: React.FC<{ valueField: EditableField<string|null|undef
 
 			<Layout direction="row" justifyContent="stretch" gap=".5rem">
 				<ToggleSwitch field={inverseField} enabledIcon={<CircleSlashIcon />} disabledIcon={<CircleCheckmarkIcon />} alignItems="center" justifyContent="center" px=".5em" />
-				<TextField field={valueField} placeholder={{ Key: "LabelValue" }} px=".5em" py=".25em" grow />
+				<TextField field={valueField} placeholder={{ Key: "LabelValue" }} px=".5em" py=".25em" grow bt br bb bl backgroundColor="Field" />
 			</Layout>
 		</>
 	);

@@ -143,8 +143,8 @@ const LoadedMovie: React.FC<{ user: UserDto; movie: BaseItemDto; reloadMovie: ()
 
 				<CastAndCrew
 					itemWithPeople={movie}
-					className={background.panel}
-					direction="row" wrap px=".5em" py="1em"
+					backgroundColor="Panel"
+					direction="row" wrap px=".5em" py="1em" bt br bb bl
 					linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
 					editableItem={editableItem}
 					isEditing={isEditing}

@@ -10,7 +10,7 @@ import { Layout } from "Common/Layout";
 import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { ItemService } from "Items/ItemsService";
 import { ListOf } from "Common/ListOf";
-import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
+import { useBreakpointValues } from "AppStyles";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { useComputed, useObservable } from "@residualeffect/rereactor/lib";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
@@ -118,7 +118,6 @@ const HomeSection: React.FC<{ viewOptions: ItemListViewOptions; itemsPerRow: num
 const LoadingSection: React.FC<{ label: string; itemsPerRow: number; viewOptions: ItemListViewOptions }> = ({ label, itemsPerRow, viewOptions }) => {
 	const listUrl = showMoreLink(viewOptions);
 	const items = React.useMemo(() => [].addCount(itemsPerRow),[itemsPerRow]);
-	const background = useBackgroundStyles();
 
 	return (
 		<Layout direction="column" gap=".25rem" width="100%">
@@ -130,7 +129,7 @@ const LoadingSection: React.FC<{ label: string; itemsPerRow: number; viewOptions
 				items={items}
 				direction="row" wrap gap=".5em"
 				forEachItem={(_, index) => (
-					<Layout key={index} direction="column" className={background.panel} alignItems="center" justifyContent="center" width={{ itemsPerRow: itemsPerRow, gap: ".5em" }} minHeight="15rem">
+					<Layout key={index} direction="column" backgroundColor="Panel" bt br bb bl alignItems="center" justifyContent="center" width={{ itemsPerRow: itemsPerRow, gap: ".5em" }} minHeight="15rem">
 						<LoadingIcon size="2em" />
 					</Layout>
 				)}

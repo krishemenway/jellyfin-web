@@ -1,6 +1,5 @@
 import * as React from "react";
 import { ListOf } from "Common/ListOf";
-import { useBackgroundStyles } from "AppStyles";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
@@ -41,8 +40,6 @@ class ScheduledTasksService {
 }
 
 export const ServerScheduledTasks: React.FC = () => {
-	const background = useBackgroundStyles();
-
 	React.useEffect(() => ScheduledTasksService.Instance.LoadTasks(), []);
 
 	return (
@@ -53,7 +50,7 @@ export const ServerScheduledTasks: React.FC = () => {
 			whenNotStarted={<LoadingIcon alignSelf="center" size="3em" />}
 			whenReceived={(tasks) => (
 				<ListOf
-					className={background.panel}
+					backgroundColor="Panel" bt br bb bl
 					items={Object.keys(tasks)}
 					direction="column" gap="1rem" py=".5rem" px=".5rem"
 					forEachItem={(category) => (

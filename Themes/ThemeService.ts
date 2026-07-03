@@ -6,6 +6,7 @@ import { EditableField } from "Common/EditableField";
 import { Property } from "csstype";
 
 export type ThemeFontColors = "Primary"|"Secondary"|"Error";
+export type ThemeBackgroundColors = "Page"|"BackdropSuppressor"|"Panel"|"AlternatePanel"|"Field"|"TableOddRow"|"Error";
 
 export class ThemeService {
 	constructor() {
@@ -39,8 +40,8 @@ export class ThemeService {
 		this.ApplyButtonStatesCssVariables(root, "ButtonSelected", theme.ButtonSelected);
 	}
 
-	public ConvertFontColor(themeColor?: ThemeFontColors): Property.Color|undefined {
-		switch (themeColor) {
+	public ConvertFontColor(color?: ThemeFontColors): Property.Color|undefined {
+		switch (color) {
 			case undefined:
 				return undefined;
 			case "Primary":
@@ -49,6 +50,48 @@ export class ThemeService {
 				return "var(--SecondaryTextColor)";
 			case "Error":
 				return "var(--ErrorTextColor)";
+		}
+	}
+
+	public ConvertBackgroundColor(color?: ThemeBackgroundColors): Property.BackgroundColor|undefined {
+		switch (color) {
+			case undefined:
+				return undefined;
+			case "Page":
+				return "var(--PageBackgroundColor)";
+			case "BackdropSuppressor":
+				return "var(--BackdropSuppressorColor)";
+			case "Panel":
+				return "var(--PanelBackgroundColor)";
+			case "AlternatePanel":
+				return "var(--AlternateBackgroundColor)";
+			case "Field":
+				return "var(--FieldBackgroundColor)";
+			case "Error":
+				return "var(--FieldBackgroundColor)";
+			case "TableOddRow":
+				return "var(--TableOddRowBackgroundColor)";
+		}
+	}
+
+	public ConvertBorderColor(color?: ThemeBackgroundColors): Property.BackgroundColor|undefined {
+		switch (color) {
+			case undefined:
+				return undefined;
+			case "Page":
+				return undefined;
+			case "BackdropSuppressor":
+				return undefined;
+			case "Panel":
+				return "var(--PanelBorderColor)";
+			case "AlternatePanel":
+				return "var(--AlternateBorderColor)";
+			case "Field":
+				return "var(--FieldBorderColor)";
+			case "Error":
+				return "var(--ErrorTextColor)";
+			case "TableOddRow":
+				return undefined;
 		}
 	}
 

@@ -132,7 +132,7 @@ const LoadedSettings: React.FC<{ settings: EditableGeneralSettings; localization
 		<Form direction="column" onSubmit={() => GeneralSettingsService.Instance.Save()} gap="1.25rem" px="1rem" py="1rem">
 			<Layout direction="column" gap=".5rem">
 				<FieldLabel field={props.settings.ServerName} />
-				<TextField field={props.settings.ServerName} px=".5rem" py=".25rem" />
+				<TextField field={props.settings.ServerName} px=".5rem" py=".25rem" bt br bb bl backgroundColor="Field" />
 				<FieldError field={props.settings.ServerName} showErrors={showErrors} />
 			</Layout>
 
@@ -152,13 +152,13 @@ const LoadedSettings: React.FC<{ settings: EditableGeneralSettings; localization
 
 			<Layout direction="column" gap=".5rem">
 				<FieldLabel field={props.settings.CachePath} />
-				<TextField field={props.settings.CachePath} px=".5rem" py=".25rem" />
+				<TextField field={props.settings.CachePath} px=".5rem" py=".25rem" bt br bb bl backgroundColor="Field" />
 				<FieldError field={props.settings.CachePath} showErrors={showErrors} />
 			</Layout>
 
 			<Layout direction="column" gap=".5rem">
 				<FieldLabel field={props.settings.MetadataPath} />
-				<TextField field={props.settings.MetadataPath} px=".5rem" py=".25rem" />
+				<TextField field={props.settings.MetadataPath} px=".5rem" py=".25rem" bt br bb bl backgroundColor="Field" />
 				<FieldError field={props.settings.MetadataPath} showErrors={showErrors} />
 			</Layout>
 
@@ -173,13 +173,13 @@ const LoadedSettings: React.FC<{ settings: EditableGeneralSettings; localization
 
 			<Layout direction="column" gap=".5rem">
 				<FieldLabel field={props.settings.LibraryScanFanoutConcurrency} />
-				<TextField field={props.settings.LibraryScanFanoutConcurrency} px=".5rem" py=".25rem" />
+				<TextField field={props.settings.LibraryScanFanoutConcurrency} px=".5rem" py=".25rem" bt br bb bl backgroundColor="Field" />
 				<FieldError field={props.settings.LibraryScanFanoutConcurrency} showErrors={showErrors} />
 			</Layout>
 
 			<Layout direction="column" gap=".5rem">
 				<FieldLabel field={props.settings.ParallelImageEncodingLimit} />
-				<TextField field={props.settings.ParallelImageEncodingLimit} px=".5rem" py=".25rem" />
+				<TextField field={props.settings.ParallelImageEncodingLimit} px=".5rem" py=".25rem" bt br bb bl backgroundColor="Field" />
 				<FieldError field={props.settings.ParallelImageEncodingLimit} showErrors={showErrors} />
 			</Layout>
 

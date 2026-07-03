@@ -3,7 +3,6 @@ import { Button } from "Common/Button";
 import { ToggleSwitch } from "Common/ToggleSwitch";
 import { TranslatedText } from "Common/TranslatedText";
 import { TextField } from "Common/TextField";
-import { useBackgroundStyles } from "AppStyles";
 import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
@@ -68,11 +67,10 @@ const StartQuickConnect: React.FC = () => {
 }
 
 const SignInWithCredentials: React.FC = () => {
-	const background = useBackgroundStyles();
 	const showForgotPassword = useObservable(LoginService.Instance.ShowForgotPassword);
 
 	return (
-		<Layout direction="column" className={background.panel} gap="1.25em" py="1em" px="1em">
+		<Layout direction="column" backgroundColor="Panel" bt br bb bl gap="1.25em" py="1em" px="1em">
 			<Form onSubmit={() => { LoginService.Instance.SignInWithCredentials(); }} direction="column" gap="1.25em">
 				<Layout direction="column" gap=".5em">
 					<FieldLabel field={LoginService.Instance.UserName} />
@@ -98,7 +96,7 @@ const SignInWithCredentials: React.FC = () => {
 			<ChangeServerButton justifyContent="center" py=".5em" withoutIcon />
 
 			<CenteredModal open={showForgotPassword} onClosed={() => { LoginService.Instance.ShowForgotPassword.Value = false; }}>
-				<Form onSubmit={() => { LoginService.Instance.SubmitForgotPassword(); }} direction="column" className={background.alternatePanel} gap="2em" px="1em" py="1em">
+				<Form onSubmit={() => { LoginService.Instance.SubmitForgotPassword(); }} direction="column" backgroundColor="AlternatePanel" bt br bb bl gap="2em" px="1em" py="1em">
 					<Layout direction="row"><TranslatedText textKey="ButtonForgotPassword" /></Layout>
 
 					<Layout direction="column" gap=".5em">
@@ -117,8 +115,6 @@ const SignInWithCredentials: React.FC = () => {
 };
 
 export const Login: React.FC<{ server: ServerConnection; }&StyleLayoutProps> = (props) => {
-	const background = useBackgroundStyles();
-
 	React.useEffect(() => QuickConnectService.Instance.LoadQuickConnectEnabled(), []);
 
 	return (
@@ -129,7 +125,7 @@ export const Login: React.FC<{ server: ServerConnection; }&StyleLayoutProps> = (
 			<Loading
 				receivers={[QuickConnectService.Instance.QuickConnectEnabled]}
 				whenNotStarted={<></>} whenLoading={<></>} whenError={() => <></>}
-				whenReceived={(quickConnectEnabled) => <>{quickConnectEnabled && <Layout direction="column" className={background.panel}><SignInWithQuickConnect /></Layout>}</>}
+				whenReceived={(quickConnectEnabled) => <>{quickConnectEnabled && <Layout direction="column" backgroundColor="Panel" bt br bb bl><SignInWithQuickConnect /></Layout>}</>}
 			/>
 		</Layout>
 	);

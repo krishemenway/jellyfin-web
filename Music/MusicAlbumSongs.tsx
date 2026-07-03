@@ -9,7 +9,6 @@ import { TranslatedText } from "Common/TranslatedText";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { SortByIndexNumber } from "ItemList/ItemSortTypes/SortByIndexNumber";
 import { DragIcon } from "CommonIcons/DragIcon";
-import { useBackgroundStyles } from "AppStyles";
 import { PlaylistDragItemsFunc } from "MediaPlayer/MediaPlayerPlaylist";
 
 export const MusicAlbumSongs: React.FC<{ addFromChildOfId: string; allSongs: BaseItemDto[] }> = ({ addFromChildOfId, allSongs }) => {
@@ -39,12 +38,10 @@ export const MusicAlbumSongs: React.FC<{ addFromChildOfId: string; allSongs: Bas
 };
 
 const AlbumSongs: React.FC<{ addFromChildOfId: string; discSongs: BaseItemDto[] }>  = (props) => {
-	const background = useBackgroundStyles();
-
 	return (
 		<ListOf
 			items={props.discSongs}
-			direction="column" className={background.alternatePanel}
+			direction="column" backgroundColor="AlternatePanel" bt br bb bl
 			forEachItem={(song) => <AlbumSong key={song.Id} song={song} />}
 		/>
 	)

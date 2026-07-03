@@ -4,21 +4,19 @@ import { ListOf } from "Common/ListOf";
 import { Button } from "Common/Button";
 import { useObservable } from "@residualeffect/rereactor";
 import { ServerService } from "Servers/ServerService";
-import { useBackgroundStyles } from "AppStyles";
 import { ConnectToServer } from "Servers/ConnectToServer";
 import { ServerIcon } from "Servers/ServerIcon";
 import { TranslatedText } from "Common/TranslatedText";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
 
 export const Servers: React.FC<{ open: boolean; onClosed: () => void; }> = ({ open, onClosed }) => {
-	const background = useBackgroundStyles();
 	const current = useObservable(ServerService.Instance.CurrentServer);
 	const servers = useObservable(ServerService.Instance.Servers);
 	React.useEffect(() => { ServerService.Instance.AttemptSetupOfCurrentDomainAsServer(); }, []);
 
 	return (
 		<Layout direction="column" gap="1em">
-			<Layout direction="column" className={background.panel} gap="1em" px="1em" py="1em" minWidth="20em">
+			<Layout direction="column" backgroundColor="Panel" bt br bb bl gap="1em" px="1em" py="1em" minWidth="20em">
 				<Layout direction="row" elementType="h2" fontSizeREM={1.2}><TranslatedText textKey="SelectServer" /></Layout>
 
 				<ListOf

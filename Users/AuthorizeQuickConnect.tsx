@@ -40,7 +40,7 @@ export const AuthorizeQuickConnect: React.FC<{ open: boolean; onClose: () => voi
 			<TranslatedText textKey="QuickConnectDescription" elementType="p" layout={{ fontSizeREM: 0.9 }} />
 
 			<FieldLabel field={QuickConnectService.Instance.QuickConnectCode} />
-			<TextField field={QuickConnectService.Instance.QuickConnectCode} px=".5em" py=".25em" />
+			<TextField field={QuickConnectService.Instance.QuickConnectCode} px=".5em" py=".25em" bt br bb bl backgroundColor="Field" />
 			<FieldError field={QuickConnectService.Instance.QuickConnectCode} showErrors={showErrors} />
 
 			<RequestError errorKey={submitError} showErrors={showErrors} />

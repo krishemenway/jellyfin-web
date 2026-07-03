@@ -1,7 +1,6 @@
 import * as React from "react";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Layout, StyleLayoutProps } from "Common/Layout";
-import { useBackgroundStyles } from "AppStyles";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
 import { EditableItemProps } from "Items/EditableItemProps";
@@ -10,13 +9,12 @@ import { ItemEditorService } from "Items/ItemEditorService";
 import { Loading } from "Common/Loading";
 
 export const ItemRating: React.FC<{ item: BaseItemDto; libraryId: string; }&EditableItemProps&StyleLayoutProps> = (props) => {
-	const background = useBackgroundStyles();
 	const combined = {...{px: ".25em", py: ".25em" } as StyleLayoutProps, ...props as StyleLayoutProps};
 	const rating = [props.item.CustomRating, props.item.OfficialRating].coalesce("", Nullable.StringHasValue);
 
 	if (props.isEditing && Nullable.HasValue(props.editableItem) && Nullable.HasValue(props.libraryId)) {
 		return (
-			<Layout direction="row" {...combined} minWidth="10rem" className={background.alternatePanel}>
+			<Layout direction="row" {...combined} minWidth="10rem" backgroundColor="AlternatePanel" bt br bb bl>
 				<Loading
 					receivers={[ItemEditorService.Instance.MetadataInfo]} whenError={() => <></>}
 					whenLoading={<LoadingIcon alignSelf="center" size="1em" />} whenNotStarted={<LoadingIcon alignSelf="center" size="1em" />}
@@ -33,5 +31,5 @@ export const ItemRating: React.FC<{ item: BaseItemDto; libraryId: string; }&Edit
 		);
 	}
 
-	return Nullable.StringValue(rating, <></>, (r) => <Layout direction="row" fontSizeREM={1.5} {...combined} className={background.alternatePanel} children={r} />);
+	return Nullable.StringValue(rating, <></>, (r) => <Layout direction="row" fontSizeREM={1.5} {...combined} backgroundColor="AlternatePanel" bt br bb bl children={r} />);
 };

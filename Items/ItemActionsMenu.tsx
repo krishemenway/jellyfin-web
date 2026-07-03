@@ -43,7 +43,7 @@ export const ItemActionsMenu: React.FC<ItemActionProps> = (props) => {
 
 			{filteredActions.flat().map((action) => Nullable.Value(action.modal, undefined, (m) => m(props.filteredItems)))}
 
-			<AnchoredModal alternatePanel anchorAlignment="center" opensInDirection="left" anchorElement={anchor} open={anchor !== null} onClosed={closeNavigation}>
+			<AnchoredModal backgroundColor="AlternatePanel" anchorAlignment="center" opensInDirection="left" anchorElement={anchor} open={anchor !== null} onClosed={closeNavigation}>
 				<ListOf
 					items={filteredActions}
 					direction="column" gap=".5em"

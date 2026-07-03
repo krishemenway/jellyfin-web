@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Property } from "csstype";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { ThemeFontColors, ThemeService } from "Themes/ThemeService";
+import { ThemeBackgroundColors, ThemeFontColors, ThemeService } from "Themes/ThemeService";
 
 export enum DimensionZLayers {
 	Default = 0,
@@ -69,7 +69,7 @@ export interface LayoutWithoutChildrenProps {
 
 	backgroundUrl?: string;
 	backgroundImage?: string;
-	backgroundColor?: Property.BackgroundColor;
+	backgroundColor?: ThemeBackgroundColors;
 	backgroundRepeat?: Property.BackgroundRepeat;
 	backgroundSize?: Property.BackgroundSize;
 }
@@ -157,7 +157,9 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 		maxHeight: props?.maxHeight,
 		height: props?.height,
 
-		backgroundColor: props?.backgroundColor,
+		backgroundColor: ThemeService.Instance.ConvertBackgroundColor(props?.backgroundColor),
+		borderColor: ThemeService.Instance.ConvertBorderColor(props?.backgroundColor),
+
 		backgroundImage: props?.backgroundImage ?? Nullable.Value(props?.backgroundUrl, undefined, (u) => `url('${u}')`),
 		backgroundRepeat: props?.backgroundRepeat,
 		backgroundSize: props?.backgroundSize,

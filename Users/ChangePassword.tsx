@@ -43,17 +43,17 @@ export const ChangePassword: React.FC = () => {
 		<Form direction="column" onSubmit={(() => ChangePasswordService.Instance.ChangePassword())} gap="1rem">
 			<Layout direction="column" gap=".5rem">
 				<FieldLabel field={ChangePasswordService.Instance.Current} />
-				<TextField field={ChangePasswordService.Instance.Current} password px=".5em" py=".25em" />
+				<TextField field={ChangePasswordService.Instance.Current} password px=".5em" py=".25em" bt br bb bl backgroundColor="Field" />
 			</Layout>
 
 			<Layout direction="column" gap=".5rem">
 				<FieldLabel field={ChangePasswordService.Instance.New} />
-				<TextField field={ChangePasswordService.Instance.New} password px=".5em" py=".25em" />
+				<TextField field={ChangePasswordService.Instance.New} password px=".5em" py=".25em" bt br bb bl backgroundColor="Field" />
 			</Layout>
 
 			<Layout direction="column" gap=".5rem">
 				<FieldLabel field={ChangePasswordService.Instance.Confirm} />
-				<TextField field={ChangePasswordService.Instance.Confirm} password px=".5em" py=".25em" />
+				<TextField field={ChangePasswordService.Instance.Confirm} password px=".5em" py=".25em" bt br bb bl backgroundColor="Field" />
 			</Layout>
 
 			<Button label="SavePassword" type="submit" px=".5em" py=".5em" justifyContent="center" />

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useObservable } from "@residualeffect/rereactor";
 import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
-import { Layout } from "Common/Layout";
+import { Layout, StyleLayoutProps } from "Common/Layout";
 import { useBackgroundStyles } from "AppStyles";
 import { TranslatedText } from "Common/TranslatedText";
 import { Button } from "Common/Button";
@@ -11,7 +11,7 @@ import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { DragIcon } from "CommonIcons/DragIcon";
 import { MediaPlayerPlaylist } from "MediaPlayer/MediaPlayerPlaylist";
 
-export const CurrentPlaylist: React.FC<{ className: string; playlist: MediaPlayerPlaylist }> = ({ className, playlist }) => {
+export const CurrentPlaylist: React.FC<{ playlist: MediaPlayerPlaylist }&StyleLayoutProps> = ({ playlist, ...props }) => {
 	const background = useBackgroundStyles();
 	const itemsInPlaylist = useObservable(playlist.ItemsInOrder);
 	const current = useObservable(playlist.Current);
@@ -19,7 +19,7 @@ export const CurrentPlaylist: React.FC<{ className: string; playlist: MediaPlaye
 
 	return (
 		<Layout
-			className={className}
+			{...props}
 			direction="column" grow py=".25em" px=".25em"
 			onDragOver={(evt) => {
 				evt.preventDefault();

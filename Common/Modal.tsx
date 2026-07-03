@@ -3,8 +3,9 @@ import * as ReactDOM from "react-dom";
 import { useLocation } from "react-router-dom";
 import { createUseStyles } from "react-jss";
 import { ObservableArray } from "@residualeffect/reactor";
-import { useBackgroundStyles } from "AppStyles";
+import { Nullable } from "Common/MissingJavascriptFunctions";
 import { DimensionZLayers } from "Common/Layout";
+import { ThemeBackgroundColors, ThemeService } from "Themes/ThemeService";
 
 const body = document.getElementsByTagName("body")[0];
 const modalRoot = document.createElement('div');
@@ -18,8 +19,7 @@ const closedFuncs: ObservableArray<() => void> = new ObservableArray([]);
 interface ModalProps {
 	open: boolean;
 	className?: string;
-	alternatePanel?: boolean;
-	noPanel?: boolean;
+	backgroundColor?: ThemeBackgroundColors;
 	onClosed: () => void;
 	children: React.ReactNode;
 	minWidth?: string;
@@ -58,7 +58,7 @@ function ResetAllModals(): void {
 }
 
 export const CenteredModal: React.FC<ModalProps> = (props) => {
-	const [modalClasses, background] = [useStyles(), useBackgroundStyles()];
+	const modalClasses = useStyles();
 	const [element] = React.useState(document.createElement("div"));
 
 	const tryCleanupModal = () => {
@@ -106,7 +106,9 @@ export const CenteredModal: React.FC<ModalProps> = (props) => {
 			modalRoot.classList.remove(modalClasses.fadeBackground);
 		}
 
-		element.className = `${modalClasses.centeredModal} ${props.alternatePanel ? background.alternatePanel : !props.noPanel ? background.panel : ""} ${props.className ?? ""}`;
+		element.className = `${modalClasses.centeredModal} ${props.className ?? ""}`;
+		Nullable.TryExecute(ThemeService.Instance.ConvertBackgroundColor(props.backgroundColor), (color) => element.style.backgroundColor = color);
+		Nullable.TryExecute(ThemeService.Instance.ConvertBorderColor(props.backgroundColor), (color) => element.style.borderColor = color);
 		element.style.minWidth = props.minWidth ?? "";
 		element.style.maxWidth = props.maxWidth ?? "";
 
@@ -122,7 +124,7 @@ export interface AnchoredModalProps extends ModalProps {
 }
 
 export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
-	const [modalClasses, background] = [useStyles(), useBackgroundStyles()];
+	const modalClasses = useStyles();
 	const [element] = React.useState(document.createElement("div"));
 
 	const tryCleanupModal = () => {
@@ -163,8 +165,10 @@ export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
 			closedFuncs.remove(props.onClosed);
 		}
 
-		element.className = `${modalClasses.anchoredModal} ${props.alternatePanel ? background.alternatePanel : !props.noPanel ? background.panel : ""} ${props.className ?? ""}`;
+		element.className = `${modalClasses.anchoredModal} ${props.className ?? ""}`;
 		element.style.zIndex = (++lastZIndex).toString();
+		Nullable.TryExecute(ThemeService.Instance.ConvertBackgroundColor(props.backgroundColor), (color) => element.style.backgroundColor = color);
+		Nullable.TryExecute(ThemeService.Instance.ConvertBorderColor(props.backgroundColor), (color) => element.style.borderColor = color);
 
 		if (props.anchorElement !== null) {
 			const anchorRect = props.anchorElement.getBoundingClientRect();

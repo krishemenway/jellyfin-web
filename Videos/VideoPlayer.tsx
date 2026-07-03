@@ -6,7 +6,6 @@ import { VideoPlayerService } from "Videos/VideoPlayerService";
 import { Loading } from "Common/Loading";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
-import { useBackgroundStyles } from "AppStyles";
 import { MediaSourceInfo, PlaybackInfoResponse } from "@jellyfin/sdk/lib/generated-client/models";
 import { ServerService } from "Servers/ServerService";
 import { Slider } from "Common/Slider";
@@ -24,13 +23,12 @@ import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { CurrentPlaylist } from "MediaPlayer/MediaPlayerPlaylistTable";
 
 export const VideoPlayer: React.FC = () => {
-	const background = useBackgroundStyles();
 	const fullscreen = useObservable(VideoPlayerService.Instance.Playlist.Fullscreen);
 	const controlsVisible = useObservable(VideoPlayerService.Instance.ControlsVisible);
 
 	return (
 		<>
-			<Layout direction="row" gap=".75em" position="fixed" zIndex={DimensionZLayers.Player} px=".25em" py=".25em" bottom="0" left="0" right="0" top={fullscreen ? 0 : undefined} className={background.panel}>
+			<Layout direction="row" gap=".75em" position="fixed" zIndex={DimensionZLayers.Player} px=".25em" py=".25em" bottom="0" left="0" right="0" top={fullscreen ? 0 : undefined} backgroundColor="Panel" bt br bb bl>
 				<Loading
 					receivers={[VideoPlayerService.Instance.PlaybackInfo]}
 					whenError={() => <></>}
@@ -39,12 +37,12 @@ export const VideoPlayer: React.FC = () => {
 				/>
 
 				{!fullscreen && (
-					<Layout direction="column" className={background.alternatePanel} grow>
+					<Layout direction="column" backgroundColor="AlternatePanel" grow>
 						<VideoMetadata />
 					</Layout>
 				)}
 
-				<CurrentPlaylist className={background.alternatePanel} playlist={VideoPlayerService.Instance.Playlist} />
+				<CurrentPlaylist backgroundColor="AlternatePanel" bt br bb bl playlist={VideoPlayerService.Instance.Playlist} />
 
 				<Layout direction={fullscreen ? "row" : "column"} position={fullscreen ? "absolute" : undefined} top="1rem" right="1rem" gap="1rem" opacity={controlsVisible ? 100 : 0}>
 					<Button
@@ -67,12 +65,11 @@ export const VideoPlayer: React.FC = () => {
 };
 
 const VideoElement: React.FC<{ playbackInfo: PlaybackInfoResponse; fullscreen: boolean; controlsVisible: boolean; }> = ({ playbackInfo, fullscreen, controlsVisible }) => {
-	const background = useBackgroundStyles();
 	const mediaSource = (playbackInfo.MediaSources ?? []).first();
 	const url = getUrlFromMediaSource(mediaSource);
 
 	return (
-		<Layout direction="column" position="relative" width={!fullscreen ? "20rem" : "100%"} height={!fullscreen ? "12rem" : "100%"} className={background.alternatePanel} py="1rem">
+		<Layout direction="column" position="relative" width={!fullscreen ? "20rem" : "100%"} height={!fullscreen ? "12rem" : "100%"} backgroundColor="AlternatePanel" bt br bb bl py="1rem">
 			<video
 				src={url} ref={(element) => { VideoPlayerService.Instance.SetVideoElement(element); }}
 				style={{ width: "100%", height: "100%", objectFit: "contain" }}

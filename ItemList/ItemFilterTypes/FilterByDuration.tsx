@@ -128,22 +128,22 @@ const FilterByDurationEditor: React.FC<{ model: FilterByDurationModel }> = ({ mo
 			<Layout direction="row" gap=".5rem">
 				<Layout direction="row" px=".5em" py=".5em">&gt;</Layout>
 				<Layout direction="row" alignItems="center">
-					<NumberField field={model.GreaterThanHours} width="3rem" placeholder={{ Key: "LabelDurationHours" }} px=".25em" py=".25em" />
+					<NumberField field={model.GreaterThanHours} width="3rem" placeholder={{ Key: "LabelDurationHours" }} px=".25em" py=".25em" bt br bb bl backgroundColor="Field" />
 					<Layout direction="row" px=".5rem">:</Layout>
-					<NumberField field={model.GreaterThanMinutes} width="3rem" placeholder={{ Key: "LabelDurationMinutes" }} px=".25em" py=".25em" />
+					<NumberField field={model.GreaterThanMinutes} width="3rem" placeholder={{ Key: "LabelDurationMinutes" }} px=".25em" py=".25em" bt br bb bl backgroundColor="Field" />
 					<Layout direction="row" px=".5rem">:</Layout>
-					<NumberField field={model.GreaterThanSeconds} width="3rem" placeholder={{ Key: "LabelDurationSeconds" }} px=".25em" py=".25em" />
+					<NumberField field={model.GreaterThanSeconds} width="3rem" placeholder={{ Key: "LabelDurationSeconds" }} px=".25em" py=".25em" bt br bb bl backgroundColor="Field" />
 				</Layout>
 			</Layout>
 
 			<Layout direction="row" gap=".5rem">
 				<Layout direction="row" px=".5em" py=".5em">&lt;</Layout>
 				<Layout direction="row" alignItems="center">
-					<NumberField field={model.LessThanHours} width="3rem" placeholder={{ Key: "LabelDurationHours" }} px=".25em" py=".25em" />
+					<NumberField field={model.LessThanHours} width="3rem" placeholder={{ Key: "LabelDurationHours" }} px=".25em" py=".25em" bt br bb bl backgroundColor="Field" />
 					<Layout direction="row" px=".5rem">:</Layout>
-					<NumberField field={model.LessThanMinutes} width="3rem" placeholder={{ Key: "LabelDurationMinutes" }} px=".25em" py=".25em" />
+					<NumberField field={model.LessThanMinutes} width="3rem" placeholder={{ Key: "LabelDurationMinutes" }} px=".25em" py=".25em" bt br bb bl backgroundColor="Field" />
 					<Layout direction="row" px=".5rem">:</Layout>
-					<NumberField field={model.LessThanSeconds} width="3rem" placeholder={{ Key: "LabelDurationSeconds" }} px=".25em" py=".25em" />
+					<NumberField field={model.LessThanSeconds} width="3rem" placeholder={{ Key: "LabelDurationSeconds" }} px=".25em" py=".25em" bt br bb bl backgroundColor="Field" />
 				</Layout>
 			</Layout>
 		</>

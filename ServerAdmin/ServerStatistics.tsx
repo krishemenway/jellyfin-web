@@ -4,7 +4,6 @@ import { ItemCounts, SystemInfo } from "@jellyfin/sdk/lib/generated-client/model
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api";
 import { TranslatedText } from "Common/TranslatedText";
 import { ListOf } from "Common/ListOf";
-import { useBackgroundStyles } from "AppStyles";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { Loading } from "Common/Loading";
@@ -36,7 +35,6 @@ export const ServerStatistics: React.FC = () => {
 }
 
 const LoadedStatistics: React.FC<{ server: SystemInfo; libraryCounts: ItemCounts }> = ({ server, libraryCounts }) => {
-	const background = useBackgroundStyles();
 	const versionStatistics = React.useMemo(() => [
 		{ label: "LabelServerVersion", value: server.Version },
 		{ label: "LabelWebVersion", value: server.Version },
@@ -44,7 +42,7 @@ const LoadedStatistics: React.FC<{ server: SystemInfo; libraryCounts: ItemCounts
 	const libraryStatistics = React.useMemo(() => createStatisticsForItemCounts(libraryCounts), [libraryCounts]);
 
 	return (
-		<Layout direction="column" gap=".5rem" className={background.panel} grow>
+		<Layout direction="column" gap=".5rem" backgroundColor="Panel" bt br bb bl grow>
 			<ListOf
 				px="1rem" py="1rem"
 				items={versionStatistics} direction="column" gap=".5rem"

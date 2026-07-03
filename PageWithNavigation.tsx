@@ -4,11 +4,9 @@ import { IconForItemKind } from "Items/IconForItemKind";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
 import { useObservable } from "@residualeffect/rereactor";
 import { BackdropService } from "Common/BackdropService";
-import { ThemeService } from "Themes/ThemeService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { BaseItemDto, SystemInfo, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { useBackgroundStyles } from "AppStyles";
 import { Button } from "Common/Button";
 import { EditIcon } from "CommonIcons/EditIcon";
 import { HyperLink } from "Common/HyperLink";
@@ -73,11 +71,10 @@ export function PageWithNavigation({ icon, content, matchHeight }: PageWithNavig
 
 const PageWrapper: React.FC<{ icon: React.ReactNode|BaseItemKind; matchHeight?: boolean; navigationButton: React.ReactNode; content: React.ReactNode; disabledSearch?: boolean; }> = ({ icon, matchHeight, navigationButton, content, disabledSearch }) => {
 	const backdropUrl = useObservable(BackdropService.Instance.CurrentBackdropImageUrl);
-	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 
 	return (
 		<Layout key="page-with-navigation" direction="column" backgroundRepeat="no-repeat" backgroundSize="cover" backgroundUrl={backdropUrl} height="100%">
-			<Layout key="backdrop-suppressor" direction="column" px="2em" py="1em" backgroundColor={Nullable.HasValue(backdropUrl) ? theme.BackdropSuppressorColor : undefined} height="100%">
+			<Layout key="backdrop-suppressor" direction="column" px="2em" py="1em" backgroundColor={Nullable.HasValue(backdropUrl) ? "BackdropSuppressor" : undefined} height="100%">
 				<NavigationBar key="navigation-bar" icon={typeof icon === "string" ? <IconForItemKind itemKind={icon as BaseItemKind} /> : icon} navigationButton={navigationButton} disabledSearch={disabledSearch} />
 				<Layout key="page-content" direction="column" gap="1em" className="page-content" grow height={(matchHeight ?? false) ? "100%" : undefined}>
 					{content}
@@ -92,10 +89,8 @@ export const PageIsLoading: React.FC = () => (
 );
 
 const NavigationBar: React.FC<{ icon?: React.ReactNode; navigationButton: React.ReactNode; disabledSearch?: boolean; }> = ({ icon, navigationButton, disabledSearch }) => {
-	const background = useBackgroundStyles();
-
 	return (
-		<Layout className={background.panel} direction="row" gap="1em" px="1em" py=".5em" width="calc(100% + 2em)" mx="-1em">
+		<Layout backgroundColor="Panel" bt br bb bl direction="row" gap="1em" px="1em" py=".5em" width="calc(100% + 2em)" mx="-1em">
 			{navigationButton}
 			{icon && (<Layout direction="row" alignItems="center" fontSizeREM={1.5}>{icon}</Layout>)}
 			<Layout direction="row" alignItems="center"><Search disabled={disabledSearch} /></Layout>
@@ -122,7 +117,7 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[]; server: SystemI
 	return (
 		<>
 			<BaseNavigationButton onClick={(element) => { setOpenAnchor(element); }} />
-			<AnchoredModal alternatePanel open={anchor !== null} onClosed={closeNavigation} opensInDirection="right" anchorElement={anchor}>
+			<AnchoredModal backgroundColor="AlternatePanel" open={anchor !== null} onClosed={closeNavigation} opensInDirection="right" anchorElement={anchor}>
 				<Layout direction="column" maxWidth="20em">
 					<HyperLink direction="row" to="/" gap="1em" py="1em" px="1em">
 						<JellyfinIcon size="3em" />

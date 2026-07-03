@@ -37,7 +37,6 @@ interface Column {
 }
 
 export const SongListViewContent: React.FC<{ libraryId: string; libraries: BaseItemDto[]; user: UserDto; settings: Settings; }> = ({ libraryId, libraries }) => {
-	const background = useBackgroundStyles();
 	const library = libraries.single((l) => l.Id === libraryId);
 
 	const albumList = ItemService.Instance.FindOrCreateListFromLibrary(libraryId, "MusicAlbum");
@@ -59,7 +58,7 @@ export const SongListViewContent: React.FC<{ libraryId: string; libraries: BaseI
 			<PageTitle text={library.Name} suppressOnScreen />
 
 			<Layout direction="row" gap="1em" height="25%">
-				<Layout direction="column" className={background.panel} grow basis={0} py="1em" px="1em" alignItems="center" justifyContent="center">
+				<Layout direction="column" backgroundColor="Panel" bt br bb bl grow basis={0} py="1em" px="1em" alignItems="center" justifyContent="center">
 					<Loading
 						receivers={[artistList.List, albumList.List, audioList.List]}
 						whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
@@ -83,7 +82,7 @@ export const SongListViewContent: React.FC<{ libraryId: string; libraries: BaseI
 						)}
 					/>
 				</Layout>
-				<Layout direction="row" className={background.panel} grow basis={0} py="1em" px="1em" alignItems="center" justifyContent="center">
+				<Layout direction="row" backgroundColor="Panel" bt br bb bl grow basis={0} py="1em" px="1em" alignItems="center" justifyContent="center">
 					<Loading
 						receivers={[albumList.List, audioList.List]}
 						whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
@@ -111,7 +110,7 @@ export const SongListViewContent: React.FC<{ libraryId: string; libraries: BaseI
 				</Layout>
 			</Layout>
 
-			<Layout direction="row" className={background.panel} grow py="1em" px="1em" alignItems="center" justifyContent="center">
+			<Layout direction="row" backgroundColor="Panel" bt br bb bl grow py="1em" px="1em" alignItems="center" justifyContent="center">
 				<Loading
 					receivers={[audioList.List]}
 					whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
@@ -186,13 +185,13 @@ const LoadedItems: React.FC<{ libraryId: string; items: BaseItemDto[]; columns: 
 				</>
 			)}
 			fixedHeaderContent={() => (
-				<tr className={background.alternatePanel}>
+				<Layout elementType="tr" display="table-row" backgroundColor="AlternatePanel" direction="row">
 					{props.columns.map((column) => (
 						<Layout key={column.name} elementType="th" display="table-cell" width={column.width} direction="row">
 							<Button type="button" onClick={() => { setSortForColumn(column); }} transparent width="100%" px=".5em" py=".5em" justifyContent={column.align} label={column.name} />
 						</Layout>
 					))}
-				</tr>
+				</Layout>
 			)}
 		/>
 	);

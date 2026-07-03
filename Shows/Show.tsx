@@ -234,7 +234,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 			/>
 
 			<CastAndCrew
-				className={background.panel}
+				backgroundColor="Panel" bt br bb bl
 				itemWithPeople={show}
 				direction="row" wrap
 				linkProps={{ px: ".5em", py: ".5em", gap: ".25em" }}
@@ -298,7 +298,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 			/>
 
 			<CastAndCrew
-				className={background.panel}
+				backgroundColor="Panel" bt br bb bl
 				itemWithPeople={episode}
 				direction="row" wrap
 				linkProps={{ px: ".5em", py: ".5em", gap: ".25em" }}
@@ -315,12 +315,12 @@ const EpisodeTitle: React.FC<{ episode: BaseItemDto; }&EditableItemProps> = ({ e
 		return (
 			<Layout direction="row" fontSizeREM={1.3} elementType="h2" gap=".5rem" alignItems="center">
 				<FieldLabel field={editableItem.ParentIndexNumber} textKey="LabelSeasonNumber" />
-				<NumberField field={editableItem.ParentIndexNumber} width="3rem" textAlign="center" />
+				<NumberField field={editableItem.ParentIndexNumber} width="3rem" textAlign="center" bt br bb bl backgroundColor="Field" />
 
 				<FieldLabel field={editableItem.IndexNumber} textKey="LabelEpisodeNumber" />
-				<NumberField field={editableItem.IndexNumber} width="3rem" textAlign="center" />
+				<NumberField field={editableItem.IndexNumber} width="3rem" textAlign="center" bt br bb bl backgroundColor="Field" />
 
-				<TextField field={editableItem.Name} grow px=".5em" py=".5em" />
+				<TextField field={editableItem.Name} grow px=".5em" py=".5em" bt br bb bl backgroundColor="Field" />
 			</Layout>
 		);
 	}
@@ -377,11 +377,10 @@ interface EpisodesInSeasonProps {
 }
 
 const EpisodesInSeason: React.FC<EpisodesInSeasonProps> = (props) => {
-	const background = useBackgroundStyles();
 	const itemsPerRow = useBreakpointValues(2, 3, 5, 7);
 
 	return (
-		<Layout direction="row" px=".5em" py=".5em" gap=".5em" wrap className={background.panel}>
+		<Layout direction="row" px=".5em" py=".5em" gap=".5em" wrap backgroundColor="Panel">
 			{props.episodes.map((item) => (
 				<ItemsGridItem
 					item={item} key={item.Id}

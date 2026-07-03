@@ -52,7 +52,7 @@ export const ItemRefreshButton: React.FC<{ item: BaseItemDto }> = ({ item }) => 
 				alignItems="center" px=".5em" py=".5em"
 			/>
 
-			<AnchoredModal alternatePanel anchorAlignment="center" opensInDirection="left" anchorElement={anchor} open={anchor !== null} onClosed={closeNavigation}>
+			<AnchoredModal backgroundColor="AlternatePanel" anchorAlignment="center" opensInDirection="left" anchorElement={anchor} open={anchor !== null} onClosed={closeNavigation}>
 				<Form onSubmit={() => { refreshItem(item, closeNavigation); }} direction="column" gap=".5rem" px="1rem" py="1rem">
 					<Layout direction="column" gap=".5rem">
 						<FieldLabel field={refreshAction} textKey="LabelRefreshMode" />

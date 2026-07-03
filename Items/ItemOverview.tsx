@@ -36,7 +36,7 @@ export const ItemOverview: React.FC<{ item: BaseItemDto; }&EditableItemProps> = 
 	const overview = React.useMemo(() => marked.parse(props.item.Overview ?? "").toString(), [props.item.Overview]);
 
 	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
-		return <MultiLineField field={props.editableItem.Overview} px=".25em" py=".25em" />;
+		return <MultiLineField field={props.editableItem.Overview} px=".25em" py=".25em" bt br bb bl backgroundColor="Field" />;
 	}
 
 	return Nullable.StringValue(overview, <></>, (o) => (

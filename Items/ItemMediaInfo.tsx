@@ -4,13 +4,11 @@ import { BaseItemDto, MediaStreamType, VideoRange, MediaStream } from "@jellyfin
 import { ListOf } from "Common/ListOf";
 import { TranslatedText, TranslationRequest } from "Common/TranslatedText";
 import { Bytes, Nullable } from "Common/MissingJavascriptFunctions";
-import { useBackgroundStyles } from "AppStyles";
 import { Collapsible } from "Common/Collapsible";
 import { Button } from "Common/Button";
 
 export const ItemMediaInfo: React.FC<{ item: BaseItemDto; }> = ({ item }) => {
 	const [open, setOpen] = React.useState(false);
-	const background = useBackgroundStyles();
 
 	if (!Nullable.HasValue(item.Container) || item.MediaSourceCount === 0) {
 		return <></>;
@@ -21,7 +19,7 @@ export const ItemMediaInfo: React.FC<{ item: BaseItemDto; }> = ({ item }) => {
 			<Button type="button" label="MoreMediaInfo" onClick={() => setOpen(!open)} direction="row" fontSizeREM={1.5} py=".5em" px=".5em" gap=".5em" />
 
 			<Collapsible open={open}>
-				<Layout direction="column" className={background.panel} px=".5rem" py=".5rem">
+				<Layout direction="column" backgroundColor="Panel" bt br bb bl px=".5rem" py=".5rem">
 					<ListOf
 						direction="column"
 						items={item.MediaSources ?? []}

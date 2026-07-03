@@ -138,7 +138,7 @@ const LoadedLibraryManager: React.FC<{ editableLibrary: EditableLibrary }> = ({ 
 
 			<Layout direction="column" gap=".25rem">
 				<FieldLabel field={editableLibrary.SeasonZeroDisplayName} textKey="LabelSpecialSeasonsDisplayName" />
-				<TextField field={editableLibrary.SeasonZeroDisplayName} px=".5em" py=".25em" />
+				<TextField field={editableLibrary.SeasonZeroDisplayName} px=".5em" py=".25em" bt br bb bl backgroundColor="Field" />
 			</Layout>
 
 			<Layout direction="column" gap=".25rem">

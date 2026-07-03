@@ -145,10 +145,10 @@ const PersonDetails: React.FC<{ person: BaseItemDto }&EditableItemProps> = ({ pe
 			{Nullable.HasValue(editableItem) && isEditing ? (
 				<Layout direction="row" alignItems="center" gap=".5em">
 					<FieldLabel field={editableItem.PremiereDate} textKey="LabelBirthDate" />
-					<DateField field={editableItem.PremiereDate} px=".5em" py=".25em" />
+					<DateField field={editableItem.PremiereDate} px=".5em" py=".25em" bt br bb bl backgroundColor="Field" />
 
 					<FieldLabel field={editableItem.ProductionLocation} textKey="BirthLocation" />
-					<TextField field={editableItem.ProductionLocation} px=".5em" py=".25em" />
+					<TextField field={editableItem.ProductionLocation} px=".5em" py=".25em" bt br bb bl backgroundColor="Field" />
 				</Layout>
 			) : Nullable.HasValue(person.PremiereDate) ? (
 				<Layout direction="row" alignItems="center" gap=".5em">
@@ -169,7 +169,7 @@ const PersonDetails: React.FC<{ person: BaseItemDto }&EditableItemProps> = ({ pe
 			{Nullable.HasValue(editableItem) && isEditing ? (
 				<Layout direction="row" className="deathDateAndDeathAge">
 					<FieldLabel field={editableItem.EndDate} textKey="LabelDeathDate" />
-					<DateField field={editableItem.EndDate} px=".5em" py=".25em" />
+					<DateField field={editableItem.EndDate} px=".5em" py=".25em" bt br bb bl backgroundColor="Field" />
 				</Layout>
 			) : Nullable.HasValue(person.EndDate) ? (
 				<Layout direction="row" className="deathDateAndDeathAge">

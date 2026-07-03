@@ -1,7 +1,6 @@
 import * as React from "react";
 import { ListOf } from "Common/ListOf";
 import { TranslatedText } from "Common/TranslatedText";
-import { useBackgroundStyles } from "AppStyles";
 import { ProgressBar } from "Common/ProgressBar";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Loading } from "Common/Loading";
@@ -35,8 +34,6 @@ class ServerPathsService {
 }
 
 export const ServerPaths: React.FC = () => {
-	const background = useBackgroundStyles();
-
 	React.useEffect(() => { ServerPathsService.Instance.LoadServerPaths(); }, []);
 
 	return (
@@ -46,7 +43,7 @@ export const ServerPaths: React.FC = () => {
 			whenLoading={<LoadingIcon alignSelf="center" size="3em" />}
 			whenNotStarted={<LoadingIcon alignSelf="center" size="3em" />}
 			whenReceived={(storage, localizationOptions) => (
-				<Layout direction="column" gap="1em" className={background.panel} px="1em" py="1em">
+				<Layout direction="column" gap="1em" backgroundColor="Panel" bt br bb bl px="1em" py="1em">
 					<Layout direction="row" justifyContent="space-between">
 						<TranslatedText textKey="HeaderPaths" elementType="div" layout={{ fontSizeREM: 1.2 }} />
 						<Button type="button" onClick={() => GeneralSettingsService.Instance.Load(localizationOptions)} direction="row" icon={<EditIcon />} px=".25em" py=".25em" />

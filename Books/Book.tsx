@@ -134,7 +134,7 @@ export const LoadedBook: React.FC<{ user: UserDto; book: BaseItemDto; reloadBook
 
 				<CastAndCrew
 					itemWithPeople={book}
-					className={background.panel}
+					backgroundColor="Panel" bt br bb bl
 					direction="row" wrap px=".5em" py="1em"
 					linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
 					editableItem={editableItem}

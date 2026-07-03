@@ -7,7 +7,7 @@ import { useObservable } from "@residualeffect/rereactor";
 import { ListOf } from "Common/ListOf";
 import { TranslatedText } from "Common/TranslatedText";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
-import { useBackgroundStyles, useBreakpointValues } from "AppStyles";
+import { useBreakpointValues } from "AppStyles";
 import { ArrowDownIcon } from "CommonIcons/ArrowDownIcon";
 import { ArrowUpIcon } from "CommonIcons/ArrowUpIcon";
 import { LoadViewOptionsIcon } from "ItemList/LoadViewOptionsIcon";
@@ -96,19 +96,19 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = ({ listOptions, i
 				{additionalButtons}
 			</Layout>
 
-			<AnchoredModal anchorElement={filterButtonRef} open={addFilterOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => { setAddFilterOpen(false); }}>
+			<AnchoredModal backgroundColor="Panel" anchorElement={filterButtonRef} open={addFilterOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => { setAddFilterOpen(false); }}>
 				<PickFilterModal filterTypes={filterTypes} onPicked={(option) => listOptions.CreateNewFilter(option)} onClosed={() => { setAddFilterOpen(false); }} />
 			</AnchoredModal>
 
-			<AnchoredModal anchorElement={filterButtonRef} open={newFilter !== undefined} anchorAlignment="center" opensInDirection="right" onClosed={() => listOptions.ClearNewFilter()}>
+			<AnchoredModal backgroundColor="Panel" anchorElement={filterButtonRef} open={newFilter !== undefined} anchorAlignment="center" opensInDirection="right" onClosed={() => listOptions.ClearNewFilter()}>
 				{newFilter && <ConfigureFilterModal items={items} listOptions={listOptions} newFilter={newFilter} onClosed={() => listOptions.ClearNewFilter()} />}
 			</AnchoredModal>
 
-			<AnchoredModal anchorElement={sortButtonRef} open={addSortOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => setAddSortOpen(false)} maxWidth="20%">
+			<AnchoredModal backgroundColor="Panel" anchorElement={sortButtonRef} open={addSortOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => setAddSortOpen(false)} maxWidth="20%">
 				<PickSortOptionModal sortTypes={sortTypes} onPicked={(option) => listOptions.AddSort(option)} onClosed={() => setAddSortOpen(false)} />
 			</AnchoredModal>
 
-			<AnchoredModal anchorElement={optionsListButtonRef} open={optionsListButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => { setOptionsListButtonRef(null); itemList.ConfirmDeleteOptions.Value = null; listOptions.ShowErrors.Value = false; }}>
+			<AnchoredModal backgroundColor="Panel" anchorElement={optionsListButtonRef} open={optionsListButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => { setOptionsListButtonRef(null); itemList.ConfirmDeleteOptions.Value = null; listOptions.ShowErrors.Value = false; }}>
 				{confirmDelete === null && <PickOptionsModal {...props} itemList={itemList} onClosed={() => setOptionsListButtonRef(null)} />}
 				{confirmDelete !== null && <ConfirmDelete {...props} itemList={itemList} options={confirmDelete} onClosed={() => { setOptionsListButtonRef(null); itemList.ConfirmDeleteOptions.Value = null; } } />}
 			</AnchoredModal>
@@ -118,11 +118,10 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = ({ listOptions, i
 
 const ConfiguredFilter: React.FC<{ filter: IFilterModel; listOptions: ItemListViewOptions; items: BaseItemDto[]; }> = ({ filter, listOptions, items }) => {
 	const [editRef, setEditRef] = React.useState<HTMLButtonElement|null>(null);
-	const background = useBackgroundStyles();
 	const displayValue = useObservable(filter.Display);
 
 	return (
-		<Layout direction="row" className={background.alternatePanel}>
+		<Layout direction="row" backgroundColor="AlternatePanel" bt br bb bl>
 			<Layout direction="row" px="1em" py=".25em">
 				{Nullable.Value(displayValue, <QuestionMarkIcon />, (config) => (
 					<>
@@ -146,12 +145,11 @@ const ConfiguredFilter: React.FC<{ filter: IFilterModel; listOptions: ItemListVi
 };
 
 const ConfiguredSort: React.FC<{ sort: ItemSortTypeModel; listOptions: ItemListViewOptions }> = ({ sort, listOptions }) => {
-	const background = useBackgroundStyles();
 	const reversed = useObservable(sort.Reversed.Current);
 	const hidden = useObservable(sort.ContentHidden.Current);
 
 	return (
-		<Layout direction="row" gap="1em" className={background.alternatePanel} alignItems="center">
+		<Layout direction="row" gap="1em"  backgroundColor="AlternatePanel" bt br bb bl alignItems="center">
 			<Button type="button" onClick={() => sort.Reversed.OnChange(!reversed)} direction="row" px=".25em" py=".25em" icon={reversed ? <ArrowUpIcon /> : <ArrowDownIcon />} />
 			<TranslatedText textKey={sort.SortType.labelKey} elementType="div" />
 
@@ -253,7 +251,7 @@ const SaveNewOptions: React.FC<{ itemList: ItemListService; settings: Settings; 
 			onSubmit={() => { itemList.SaveViewOptions(settings, listOptions, (newFilterLabelOrNull) => { onClosed(); Nullable.TryExecute(newFilterLabelOrNull, (label) => navigate(`${baseUrl}/${label}`)) }); }}>
 
 			<Layout direction="column" grow>
-				<TextField field={listOptions.Label} py=".25em" px=".5em" grow placeholder={{ Key: "LabelNewName" }} />
+				<TextField field={listOptions.Label} py=".25em" px=".5em" grow placeholder={{ Key: "LabelNewName" }} bt br bb bl backgroundColor="Field" />
 				<FieldError field={listOptions.Label} showErrors={showErrors} />
 			</Layout>
 
@@ -273,10 +271,7 @@ const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions
 			{itemListViewOptions.CanSave && isSelected ? (
 				<Layout direction="row" grow px=".5em" gap=".5rem" alignItems="center">
 					<RadioCheckedIcon />
-					<TextField
-						field={itemListViewOptions.Label}
-						px=".25em" py=".25em"
-					/>
+					<TextField field={itemListViewOptions.Label} px=".25em" py=".25em" bt br bb bl backgroundColor="Field" />
 				</Layout>
 			) : (
 				<HyperLink

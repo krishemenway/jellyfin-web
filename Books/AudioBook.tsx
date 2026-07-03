@@ -135,7 +135,7 @@ const LoadedAudioBook: React.FC<{ user: UserDto; audioBook: BaseItemDto; reloadA
 
 				<CastAndCrew
 					itemWithPeople={audioBook}
-					className={background.panel}
+					backgroundColor="Panel" bt br bb bl
 					direction="row" wrap px=".5em" py="1em"
 					linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
 					editableItem={editableItem}

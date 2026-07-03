@@ -82,17 +82,16 @@ const GridItemField: React.FC<{ item: BaseItemDto; getContent: (item: BaseItemDt
 };
 
 const ItemIsSelectedMarker: React.FC<{ selectedItems: readonly BaseItemDto[]; item: BaseItemDto; }> = ({ selectedItems, item }) => {
-	const background = useBackgroundStyles();
 	const isSelected = selectedItems.some((i) => i.Id === item.Id);
 
 	return (
 		<Layout
-			className={background.alternatePanel}
+			backgroundColor="AlternatePanel" bt br bb bl
 			direction="row" position="absolute"
 			top="-1px" left="-1px" px=".25rem" py=".25rem"
 			alignItems="center" justifyContent="center"
 		>
-			<Layout direction="column" className={background.panel}>
+			<Layout direction="column" backgroundColor="Panel" bt br bb bl>
 				<CheckIcon opacity={isSelected ? 100 : 0} />
 			</Layout>
 		</Layout>

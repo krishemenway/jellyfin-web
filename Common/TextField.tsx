@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useObservable } from "@residualeffect/rereactor";
-import { useBackgroundStyles } from "AppStyles";
 import { EditableField } from "Common/EditableField";
 import { ApplyLayoutStyleProps, LayoutWithoutChildrenProps } from "Common/Layout";
 import { TranslationRequest, useTranslatedText } from "Common/TranslatedText";
@@ -59,7 +58,6 @@ const ForwardedMultiLineField: React.ForwardRefRenderFunction<HTMLTextAreaElemen
 };
 
 const ForwardedInputField: React.ForwardRefRenderFunction<HTMLInputElement, InputFieldProps> = (props, ref) => {
-	const background = useBackgroundStyles();
 	const placeholder = Nullable.Value(props.placeholder, undefined, (p) => useTranslatedText(p));
 
 	return (
@@ -67,7 +65,7 @@ const ForwardedInputField: React.ForwardRefRenderFunction<HTMLInputElement, Inpu
 			type={props.type}
 			ref={ref}
 			id={props.id}
-			className={props.className ?? background.field}
+			className={props.className}
 			value={props.value}
 			onBlur={() => props.onBlur && props.onBlur()}
 			onChange={(evt) => { props.onChange(evt.currentTarget.value); }}
@@ -80,14 +78,13 @@ const ForwardedInputField: React.ForwardRefRenderFunction<HTMLInputElement, Inpu
 };
 
 const ForwardedTextAreaField: React.ForwardRefRenderFunction<HTMLTextAreaElement, InputFieldProps> = (props, ref) => {
-	const background = useBackgroundStyles();
 	const placeholder = Nullable.Value(props.placeholder, undefined, (p) => useTranslatedText(p));
 
 	return (
 		<textarea
 			ref={ref}
 			id={props.id}
-			className={props.className ?? background.field}
+			className={props.className}
 			value={props.value}
 			onBlur={() => props.onBlur && props.onBlur()}
 			onChange={(evt) => { evt.target.style.height = `${evt.target.scrollHeight}px`; props.onChange(evt.currentTarget.value); }}

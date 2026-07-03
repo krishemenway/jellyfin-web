@@ -162,7 +162,7 @@ const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloa
 
 				<CastAndCrew
 					itemWithPeople={musicVideo}
-					className={background.panel}
+					backgroundColor="Panel"
 					direction="row" wrap px=".5em" py="1em"
 					linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
 					isEditing={isEditing} editableItem={editableItem}
@@ -179,7 +179,7 @@ const AlbumName: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) =>
 		return (
 			<>
 				<FieldLabel field={props.editableItem.Album} />
-				<TextField field={props.editableItem.Album} py=".5em" px=".25em" />
+				<TextField field={props.editableItem.Album} py=".5em" px=".25em" bt br bb bl backgroundColor="Field" />
 			</>
 		);
 	}

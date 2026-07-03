@@ -16,7 +16,7 @@ export const ChangeServerButton: React.FC<{ withoutIcon?: boolean; onOpened?: ()
 				type="button" onClick={() => { Nullable.TryExecute(props.onOpened, (o) => o()); setChangingServer(true); }}
 			/>
 
-			<CenteredModal noPanel open={changingServer} onClosed={() => { setChangingServer(false); }}>
+			<CenteredModal open={changingServer} onClosed={() => { setChangingServer(false); }}>
 				<Servers open={changingServer} onClosed={() => { setChangingServer(false); }} />
 			</CenteredModal>
 		</>

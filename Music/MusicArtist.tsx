@@ -136,12 +136,11 @@ const Albums: React.FC<{ artist: BaseItemDto; relatedItemsToArtist: BaseItemDto[
 };
 
 const Album: React.FC<{ artist: BaseItemDto; album: BaseItemDto; relatedItemsToArtist: BaseItemDto[]; }> = ({ artist, album, relatedItemsToArtist }) => {
-	const background = useBackgroundStyles();
 	const albumsPerRow = useBreakpointValues(1, 1, 2, 2);
 	const songs = React.useMemo(() => relatedItemsToArtist.filter((i) => i.Type === "Audio" && i.AlbumId === album.Id).sort(SortByIndexNumber.sortFunc), [album, relatedItemsToArtist]);
 
 	return (
-		<Layout direction="row" gap="1rem" width={{ itemsPerRow: albumsPerRow, gap: "1rem" }} className={background.panel} py=".25rem">
+		<Layout direction="row" gap="1rem" width={{ itemsPerRow: albumsPerRow, gap: "1rem" }} backgroundColor="Panel" bt br bb bl py=".25rem">
 			<LinkToItem item={album} direction="column" px="1rem" width="18rem" alignItems="center" justifyContent="center">
 				<ItemImage width="100%" item={album} type="Primary" />
 			</LinkToItem>

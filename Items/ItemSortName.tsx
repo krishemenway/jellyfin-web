@@ -13,7 +13,7 @@ export const ItemSortName: React.FC<EditableItemProps> = ({ editableItem, isEdit
 	return (
 		<Layout direction="row" gap="1rem" alignItems="center">
 			<FieldLabel field={editableItem.ForcedSortName} />
-			<TextField field={editableItem.ForcedSortName} grow px=".25em" py=".25em" />
+			<TextField field={editableItem.ForcedSortName} grow px=".25em" py=".25em" bt br bb bl backgroundColor="Field" />
 		</Layout>
 	);
 };
