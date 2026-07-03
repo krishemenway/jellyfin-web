@@ -83,7 +83,7 @@ export interface StyleLayoutProps extends LayoutWithoutChildrenProps {
 }
 
 interface LayoutParams extends StyleLayoutPropsWithRequiredDirection {
-	className?: string;
+	classes?: string[];
 	children?: React.ReactNode;
 	elementType?: React.ElementType;
 
@@ -168,7 +168,7 @@ export function ApplyLayoutStyleProps(props?: Partial<StyleLayoutPropsWithRequir
 
 export const Layout: React.FC<LayoutParams> = (props) => {
 	return React.createElement(props.elementType ?? "div", {
-		className: props.className,
+		className: props.classes?.join(" "),
 		style: ApplyLayoutStyleProps(props),
 		onDragStart: props.onDragStart,
 		onDrop: props.onDrop,

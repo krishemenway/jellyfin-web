@@ -4,7 +4,7 @@ import { useBackgroundStyles } from "AppStyles";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 
 interface RequestErrorProps {
-	className?: string;
+	classes?: string[];
 	errorKey?: string;
 	showErrors: boolean;
 }
@@ -16,5 +16,5 @@ export const RequestError: React.FC<RequestErrorProps> = (props) => {
 		return <></>;
 	}
 
-	return <TranslatedText textKey={props.errorKey} elementType="p" className={background.error} />;
+	return <TranslatedText textKey={props.errorKey} elementType="p" classes={props.classes ?? [background.error]} />;
 };

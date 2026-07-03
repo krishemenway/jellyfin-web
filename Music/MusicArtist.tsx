@@ -73,7 +73,7 @@ const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; reloadAr
 					<ItemGenres
 						item={artist}
 						direction="row" gap=".5rem" wrap
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: { itemsPerRow: genresPerRow, gap: ".5rem" }, py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						editableItem={editableItem} isEditing={isEditing}
 					/>
@@ -81,7 +81,7 @@ const LoadedMusicArtist: React.FC<{ user: UserDto; artist: BaseItemDto; reloadAr
 					<ItemExternalLinks
 						item={artist}
 						direction="row" gap=".5rem"
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						editableItem={editableItem} isEditing={isEditing}
 					/>

@@ -76,7 +76,7 @@ const PageWrapper: React.FC<{ icon: React.ReactNode|BaseItemKind; matchHeight?: 
 		<Layout key="page-with-navigation" direction="column" backgroundRepeat="no-repeat" backgroundSize="cover" backgroundUrl={backdropUrl} height="100%">
 			<Layout key="backdrop-suppressor" direction="column" px="2em" py="1em" backgroundColor={Nullable.HasValue(backdropUrl) ? "BackdropSuppressor" : undefined} height="100%">
 				<NavigationBar key="navigation-bar" icon={typeof icon === "string" ? <IconForItemKind itemKind={icon as BaseItemKind} /> : icon} navigationButton={navigationButton} disabledSearch={disabledSearch} />
-				<Layout key="page-content" direction="column" gap="1em" className="page-content" grow height={(matchHeight ?? false) ? "100%" : undefined}>
+				<Layout key="page-content" direction="column" gap="1em" classes={["page-content"]} grow height={(matchHeight ?? false) ? "100%" : undefined}>
 					{content}
 				</Layout>
 			</Layout>

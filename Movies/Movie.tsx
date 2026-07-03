@@ -77,7 +77,7 @@ const LoadedMovie: React.FC<{ user: UserDto; movie: BaseItemDto; reloadMovie: ()
 					<ItemExternalLinks
 						item={movie}
 						direction="row" gap=".5rem"
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						editableItem={editableItem} isEditing={isEditing}
 					/>
@@ -85,7 +85,7 @@ const LoadedMovie: React.FC<{ user: UserDto; movie: BaseItemDto; reloadMovie: ()
 					<ItemGenres
 						item={movie}
 						direction="row" gap=".5rem"
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={4}
 						editableItem={editableItem} isEditing={isEditing} libraryId={movie.ParentId!}
@@ -94,7 +94,7 @@ const LoadedMovie: React.FC<{ user: UserDto; movie: BaseItemDto; reloadMovie: ()
 					<ItemStudios
 						item={movie}
 						direction="column" gap=".5rem"
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={3}
 						editableItem={editableItem} isEditing={isEditing} libraryId={movie.ParentId!}
@@ -136,7 +136,7 @@ const LoadedMovie: React.FC<{ user: UserDto; movie: BaseItemDto; reloadMovie: ()
 					item={movie}
 					isEditing={isEditing} editableItem={editableItem} libraryId={movie.ParentId!}
 					direction="row" gap=".5rem" wrap
-					linkClassName={background.button}
+					linkClasses={[background.button]}
 					linkLayout={{ px: ".25em", py: ".25em" }}
 					showMoreLimit={25}
 				/>

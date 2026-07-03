@@ -73,7 +73,7 @@ export const LoadedBook: React.FC<{ user: UserDto; book: BaseItemDto; reloadBook
 					<ItemExternalLinks
 						item={book}
 						direction="row" gap=".5rem"
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						editableItem={editableItem} isEditing={isEditing}
 					/>
@@ -81,7 +81,7 @@ export const LoadedBook: React.FC<{ user: UserDto; book: BaseItemDto; reloadBook
 					<ItemGenres
 						item={book}
 						direction="row" gap=".5rem"
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={4}
 						editableItem={editableItem} isEditing={isEditing} libraryId={book.ParentId!}
@@ -90,7 +90,7 @@ export const LoadedBook: React.FC<{ user: UserDto; book: BaseItemDto; reloadBook
 					<ItemStudios
 						item={book}
 						direction="column" gap=".5rem"
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={3}
 						editableItem={editableItem} isEditing={isEditing} libraryId={book.ParentId!}
@@ -127,7 +127,7 @@ export const LoadedBook: React.FC<{ user: UserDto; book: BaseItemDto; reloadBook
 					item={book}
 					isEditing={isEditing} editableItem={editableItem} libraryId={book.ParentId!}
 					direction="row" gap=".5rem" wrap
-					linkClassName={background.button}
+					linkClasses={[background.button]}
 					linkLayout={{ px: ".25em", py: ".25em" }}
 					showMoreLimit={25}
 				/>

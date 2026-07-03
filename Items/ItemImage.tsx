@@ -2,8 +2,9 @@ import * as React from "react";
 import { BaseItemDto, ImageType } from "@jellyfin/sdk/lib/generated-client/models";
 import { getImageApi } from "@jellyfin/sdk/lib/utils/api";
 import { ServerService } from "Servers/ServerService";
-import { ApplyLayoutStyleProps, LayoutWithoutChildrenProps } from "Common/Layout";
+import { LayoutWithoutChildrenProps } from "Common/Layout";
 import { Nullable } from "Common/MissingJavascriptFunctions";
+import { Image } from "Common/Image";
 
 export enum ImageShape {
 	Portrait,
@@ -17,7 +18,7 @@ interface BaseItemImageProps extends LayoutWithoutChildrenProps {
 	fillWidth?: number;
 	fillHeight?: number;
 
-	className?: string;
+	classes?: string[];
 	lazy?: boolean;
 }
 
@@ -37,24 +38,19 @@ interface ItemImageByIdProps extends BaseItemImageProps {
 	tag?: string;
 }
 
-export const ItemImageById: React.FC<ItemImageByIdProps> = ({ className, lazy, itemId, fallbackId, altText, type, fillWidth, fillHeight, tag, ...layoutStyleProps }) => {
+export const ItemImageById: React.FC<ItemImageByIdProps> = ({ classes, lazy, itemId, fallbackId, altText, type, fillWidth, fillHeight, tag, ...layoutStyleProps }) => {
 	const service = React.useMemo(() => getImageApi(ServerService.Instance.CurrentApi), []);
 	const imageUrl = React.useMemo(() => service.getItemImageUrlById(itemId, type, { fillWidth: fillWidth, fillHeight: fillHeight, tag: tag }), [itemId, type, fillWidth, fillHeight, tag]);
 	const fallbackImageUrl = React.useMemo(() => Nullable.Value(fallbackId, "", (fid) => service.getItemImageUrlById(fid, type, { fillWidth: fillWidth, fillHeight: fillHeight})), [fallbackId, type, fillWidth, fillHeight, tag]);
-	const onImageLoadError = React.useCallback((evt: React.SyntheticEvent<HTMLImageElement, Event>) => {
-		if (evt.currentTarget.src !== fallbackImageUrl && Nullable.HasValue(fallbackImageUrl)) {
-			evt.currentTarget.src = fallbackImageUrl;
-		}
-	}, [fallbackImageUrl]);
 
 	return (
-		<img
-			className={className}
-			src={imageUrl}
-			alt={altText}
-			style={ApplyLayoutStyleProps(layoutStyleProps)}
-			loading={lazy === true ? "lazy" : "eager"}
-			onError={onImageLoadError}
+		<Image
+			url={imageUrl}
+			fallbackUrls={[fallbackImageUrl]}
+			altText={altText}
+			lazy={lazy}
+			classes={classes}
+			{...layoutStyleProps}
 		/>
 	);
 };

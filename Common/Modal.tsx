@@ -18,7 +18,7 @@ const closedFuncs: ObservableArray<() => void> = new ObservableArray([]);
 
 interface ModalProps {
 	open: boolean;
-	className?: string;
+	classes?: string[];
 	backgroundColor?: ThemeBackgroundColors;
 	onClosed: () => void;
 	children: React.ReactNode;
@@ -106,7 +106,7 @@ export const CenteredModal: React.FC<ModalProps> = (props) => {
 			modalRoot.classList.remove(modalClasses.fadeBackground);
 		}
 
-		element.className = `${modalClasses.centeredModal} ${props.className ?? ""}`;
+		element.className = `${modalClasses.centeredModal} ${props.classes?.join(" ") ?? ""}`;
 		Nullable.TryExecute(ThemeService.Instance.ConvertBackgroundColor(props.backgroundColor), (color) => element.style.backgroundColor = color);
 		Nullable.TryExecute(ThemeService.Instance.ConvertBorderColor(props.backgroundColor), (color) => element.style.borderColor = color);
 		element.style.minWidth = props.minWidth ?? "";
@@ -165,7 +165,7 @@ export const AnchoredModal: React.FC<AnchoredModalProps> = (props) => {
 			closedFuncs.remove(props.onClosed);
 		}
 
-		element.className = `${modalClasses.anchoredModal} ${props.className ?? ""}`;
+		element.className = `${modalClasses.anchoredModal} ${props.classes?.join(" ") ?? ""}`;
 		element.style.zIndex = (++lastZIndex).toString();
 		Nullable.TryExecute(ThemeService.Instance.ConvertBackgroundColor(props.backgroundColor), (color) => element.style.backgroundColor = color);
 		Nullable.TryExecute(ThemeService.Instance.ConvertBorderColor(props.backgroundColor), (color) => element.style.borderColor = color);

@@ -19,7 +19,7 @@ import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { Collapsible } from "Common/Collapsible";
 import { SortByNumber } from "Common/ArrayPrototype";
 
-export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; className?: string; linkProps?: StyleLayoutProps; startOpen?: boolean; }&EditableItemProps&StyleLayoutProps> = (props) => {
+export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; classes?: string[]; linkProps?: StyleLayoutProps; startOpen?: boolean; }&EditableItemProps&StyleLayoutProps> = (props) => {
 	const [open, setOpen] = React.useState(props.startOpen ?? false);
 	const itemsPerRow = useBreakpointValues(1, 2, 3, 5);
 	const relevantPersonKinds = BaseItemKindServiceFactory.FindOrThrow(props.itemWithPeople.Type).relevantPersonKinds ?? [];
@@ -55,20 +55,20 @@ const ReadOnlyCastAndCrew: React.FC<{ orderedCastAndCrew: BaseItemPerson[]; link
 	);
 };
 
-const EditableCastAndCrew: React.FC<{ className?: string; editableItem: EditableItem; relevantPersonKinds: PersonKind[]; itemsPerRow: number; }&StyleLayoutProps> = (props) => {
-	const people = useObservable(props.editableItem.People);
+const EditableCastAndCrew: React.FC<{ classes?: string[]; editableItem: EditableItem; relevantPersonKinds: PersonKind[]; itemsPerRow: number; }&StyleLayoutProps> = ({ classes, editableItem, relevantPersonKinds, itemsPerRow, ...props }) => {
+	const people = useObservable(editableItem.People);
 
 	return (
-		<Layout direction="row" wrap gap=".25rem" className={props.className}>
+		<Layout direction="row" wrap gap=".25rem" classes={classes} {...props}>
 			{people.map((person) => (
-				<EditPersonCredit key={person.Key} person={person} onDelete={() => { props.editableItem.People.remove(person); }} itemsPerRow={props.itemsPerRow} relevantPersonKinds={props.relevantPersonKinds} />
+				<EditPersonCredit key={person.Key} person={person} onDelete={() => { editableItem.People.remove(person); }} itemsPerRow={itemsPerRow} relevantPersonKinds={relevantPersonKinds} />
 			))}
 
 			<Button
 				type="button"
-				onClick={() => { props.editableItem.People.push(new EditablePersonCredit({ Type: props.relevantPersonKinds[0]  }))}}
+				onClick={() => { editableItem.People.push(new EditablePersonCredit({ Type: relevantPersonKinds[0]  }))}}
 				icon={<AddIcon />}
-				width={{ itemsPerRow: props.itemsPerRow, gap: ".25rem" }}
+				width={{ itemsPerRow: itemsPerRow, gap: ".25rem" }}
 				px=".5em" py="1.1rem" gap=".5rem" alignItems="center" justifyContent="center"
 			/>
 		</Layout>

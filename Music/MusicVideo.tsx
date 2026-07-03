@@ -89,7 +89,7 @@ const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloa
 					<ItemExternalLinks
 						item={musicVideo}
 						direction="row" gap=".5em" wrap
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						editableItem={editableItem} isEditing={isEditing}
 					/>
@@ -97,7 +97,7 @@ const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloa
 					<ItemGenres
 						item={musicVideo}
 						direction="row" gap=".5em" wrap
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={4}
 						editableItem={editableItem} isEditing={isEditing} libraryId={musicVideo.ParentId!}
@@ -106,7 +106,7 @@ const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloa
 					<ItemStudios
 						item={musicVideo}
 						direction="column" gap=".5em" wrap
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={3}
 						editableItem={editableItem} isEditing={isEditing} libraryId={musicVideo.ParentId!}
@@ -154,7 +154,7 @@ const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloa
 				<ItemTags
 					item={musicVideo}
 					direction="row" gap=".5em" wrap
-					linkClassName={background.button}
+					linkClasses={[background.button]}
 					linkLayout={{ px: ".25em", py: ".25em" }}
 					showMoreLimit={25}
 					isEditing={isEditing} editableItem={editableItem} libraryId={musicVideo.ParentId!}

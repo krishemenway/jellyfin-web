@@ -74,7 +74,7 @@ const LoadedAudioBook: React.FC<{ user: UserDto; audioBook: BaseItemDto; reloadA
 					<ItemExternalLinks
 						item={audioBook}
 						direction="row" gap=".5rem"
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						editableItem={editableItem} isEditing={isEditing}
 					/>
@@ -82,7 +82,7 @@ const LoadedAudioBook: React.FC<{ user: UserDto; audioBook: BaseItemDto; reloadA
 					<ItemGenres
 						item={audioBook}
 						direction="row" gap=".5rem"
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={4}
 						editableItem={editableItem} isEditing={isEditing} libraryId={audioBook.ParentId!}
@@ -91,7 +91,7 @@ const LoadedAudioBook: React.FC<{ user: UserDto; audioBook: BaseItemDto; reloadA
 					<ItemStudios
 						item={audioBook}
 						direction="column" gap=".5rem"
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
 						showMoreLimit={3}
 						editableItem={editableItem} isEditing={isEditing} libraryId={audioBook.ParentId!}
@@ -128,7 +128,7 @@ const LoadedAudioBook: React.FC<{ user: UserDto; audioBook: BaseItemDto; reloadA
 					item={audioBook}
 					isEditing={isEditing} editableItem={editableItem} libraryId={audioBook.ParentId!}
 					direction="row" gap=".5rem" wrap
-					linkClassName={background.button}
+					linkClasses={[background.button]}
 					linkLayout={{ px: ".25em", py: ".25em" }}
 					showMoreLimit={25}
 				/>

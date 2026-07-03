@@ -21,7 +21,7 @@ import { AddIcon } from "CommonIcons/AddIcon";
 import { FieldLabel } from "Common/FieldLabel";
 import { Collapsible } from "Common/Collapsible";
 
-export const ItemExternalLinks: React.FC<{ item: BaseItemDto, linkLayout?: StyleLayoutProps, linkClassName?: string }&EditableItemProps&BaseListProps> = (props) => {
+export const ItemExternalLinks: React.FC<{ item: BaseItemDto, linkLayout?: StyleLayoutProps, linkClasses?: string[] }&EditableItemProps&BaseListProps> = (props) => {
 	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
 		return (
 			<Loading
@@ -37,7 +37,7 @@ export const ItemExternalLinks: React.FC<{ item: BaseItemDto, linkLayout?: Style
 	return (
 		<ListOf
 			items={props.item.ExternalUrls ?? []}
-			forEachItem={(url, index) => <HyperLink key={url.Url ?? index.toString()} to={url.Url ?? "/NotFound"} direction="row" {...props.linkLayout} className={props.linkClassName}>{url.Name}</HyperLink>}
+			forEachItem={(url, index) => <HyperLink key={url.Url ?? index.toString()} to={url.Url ?? "/NotFound"} direction="row" {...props.linkLayout} classes={props.linkClasses}>{url.Name}</HyperLink>}
 			{...props}
 		/>
 	);

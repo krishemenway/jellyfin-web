@@ -9,7 +9,7 @@ import { EditableField } from "Common/EditableField";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
 interface SelectFieldEditorProps<TOption> extends LayoutWithoutChildrenProps {
-	className?: string;
+	classes?: string[];
 	field: EditableField<TOption>;
 	allOptions: TOption[];
 	getValue: (value: TOption) => string;
@@ -20,7 +20,7 @@ export function SelectFieldEditor<TOption>(props: SelectFieldEditorProps<TOption
 	const value = useObservable(props.field.Current);
 
 	return (
-		<select className={props.className} value={props.getValue(value)} onChange={(evt) => { props.field.OnChange(props.allOptions.find((option) => props.getValue(option) === evt.currentTarget.value)!); }} style={ApplyLayoutStyleProps(props)}>
+		<select className={props.classes?.join(" ")} value={props.getValue(value)} onChange={(evt) => { props.field.OnChange(props.allOptions.find((option) => props.getValue(option) === evt.currentTarget.value)!); }} style={ApplyLayoutStyleProps(props)}>
 			{props.allOptions.map((option) => <option key={props.getValue(option)} value={props.getValue(option)}>{props.getLabel(option)}</option>)}
 		</select>
 	);
@@ -35,7 +35,7 @@ export function AutoCompleteFieldEditor<TOption>(props: SelectFieldEditorProps<T
 
 	return (
 		<Select
-			className={props.className}
+			className={props.classes?.join(" ")}
 			options={allOptions}
 			value={selectedOption}
 			onChange={(newValue) => props.field.OnChange(props.allOptions.find((o) => props.getValue(o) === (newValue as SingleValue<{ value: string; label: string }>)?.value)!)}
@@ -51,7 +51,7 @@ export function AutoCompleteFieldEditor<TOption>(props: SelectFieldEditorProps<T
 };
 
 interface MultiSelectEditorProps<TOption> extends LayoutWithoutChildrenProps {
-	className?: string;
+	classes?: string[];
 	field: EditableField<TOption[]>;
 	allOptions: TOption[];
 	getValue: (value: TOption) => string;
@@ -71,7 +71,7 @@ export function MultiSelectEditor<TOption>(props: MultiSelectEditorProps<TOption
 		return (
 			<CreatableSelect
 				id={props.field.FieldId}
-				className={props.className}
+				className={props.classes?.join(" ")}
 				isMulti={true}
 				isSearchable={true}
 				isClearable={false}
@@ -92,7 +92,7 @@ export function MultiSelectEditor<TOption>(props: MultiSelectEditorProps<TOption
 		return (
 			<Select
 				id={props.field.FieldId}
-				className={props.className}
+				className={props.classes?.join(" ")}
 				isMulti={true}
 				isSearchable={true}
 				isClearable={false}

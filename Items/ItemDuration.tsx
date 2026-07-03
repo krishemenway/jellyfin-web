@@ -19,7 +19,7 @@ const Duration: React.FC<{ runtime: number|undefined|null; }> = (props) => {
 	return Nullable.StringValue(duration, <></>, (parsedDuration) => (
 		<Layout direction="row" gap=".5em" alignItems="center">
 			<TranslatedText textKey="LabelDuration" />
-			<Layout direction="row" className="item-runtime" children={parsedDuration} />
+			<Layout direction="row" classes={["item-runtime"]} children={parsedDuration} />
 		</Layout>
 	));
 };

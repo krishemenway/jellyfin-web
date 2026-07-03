@@ -12,7 +12,7 @@ export function useUrlToItem(item: BaseItemDto, afterUrl?: string): string {
 interface LinkToItemProps extends StyleLayoutPropsWithRequiredDirection {
 	item: BaseItemDto;
 	afterUrl?: string;
-	className?: string;
+	classes?: string[];
 	children: React.ReactNode;
 	onClick?: () => void;
 	onDragStart?: (evt: React.DragEvent<HTMLElement>) => void;

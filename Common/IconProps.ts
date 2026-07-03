@@ -4,7 +4,7 @@ import { Property } from "csstype";
 export interface IconProps extends React.ComponentPropsWithoutRef<'svg'> {
 	size?: string;
 	color?: string;
-	className?: string;
+	classes?: string[];
 
 	alignSelf?: Property.AlignSelf;
 
@@ -17,7 +17,7 @@ export function ApplyIconPropsToSvg(props: IconProps): Partial<React.SVGProps<SV
 		height: props.size ?? "1em",
 		width: props.size ?? "1em",
 		fill: props.color ?? "inherit",
-		className: props.className,
+		className: props.classes?.join(" "),
 		style: {
 			marginTop: props.my,
 			marginBottom: props.my,

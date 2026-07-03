@@ -9,7 +9,7 @@ import { MultiSelectEditor } from "Common/SelectFieldEditor";
 import { ItemFilterService } from "Items/ItemFilterService";
 import { useDataOrNull } from "Common/Loading";
 
-export const ItemGenres: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutProps, linkClassName?: string }&EditableItemProps&BaseListProps> = (props) => {
+export const ItemGenres: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutProps, linkClasses?: string[] }&EditableItemProps&BaseListProps> = (props) => {
 	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
 		return <EditItemGenres {...props} />;
 	}
@@ -17,7 +17,7 @@ export const ItemGenres: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutP
 	return (
 		<ListOf
 			items={props.item.Genres ?? []}
-			forEachItem={(genre) => <HyperLink key={genre} to={`/Genres/${genre}`} direction="row" {...props.linkLayout} className={props.linkClassName}>{genre}</HyperLink>}
+			forEachItem={(genre) => <HyperLink key={genre} to={`/Genres/${genre}`} direction="row" {...props.linkLayout} classes={props.linkClasses}>{genre}</HyperLink>}
 			showMoreButtonStyles={props.linkLayout}
 			{...props}
 		/>

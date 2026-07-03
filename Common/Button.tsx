@@ -12,7 +12,7 @@ interface BaseButtonProps extends StyleLayoutProps {
 	children?: React.ReactNode,
 
 	id?: string;
-	className?: string;
+	classes?: string[];
 	title?: TranslationRequest;
 
 	disabled?: boolean;
@@ -43,7 +43,7 @@ const ForwardedButton: React.ForwardRefRenderFunction<HTMLButtonElement, ButtonP
 		<button
 			onClick={(evt) => props.type === "button" ? props.onClick(evt.currentTarget, evt) : undefined}
 			style={ApplyLayoutStyleProps(props)}
-			className={props.className ?? (props.selected === true ? background.selected : props.transparent === true ? background.transparent : background.button)}
+			className={(props.classes ?? [(props.selected === true ? background.selected : props.transparent === true ? background.transparent : background.button)]).join(" ")}
 			ref={ref}
 			id={props.id}
 			type={props.type}

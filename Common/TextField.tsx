@@ -22,7 +22,7 @@ interface InputFieldProps extends BaseInputFieldProps {
 }
 
 interface BaseInputFieldProps extends LayoutWithoutChildrenProps {
-	className?: string;
+	classes?: string[];
 	type?: React.HTMLInputTypeAttribute;
 
 	disabled?: boolean;
@@ -55,7 +55,7 @@ const ForwardedInputField: React.ForwardRefRenderFunction<HTMLInputElement, Inpu
 			type={props.type}
 			ref={ref}
 			id={props.id}
-			className={props.className}
+			className={props.classes?.join(" ")}
 			value={props.value}
 			onBlur={() => props.onBlur && props.onBlur()}
 			onChange={(evt) => { props.onChange(evt.currentTarget.value); }}
@@ -74,7 +74,7 @@ const ForwardedTextAreaField: React.ForwardRefRenderFunction<HTMLTextAreaElement
 		<textarea
 			ref={ref}
 			id={props.id}
-			className={props.className}
+			className={props.classes?.join(" ")}
 			value={props.value}
 			onBlur={() => props.onBlur && props.onBlur()}
 			onChange={(evt) => { evt.target.style.height = `${evt.target.scrollHeight}px`; props.onChange(evt.currentTarget.value); }}

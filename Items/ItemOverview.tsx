@@ -7,6 +7,7 @@ import { MultiLineField } from "Common/TextField";
 import { EditableItemProps } from "Items/EditableItemProps";
 import { Button } from "Common/Button";
 import { Layout } from "Common/Layout";
+import { RenderedMarkdown } from "Common/RenderedMarkdown";
 
 const useMarkdownStyles = createUseStyles({
 	overview: {
@@ -41,7 +42,7 @@ export const ItemOverview: React.FC<{ item: BaseItemDto; }&EditableItemProps> = 
 
 	return Nullable.StringValue(overview, <></>, (o) => (
 		<Layout direction="column" gap="1rem">
-			<div className={`${props.item.Type}-overview ${markdownStyles.overview}`} style={{ maxHeight: showMore ? undefined : '5rem' }} ref={element} dangerouslySetInnerHTML={{ __html: o }} />
+			<RenderedMarkdown content={o} classes={[props.item.Type+"-overview", markdownStyles.overview]} maxHeight={showMore ? undefined : '5rem'} />
 			{showMoreVisible && <Layout direction="row" justifyContent="end"><Button type="button" onClick={showAllOverview} px=".25em" py=".25em" label={{ Key: "ShowMore" }} /></Layout>}
 		</Layout>
 	));

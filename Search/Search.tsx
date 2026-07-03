@@ -26,8 +26,8 @@ export const Search: React.FC<{ disabled?: boolean; }> = ({ disabled }) => {
 
 	return (
 		<Layout direction="row" alignItems="center" position="relative">
-			<SearchIcon className={searchStyles.searchIcon} size="20" />
-			<TextField px="2em" py=".25em" className={searchStyles.queryField} field={SearchService.Instance.SearchTermField} ref={(r) => { setTextRef(r); }} disabled={disabled} bt br bb bl backgroundColor="Field" />
+			<SearchIcon classes={[searchStyles.searchIcon]} size="20" />
+			<TextField px="2em" py=".25em" classes={[searchStyles.queryField]} field={SearchService.Instance.SearchTermField} ref={(r) => { setTextRef(r); }} disabled={disabled} bt br bb bl backgroundColor="Field" />
 
 			<AnchoredModal
 				anchorElement={textRef}

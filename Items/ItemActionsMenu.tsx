@@ -10,7 +10,7 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 import { useNavigate } from "react-router-dom";
 
 export interface ItemActionProps extends StyleLayoutProps {
-	className?: string;
+	classes?: string[];
 	actions: ItemMenuAction[][];
 	user: UserDto;
 	filteredItems: readonly BaseItemDto[];

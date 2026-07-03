@@ -3,21 +3,19 @@ import { EditableField } from "Common/EditableField";
 import { TranslatedText } from "Common/TranslatedText";
 import { useObservable } from "@residualeffect/rereactor";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { useBackgroundStyles } from "AppStyles";
 
 interface FieldLabelProps<T> {
-	className?: string;
+	classes?: string[];
 	field: EditableField<T>;
 	showErrors: boolean;
 }
 
 export function FieldError<T>(props: FieldLabelProps<T>): React.ReactNode {
-	const background = useBackgroundStyles();
 	const errorTextKey = useObservable(props.field.ErrorMessage);
 
 	if (!props.showErrors || !Nullable.HasValue(errorTextKey)) {
 		return <></>;
 	}
 
-	return <TranslatedText textKey={errorTextKey} className={background.error} elementType="p" />;
+	return <TranslatedText textKey={errorTextKey} classes={props.classes} layout={{ fontColor: "Error" }} elementType="p" />;
 }

@@ -11,7 +11,7 @@ import { ItemFilterService } from "Items/ItemFilterService";
 import { FieldLabel } from "Common/FieldLabel";
 import { TranslatedText } from "Common/TranslatedText";
 
-export const ItemTags: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutProps, linkClassName?: string; libraryId?: string }&EditableItemProps&BaseListProps> = (props) => {
+export const ItemTags: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutProps, linkClasses?: string[]; libraryId?: string }&EditableItemProps&BaseListProps> = (props) => {
 	const tags = Nullable.Value(props.libraryId, [], (lid) => useDataOrNull(ItemFilterService.Instance.FindOrCreateFiltersReceiver([lid]))?.Tags ?? []);
 
 	React.useEffect(() => Nullable.TryExecute(props.libraryId, (lid) => ItemFilterService.Instance.LoadFiltersWithAbort([lid])), [props.libraryId]);
@@ -37,7 +37,7 @@ export const ItemTags: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutPro
 				<Layout direction="row" px=".25em" py=".25em"><TranslatedText textKey="Tags" /></Layout>
 				<ListOf
 					items={props.item.Tags ?? []}
-					forEachItem={(tag) => <TagLink key={tag} tag={tag} direction="row" {...props.linkLayout} className={props.linkClassName} />}
+					forEachItem={(tag) => <TagLink key={tag} tag={tag} direction="row" {...props.linkLayout} classes={props.linkClasses} />}
 					showMoreButtonStyles={props.linkLayout}
 					{...props}
 				/>

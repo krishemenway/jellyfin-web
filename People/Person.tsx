@@ -83,7 +83,7 @@ const LoadedPerson: React.FC<{ person: BaseItemDto; creditedItems: BaseItemDto[]
 				<ItemExternalLinks
 					item={person}
 					direction="row" gap=".5em"
-					linkClassName={background.button}
+					linkClasses={[background.button]}
 					linkLayout={{ direction: "row", width: "100%", py: ".5em", justifyContent: "center", grow: 1 }}
 					isEditing={isEditing} editableItem={editableItem}
 				/>
@@ -153,14 +153,14 @@ const PersonDetails: React.FC<{ person: BaseItemDto }&EditableItemProps> = ({ pe
 				</Layout>
 			) : Nullable.HasValue(person.PremiereDate) ? (
 				<Layout direction="row" alignItems="center" gap=".5em">
-					<TranslatedText textKey="BirthDateValue" textProps={[birthday.toLocaleDateString()]} elementType="div" className="birthDate" />
+					<TranslatedText textKey="BirthDateValue" textProps={[birthday.toLocaleDateString()]} elementType="div" classes={["birthDate"]} />
 
 					{!Nullable.HasValue(person.EndDate) && (
-						<Layout direction="row" className="age">({ageAtDeathOrNow.years})</Layout>
+						<Layout direction="row" classes={["age"]}>({ageAtDeathOrNow.years})</Layout>
 					)}
 
 					{!!person.ProductionLocations && !!person.ProductionLocations[0] && (
-						<Layout direction="row" className="birthLocation">@ {person.ProductionLocations[0]}</Layout>
+						<Layout direction="row" classes={["birthLocation"]}>@ {person.ProductionLocations[0]}</Layout>
 					)}
 				</Layout>
 			) : (
@@ -168,12 +168,12 @@ const PersonDetails: React.FC<{ person: BaseItemDto }&EditableItemProps> = ({ pe
 			)}
 
 			{Nullable.HasValue(editableItem) && isEditing ? (
-				<Layout direction="row" className="deathDateAndDeathAge" alignItems="center" gap=".5em">
+				<Layout direction="row" classes={["deathDateAndDeathAge"]} alignItems="center" gap=".5em">
 					<FieldLabel field={editableItem.EndDate} textKey="LabelDeathDate" />
 					<DateField field={editableItem.EndDate} px=".5em" py=".25em" bt br bb bl backgroundColor="Field" />
 				</Layout>
 			) : Nullable.HasValue(person.EndDate) ? (
-				<Layout direction="row" className="deathDateAndDeathAge" alignItems="center" gap=".5em">
+				<Layout direction="row" classes={["deathDateAndDeathAge"]} alignItems="center" gap=".5em">
 					<TranslatedText textKey="DeathDateValue" textProps={[deathOrNow.toLocaleDateString()]} />
 					<TranslatedText textKey="AgeValue" textProps={[ageAtDeathOrNow.years?.toString() ?? ""]} />
 				</Layout>
@@ -186,7 +186,7 @@ const PersonDetails: React.FC<{ person: BaseItemDto }&EditableItemProps> = ({ pe
 				item={person}
 				isEditing={isEditing} editableItem={editableItem}
 				direction="row" gap=".5em" wrap
-				linkClassName={background.button}
+				linkClasses={[background.button]}
 				linkLayout={{ px: ".25em", py: ".25em" }}
 				showMoreLimit={25}
 			/>

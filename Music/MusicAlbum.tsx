@@ -90,7 +90,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemD
 					<ItemStudios
 						item={album}
 						direction="row" gap=".5em"
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 						showMoreLimit={3}
 						isEditing={isEditing} libraryId={album.ParentId!} editableItem={editableItem}
@@ -99,7 +99,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemD
 					<ItemExternalLinks
 						item={album}
 						direction="row" gap=".5em"
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 						editableItem={editableItem} isEditing={isEditing}
 					/>
@@ -107,7 +107,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemD
 					<ItemGenres
 						item={album}
 						direction="row" gap=".5em"
-						linkClassName={background.button}
+						linkClasses={[background.button]}
 						linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 						showMoreLimit={4}
 						isEditing={isEditing} libraryId={album.ParentId!} editableItem={editableItem}
@@ -153,7 +153,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemD
 						<ItemTags
 							item={album}
 							direction="row" gap=".5em" wrap
-							linkClassName={background.button}
+							linkClasses={[background.button]}
 							linkLayout={{ px: ".25em", py: ".25em" }}
 							showMoreLimit={25}
 							isEditing={isEditing} libraryId={album.ParentId!} editableItem={editableItem}

@@ -10,7 +10,7 @@ import { Nullable } from "./MissingJavascriptFunctions";
 interface DateFieldProps extends LayoutWithoutChildrenProps {
 	field: EditableField<string|undefined|null> | EditableField<string> | EditableField<string|undefined>;
 	disabled?: boolean;
-	className?: string;
+	classes?: string[];
 }
 
 interface DatePart {

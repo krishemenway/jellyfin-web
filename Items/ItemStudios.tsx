@@ -11,7 +11,7 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { LoadingIcon } from "Common/LoadingIcon";
 import { MultiSelectEditor } from "Common/SelectFieldEditor";
 
-export const ItemStudios: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutProps, linkClassName?: string }&EditableItemProps&BaseListProps> = (props) => {
+export const ItemStudios: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutProps, linkClasses?: string[] }&EditableItemProps&BaseListProps> = (props) => {
 	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
 		return <EditItemStudios {...props} />;
 	}
@@ -19,7 +19,7 @@ export const ItemStudios: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayout
 	return (
 		<ListOf
 			items={props.item.Studios ?? []}
-			forEachItem={(studio, index) => <HyperLink key={studio.Id ?? index.toString()} to={`/Studio/${studio.Id}`} direction="row" {...props.linkLayout} className={props.linkClassName}>{studio.Name}</HyperLink>}
+			forEachItem={(studio, index) => <HyperLink key={studio.Id ?? index.toString()} to={`/Studio/${studio.Id}`} direction="row" {...props.linkLayout} classes={props.linkClasses}>{studio.Name}</HyperLink>}
 			showMoreButtonStyles={props.linkLayout}
 			{...props}
 		/>

@@ -32,7 +32,7 @@ export const ItemsGridItem: React.FC<ItemsGridItemProps> = ({ item, fallback, im
 		return (
 			<Button
 				type="button" onClick={() => toggleSelectedItem(item)}
-				className={background.button}
+				classes={[background.button]}
 				direction="column" position="relative"
 				py=".5em" px=".5em" gap=".25em"
 				justifyContent="space-between" alignItems="center"
@@ -51,7 +51,7 @@ export const ItemsGridItem: React.FC<ItemsGridItemProps> = ({ item, fallback, im
 	return (
 		<LinkToItem
 			item={item}
-			className={background.button}
+			classes={[background.button]}
 			direction="column" position="relative"
 			py=".5em" px=".5em" gap=".25em"
 			justifyContent="space-between" alignItems="center"

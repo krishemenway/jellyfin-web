@@ -86,7 +86,7 @@ export const CurrentPlaylist: React.FC<{ playlist: MediaPlayerPlaylist }&StyleLa
 					)}
 				/>
 			) : (
-				<Layout className={background.dashed} direction="column" justifyContent="center" alignItems="center" width="100%" grow>
+				<Layout classes={[background.dashed]} direction="column" justifyContent="center" alignItems="center" width="100%" grow>
 					<TranslatedText textKey="AddToPlaylist" />
 				</Layout>
 			)}

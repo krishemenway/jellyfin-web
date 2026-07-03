@@ -20,7 +20,7 @@ export const ServerDashboard: React.FC = () => {
 				<PageTitle text={({ Key: "TabServer" })} suppressOnScreen />
 
 				<Layout direction="row" justifyContent="space-between">
-					<Layout direction="row" fontSizeREM={2} className="server-name">{server.ServerName}</Layout>
+					<Layout direction="row" fontSizeREM={2} classes={["server-name"]}>{server.ServerName}</Layout>
 				</Layout>
 
 				<Layout direction="row" gap="1rem">

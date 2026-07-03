@@ -107,7 +107,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; seasonId?: string; children: Bas
 				<ItemStudios
 					item={show}
 					direction="row" gap=".5em" wrap
-					linkClassName={background.button}
+					linkClasses={[background.button]}
 					linkLayout={{ direction: "column", width: { itemsPerRow: leftPanelItemsPerRow }, py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					showMoreLimit={3}
 					editableItem={editableItem} isEditing={isEditing} libraryId={show.ParentId!}
@@ -116,7 +116,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; seasonId?: string; children: Bas
 				<ItemExternalLinks
 					item={show}
 					direction="row" gap=".5em" wrap
-					linkClassName={background.button}
+					linkClasses={[background.button]}
 					linkLayout={{ direction: "column", width: { itemsPerRow: leftPanelItemsPerRow }, py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					editableItem={editableItem} isEditing={isEditing}
 				/>
@@ -124,7 +124,7 @@ const LoadedShow: React.FC<{ show: BaseItemDto; seasonId?: string; children: Bas
 				<ItemGenres
 					item={show}
 					direction="row" gap=".5em" wrap
-					linkClassName={background.button}
+					linkClasses={[background.button]}
 					linkLayout={{ direction: "column", width: { itemsPerRow: leftPanelItemsPerRow }, py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					showMoreLimit={4}
 					editableItem={editableItem} isEditing={isEditing} libraryId={show.ParentId!}
@@ -161,7 +161,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 				<ItemStudios
 					item={selectedEpisode}
 					direction="row" gap=".5em" wrap
-					linkClassName={background.button}
+					linkClasses={[background.button]}
 					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					showMoreLimit={3}
 					editableItem={editableItem} isEditing={isEditing} libraryId={show.ParentId!}
@@ -170,7 +170,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 				<ItemExternalLinks
 					item={selectedEpisode}
 					direction="row" gap=".5em" wrap
-					linkClassName={background.button}
+					linkClasses={[background.button]}
 					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					editableItem={editableItem} isEditing={isEditing}
 				/>
@@ -178,7 +178,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 				<ItemGenres
 					item={selectedEpisode}
 					direction="row" gap=".5em" wrap
-					linkClassName={background.button}
+					linkClasses={[background.button]}
 					linkLayout={{ direction: "column", width: "100%", py: ".5em", textAlign: "center", alignItems: "center", justifyContent: "center", grow: true }}
 					showMoreLimit={4}
 					editableItem={editableItem} isEditing={isEditing} libraryId={show.ParentId!}
@@ -228,7 +228,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 				item={show}
 				isEditing={isEditing} editableItem={editableItem} libraryId={show.ParentId!}
 				direction="row" gap=".5em" wrap
-				linkClassName={background.button}
+				linkClasses={[background.button]}
 				linkLayout={{ px: ".25em", py: ".25em" }}
 				showMoreLimit={25}
 			/>
@@ -292,7 +292,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 				item={episode}
 				isEditing={isEditing} editableItem={editableEpisode} libraryId={show.ParentId!}
 				direction="row" gap=".5em" wrap
-				linkClassName={background.button}
+				linkClasses={[background.button]}
 				linkLayout={{ px: ".25em", py: ".25em" }}
 				showMoreLimit={25}
 			/>

@@ -79,10 +79,10 @@ interface TranslatedTextProps {
 	formatText?: (translatedText?: string) => string;
 	elementType?: string;
 	layout?: StyleLayoutProps;
-	className?: string
+	classes?: string[];
 }
 
-export const TranslatedText: React.FC<TranslatedTextProps> = ({ textKey, textProps, formatText, className, elementType, layout }) => {
+export const TranslatedText: React.FC<TranslatedTextProps> = ({ textKey, textProps, formatText, classes, elementType, layout }) => {
 	let translated = useTranslatedText({ Key: textKey, KeyProps: textProps });
 
 	if (translated === undefined) {
@@ -94,7 +94,7 @@ export const TranslatedText: React.FC<TranslatedTextProps> = ({ textKey, textPro
 	}
 
 	if (elementType !== undefined) {
-		return React.createElement(elementType, { className: className, style: ApplyLayoutStyleProps(layout) }, <>{translated}</>);
+		return React.createElement(elementType, { className: classes?.join(" "), style: ApplyLayoutStyleProps(layout) }, <>{translated}</>);
 	} else {
 		return <>{translated}</>;
 	}

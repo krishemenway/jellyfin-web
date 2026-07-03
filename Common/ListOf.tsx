@@ -8,7 +8,7 @@ export interface BaseListProps extends StyleLayoutPropsWithRequiredDirection {
 	showMoreLimit?: number;
 	showMoreButtonStyles?: StyleLayoutProps;
 	emptyListView?: React.ReactNode;
-	className?: string;
+	classes?: string[];
 	key?: string;
 }
 

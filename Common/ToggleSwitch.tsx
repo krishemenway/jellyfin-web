@@ -9,7 +9,7 @@ interface BaseToggleSwitchProps extends StyleLayoutProps {
 	id?: string;
 	enabledIcon?: React.ReactNode;
 	disabledIcon?: React.ReactNode;
-	className?: string;
+	classes?: string[];
 }
 
 export const ToggleSwitch: React.FC<BaseToggleSwitchProps&{ field: EditableField<boolean>; }> = ({ field, ...props }) => {
