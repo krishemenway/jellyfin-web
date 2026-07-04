@@ -13,7 +13,7 @@ interface DateFieldProps extends LayoutWithoutChildrenProps {
 
 export const DateField: React.FC<DateFieldProps> = ({ field, disabled, ...props }) => {
 	const culture = useObservable(TranslationService.Instance.CurrentCulture);
-	const dateParts = Intl.DateTimeFormat(culture).formatToParts(new Date(2000, 9, 11));
+	const dateParts = Intl.DateTimeFormat(culture).formatToParts(new Date());
 	const currentDateParts = useObservable(field.Current)?.split("-") ?? [];
 
 	return (
