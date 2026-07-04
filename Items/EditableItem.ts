@@ -47,7 +47,7 @@ export class EditableItem {
 		this.ProductionLocation = new EditableField("ProductionLocations", Nullable.Value(item.ProductionLocations, undefined, (i) => i[0]));
 		this.Studios = new EditableField("Studios", Nullable.Value(item, [], (i) => i.Studios ?? []));
 
-		this.PremiereDate = new EditableField("Premiere", Nullable.Value(item?.PremiereDate, "", (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })), (d) => { console.log(isValid(new Date(d)), d); return !isValid(new Date(d)) ? "InvalidDateFormat" : "" });
+		this.PremiereDate = new EditableField("Premiere", Nullable.Value(item?.PremiereDate, "", (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })), (d) => !isValid(new Date(d)) ? "InvalidDateFormat" : "");
 		this.EndDate = new EditableField("EndDate", Nullable.Value(item?.EndDate, undefined, (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })));
 		this.DateCreated = new EditableField("DateCreated", Nullable.Value(item, undefined, (i) => i.DateCreated));
 
