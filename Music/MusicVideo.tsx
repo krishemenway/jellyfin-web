@@ -46,6 +46,7 @@ import { ItemDuration } from "Items/ItemDuration";
 import { ChangeImageButton } from "Items/ChangeImageButton";
 import { ItemMediaInfo } from "Items/ItemMediaInfo";
 import { ItemSortName } from "Items/ItemSortName";
+import { Form } from "Common/Form";
 
 export const MusicVideo: React.FC = () => {
 	const routeParams = useParams<{ musicVideoId: string }>();
@@ -73,7 +74,7 @@ const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloa
 	React.useEffect(() => BackdropService.Instance.SetWithDispose(musicVideo), [musicVideo]);
 
 	return (
-		<Layout direction="row" gap="1em" py="1em">
+		<Form direction="row" gap="1em" py="1em" onSubmit={() => { ItemEditorService.Instance.Save(reloadMusicVideo); }}>
 			<Layout direction="column" maxWidth="20%" gap=".5em">
 				<Layout direction="column" gap=".5em">
 					<Layout direction="column">
@@ -120,7 +121,7 @@ const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloa
 						{!isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<PlayIcon />} onClick={() => { VideoPlayerService.Instance.ClearAndPlay([musicVideo]) }} />}
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={musicVideo} />}
-						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(reloadMusicVideo); }} />}
+						{isEditing && <Button type="submit" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} />}
 						<ItemActionsMenu reloadItems={() => reloadMusicVideo()} filteredItems={[musicVideo]} actions={[
 							[ // User-based actions
 								PlayVideoAction,
@@ -170,7 +171,7 @@ const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloa
 
 				<ItemMediaInfo item={musicVideo} />
 			</Layout>
-		</Layout>
+		</Form>
 	);
 };
 
