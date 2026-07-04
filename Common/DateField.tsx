@@ -2,7 +2,7 @@ import * as React from "react";
 import { Layout, LayoutWithoutChildrenProps } from "Common/Layout";
 import { InputField } from "Common/TextField";
 import { EditableField } from "Common/EditableField";
-import { useObservable } from "@residualeffect/rereactor";
+import { useComputed, useObservable } from "@residualeffect/rereactor";
 import { TranslationService } from "Common/TranslatedText";
 
 interface DateFieldProps extends LayoutWithoutChildrenProps {
@@ -15,17 +15,18 @@ export const DateField: React.FC<DateFieldProps> = ({ field, disabled, ...props 
 	const culture = useObservable(TranslationService.Instance.CurrentCulture);
 	const dateParts = Intl.DateTimeFormat(culture).formatToParts(new Date());
 	const currentDateParts = useObservable(field.Current)?.split("-") ?? [];
+	const hasError = useComputed(() => !field.CanMakeRequest());
 
 	return (
-		<Layout direction="row" justifyContent="center" alignItems="center" {...props}>
+		<Layout direction="row" justifyContent="center" alignItems="center" backgroundColor={hasError ? "Error" : "Field"} {...props}>
 			{dateParts.map((part, index) => {
 				switch (part.type) {
 					case "day":
-						return <Input key={field.FieldId} currentValue={currentDateParts[2] ?? ""} part="day" disabled={disabled} onChange={(newValue) => field.OnChange(`${dateParts[0] ?? ""}-${dateParts[1] ?? ""}-${newValue ?? ""}`)} classes={["edit-date-day"]} />;
+						return <Input key={field.FieldId+"-"+part.type} id={field.FieldId+"-"+part.type} currentValue={currentDateParts[2] ?? ""} part="day" width="2em" disabled={disabled} onChange={(newValue) => field.OnChange(`${currentDateParts[0] ?? ""}-${currentDateParts[1] ?? ""}-${newValue}`)} classes={["edit-date-day"]} />;
 					case "month":
-						return <Input key={field.FieldId} currentValue={currentDateParts[1] ?? ""} part="month" disabled={disabled} onChange={(newValue) => field.OnChange(`${dateParts[0] ?? ""}-${newValue ?? ""}-${dateParts[2] ?? ""}`)} classes={["edit-date-month"]} />;
+						return <Input key={field.FieldId+"-"+part.type} id={field.FieldId+"-"+part.type} currentValue={currentDateParts[1] ?? ""} part="month" width="2em" disabled={disabled} onChange={(newValue) => field.OnChange(`${currentDateParts[0] ?? ""}-${newValue}-${currentDateParts[2] ?? ""}`)} classes={["edit-date-month"]} />;
 					case "year":
-						return <Input key={field.FieldId} currentValue={currentDateParts[0] ?? ""} part="year" disabled={disabled} onChange={(newValue) => field.OnChange(`${newValue ?? ""}-${dateParts[1] ?? ""}-${dateParts[2] ?? ""}`)} classes={["edit-date-year"]} />;
+						return <Input key={field.FieldId+"-"+part.type} id={field.FieldId+"-"+part.type} currentValue={currentDateParts[0] ?? ""} part="year" width="3em" disabled={disabled} onChange={(newValue) => field.OnChange(`${newValue}-${currentDateParts[1] ?? ""}-${currentDateParts[2] ?? ""}`)} classes={["edit-date-year"]} />;
 					case "literal":
 						return <Layout key={field.FieldId + "-" + index} direction="row" elementType="span" children={part.value} classes={["edit-date-literal"]} />;
 				}
@@ -34,17 +35,16 @@ export const DateField: React.FC<DateFieldProps> = ({ field, disabled, ...props 
 	);
 };
 
-const Input: React.FC<{ key: string; part: "literal"|"day"|"month"|"year"; currentValue: string; onChange: (newValue: string) => void; disabled?: boolean; classes: string[] }> = ({ key, part, currentValue, onChange, disabled, classes }) => {
+const Input: React.FC<{ id: string; part: "literal"|"day"|"month"|"year"; currentValue: string; onChange: (newValue: string) => void; disabled?: boolean; classes: string[]; width: string }> = ({ id, part, currentValue, onChange, disabled, classes, width }) => {
 	return (
 		<InputField
 			type="number"
-			key={key} id={key}
-			classes={classes}
+			id={id} classes={classes}
 			disabled={disabled}
 			value={currentValue}
 			placeholder={{ Key: `LabelDate${part}` }}
-			onChange={(v) => onChange(v)}
-			px=".25em" py=".25em" width={currentValue.length + "em"} textAlign="center"
+			onChange={(v) => onChange(v ?? "")}
+			px=".25em" py=".25em" width={width} textAlign="center"
 		/>
 	);
 };

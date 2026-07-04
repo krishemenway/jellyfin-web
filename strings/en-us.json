@@ -632,6 +632,7 @@
     "InternalServerError": "Something went wrong on the server. Try again later.",
     "Interview": "Interview",
     "InvalidRequest": "Something was wrong with this request.",
+    "InvalidDateFormat": "Provided date is invalid.",
     "IsBetween": "Is Between",
     "IsBetweenFilterDisplay": "Is Between {0} and {1}",
     "IsEmpty": "Is Empty",

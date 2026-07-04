@@ -15,7 +15,7 @@ export const ItemPremiereDate: React.FC<{ item: BaseItemDto; }&EditableItemProps
 		return (
 			<Layout direction="row" gap=".5em" alignItems="center">
 				<FieldLabel field={props.editableItem.PremiereDate} />
-				<DateField field={props.editableItem.PremiereDate} px=".5em" py=".25em" bt br bb bl backgroundColor="Field" />
+				<DateField field={props.editableItem.PremiereDate} px=".5em" py=".25em" bt br bb bl />
 			</Layout>
 		);
 	}
