@@ -154,7 +154,7 @@ function showMoreLink(viewOptions: ItemListViewOptions): string {
 			return `/Tags/${viewOptions.DataSource.DataSourceKey}/${viewOptions.Key}`;
 		}
 		case "Resume": {
-			return `/Resume${viewOptions.CanSave ? "/" + viewOptions.Key : ""}`;
+			return `/Resume${!viewOptions.IsReadOnly ? "/" + viewOptions.Key : ""}`;
 		}
 		case "Collection": {
 			return `/Collection/${viewOptions.DataSource.DataSourceKey}/${viewOptions.Key}`;

@@ -108,7 +108,7 @@ export class ItemListService {
 			.filter((k) => k.startsWith(`ViewOption|`))
 			.map((key) => settings.ReadAsJsonOrThrow<ItemViewOptionsData>(key))
 			.filter((optionData) => optionData.DataSource.DataSource === this.DataSource.DataSource && optionData.DataSource.DataSourceKey === this.DataSource.DataSourceKey)
-			.map((optionData) => new ItemListViewOptions(this.DataSource, optionData, true))
+			.map((optionData) => new ItemListViewOptions(this.DataSource, optionData, false))
 			.concat([ ItemListViewOptions.CreateRecentlyAdded(this.DataSource, contextName) ]);
 
 		if (Nullable.HasValue(viewOptionsKey)) {
@@ -120,6 +120,10 @@ export class ItemListService {
 
 	public SaveViewOptions(settings: Settings, listOptions: ItemListViewOptions, onSuccess: (viewOptionsKey: string|null) => void): void {
 		listOptions.ShowErrors.Value = true;
+
+		if (listOptions.IsReadOnly || !listOptions.CanMakeRequest.Value) {
+			return;
+		}
 
 		SettingsStore.Instance.SaveSettings("usersettings", settings.CreateSaveRequestWithChangedKey(listOptions.BuildStorageKey(), listOptions.CreateSaveRequest()), () => {
 			SettingsStore.Instance.LoadSettings("usersettings", () => {

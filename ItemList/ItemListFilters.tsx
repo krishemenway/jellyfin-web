@@ -268,7 +268,7 @@ const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions
 
 	return (
 		<Layout direction="row" justifyContent="space-between" gap=".5rem">
-			{itemListViewOptions.CanSave && isSelected ? (
+			{!itemListViewOptions.IsReadOnly && isSelected ? (
 				<Layout direction="row" grow px=".5em" gap=".5rem" alignItems="center">
 					<RadioCheckedIcon />
 					<TextField field={itemListViewOptions.Label} px=".25em" py=".25em" bt br bb bl backgroundColor="Field" />
@@ -282,7 +282,7 @@ const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions
 				</HyperLink>
 			)}
 
-			{itemListViewOptions.CanSave && isSelected && (
+			{!itemListViewOptions.IsReadOnly && isSelected && (
 				<Layout direction="row" gap=".25rem">
 					<Button
 						type="button"

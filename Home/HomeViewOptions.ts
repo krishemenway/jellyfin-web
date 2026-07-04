@@ -57,7 +57,7 @@ export class HomeViewOptions {
 			throw new Error(`Unable to find ${key}`);
 		}
 
-		return new ItemListViewOptions(viewOptionsData.DataSource, viewOptionsData, true);
+		return new ItemListViewOptions(viewOptionsData.DataSource, viewOptionsData, false);
 	}
 
 	public Settings: Settings;

@@ -12,14 +12,15 @@ import { ItemSortTypeModel } from "ItemList/ItemSortTypeModel";
 import { SortByDatePlayed } from "ItemList/ItemSortTypes/SortByDatePlayed";
 
 export class ItemListViewOptions {
-	constructor(dataSource: ItemViewOptionDataSource, data?: Partial<ItemViewOptionsData>, canSave?: boolean) {
+	constructor(dataSource: ItemViewOptionDataSource, data?: Partial<ItemViewOptionsData>, isReadOnly?: boolean) {
 		this.Key = Nullable.Value(data?.Key, self.crypto.randomUUID(), k => k);
 		this.IsUnsaved = !Nullable.HasValue(data?.Key);
-		this.CanSave = canSave ?? true;
+		this.IsReadOnly = isReadOnly ?? false;
 		this.Label = new EditableField("Filter", data?.Label ?? "", (v) => ValueIsRequired(v));
 		this.ShowErrors = new Observable(false);
 		this.DataSource = data?.DataSource ?? dataSource;
 		this.HasChanged = new Computed(() => this.AllFields().map((f) => f.HasChanged.Value).some((hc) => hc));
+		this.CanMakeRequest = new Computed(() => this.AllFields().every((f) => f.CanMakeRequest()));
 
 		this.NewFilter = new Observable(undefined);
 		this.Filters = new ObservableArray(Nullable.Value(data?.Filters, [], (d) => d).map((d) => ItemFilterTypeStore.Instance.FindOrThrow(d.Type).CreateModel(d)));
@@ -75,11 +76,11 @@ export class ItemListViewOptions {
 
 	public static CreateContinuing(): ItemListViewOptions {
 		const dataSource: ItemViewOptionDataSource = { DataSource: "Resume", DataSourceKey: "", };
-		return new ItemListViewOptions(dataSource, { Key: "Resume", Label: "Continue Watching", DataSource: dataSource, Filters: [], Sorts: ContinuingSorts }, false);
+		return new ItemListViewOptions(dataSource, { Key: "Resume", Label: "Continue Watching", DataSource: dataSource, Filters: [], Sorts: ContinuingSorts }, true);
 	}
 
 	public static CreateRecentlyAdded(dataSource: ItemViewOptionDataSource, dataSourceName: string): ItemListViewOptions {
-		return new ItemListViewOptions(dataSource, { DataSource: dataSource, Key: `RecentlyAdded-${dataSource.DataSourceKey}`, Filters: [], Label: `${dataSourceName} - Recently Added`, Sorts: [{ Reversed: true, SortType: "DateCreated", Hidden: true }] }, false);
+		return new ItemListViewOptions(dataSource, { DataSource: dataSource, Key: `RecentlyAdded-${dataSource.DataSourceKey}`, Filters: [], Label: `${dataSourceName} - Recently Added`, Sorts: [{ Reversed: true, SortType: "DateCreated", Hidden: true }] }, true);
 	}
 
 	public CreateSaveRequest(): ItemViewOptionsData {
@@ -110,10 +111,11 @@ export class ItemListViewOptions {
 
 	public Key: string;
 	public IsUnsaved: boolean;
-	public CanSave: boolean;
+	public IsReadOnly: boolean;
 	public Label: EditableField<string>;
 	public ShowErrors: Observable<boolean>;
 	public HasChanged: Computed<boolean>;
+	public CanMakeRequest: Computed<boolean>;
 	public DataSource: ItemViewOptionDataSource;
 
 	public NewFilter: Observable<IFilterModel|undefined>;
