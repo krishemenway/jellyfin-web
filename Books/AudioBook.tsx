@@ -31,6 +31,7 @@ import { SaveIcon } from "CommonIcons/SaveIcon";
 import { useObservable } from "@residualeffect/rereactor";
 import { RevertIcon } from "CommonIcons/RevertIcon";
 import { ChangeImageButton } from "Items/ChangeImageButton";
+import { ItemSortName } from "Items/ItemSortName";
 
 export const AudioBook: React.FC = () => {
 	const audioBookId = useParams<{ audioBookId: string }>().audioBookId!;
@@ -122,6 +123,7 @@ const LoadedAudioBook: React.FC<{ user: UserDto; audioBook: BaseItemDto; reloadA
 					</Layout>
 				</Layout>
 
+				<ItemSortName editableItem={editableItem} isEditing={isEditing} />
 				<ItemOverview item={audioBook} editableItem={editableItem} isEditing={isEditing} />
 
 				<ItemTags

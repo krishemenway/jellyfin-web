@@ -49,6 +49,7 @@ import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { ItemFavoriteIcon } from "Items/ItemFavoriteIcon";
 import { PageTitle } from "Common/PageTitle";
 import { LinkToItem } from "Items/LinkToItem";
+import { ItemSortName } from "Items/ItemSortName";
 
 export const Show: React.FC = () => {
 	const routeParams = useParams<{ showId: string; seasonId?: string; episodeId?: string }>();
@@ -222,6 +223,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 				<AggregateItemDuration items={allEpisodes} />
 			</Layout>
 
+			<ItemSortName isEditing={isEditing} editableItem={editableItem} />
 			<ItemOverview item={show} isEditing={isEditing} editableItem={editableItem} />
 
 			<ItemTags
@@ -286,6 +288,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 				<ItemDuration item={episode} />
 			</Layout>
 
+			<ItemSortName isEditing={isEditing} editableItem={editableEpisode} />
 			<ItemOverview item={episode} isEditing={isEditing} editableItem={editableEpisode} />
 
 			<ItemTags

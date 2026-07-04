@@ -42,6 +42,7 @@ import { ItemDuration } from "Items/ItemDuration";
 import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { ChangeImageButton } from "Items/ChangeImageButton";
+import { ItemSortName } from "Items/ItemSortName";
 
 export const MusicAlbum: React.FC = () => {
 	const albumId = useParams<{ albumId: string; songId?: string; }>().albumId!;
@@ -148,6 +149,7 @@ const LoadedMusicAlbums: React.FC<{ album: BaseItemDto; allAlbumItems: BaseItemD
 							<ItemDuration item={album} />
 						</Layout>
 
+						<ItemSortName editableItem={editableItem} isEditing={isEditing} />
 						<ItemOverview item={album} editableItem={editableItem} isEditing={isEditing} />
 
 						<ItemTags

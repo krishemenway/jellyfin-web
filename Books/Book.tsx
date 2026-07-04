@@ -31,6 +31,7 @@ import { SaveIcon } from "CommonIcons/SaveIcon";
 import { useObservable } from "@residualeffect/rereactor";
 import { RevertIcon } from "CommonIcons/RevertIcon";
 import { ChangeImageButton } from "Items/ChangeImageButton";
+import { ItemSortName } from "Items/ItemSortName";
 
 export const Book: React.FC = () => {
 	const bookId = useParams<{ bookId: string }>().bookId!;
@@ -121,6 +122,7 @@ export const LoadedBook: React.FC<{ user: UserDto; book: BaseItemDto; reloadBook
 					</Layout>
 				</Layout>
 
+				<ItemSortName editableItem={editableItem} isEditing={isEditing} />
 				<ItemOverview item={book} editableItem={editableItem} isEditing={isEditing} />
 
 				<ItemTags

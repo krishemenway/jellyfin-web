@@ -34,6 +34,7 @@ import { ItemPremiereDate } from "Items/ItemPremiereDate";
 import { ItemDuration } from "Items/ItemDuration";
 import { ChangeImageButton } from "Items/ChangeImageButton";
 import { ItemMediaInfo } from "Items/ItemMediaInfo";
+import { ItemSortName } from "Items/ItemSortName";
 
 export const Movie: React.FC = () => {
 	const movieId = useParams<{ movieId: string }>().movieId!;
@@ -130,6 +131,7 @@ const LoadedMovie: React.FC<{ user: UserDto; movie: BaseItemDto; reloadMovie: ()
 					<ItemDuration item={movie} />
 				</Layout>
 
+				<ItemSortName editableItem={editableItem} isEditing={isEditing} />
 				<ItemOverview item={movie} editableItem={editableItem} isEditing={isEditing} />
 
 				<ItemTags
