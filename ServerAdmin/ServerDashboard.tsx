@@ -10,6 +10,7 @@ import { LocalizationOptionsStore } from "ServerAdmin/LocalizationOptionsStore";
 import { ServerControls } from "ServerAdmin/ServerControls";
 import { ServerScheduledTasks } from "ServerAdmin/ServerScheduledTasks";
 import { ServerDevices } from "ServerAdmin/ServerDevices";
+import { ServerUsers } from "ServerAdmin/ServerUsers";
 
 export const ServerDashboard: React.FC = () => {
 	React.useEffect(() => LocalizationOptionsStore.Instance.Load(), []);
@@ -23,15 +24,19 @@ export const ServerDashboard: React.FC = () => {
 					<Layout direction="row" fontSizeREM={2} classes={["server-name"]}>{server.ServerName}</Layout>
 				</Layout>
 
-				<Layout direction="row" gap="1rem">
-					<Layout direction="column" gap="1rem">
-						<ServerControls />
-						<ServerStatistics />
+				<Layout direction="column" gap="1rem">
+					<Layout direction="row" gap="1rem">
+						<Layout direction="column" gap="1rem">
+							<ServerControls />
+							<ServerStatistics />
+						</Layout>
+
+						<ServerPaths />
 					</Layout>
 
-					<ServerPaths />
 					<ServerScheduledTasks />
 					<ServerDevices />
+					<ServerUsers />
 				</Layout>
 
 				<EditGeneralSettingsModal />

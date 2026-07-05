@@ -74,7 +74,7 @@ export function useTranslatedText(request: TranslationRequest|undefined): string
 }
 
 interface TranslatedTextProps {
-	textKey: string;
+	textKey: string|TranslationRequest;
 	textProps?: string[];
 	formatText?: (translatedText?: string) => string;
 	elementType?: string;
@@ -83,6 +83,9 @@ interface TranslatedTextProps {
 }
 
 export const TranslatedText: React.FC<TranslatedTextProps> = ({ textKey, textProps, formatText, classes, elementType, layout }) => {
+	textProps = typeof textKey === "string" ? textProps : textKey.KeyProps;
+	textKey = typeof textKey === "string" ? textKey : textKey.Key;
+
 	let translated = useTranslatedText({ Key: textKey, KeyProps: textProps });
 
 	if (translated === undefined) {

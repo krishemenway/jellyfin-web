@@ -137,6 +137,10 @@ Array.prototype.addCount = function addCount<T>(count: number, getItem?: (index:
 	return array;
 }
 
+export function SortByBoolean<T>(findBooleanFunc: (x: T) => boolean|undefined|null): SortFunc<T> {
+	return (a, b) => (findBooleanFunc(a) === findBooleanFunc(b)) ? 0 : findBooleanFunc(a) ? -1 : 1;
+}
+
 export function SortByNumber<T>(findNumberFunc: (x: T) => number|undefined|null): SortFunc<T> {
 	return (a, b) => (findNumberFunc(a) ?? 0) - (findNumberFunc(b) ?? 0);
 }
