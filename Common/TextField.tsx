@@ -9,16 +9,19 @@ interface TextFieldProps extends BaseInputFieldProps {
 	field: EditableField<string|undefined|null> | EditableField<string> | EditableField<string|undefined>;
 	password?: boolean;
 	multiLine?: boolean;
+	autoComplete?: boolean;
 }
 
 interface NumberFieldProps extends BaseInputFieldProps {
 	field: EditableField<number|undefined|null> | EditableField<number|undefined>;
+	autoComplete?: boolean;
 }
 
 interface InputFieldProps extends BaseInputFieldProps {
 	id: string;
 	value: string;
 	onChange: (newValue: string) => void;
+	autoComplete?: AutoFill;
 }
 
 interface BaseInputFieldProps extends LayoutWithoutChildrenProps {
@@ -34,17 +37,43 @@ interface BaseInputFieldProps extends LayoutWithoutChildrenProps {
 
 const ForwardedNumberField: React.ForwardRefRenderFunction<HTMLInputElement, NumberFieldProps> = (props, ref) => {
 	const currentValue = useObservable(props.field.Current);
-	return <InputField {...props} id={props.field.FieldId} type="number" value={currentValue?.toString() ?? ""} onChange={(newValue) => props.field.OnChange(Nullable.StringValue(newValue, undefined, nv => parseFloat(nv)))} ref={ref} />;
+	return (
+		<InputField
+			{...props}
+			type="number"
+			ref={ref} id={props.field.FieldId}
+			autoComplete={props.autoComplete === true ? "on" : "off"}
+			value={currentValue?.toString() ?? ""}
+			onChange={(newValue) => props.field.OnChange(Nullable.StringValue(newValue, undefined, nv => parseFloat(nv)))}
+		/>
+	);
 };
 
 const ForwardedTextField: React.ForwardRefRenderFunction<HTMLInputElement, TextFieldProps> = (props, ref) => {
 	const currentValue = useObservable(props.field.Current);
-	return <InputField {...props} id={props.field.FieldId} type={props.password ? "password" : "text"} value={currentValue ?? ""} onChange={(newValue) => props.field.OnChange(newValue)} ref={ref} />;
+	return (
+		<InputField
+			{...props}
+			id={props.field.FieldId} ref={ref}
+			type={props.password ? "password" : "text"}
+			value={currentValue ?? ""}
+			onChange={(newValue) => props.field.OnChange(newValue)}
+			autoComplete={props.password === true ? (props.autoComplete === true ? "on" : "new-password") : "off"}
+		/>
+	);
 };
 
 const ForwardedMultiLineField: React.ForwardRefRenderFunction<HTMLTextAreaElement, TextFieldProps> = (props, ref) => {
 	const currentValue = useObservable(props.field.Current);
-	return <TextAreaField {...props} id={props.field.FieldId} value={currentValue ?? ""} onChange={(newValue) => props.field.OnChange(newValue)} ref={ref} />;
+	return (
+		<TextAreaField
+			{...props}
+			id={props.field.FieldId} ref={ref}
+			value={currentValue ?? ""}
+			onChange={(newValue) => props.field.OnChange(newValue)}
+			autoComplete={props.autoComplete === true ? "on" : "off"}
+		/>
+	);
 };
 
 const ForwardedInputField: React.ForwardRefRenderFunction<HTMLInputElement, InputFieldProps> = (props, ref) => {
@@ -61,6 +90,7 @@ const ForwardedInputField: React.ForwardRefRenderFunction<HTMLInputElement, Inpu
 			onChange={(evt) => { props.onChange(evt.currentTarget.value); }}
 			autoFocus={true}
 			disabled={props.disabled}
+			autoComplete={props.autoComplete}
 			style={ApplyLayoutStyleProps(props)}
 			placeholder={placeholder}
 		/>
@@ -80,6 +110,7 @@ const ForwardedTextAreaField: React.ForwardRefRenderFunction<HTMLTextAreaElement
 			onChange={(evt) => { evt.target.style.height = `${evt.target.scrollHeight}px`; props.onChange(evt.currentTarget.value); }}
 			autoFocus={true}
 			disabled={props.disabled}
+			autoComplete={props.autoComplete}
 			style={ApplyLayoutStyleProps(props)}
 			placeholder={placeholder}
 		/>

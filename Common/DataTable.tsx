@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Property } from "csstype";
 import { TranslatedText, TranslationRequest } from "Common/TranslatedText";
 import { ReverseSort, SortFunc } from "Common/ArrayPrototype";
 import { Nullable } from "Common/MissingJavascriptFunctions";
@@ -12,6 +13,8 @@ interface DataTableColumn<T> {
 	header: TranslationRequest;
 	content: (item: T) => React.ReactNode;
 	sortFunc?: SortFunc<T>;
+	width?: Property.Width;
+	align?: Property.TextAlign;
 }
 
 interface DataTableProps<T> extends StyleLayoutProps {
@@ -36,7 +39,7 @@ export function DataTable<T>({ items, columns, keyFunc, tableHeaderElementProps,
 				<tr>
 				{columns.map((column) => (
 					<Layout key={column.id} elementType="th" direction="row" display="table-cell" {...tableHeaderElementProps}>
-						{Nullable.Value(column.sortFunc, <TranslatedText key={column.header.Key} textKey={column.header} />, () => (
+						{Nullable.Value(column.sortFunc, <TranslatedText key={column.header.Key} textKey={column.header} elementType="div" layout={{ ...tableHeaderButtonProps, alignItems: column.align }} />, () => (
 							<Button type="button" width="100%" alignItems="center" justifyContent="space-between" key={column.header.Key} onClick={() => { if (sortColumn === column) { setReverseSort(!reverseSort); } else { setSortColumn(column); setReverseSort(false); }}} {...tableHeaderButtonProps}>
 								<TranslatedText textKey={column.header} />
 								{sortColumn === column ? (reverseSort ? <ArrowUpIcon /> : <ArrowDownIcon />) : undefined}
@@ -49,7 +52,7 @@ export function DataTable<T>({ items, columns, keyFunc, tableHeaderElementProps,
 
 			<tbody>
 				{sortedItems.map((item) => (
-					<tr key={keyFunc(item)}>{columns.map((c) => <Layout key={c.id} elementType="td" direction="row" display="table-cell" children={c.content(item)} {...tableDataProps} />)}</tr>
+					<tr key={keyFunc(item)}>{columns.map((c) => <Layout key={c.id} elementType="td" direction="row" display="table-cell" children={c.content(item)} {...tableDataProps} textAlign={c.align} width={c.width} />)}</tr>
 				))}
 			</tbody>
 		</Layout>

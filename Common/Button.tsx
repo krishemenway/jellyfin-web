@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TranslatedText, TranslationRequest, useTranslatedText } from "Common/TranslatedText";
+import { TranslationRequest, useTranslatedText } from "Common/TranslatedText";
 import { useBackgroundStyles } from "AppStyles";
 import { ApplyLayoutStyleProps, StyleLayoutProps } from "Common/Layout";
 import { Nullable } from "Common/MissingJavascriptFunctions";
@@ -8,6 +8,7 @@ interface BaseButtonProps extends StyleLayoutProps {
 	icon?: React.ReactNode;
 
 	label?: string|TranslationRequest;
+	hiddenLabel?: boolean;
 
 	children?: React.ReactNode,
 
@@ -37,7 +38,8 @@ export interface ResetButtonProps extends BaseButtonProps {
 
 const ForwardedButton: React.ForwardRefRenderFunction<HTMLButtonElement, ButtonProps|SubmitButtonProps|ResetButtonProps> = (props, ref) => {
 	const background = useBackgroundStyles();
-	const title = useTranslatedText(props.title);
+	const translatedLabel = useTranslatedText(props.label);
+	const translatedTitle = useTranslatedText(props.title);
 
 	return (
 		<button
@@ -48,10 +50,11 @@ const ForwardedButton: React.ForwardRefRenderFunction<HTMLButtonElement, ButtonP
 			id={props.id}
 			type={props.type}
 			disabled={props.disabled}
-			title={title}
+			title={translatedTitle}
+			aria-label={translatedLabel}
 			onDragStart={(evt) => Nullable.TryExecute(props.onDragStart, (ods) => ods(evt))}>
 			{Nullable.HasValue(props.icon) && props.icon}
-			{Nullable.HasValue(props.label) && (typeof props.label === "string" ? <TranslatedText textKey={props.label} /> : <TranslatedText textKey={props.label.Key} textProps={props.label.KeyProps} />)}
+			{Nullable.HasValue(translatedLabel) && props.hiddenLabel !== true && translatedLabel}
 			{Nullable.HasValue(props.children) && <>{React.Children.map(props.children, (c) => c)}</>}
 		</button>
 	);

@@ -17,7 +17,7 @@ export const ItemGenres: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutP
 	return (
 		<ListOf
 			items={props.item.Genres ?? []}
-			forEachItem={(genre) => <HyperLink key={genre} to={`/Genres/${genre}`} direction="row" {...props.linkLayout} classes={props.linkClasses}>{genre}</HyperLink>}
+			forEachItem={(genre) => <HyperLink key={genre} to={`/Genres/${genre}`} direction="row" {...props.linkLayout} classes={props.linkClasses} children={genre} />}
 			showMoreButtonStyles={props.linkLayout}
 			{...props}
 		/>

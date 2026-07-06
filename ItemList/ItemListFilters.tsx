@@ -224,18 +224,8 @@ const PickOptionsModal: React.FC<{ itemList: ItemListService; settings: Settings
 				forEachItem={(option) => <PickOptionsLink itemList={itemList} baseUrl={baseUrl} key={option.Key} itemListViewOptions={option} isSelected={option === current} {...props} />}
 			/>
 
-			{!current?.IsUnsaved && (
-				<HyperLink
-					to={baseUrl}
-					direction="row" px=".5em" py=".5em" gap=".5rem">
-					<RadioUncheckedIcon />
-					<TranslatedText textKey="New" />
-				</HyperLink>
-			)}
-
-			{current?.IsUnsaved && (
-				<SaveNewOptions itemList={itemList} baseUrl={baseUrl} listOptions={current} {...props} />
-			)}
+			{!current?.IsUnsaved && <HyperLink to={baseUrl} direction="row" px=".5em" py=".5em" gap=".5rem" icon={<RadioUncheckedIcon />} label="New" />}
+			{current?.IsUnsaved && <SaveNewOptions itemList={itemList} baseUrl={baseUrl} listOptions={current} {...props} />}
 		</Layout>
 	);
 };
@@ -275,11 +265,12 @@ const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions
 				</Layout>
 			) : (
 				<HyperLink
-					key={label} to={`${baseUrl}/${itemListViewOptions.Key}`}
-					direction="row" px=".5em" py=".5em" grow gap=".5rem" alignItems="center">
-					{isSelected ? <RadioCheckedIcon /> : <RadioUncheckedIcon />}
-					{label}
-				</HyperLink>
+					key={label}
+					to={`${baseUrl}/${itemListViewOptions.Key}`}
+					direction="row" px=".5em" py=".5em" grow gap=".5rem" alignItems="center"
+					icon={isSelected ? <RadioCheckedIcon /> : <RadioUncheckedIcon />}
+					children={label}
+				/>
 			)}
 
 			{!itemListViewOptions.IsReadOnly && isSelected && (

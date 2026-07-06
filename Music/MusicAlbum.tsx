@@ -184,9 +184,7 @@ const Artists: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {
 		return (
 			<>
 				<Layout direction="row"><TranslatedText textKey="Artists" /></Layout>
-				{props.item.ArtistItems?.map((ai) => (
-					<HyperLink key={ai.Name} to={MusicArtistService.findUrl!({ Id: ai.Id })!} direction="row" px=".5em" py=".25em">{ai.Name}</HyperLink>
-				))}
+				{props.item.ArtistItems?.map((ai) => <HyperLink key={ai.Name} to={MusicArtistService.findUrl!({ Id: ai.Id })!} direction="row" px=".5em" py=".25em" children={ai.Name} />)}
 				{props.item.Artists?.filter((artist) => !Nullable.HasValue(props.item.ArtistItems?.find((artistItem) => artistItem.Name === artist))).map((artist) => (
 					<Layout key={artist} direction="row" px=".5em" py=".25em">{artist}</Layout>
 				))}

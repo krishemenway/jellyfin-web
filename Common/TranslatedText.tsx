@@ -57,17 +57,18 @@ export class TranslationService {
 	private static _instance: TranslationService;
 }
 
-export function useTranslatedText(request: TranslationRequest|undefined): string|undefined {
+export function useTranslatedText(request: TranslationRequest|undefined|string): string|undefined {
 	const translations = useDataOrNull(TranslationService.Instance.Translations);
 
 	if (translations === null || !Nullable.HasValue(request)) {
 		return undefined;
 	}
 
-	let textFromStore = translations[request.Key];
+	const keyProps = typeof request === "string" ? undefined : request.KeyProps;
+	let textFromStore = translations[typeof request === "string" ? request : request.Key];
 
-	if (Nullable.HasValue(textFromStore) && Nullable.HasValue(request.KeyProps)) {
-		request.KeyProps.forEach((tp, i) => { textFromStore = textFromStore.replace(`{${i}}`, tp)})
+	if (Nullable.HasValue(textFromStore) && Nullable.HasValue(keyProps)) {
+		keyProps.forEach((tp, i) => { textFromStore = textFromStore.replace(`{${i}}`, tp)})
 	}
 
 	return textFromStore;

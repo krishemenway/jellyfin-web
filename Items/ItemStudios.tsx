@@ -19,7 +19,7 @@ export const ItemStudios: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayout
 	return (
 		<ListOf
 			items={props.item.Studios ?? []}
-			forEachItem={(studio, index) => <HyperLink key={studio.Id ?? index.toString()} to={`/Studio/${studio.Id}`} direction="row" {...props.linkLayout} classes={props.linkClasses}>{studio.Name}</HyperLink>}
+			forEachItem={(studio, index) => <HyperLink key={studio.Id ?? index.toString()} to={`/Studio/${studio.Id}`} direction="row" {...props.linkLayout} classes={props.linkClasses} children={studio.Name} />}
 			showMoreButtonStyles={props.linkLayout}
 			{...props}
 		/>

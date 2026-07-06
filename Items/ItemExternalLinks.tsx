@@ -37,7 +37,7 @@ export const ItemExternalLinks: React.FC<{ item: BaseItemDto, linkLayout?: Style
 	return (
 		<ListOf
 			items={props.item.ExternalUrls ?? []}
-			forEachItem={(url, index) => <HyperLink key={url.Url ?? index.toString()} to={url.Url ?? "/NotFound"} direction="row" {...props.linkLayout} classes={props.linkClasses}>{url.Name}</HyperLink>}
+			forEachItem={(url, index) => <HyperLink key={url.Url ?? index.toString()} to={url.Url ?? "/NotFound"} direction="row" {...props.linkLayout} classes={props.linkClasses} children={url.Name} />}
 			{...props}
 		/>
 	);
