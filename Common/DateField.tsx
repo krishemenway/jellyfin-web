@@ -22,11 +22,11 @@ export const DateField: React.FC<DateFieldProps> = ({ field, disabled, ...props 
 			{dateParts.map((part, index) => {
 				switch (part.type) {
 					case "day":
-						return <Input key={field.FieldId+"-"+part.type} id={field.FieldId+"-"+part.type} currentValue={currentDateParts[2] ?? ""} part="day" width="2em" disabled={disabled} onChange={(newValue) => field.OnChange(`${currentDateParts[0] ?? ""}-${currentDateParts[1] ?? ""}-${newValue}`)} classes={["edit-date-day"]} />;
+						return <Input key={field.FieldId+"-"+part.type} id={field.FieldId+"-"+part.type} currentValue={currentDateParts[2] ?? ""} part="day" width="2em" disabled={disabled} onChange={(newValue) => field.OnChange(`${currentDateParts[0] ?? ""}-${currentDateParts[1] ?? ""}-${newValue}`)} classes={["edit-date-day"]} minLength={2} />;
 					case "month":
-						return <Input key={field.FieldId+"-"+part.type} id={field.FieldId+"-"+part.type} currentValue={currentDateParts[1] ?? ""} part="month" width="2em" disabled={disabled} onChange={(newValue) => field.OnChange(`${currentDateParts[0] ?? ""}-${newValue}-${currentDateParts[2] ?? ""}`)} classes={["edit-date-month"]} />;
+						return <Input key={field.FieldId+"-"+part.type} id={field.FieldId+"-"+part.type} currentValue={currentDateParts[1] ?? ""} part="month" width="2em" disabled={disabled} onChange={(newValue) => field.OnChange(`${currentDateParts[0] ?? ""}-${newValue}-${currentDateParts[2] ?? ""}`)} classes={["edit-date-month"]} minLength={2} />;
 					case "year":
-						return <Input key={field.FieldId+"-"+part.type} id={field.FieldId+"-"+part.type} currentValue={currentDateParts[0] ?? ""} part="year" width="3em" disabled={disabled} onChange={(newValue) => field.OnChange(`${newValue}-${currentDateParts[1] ?? ""}-${currentDateParts[2] ?? ""}`)} classes={["edit-date-year"]} />;
+						return <Input key={field.FieldId+"-"+part.type} id={field.FieldId+"-"+part.type} currentValue={currentDateParts[0] ?? ""} part="year" width="3em" disabled={disabled} onChange={(newValue) => field.OnChange(`${newValue}-${currentDateParts[1] ?? ""}-${currentDateParts[2] ?? ""}`)} classes={["edit-date-year"]} minLength={4} />;
 					case "literal":
 						return <Layout key={field.FieldId + "-" + index} direction="row" elementType="span" children={part.value} classes={["edit-date-literal"]} />;
 				}
@@ -35,7 +35,7 @@ export const DateField: React.FC<DateFieldProps> = ({ field, disabled, ...props 
 	);
 };
 
-const Input: React.FC<{ id: string; part: "literal"|"day"|"month"|"year"; currentValue: string; onChange: (newValue: string) => void; disabled?: boolean; classes: string[]; width: string }> = ({ id, part, currentValue, onChange, disabled, classes, width }) => {
+const Input: React.FC<{ id: string; part: "literal"|"day"|"month"|"year"; currentValue: string; onChange: (newValue: string) => void; disabled?: boolean; classes: string[]; width: string; minLength: number }> = ({ id, part, currentValue, onChange, disabled, classes, width, minLength }) => {
 	return (
 		<InputField
 			type="number"
@@ -44,6 +44,7 @@ const Input: React.FC<{ id: string; part: "literal"|"day"|"month"|"year"; curren
 			value={currentValue}
 			placeholder={{ Key: `LabelDate${part}` }}
 			onChange={(v) => onChange(v ?? "")}
+			onBlur={() => { if (currentValue.length < minLength) { onChange(new Array<string>().addCount(minLength - currentValue.length, () => "0").join("") + currentValue); }}}
 			px=".25em" py=".25em" width={width} textAlign="center"
 		/>
 	);
