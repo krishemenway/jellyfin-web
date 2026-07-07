@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BaseItemKindService } from "Items/BaseItemKindService";
-import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
+import { QuestionMarkIcon } from "CommonIcons/QuestionMarkIcon";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 

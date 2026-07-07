@@ -2,7 +2,7 @@ import * as React from "react";
 import { BaseItemKind, CollectionType } from "@jellyfin/sdk/lib/generated-client/models";
 import { IconProps } from "Common/IconProps";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
-import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
+import { QuestionMarkIcon } from "CommonIcons/QuestionMarkIcon";
 
 export const IconForItemKind : React.FC<{ itemKind: BaseItemKind|undefined, collectionType?: CollectionType }&IconProps> = (props) => {
 	const iconTypeFuncOrDefault = BaseItemKindServiceFactory.FindOrNull(props.itemKind)?.findIcon ?? ((iconProps) => <QuestionMarkIcon {...iconProps} />);

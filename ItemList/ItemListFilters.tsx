@@ -31,7 +31,7 @@ import { RadioUncheckedIcon } from "CommonIcons/RadioUncheckedIcon";
 import { FieldError } from "Common/FieldError";
 import { VisibleIcon } from "CommonIcons/VisibleIcon";
 import { HyperLink } from "Common/HyperLink";
-import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
+import { QuestionMarkIcon } from "CommonIcons/QuestionMarkIcon";
 import { EditIcon } from "CommonIcons/EditIcon";
 
 export interface ItemListFiltersProps {

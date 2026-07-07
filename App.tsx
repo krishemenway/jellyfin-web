@@ -50,7 +50,7 @@ import { MusicVideo } from "Music/MusicVideo";
 import { RequiresTranslationsLoaded } from "Common/TranslatedText";
 import { MediaPlayer } from "MediaPlayer/MediaPlayer";
 import { PageWithNavigation } from "PageWithNavigation";
-import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
+import { QuestionMarkIcon } from "CommonIcons/QuestionMarkIcon";
 
 const AppWrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
 	const [breakpoint, ResponsiveProvider] = useCalculatedBreakpoint();

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BaseItemKindService } from "Items/BaseItemKindService";
-import { QuestionMarkIcon } from "Common/QuestionMarkIcon";
+import { QuestionMarkIcon } from "CommonIcons/QuestionMarkIcon";
 
 // TODO this likely needs moving!
 export const ChannelService: BaseItemKindService = {
