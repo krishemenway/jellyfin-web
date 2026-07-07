@@ -8,7 +8,7 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 import { Loading } from "Common/Loading";
 import { ItemService } from "Items/ItemsService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { MultiSelectEditor } from "Common/SelectFieldEditor";
 
 export const ItemStudios: React.FC<{ item: BaseItemDto; linkLayout?: StyleLayoutProps, linkClasses?: string[] }&EditableItemProps&BaseListProps> = (props) => {

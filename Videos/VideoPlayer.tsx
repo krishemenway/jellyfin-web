@@ -4,7 +4,7 @@ import { Button } from "Common/Button";
 import { CloseIcon } from "CommonIcons/CloseIcon";
 import { VideoPlayerService } from "Videos/VideoPlayerService";
 import { Loading } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { MediaSourceInfo, PlaybackInfoResponse } from "@jellyfin/sdk/lib/generated-client/models";
 import { ServerService } from "Servers/ServerService";

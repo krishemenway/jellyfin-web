@@ -9,7 +9,7 @@ import { EditableItemProps } from "Items/EditableItemProps";
 import { CenteredModal } from "Common/Modal";
 import { Button } from "Common/Button";
 import { Receiver } from "Common/Receiver";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Loading } from "Common/Loading";
 import { ListOf } from "Common/ListOf";

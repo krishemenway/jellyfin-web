@@ -18,7 +18,7 @@ import { useBackgroundStyles } from "AppStyles";
 import { Receiver } from "Common/Receiver";
 import { useNavigate } from "node_modules/react-router-dom/dist";
 import { Loading, useIsBusy } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { EditableUser } from "Users/EditableUser";
 import { ToggleSwitch } from "Common/ToggleSwitch";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";

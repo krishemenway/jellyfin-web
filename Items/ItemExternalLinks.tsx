@@ -7,7 +7,7 @@ import { EditableItemProps } from "Items/EditableItemProps";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemEditorService } from "Items/ItemEditorService";
 import { Loading } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { useObservable } from "@residualeffect/rereactor";
 import { TextField } from "Common/TextField";

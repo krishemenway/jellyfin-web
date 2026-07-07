@@ -6,7 +6,7 @@ import { FieldLabel } from "Common/FieldLabel";
 import { Form } from "Common/Form";
 import { Layout } from "Common/Layout";
 import { useDataOrNull, useError, useIsBusy } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { RequestError } from "Common/RequestError";
 import { TextField } from "Common/TextField";
 import { TranslatedText } from "Common/TranslatedText";

@@ -5,7 +5,7 @@ import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
 import { useObservable } from "@residualeffect/rereactor";
 import { BackdropService } from "Common/BackdropService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { BaseItemDto, SystemInfo, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Button } from "Common/Button";
 import { EditIcon } from "CommonIcons/EditIcon";

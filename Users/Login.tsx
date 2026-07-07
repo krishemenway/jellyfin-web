@@ -4,7 +4,7 @@ import { ToggleSwitch } from "Common/ToggleSwitch";
 import { TranslatedText } from "Common/TranslatedText";
 import { TextField } from "Common/TextField";
 import { Loading } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Layout, StyleLayoutProps } from "Common/Layout";
 import { LoginService } from "Users/LoginService";

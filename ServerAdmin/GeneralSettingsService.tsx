@@ -15,7 +15,7 @@ import { FieldError } from "Common/FieldError";
 import { Computed, Observable } from "@residualeffect/reactor";
 import { useObservable } from "@residualeffect/rereactor";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
 import { LocalizationOptionsStore } from "ServerAdmin/LocalizationOptionsStore";
 import { ToggleSwitch } from "Common/ToggleSwitch";

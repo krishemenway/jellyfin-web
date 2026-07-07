@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { Layout } from "Common/Layout";
 import { ItemService } from "Items/ItemsService";
 import { Loading } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemImage } from "Items/ItemImage";
 import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";

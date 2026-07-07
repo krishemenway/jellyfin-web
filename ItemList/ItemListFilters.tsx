@@ -24,7 +24,7 @@ import { ItemListService } from "ItemList/ItemListService";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { useIsBusy } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { useNavigate } from "react-router-dom";
 import { RadioCheckedIcon } from "CommonIcons/RadioCheckedIcon";
 import { RadioUncheckedIcon } from "CommonIcons/RadioUncheckedIcon";

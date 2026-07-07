@@ -4,7 +4,7 @@ import { Layout, StyleLayoutProps } from "Common/Layout";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { AutoCompleteFieldEditor } from "Common/SelectFieldEditor";
 import { EditableItemProps } from "Items/EditableItemProps";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { ItemEditorService } from "Items/ItemEditorService";
 import { Loading } from "Common/Loading";
 

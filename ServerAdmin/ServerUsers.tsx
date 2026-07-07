@@ -7,7 +7,7 @@ import { ServerService } from "Servers/ServerService";
 import { UserDto } from "node_modules/@jellyfin/sdk/lib/generated-client";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { DataTable } from "Common/DataTable";
 import { SortByBoolean, SortByString } from "Common/ArrayPrototype";
 import { CheckIcon } from "CommonIcons/CheckIcon";

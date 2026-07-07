@@ -5,7 +5,7 @@ import { PageWithNavigation } from "PageWithNavigation";
 import { Loading } from "Common/Loading";
 import { ItemService } from "Items/ItemsService";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { Settings } from "Users/SettingsStore";
 import { Layout } from "Common/Layout";

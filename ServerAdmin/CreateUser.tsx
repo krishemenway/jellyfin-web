@@ -19,7 +19,7 @@ import { useBackgroundStyles } from "AppStyles";
 import { Receiver } from "Common/Receiver";
 import { useNavigate } from "node_modules/react-router-dom/dist";
 import { useIsBusy } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 
 class CreateUserService {
 	constructor() {

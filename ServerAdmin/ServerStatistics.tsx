@@ -8,7 +8,7 @@ import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 
 interface Statistic {
 	label: string;

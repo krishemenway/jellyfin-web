@@ -2,7 +2,7 @@ import * as React from "react";
 import { ListOf } from "Common/ListOf";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Loading } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { Layout } from "Common/Layout";
 import { Receiver } from "Common/Receiver";
 import { DeviceInfoDto } from "@jellyfin/sdk/lib/generated-client/models";

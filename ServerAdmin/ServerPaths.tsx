@@ -4,7 +4,7 @@ import { TranslatedText } from "Common/TranslatedText";
 import { ProgressBar } from "Common/ProgressBar";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { Loading } from "Common/Loading";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { Layout } from "Common/Layout";
 import { Button } from "Common/Button";
 import { EditIcon } from "CommonIcons/EditIcon";

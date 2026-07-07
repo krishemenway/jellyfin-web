@@ -5,7 +5,7 @@ import { PageTitle } from "Common/PageTitle";
 import { Settings } from "Users/SettingsStore";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { LoadingIcon } from "Common/LoadingIcon";
+import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { Layout } from "Common/Layout";
 import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
 import { ItemService } from "Items/ItemsService";
