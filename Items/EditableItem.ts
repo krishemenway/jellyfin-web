@@ -4,7 +4,7 @@ import { EditableField, IEditableField } from "Common/EditableField";
 import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { EditablePersonCredit } from "Items/EditablePersonCredit";
 import { EditableItemProvider } from "Items/EditableItemProvider";
-import { formatISO, isValid } from "date-fns";
+import { formatISO, isValid, parseISO } from "date-fns";
 
 export class EditableItem {
 	constructor(item: BaseItemDto) {
@@ -47,8 +47,8 @@ export class EditableItem {
 		this.ProductionLocation = new EditableField("ProductionLocations", Nullable.Value(item.ProductionLocations, undefined, (i) => i[0]));
 		this.Studios = new EditableField("Studios", Nullable.Value(item, [], (i) => i.Studios ?? []));
 
-		this.PremiereDate = new EditableField("Premiere", Nullable.Value(item?.PremiereDate, "", (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })), (d) => !isValid(new Date(d)) ? "InvalidDateFormat" : "");
-		this.EndDate = new EditableField("EndDate", Nullable.Value(item?.EndDate, undefined, (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })));
+		this.PremiereDate = new EditableField("Premiere", Nullable.Value(item?.PremiereDate, "", (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })), (d) => !isValid(parseISO(d)) ? "InvalidDateFormat" : "");
+		this.EndDate = new EditableField("EndDate", Nullable.Value(item?.EndDate, "", (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })), (d) => !isValid(parseISO(d)) ? "InvalidDateFormat" : "");
 		this.DateCreated = new EditableField("DateCreated", Nullable.Value(item, undefined, (i) => i.DateCreated));
 
 		this.Height = new EditableField("Height", Nullable.Value(item, undefined, (i) => i.Height));
@@ -203,7 +203,7 @@ export class EditableItem {
 	public Tags: EditableField<string[]>;
 
 	public PremiereDate: EditableField<string>;
-	public EndDate: EditableField<string|undefined>;
+	public EndDate: EditableField<string>;
 
 	public ProductionLocation: EditableField<string|undefined>;
 
