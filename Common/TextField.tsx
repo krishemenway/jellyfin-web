@@ -21,6 +21,7 @@ interface InputFieldProps extends BaseInputFieldProps {
 	id: string;
 	value: string;
 	onChange: (newValue: string) => void;
+	onKeyDown?: (key: string, currentValue: string) => boolean;
 	autoComplete?: AutoFill;
 }
 
@@ -88,6 +89,7 @@ const ForwardedInputField: React.ForwardRefRenderFunction<HTMLInputElement, Inpu
 			value={props.value}
 			onBlur={() => props.onBlur && props.onBlur()}
 			onChange={(evt) => { props.onChange(evt.currentTarget.value); }}
+			onKeyDown={Nullable.Value(props.onKeyDown, undefined, kd => (evt: React.KeyboardEvent<HTMLInputElement>) => { if (!kd(evt.key, evt.currentTarget.value)) { evt.preventDefault(); } })}
 			autoFocus={true}
 			disabled={props.disabled}
 			autoComplete={props.autoComplete}
