@@ -103,6 +103,7 @@ const LoadedBasicItemListView: React.FC<LoadedBasicItemListViewProps> = ({ libra
 						settings={settings}
 						filterTypes={filterTypes ?? []}
 						sortTypes={sortTypes ?? []}
+						fallbackItem={() => library}
 						user={user}
 						reloadItems={() => itemList.LoadWithAbort(undefined, true)}
 						menuActions={[[
