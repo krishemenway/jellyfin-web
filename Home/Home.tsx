@@ -28,6 +28,7 @@ import { ArrowDownIcon } from "CommonIcons/ArrowDownIcon";
 import { ArrowUpIcon } from "CommonIcons/ArrowUpIcon";
 import { CollectionServiceFactory } from "Collections/CollectionTypeService";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
+import { TranslatedText } from "Common/TranslatedText";
 
 export const Home: React.FC = () => {
 	return (
@@ -85,7 +86,7 @@ const AddHomeSectionButton: React.FC<{ currentOptions: ItemListViewOptions[]; ho
 			<AutoCompleteFieldEditor
 				allOptions={filtered}
 				field={field}
-				getLabel={(o) => o.Label.Current.Value}
+				getLabel={(o) => o.IsReadOnly ? <TranslatedText textKey={o.DefaultLabel?.Key ?? "Missing Default Label Key"} textProps={o.DefaultLabel?.KeyProps} /> : o.Label.Current.Value}
 				getValue={(o) => o.Key}
 			/>
 
@@ -145,6 +146,9 @@ function showMoreLink(viewOptions: ItemListViewOptions): string {
 		}
 		case "Resume": {
 			return `/Resume${!viewOptions.IsReadOnly ? "/" + viewOptions.Key : ""}`;
+		}
+		case "Favorites": {
+			return `/Favorites${!viewOptions.IsReadOnly ? "/" + viewOptions.Key : ""}`;
 		}
 		case "Collection": {
 			return `/Collection/${viewOptions.DataSource.DataSourceKey}/${viewOptions.Key}`;

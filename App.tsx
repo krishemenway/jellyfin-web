@@ -42,7 +42,9 @@ import { Studio } from "Studios/Studio";
 
 import { Tag } from "Tags/Tag";
 import { Tags } from "Tags/Tags";
+
 import { ResumeView } from "ItemList/ResumeView";
+import { FavoritesView } from "Users/FavoritesView";
 
 import { Genre } from "Genres/Genre";
 import { Genres } from "Genres/Genres";
@@ -99,6 +101,9 @@ const App: React.FC<{ basePath: string }> = (props) => {
 
 						{ path: "/Resume/:viewOptionsKey", element: <ResumeView /> },
 						{ path: "/Resume", element: <ResumeView /> },
+
+						{ path: "/Favorites/:viewOptionsKey", element: <FavoritesView /> },
+						{ path: "/Favorites", element: <FavoritesView /> },
 
 						{ path: "/Playlists/:libraryId", element: <ItemListView itemKind="Playlist" paramName="libraryId" /> },
 						{ path: "/Playlist/:playlistId", element: <PlaylistView /> },

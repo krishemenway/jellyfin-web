@@ -31,15 +31,15 @@ import { ItemListService } from "ItemList/ItemListService";
 import { Settings } from "Users/SettingsStore";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
 import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
-import { ContinuingSorts, ResumeDataSource } from "ItemList/ItemListViewOptions";
+import { ContinuingSorts, FavoritesDataSource } from "ItemList/ItemListViewOptions";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { PlayVideoAction } from "MenuActions/PlayVideoAction";
 import { MarkPlayedAction, MarkUnplayedAction } from "MenuActions/MarkPlayedAction";
 
-export const ResumeView: React.FC = () => {
+export const FavoritesView: React.FC = () => {
 	const viewOptionsKey = useParams().viewOptionsKey;
-	const itemList = ItemService.Instance.FindOrCreateListFromSource(ResumeDataSource);
+	const itemList = ItemService.Instance.FindOrCreateListFromSource(FavoritesDataSource);
 
 	React.useEffect(() => itemList.LoadWithAbort([]), []);
 
@@ -80,15 +80,15 @@ const SortTypes: ItemSortType[] = [
 const ListViewOptions: React.FC<{ viewOptionsKey?: string; items: BaseItemDto[]; itemList: ItemListService; settings: Settings; user: UserDto }> = ({ viewOptionsKey, items, itemList, settings, user }) => {
 	const listOptions = useObservable(itemList.ListOptions);
 
-	React.useEffect(() => itemList.LoadItemListViewOptionsOrNew(settings, viewOptionsKey, "Resume", { Sorts: ContinuingSorts }), [settings, viewOptionsKey]);
+	React.useEffect(() => itemList.LoadItemListViewOptionsOrNew(settings, viewOptionsKey, "Favorites", { Sorts: ContinuingSorts }), [settings, viewOptionsKey]);
 	
 	return (
 		<Layout direction="column" gap="1em" py="1em" height="100%">
-			<PageTitle text={{ Key: "ContinueWatching" }} />
+			<PageTitle text={{ Key: "Favorites" }} />
 			<ItemGridWithFilters
 				items={items}
 				settings={settings}
-				baseUrl="/Resume"
+				baseUrl="/Favorites"
 				itemList={itemList}
 				listOptions={listOptions}
 				filterTypes={FilterTypes}

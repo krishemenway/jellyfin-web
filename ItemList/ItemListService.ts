@@ -32,6 +32,11 @@ const loadRequestForDataSource = (dataSource: ItemViewOptionDataSource, receiver
 				ItemCacheResetService.Instance.LoadedItems(items, receiver);
 				return items;
 			});
+		case "Favorites":
+			return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, isFavorite: true }, { signal: a.signal }).then(r => r.data.Items ?? []).then((items) => {
+				ItemCacheResetService.Instance.LoadedItems(items, receiver);
+				return items;
+			});
 		case "Genre":
 			return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, genres: [dataSource.DataSourceKey] }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
 				ItemCacheResetService.Instance.LoadedItems(items, receiver);
@@ -98,7 +103,7 @@ export class ItemListService {
 	constructor(dataSource: ItemViewOptionDataSource) {
 		this.DataSource = dataSource;
 		this.List = new Receiver("UnknownError");
-		this.ListOptions = new Observable(new ItemListViewOptions(this.DataSource, undefined));
+		this.ListOptions = new Observable(new ItemListViewOptions(this.DataSource));
 		this.ExistingOptions = new ObservableArray([]);
 		this.ConfirmDeleteOptions = new Observable(null);
 
@@ -143,7 +148,7 @@ export class ItemListService {
 			.filter((k) => k.startsWith(`ViewOption|`))
 			.map((key) => settings.ReadAsJsonOrThrow<ItemViewOptionsData>(key))
 			.filter((optionData) => optionData.DataSource.DataSource === this.DataSource.DataSource && optionData.DataSource.DataSourceKey === this.DataSource.DataSourceKey)
-			.map((optionData) => new ItemListViewOptions(this.DataSource, optionData, false))
+			.map((optionData) => new ItemListViewOptions(this.DataSource, optionData))
 			.concat([ ItemListViewOptions.CreateRecentlyAdded(this.DataSource, contextName) ]);
 
 		if (Nullable.HasValue(viewOptionsKey)) {

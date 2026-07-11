@@ -36,7 +36,7 @@ export class HomeViewOptions {
 			const dataSource: ItemViewOptionDataSource = { DataSource: library.CollectionType!, DataSourceKey: library.Id!, };
 			all.push(ItemListViewOptions.CreateRecentlyAdded(dataSource, library.Name!));
 			return all;
-		}, [ItemListViewOptions.CreateContinuing()] as ItemListViewOptions[]);
+		}, [ItemListViewOptions.CreateContinuing(), ItemListViewOptions.CreateFavorites()] as ItemListViewOptions[]);
 	}
 
 	public LoadHomeOptions(): ItemListViewOptions[] {
@@ -51,7 +51,7 @@ export class HomeViewOptions {
 			throw new Error(`Unable to find ${key}`);
 		}
 
-		return new ItemListViewOptions(viewOptionsData.DataSource, viewOptionsData, false);
+		return new ItemListViewOptions(viewOptionsData.DataSource, viewOptionsData);
 	}
 
 	public Settings: Settings;

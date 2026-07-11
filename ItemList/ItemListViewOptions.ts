@@ -10,13 +10,18 @@ import { ItemSortTypeStore } from "ItemList/ItemSortOptionStore";
 import { ItemFilterTypeStore, ItemFilterData } from "ItemList/ItemFilterTypeStore";
 import { ItemSortTypeModel } from "ItemList/ItemSortTypeModel";
 import { SortByDatePlayed } from "ItemList/ItemSortTypes/SortByDatePlayed";
+import { TranslationRequest } from "Common/TranslatedText";
+
+export const ResumeDataSource: ItemViewOptionDataSource = { DataSource: "Resume", DataSourceKey: "Resume" };
+export const FavoritesDataSource: ItemViewOptionDataSource = { DataSource: "Favorites", DataSourceKey: "Favorites" };
 
 export class ItemListViewOptions {
-	constructor(dataSource: ItemViewOptionDataSource, data?: Partial<ItemViewOptionsData>, isReadOnly?: boolean) {
+	constructor(dataSource: ItemViewOptionDataSource, data?: Partial<ItemViewOptionsData>, isReadOnly?: boolean, defaultLabel?: TranslationRequest) {
 		this.Key = Nullable.Value(data?.Key, self.crypto.randomUUID(), k => k);
 		this.IsUnsaved = !Nullable.HasValue(data?.Key);
 		this.IsReadOnly = isReadOnly ?? false;
 		this.Label = new EditableField("Filter", data?.Label ?? "", (v) => ValueIsRequired(v));
+		this.DefaultLabel = defaultLabel;
 		this.ShowErrors = new Observable(false);
 		this.DataSource = data?.DataSource ?? dataSource;
 		this.HasChanged = new Computed(() => this.AllFields().map((f) => f.HasChanged.Value).some((hc) => hc));
@@ -75,12 +80,15 @@ export class ItemListViewOptions {
 	}
 
 	public static CreateContinuing(): ItemListViewOptions {
-		const dataSource: ItemViewOptionDataSource = { DataSource: "Resume", DataSourceKey: "", };
-		return new ItemListViewOptions(dataSource, { Key: "Resume", Label: "Continue Watching", DataSource: dataSource, Filters: [], Sorts: ContinuingSorts }, true);
+		return new ItemListViewOptions(ResumeDataSource, { Key: "Resume", Filters: [], Sorts: ContinuingSorts }, true, { Key: "ContinueWatching" });
+	}
+
+	public static CreateFavorites(): ItemListViewOptions {
+		return new ItemListViewOptions(FavoritesDataSource, { Key: "Favorites", Label: "Favorites", Filters: [], Sorts: [] }, true, { Key: "Favorites" });
 	}
 
 	public static CreateRecentlyAdded(dataSource: ItemViewOptionDataSource, dataSourceName: string): ItemListViewOptions {
-		return new ItemListViewOptions(dataSource, { DataSource: dataSource, Key: `RecentlyAdded-${dataSource.DataSourceKey}`, Filters: [], Label: `${dataSourceName} - Recently Added`, Sorts: [{ Reversed: true, SortType: "DateCreated", Hidden: true }] }, true);
+		return new ItemListViewOptions(dataSource, { DataSource: dataSource, Key: `RecentlyAdded-${dataSource.DataSourceKey}`, Filters: [], Sorts: [{ Reversed: true, SortType: "DateCreated", Hidden: true }] }, true, { Key: "LatestFromLibrary", KeyProps: [dataSourceName] });
 	}
 
 	public CreateSaveRequest(): ItemViewOptionsData {
@@ -117,6 +125,7 @@ export class ItemListViewOptions {
 	public HasChanged: Computed<boolean>;
 	public CanMakeRequest: Computed<boolean>;
 	public DataSource: ItemViewOptionDataSource;
+	public DefaultLabel: TranslationRequest|undefined;
 
 	public NewFilter: Observable<IFilterModel|undefined>;
 
@@ -146,7 +155,7 @@ export interface ItemViewOptionSortData {
 	Hidden: boolean;
 }
 
-export type DataSourceType = "Tag"|"Resume"|"Genre"|"Studio"|"Collection"|"Studios"|"MusicArtists"|"MusicSongs";
+export type DataSourceType = "Tag"|"Resume"|"Favorites"|"Genre"|"Studio"|"Collection"|"Studios"|"MusicArtists"|"MusicSongs";
 
 export interface ItemViewOptionDataSource {
 	DataSource: DataSourceType|CollectionType;
