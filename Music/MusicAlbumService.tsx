@@ -14,6 +14,8 @@ import { SortByOfficialRating } from "ItemList/ItemSortTypes/SortByOfficialRatin
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { SortByPlayCount } from "ItemList/ItemSortTypes/SortByPlayCount";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
+import { SortByArtist } from "ItemList/ItemSortTypes/SortByArtist";
+import { SortByAlbumArtist } from "ItemList/ItemSortTypes/SortByAlbumArtist";
 
 export const MusicAlbumService: BaseItemKindService = {
 	kind: "MusicAlbum",
@@ -30,6 +32,8 @@ export const MusicAlbumService: BaseItemKindService = {
 		SortByPremiereDate,
 		SortByPlayCount,
 		SortByRandom,
+		SortByArtist,
+		SortByAlbumArtist,
 	],
 	filterOptions: [
 		FilterByName,

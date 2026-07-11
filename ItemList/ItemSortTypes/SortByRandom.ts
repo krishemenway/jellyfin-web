@@ -2,7 +2,7 @@ import { SortByNumber } from "Common/ArrayPrototype";
 import { ItemSortType } from "ItemList/ItemSortType";
 
 export const SortByRandom: ItemSortType = {
-	labelKey: 'OptionRandom',
+	labelKey: "OptionRandom",
 	field: "Random",
 	getContent: (i) => FindOrCreateRandomValue(i.Id).toLocaleString(),
 	sortFunc: SortByNumber((i) => FindOrCreateRandomValue(i.Id)),

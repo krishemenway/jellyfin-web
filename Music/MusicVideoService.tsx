@@ -24,6 +24,7 @@ import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
+import { SortByArtist } from "ItemList/ItemSortTypes/SortByArtist";
 import { CollectionTypeService } from "Collections/CollectionTypeService";
 
 export const MusicVideoService: BaseItemKindService = {
@@ -56,6 +57,7 @@ export const MusicVideoService: BaseItemKindService = {
 		SortByRuntime,
 		SortByRandom,
 		SortByTagCount,
+		SortByArtist,
 	],
 };
 

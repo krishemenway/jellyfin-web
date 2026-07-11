@@ -2,7 +2,7 @@ import { SortByNumber } from "Common/ArrayPrototype";
 import { ItemSortType } from "ItemList/ItemSortType";
 
 export const SortByCommunityRating: ItemSortType = {
-	labelKey: 'OptionCommunityRating',
+	labelKey: "OptionCommunityRating",
 	field: "CommunityRating",
 	getContent: (i) => i.CommunityRating?.toString(),
 	sortFunc: SortByNumber((i) => i.CommunityRating),

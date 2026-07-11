@@ -3,7 +3,7 @@ import { SortByNumber } from "Common/ArrayPrototype";
 import { ItemSortType } from "ItemList/ItemSortType";
 
 export const SortByRuntime: ItemSortType = {
-	labelKey: 'Runtime',
+	labelKey: "Runtime",
 	field: "Runtime",
 	getContent: (i) => DateTime.ConvertTicksToDurationString(i.RunTimeTicks),
 	sortFunc: SortByNumber((i) => i.RunTimeTicks),

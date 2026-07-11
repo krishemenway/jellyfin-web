@@ -3,7 +3,7 @@ import { SortByNumber } from "Common/ArrayPrototype";
 import { ItemSortType } from "ItemList/ItemSortType";
 
 export const SortByOfficialRating: ItemSortType = {
-	labelKey: 'OptionParentalRating',
+	labelKey: "OptionParentalRating",
 	field: "OfficialRating",
 	getContent: (i) => i.OfficialRating,
 	sortFunc: SortByNumber((i) => GetOrder(i.OfficialRating)),
