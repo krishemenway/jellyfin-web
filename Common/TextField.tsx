@@ -90,7 +90,6 @@ const ForwardedInputField: React.ForwardRefRenderFunction<HTMLInputElement, Inpu
 			onBlur={() => props.onBlur && props.onBlur()}
 			onChange={(evt) => { props.onChange(evt.currentTarget.value); }}
 			onKeyDown={Nullable.Value(props.onKeyDown, undefined, kd => (evt: React.KeyboardEvent<HTMLInputElement>) => { if (!kd(evt.key, evt.currentTarget.value)) { evt.preventDefault(); } })}
-			autoFocus={true}
 			disabled={props.disabled}
 			autoComplete={props.autoComplete}
 			style={ApplyLayoutStyleProps(props)}
@@ -109,11 +108,11 @@ const ForwardedTextAreaField: React.ForwardRefRenderFunction<HTMLTextAreaElement
 			className={props.classes?.join(" ")}
 			value={props.value}
 			onBlur={() => props.onBlur && props.onBlur()}
-			onChange={(evt) => { evt.target.style.height = `${evt.target.scrollHeight}px`; props.onChange(evt.currentTarget.value); }}
-			autoFocus={true}
+			onFocus={(evt) => { evt.currentTarget.style.height = "1em"; evt.currentTarget.style.height = `${evt.currentTarget.scrollHeight}px`; }}
+			onChange={(evt) => { props.onChange(evt.currentTarget.value); evt.currentTarget.style.height = "1em"; evt.currentTarget.style.height = `${evt.currentTarget.scrollHeight}px`; }}
 			disabled={props.disabled}
 			autoComplete={props.autoComplete}
-			style={ApplyLayoutStyleProps(props)}
+			style={ApplyLayoutStyleProps({...{ overflowY: "hidden", resize: "none" }, ...props})}
 			placeholder={placeholder}
 		/>
 	);
