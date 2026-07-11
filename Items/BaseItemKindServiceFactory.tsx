@@ -1,4 +1,4 @@
-import { BaseItemDto, BaseItemKind, CollectionType } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
 import { AudioBookService } from "Books/AudioBookService";
 import { BookService } from "Books/BookService";
 import { AggregateFolderService } from "Collections/AggregateFolderService";
@@ -55,77 +55,43 @@ export class BaseItemKindServiceFactory {
 		return this._servicesByKind[kind as BaseItemKind] ?? null;
 	}
 
-	public static FindOrNullByCollectionType(collectionType?: CollectionType): BaseItemKindService|null {
-		if (collectionType === undefined) {
-			return null;
-		}
-
-		return this._servicesByCollection[collectionType] ?? null;
-	}
-
-	public static FindOrThrowByCollectionType(collectionType?: CollectionType): BaseItemKindService {
-		const result = BaseItemKindServiceFactory.FindOrNullByCollectionType(collectionType);
-
-		if (!Nullable.HasValue(result)) {
-			throw new Error(`Missing Service for collection type ${collectionType}`);
-		}
-
-		return result;
-	}
-
-	private static _servicesByKind: Record<BaseItemKind, BaseItemKindService> = {
-		"AggregateFolder": AggregateFolderService,
-		"Audio": AudioService,
-		"AudioBook": AudioBookService,
-		"BasePluginFolder": BasePluginFolderService,
-		"Book": BookService,
-		"BoxSet": BoxSetService,
-		"Channel": ChannelService,
-		"ChannelFolderItem": ChannelFolderItemService,
-		"CollectionFolder": CollectionFolderService,
-		"Episode": EpisodeService,
-		"Folder": FolderService,
-		"Genre": GenreService,
-		"ManualPlaylistsFolder": ManualPlaylistsFolderService,
-		"Movie": MovieService,
-		"LiveTvChannel": LiveTVChannelService,
-		"LiveTvProgram": LiveTVProgramService,
-		"MusicAlbum": MusicAlbumService,
-		"MusicArtist": MusicArtistService,
-		"MusicGenre": MusicGenreService,
-		"MusicVideo": MusicVideoService,
-		"Person": PersonService,
-		"Photo": PhotoService,
-		"PhotoAlbum": PhotoAlbumService,
-		"Playlist": PlaylistService,
-		"PlaylistsFolder": PlaylistsFolderService,
-		"Program": LiveTVProgramService,
-		"Recording": RecordingService,
-		"Season": SeasonService,
-		"Series": ShowService,
-		"Studio": StudioService,
-		"Trailer": TrailerService,
-		"TvChannel": LiveTVChannelService,
-		"TvProgram": LiveTVProgramService,
-		"UserRootFolder": UserRootFolderService,
-		"UserView": CollectionFolderService,
-		"Video": VideoService,
-		"Year": YearService,
-	};
-
-	private static _servicesByCollection: Record<CollectionType, BaseItemKindService> = {
-		"boxsets": BoxSetService,
-		"music": AudioService,
-		"musicvideos": MusicVideoService,
-		"movies": MovieService,
-		"photos": PhotoService,
-		"tvshows": ShowService,
-		"trailers": TrailerService,
-		"homevideos": RecordingService,
-		"books": BookService,
-		"playlists": PlaylistService,
-		"folders": FolderService,
-		"livetv": LiveTVChannelService,
-		"unknown": FolderService,
-	};
+	private static _servicesByKind: Record<BaseItemKind, BaseItemKindService> = [
+		AggregateFolderService,
+		AudioService,
+		AudioBookService,
+		BasePluginFolderService,
+		BookService,
+		BoxSetService,
+		ChannelService,
+		ChannelFolderItemService,
+		CollectionFolderService,
+		EpisodeService,
+		FolderService,
+		GenreService,
+		ManualPlaylistsFolderService,
+		MovieService,
+		LiveTVChannelService,
+		LiveTVProgramService,
+		MusicAlbumService,
+		MusicArtistService,
+		MusicGenreService,
+		MusicVideoService,
+		PersonService,
+		PhotoService,
+		PhotoAlbumService,
+		PlaylistService,
+		PlaylistsFolderService,
+		LiveTVProgramService,
+		RecordingService,
+		SeasonService,
+		ShowService,
+		StudioService,
+		TrailerService,
+		LiveTVChannelService,
+		LiveTVProgramService,
+		UserRootFolderService,
+		CollectionFolderService,
+		VideoService,
+		YearService,
+	].toRecord(s => s.kind);
 }

@@ -39,9 +39,9 @@ interface Column {
 export const SongListViewContent: React.FC<{ libraryId: string; libraries: BaseItemDto[]; user: UserDto; settings: Settings; }> = ({ libraryId, libraries }) => {
 	const library = libraries.single((l) => l.Id === libraryId);
 
-	const albumList = ItemService.Instance.FindOrCreateListFromLibrary(libraryId, "MusicAlbum");
-	const artistList = ItemService.Instance.FindOrCreateListFromLibrary(libraryId, "MusicArtist");
-	const audioList = ItemService.Instance.FindOrCreateListFromLibrary(libraryId, "Audio");
+	const albumList = ItemService.Instance.FindOrCreateListFromLibrary(library);
+	const artistList = ItemService.Instance.FindOrCreateListFromSource({ DataSource: "MusicArtists", DataSourceKey: libraryId });
+	const audioList = ItemService.Instance.FindOrCreateListFromSource({ DataSource: "MusicSongs", DataSourceKey: libraryId });
 
 	React.useEffect(() => artistList.LoadWithAbort(), [artistList]);
 	React.useEffect(() => albumList.LoadWithAbort([{ Key: "AlbumCountByArtistId", GetKeysForItem: (i) => i.AlbumArtists?.map((a) => a.Id) ?? [] }]), [albumList]);

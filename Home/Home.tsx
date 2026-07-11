@@ -13,7 +13,7 @@ import { ListOf } from "Common/ListOf";
 import { useBreakpointValues } from "AppStyles";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
 import { useComputed, useObservable } from "@residualeffect/rereactor/lib";
-import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, CollectionType } from "@jellyfin/sdk/lib/generated-client/models";
 import { HyperLink } from "Common/HyperLink";
 import { EditIcon } from "CommonIcons/EditIcon";
 import { Button } from "Common/Button";
@@ -26,7 +26,7 @@ import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { HomeViewOptions } from "Home/HomeViewOptions";
 import { ArrowDownIcon } from "CommonIcons/ArrowDownIcon";
 import { ArrowUpIcon } from "CommonIcons/ArrowUpIcon";
-import { Nullable } from "Common/MissingJavascriptFunctions";
+import { CollectionServiceFactory } from "Collections/CollectionTypeService";
 import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 export const Home: React.FC = () => {
@@ -140,16 +140,6 @@ const LoadingSection: React.FC<{ label: string; itemsPerRow: number; viewOptions
 
 function showMoreLink(viewOptions: ItemListViewOptions): string {
 	switch(viewOptions.DataSource.DataSource) {
-		case "Library": {
-			const [kind, libraryId] = viewOptions.DataSource.DataSourceKey.split("|");
-			const service = BaseItemKindServiceFactory.FindOrThrow(kind);
-
-			if (!Nullable.HasValue(service.listUrl)) {
-				throw new Error(`Missing list url for type ${service.kind} to render Show More link`);
-			}
-
-			return `${service.listUrl(libraryId)}/${viewOptions.Key}`;
-		}
 		case "Tag": {
 			return `/Tags/${viewOptions.DataSource.DataSourceKey}/${viewOptions.Key}`;
 		}
@@ -164,6 +154,18 @@ function showMoreLink(viewOptions: ItemListViewOptions): string {
 		}
 		case "Studio": {
 			return `/Studio/${viewOptions.DataSource.DataSourceKey}/${viewOptions.Key}`;
+		}
+		case "Studios": {
+			return `/Studios/${viewOptions.DataSource.DataSourceKey}/${viewOptions.Key}`;
+		}
+		case "MusicArtists": {
+			return `/Music/Artists/${viewOptions.DataSource.DataSourceKey}/${viewOptions.Key}`;
+		}
+		case "MusicSongs": {
+			return `/Music/Songs/${viewOptions.DataSource.DataSourceKey}/${viewOptions.Key}`;
+		}
+		default: {
+			return `${CollectionServiceFactory.FindOrThrowByCollectionType(viewOptions.DataSource.DataSource as CollectionType).listUrl(viewOptions.DataSource.DataSourceKey)}/${viewOptions.Key}`;
 		}
 	}
 }

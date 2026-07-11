@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { Loading } from "Common/Loading";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemService } from "Items/ItemsService";
-import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, PersonKind, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { Layout } from "Common/Layout";
 import { useBackgroundStyles } from "AppStyles";
@@ -66,6 +66,7 @@ export const MusicVideo: React.FC = () => {
 	);
 };
 
+const relevantPersonKinds: PersonKind[] = ["Actor", "Director", "Writer", "Producer", "Composer", "Editor"];
 const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloadMusicVideo: () => void; }> = ({ user, musicVideo, reloadMusicVideo }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(musicVideo, user);
@@ -167,6 +168,7 @@ const LoadedMusicVideo: React.FC<{ user: UserDto; musicVideo: BaseItemDto; reloa
 					direction="row" wrap px=".5em" py="1em"
 					linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
 					isEditing={isEditing} editableItem={editableItem}
+					relevantPersonKinds={relevantPersonKinds}
 				/>
 
 				<ItemMediaInfo item={musicVideo} />

@@ -1,4 +1,4 @@
-import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, CollectionType } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed, Observable, ObservableArray } from "@residualeffect/reactor";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { SortByObjectsFunc } from "Common/ArrayPrototype";
@@ -146,8 +146,10 @@ export interface ItemViewOptionSortData {
 	Hidden: boolean;
 }
 
+export type DataSourceType = "Tag"|"Resume"|"Genre"|"Studio"|"Collection"|"Studios"|"MusicArtists"|"MusicSongs";
+
 export interface ItemViewOptionDataSource {
-	DataSource: "Library"|"Tag"|"Resume"|"Genre"|"Studio"|"Collection";
+	DataSource: DataSourceType|CollectionType;
 	DataSourceKey: string;
 }
 

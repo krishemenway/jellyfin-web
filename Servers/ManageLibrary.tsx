@@ -38,9 +38,10 @@ class LibraryManager {
 	public LoadWithAbort(libraryId: string): () => void {
 		this.EditableLibrary.Start((a) => getLibraryStructureApi(ServerService.Instance.CurrentApi).getVirtualFolders({ signal: a.signal }).then(async response => {
 			const library = response.data.single((l) => l.ItemId === libraryId);
-			const libraryOptions = await getLibraryApi(ServerService.Instance.CurrentApi).getLibraryOptionsInfo({ libraryContentType: library.CollectionType as CollectionType, isNewLibrary: false }, { signal: a.signal }).then((r) => r.data);
+			const collectionType = library.CollectionType as CollectionType;
+			const libraryOptions = await getLibraryApi(ServerService.Instance.CurrentApi).getLibraryOptionsInfo({ libraryContentType: collectionType, isNewLibrary: false }, { signal: a.signal }).then((r) => r.data);
 
-			return new EditableLibrary(libraryOptions, library);
+			return new EditableLibrary(collectionType, libraryOptions, library);
 		}));
 
 		return () => this.EditableLibrary.ResetIfLoading();

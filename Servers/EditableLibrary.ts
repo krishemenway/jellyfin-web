@@ -1,15 +1,17 @@
 import { EditableField, IEditableField } from "Common/EditableField";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { EmbeddedSubtitleOptions, LibraryOptions, LibraryOptionsResultDto, VirtualFolderInfo } from "@jellyfin/sdk/lib/generated-client/models";
+import { CollectionType, EmbeddedSubtitleOptions, LibraryOptions, LibraryOptionsResultDto, VirtualFolderInfo } from "@jellyfin/sdk/lib/generated-client/models";
 import { Computed } from "@residualeffect/reactor";
 import { EditableLibraryItemTypeOptions } from "Servers/EditableLibraryItemTypeOptions";
 
 export class EditableLibrary {
-	constructor(libraryOptions: LibraryOptionsResultDto, virtualFolderInfo?: VirtualFolderInfo) {
+	constructor(collectionType: CollectionType, libraryOptions: LibraryOptionsResultDto, virtualFolderInfo?: VirtualFolderInfo) {
 		this.Existing = virtualFolderInfo;
+		this.CollectionType = collectionType;
 		this.LibraryOptions = libraryOptions;
 		this.IsNew = !Nullable.HasValue(virtualFolderInfo);
 
+		console.log(libraryOptions.TypeOptions);
 		this.TypeOptions = (libraryOptions.TypeOptions ?? []).map((typeOption) => new EditableLibraryItemTypeOptions(typeOption, this.Existing?.LibraryOptions?.TypeOptions))
 
 		this.Locations = new EditableField("Locations", this.Existing?.Locations ?? []);
@@ -204,6 +206,7 @@ export class EditableLibrary {
 	public AllowEmbeddedSubtitles: EditableField<EmbeddedSubtitleOptions>;
 	public TypeOptions: EditableLibraryItemTypeOptions[];
 
+	public CollectionType: CollectionType;
 	public Existing: VirtualFolderInfo|undefined;
 	public LibraryOptions: LibraryOptionsResultDto;
 	public IsNew: boolean;

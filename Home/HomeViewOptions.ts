@@ -4,7 +4,6 @@ import { Settings, SettingsStore } from "Users/SettingsStore";
 import { EditableField } from "Common/EditableField";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 
 export class HomeViewOptions {
 	constructor(settings: Settings, libraries: BaseItemDto[]) {
@@ -34,12 +33,7 @@ export class HomeViewOptions {
 
 	private CreateAllBuiltInOptions(libraries: BaseItemDto[]): ItemListViewOptions[] {
 		return libraries.reduce((all, library) => {
-			const service = BaseItemKindServiceFactory.FindOrThrowByCollectionType(library.CollectionType);
-			const dataSource: ItemViewOptionDataSource = {
-				DataSource: "Library",
-				DataSourceKey: `${service.kind}|${library.Id}`,
-			};
-
+			const dataSource: ItemViewOptionDataSource = { DataSource: library.CollectionType!, DataSourceKey: library.Id!, };
 			all.push(ItemListViewOptions.CreateRecentlyAdded(dataSource, library.Name!));
 			return all;
 		}, [ItemListViewOptions.CreateContinuing()] as ItemListViewOptions[]);

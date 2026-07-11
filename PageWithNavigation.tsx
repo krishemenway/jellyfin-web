@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Layout, StyleLayoutProps } from "Common/Layout";
-import { IconForItemKind } from "Items/IconForItemKind";
+import { IconForItemCollection, IconForItemKind } from "Items/IconForItemKind";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
 import { useObservable } from "@residualeffect/rereactor";
 import { BackdropService } from "Common/BackdropService";
@@ -14,7 +14,6 @@ import { JellyfinIcon } from "CommonIcons/JellyfinIcon";
 import { Loading } from "Common/Loading";
 import { AnchoredModal, CenteredModal } from "Common/Modal";
 import { TranslatedText } from "Common/TranslatedText";
-import { IconForItem } from "Items/IconForItem";
 import { MenuIcon } from "CommonIcons/MenuIcon";
 import { Search } from "Search/Search";
 import { ServerIcon } from "Servers/ServerIcon";
@@ -137,8 +136,8 @@ const OpenNavigationButton: React.FC<{ libraries: BaseItemDto[]; server: SystemI
 									direction="column" alignItems="center"
 									px=".5em" py=".5em" gap=".5em" width={{ itemsPerRow: 3 }}
 								>
-									<Layout direction="row" justifyContent="center"><IconForItem item={library} size="1.5em" /></Layout>
-									<Layout direction="row" justifyContent="center" textAlign="center">{library.Name}</Layout>
+									<Layout direction="row" justifyContent="center"><IconForItemCollection collectionType={library.CollectionType} size="1.5em" /></Layout>
+									<Layout direction="row" justifyContent="center" textAlign="center" children={library.Name} />
 								</LinkToItem>
 							))}
 

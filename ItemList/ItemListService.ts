@@ -1,13 +1,13 @@
-import { BaseItemDto, BaseItemKind, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
-import { getItemsApi, getTvShowsApi } from "@jellyfin/sdk/lib/utils/api";
+import { BaseItemDto, CollectionType, ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
+import { getArtistsApi, getItemsApi, getStudiosApi, getTvShowsApi } from "@jellyfin/sdk/lib/utils/api";
 import { IReceiver, Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { ItemListViewOptions, ItemViewOptionDataSource, ItemViewOptionsData } from "ItemList/ItemListViewOptions";
 import { Observable, ObservableArray } from "@residualeffect/reactor";
 import { Settings, SettingsStore } from "Users/SettingsStore";
 import { Nullable } from "Common/MissingJavascriptFunctions";
-import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { ItemCacheResetService } from "Items/ItemCacheResetService";
+import { CollectionServiceFactory } from "Collections/CollectionTypeService";
 
 export interface ItemListStatConfig {
 	Key: string;
@@ -21,41 +21,76 @@ export interface ItemListWithStats {
 
 const defaultLoadFunc = (a: AbortController, id: string) => (getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: id, fields: ["DateCreated", "Genres", "Tags", "SortName", "Studios"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal }).then((r) => r.data.Items ?? []));
 const loadRequestForDataSource = (dataSource: ItemViewOptionDataSource, receiver: IReceiver): (a: AbortController) => Promise<BaseItemDto[]> => {
-	if (dataSource.DataSource === "Library") {
-		const [kind, libraryId] = dataSource.DataSourceKey.split("|");
-		const service = BaseItemKindServiceFactory.FindOrThrow(kind as BaseItemKind);
-		const loadList = service.loadList ?? defaultLoadFunc;
-		return (a: AbortController) => loadList(a, libraryId).then((list) => Nullable.Value(service.listTypes, list, (types) => list.filter((l) => types.indexOf(l.Type!) > -1))).then((items) => {
-			ItemCacheResetService.Instance.LoadedItems(items, receiver);
-			return items;
-		});
-	} else if (dataSource.DataSource === "Tag") {
-		return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, tags: [dataSource.DataSourceKey], isMissing: false }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
-			ItemCacheResetService.Instance.LoadedItems(items, receiver);
-			return items;
-		});
-	} else if (dataSource.DataSource === "Resume") {
-		return (a: AbortController) => Promise.all([getItemsApi(ServerService.Instance.CurrentApi).getResumeItems({ }, { signal: a.signal }), getTvShowsApi(ServerService.Instance.CurrentApi).getNextUp({ })]).then(([resume, nextUp]) => (resume.data.Items ?? []).concat(nextUp.data.Items ?? []).distinct((i) => i.Id!)).then((items) => {
-			ItemCacheResetService.Instance.LoadedItems(items, receiver);
-			return items;
-		});
-	} else if (dataSource.DataSource === "Genre") {
-		return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, genres: [dataSource.DataSourceKey] }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
-			ItemCacheResetService.Instance.LoadedItems(items, receiver);
-			return items;
-		});
-	} else if (dataSource.DataSource === "Studio") {
-		return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, studioIds: [dataSource.DataSourceKey] }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
-			ItemCacheResetService.Instance.LoadedItems(items, receiver);
-			return items;
-		});
-	} else if (dataSource.DataSource === "Collection") {
-		return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, parentId: dataSource.DataSourceKey }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
-			ItemCacheResetService.Instance.LoadedItems(items, receiver);
-			return items;
-		});
-	} else {
-		throw new Error(`Unknown data source ${dataSource.DataSource}`);
+	switch(dataSource.DataSource) {
+		case "Tag":
+			return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, tags: [dataSource.DataSourceKey], isMissing: false }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
+				ItemCacheResetService.Instance.LoadedItems(items, receiver);
+				return items;
+			});
+		case "Resume":
+			return (a: AbortController) => Promise.all([getItemsApi(ServerService.Instance.CurrentApi).getResumeItems({ }, { signal: a.signal }), getTvShowsApi(ServerService.Instance.CurrentApi).getNextUp({ })]).then(([resume, nextUp]) => (resume.data.Items ?? []).concat(nextUp.data.Items ?? []).distinct((i) => i.Id!)).then((items) => {
+				ItemCacheResetService.Instance.LoadedItems(items, receiver);
+				return items;
+			});
+		case "Genre":
+			return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, genres: [dataSource.DataSourceKey] }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
+				ItemCacheResetService.Instance.LoadedItems(items, receiver);
+				return items;
+			});
+		case "Studios":
+			return (a: AbortController) => getStudiosApi(ServerService.Instance.CurrentApi).getStudios({ parentId: dataSource.DataSourceKey }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
+				ItemCacheResetService.Instance.LoadedItems(items, receiver);
+				return items;
+			});
+		case "Studio":
+			return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, studioIds: [dataSource.DataSourceKey] }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
+				ItemCacheResetService.Instance.LoadedItems(items, receiver);
+				return items;
+			});
+		case "Collection":
+			return (a: AbortController) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ recursive: true, parentId: dataSource.DataSourceKey }, { signal: a.signal }).then((r) => r.data.Items ?? []).then((items) => {
+				ItemCacheResetService.Instance.LoadedItems(items, receiver);
+				return items;
+			});
+		case "MusicArtists":
+			return (a: AbortController) => getArtistsApi(ServerService.Instance.CurrentApi).getArtists({ parentId: dataSource.DataSourceKey, fields: [ "Genres" ] }, { signal: a.signal }).then((result) => result.data.Items ?? []).then((items) => {
+				ItemCacheResetService.Instance.LoadedItems(items, receiver);
+				return items;
+			});
+		case "MusicSongs": {
+			const BatchSize = 1000;
+			return (a: AbortController) => new Promise((onResolved, onFailure) => {
+				const allItems: BaseItemDto[] = [];
+				getItemsApi(ServerService.Instance.CurrentApi).getItems({ limit: BatchSize, startIndex: 0, parentId: dataSource.DataSourceKey, enableTotalRecordCount: true, recursive: true, includeItemTypes: ["Audio"], fields: ["DateCreated", "Genres", "Tags"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal })
+					.then(async (initialResult) => {
+						if (!Nullable.HasValue(initialResult.data.TotalRecordCount) || initialResult.data.TotalRecordCount === 0) {
+							onResolved([]);
+							return;
+						}
+
+						allItems.push(...initialResult.data.Items ?? [])
+						const totalBatches = Math.ceil(initialResult.data.TotalRecordCount / BatchSize);
+
+						for (let batchIndex = 1; batchIndex < totalBatches; batchIndex++) {
+							await getItemsApi(ServerService.Instance.CurrentApi).getItems({ limit: BatchSize, startIndex: BatchSize * batchIndex, parentId: dataSource.DataSourceKey, recursive: true, includeItemTypes: ["Audio"], fields: ["DateCreated", "Genres", "Tags"], sortBy: [ItemSortBy.SortName] }, { signal: a.signal })
+									.then((r) => allItems.push(...r.data.Items ?? []))
+									.catch(onFailure);
+						}
+
+						onResolved(allItems);
+					})
+					.catch(onFailure);
+			});
+		}
+		default: {
+			const service = CollectionServiceFactory.FindOrNullByCollectionType(dataSource.DataSource as CollectionType);
+			const loadList = service?.loadList ?? defaultLoadFunc;
+
+			return (a: AbortController) => loadList(a, dataSource.DataSourceKey).then((list) => Nullable.Value(service?.listTypes, list, (types) => list.filter((l) => types.indexOf(l.Type!) > -1))).then((items) => {
+				ItemCacheResetService.Instance.LoadedItems(items, receiver);
+				return items;
+			});
+		}
 	}
 }
 

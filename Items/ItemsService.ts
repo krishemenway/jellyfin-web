@@ -1,7 +1,7 @@
 import { ItemDataService } from "Items/ItemDataService";
 import { ItemListService } from "ItemList/ItemListService";
 import { ItemViewOptionDataSource } from "ItemList/ItemListViewOptions";
-import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto } from "node_modules/@jellyfin/sdk/lib/generated-client";
 
 export class ItemService {
 	constructor() {
@@ -13,10 +13,10 @@ export class ItemService {
 		return this._itemDataByItemId[id] ?? (this._itemDataByItemId[id] = new ItemDataService(id));
 	}
 
-	public FindOrCreateListFromLibrary(libraryId: string, kind: BaseItemKind): ItemListService {
+	public FindOrCreateListFromLibrary(library: BaseItemDto): ItemListService {
 		const source: ItemViewOptionDataSource = {
-			DataSource: "Library",
-			DataSourceKey: `${kind}|${libraryId}`,
+			DataSource: library.CollectionType!,
+			DataSourceKey: library.Id!,
 		};
 
 		return this.FindOrCreateListFromSource(source);

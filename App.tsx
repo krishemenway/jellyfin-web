@@ -11,7 +11,7 @@ import { LoadNumberPrototype } from "Common/NumberPrototype";
 
 import { NotFound } from "Common/NotFound";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
-import { ItemListView } from "ItemList/ItemListView";
+import { ItemListView, ItemListViewWithDataSource } from "ItemList/ItemListView";
 
 import { ServerDashboard } from "ServerAdmin/ServerDashboard";
 import { ManageLibrary } from "Servers/ManageLibrary";
@@ -31,6 +31,8 @@ import { AudioBook } from "Books/AudioBook";
 import { Book } from "Books/Book";
 import { Show } from "Shows/Show";
 import { Movie } from "Movies/Movie";
+import { Photo } from "Photos/Photo";
+import { Video } from "Videos/Video";
 import { MusicAlbum } from "Music/MusicAlbum";
 import { PhotoAlbum } from "Photos/PhotoAlbum";
 import { MusicArtist } from "Music/MusicArtist";
@@ -51,6 +53,8 @@ import { RequiresTranslationsLoaded } from "Common/TranslatedText";
 import { MediaPlayer } from "MediaPlayer/MediaPlayer";
 import { PageWithNavigation } from "PageWithNavigation";
 import { QuestionMarkIcon } from "CommonIcons/QuestionMarkIcon";
+import { MusicArtistIcon } from "Music/MusicArtistIcon";
+import { MusicArtistService } from "Music/MusicArtistService";
 
 const AppWrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
 	const [breakpoint, ResponsiveProvider] = useCalculatedBreakpoint();
@@ -120,12 +124,15 @@ const App: React.FC<{ basePath: string }> = (props) => {
 						{ path: "/Music/Songs/:libraryId", element: <SongListView /> },
 						{ path: "/Music/Albums/:libraryId/:viewOptionsKey", element: <ItemListView itemKind="MusicAlbum" paramName="libraryId" /> },
 						{ path: "/Music/Albums/:libraryId", element: <ItemListView itemKind="MusicAlbum" paramName="libraryId" /> },
-						{ path: "/Music/Artists/:libraryId/:viewOptionsKey", element: <ItemListView itemKind="MusicArtist" paramName="libraryId" /> },
-						{ path: "/Music/Artists/:libraryId", element: <ItemListView itemKind="MusicArtist" paramName="libraryId" /> },
+						{ path: "/Music/Artists/:libraryId/:viewOptionsKey", element: <ItemListViewWithDataSource dataSource="MusicArtists" paramName="libraryId" icon={<MusicArtistIcon />} filterTypes={MusicArtistService.filterOptions} sortTypes={MusicArtistService.sortOptions} /> },
+						{ path: "/Music/Artists/:libraryId", element: <ItemListViewWithDataSource dataSource="MusicArtists" paramName="libraryId" icon={<MusicArtistIcon />} filterTypes={MusicArtistService.filterOptions} sortTypes={MusicArtistService.sortOptions} /> },
 
-						{ path: "/Photo/Albums/:libraryId/:viewOptionsKey", element: <ItemListView itemKind="PhotoAlbum" paramName="libraryId" /> },
-						{ path: "/Photo/Albums/:libraryId", element: <ItemListView itemKind="PhotoAlbum" paramName="libraryId" /> },
-						{ path: "/Photo/Album/:albumId", element: <PhotoAlbum /> },
+						{ path: "/HomeVideos/:libraryId/:viewOptionsKey", element: <ItemListView itemKind="PhotoAlbum" paramName="libraryId" /> },
+						{ path: "/HomeVideos/:libraryId", element: <ItemListView itemKind="PhotoAlbum" paramName="libraryId" /> },
+
+						{ path: "/Video/:videoId", element: <Video /> },
+						{ path: "/Photo/:photoId", element: <Photo /> },
+						{ path: "/PhotoAlbum/:albumId", element: <PhotoAlbum /> },
 
 						{ path: "/Movies/:libraryId/:viewOptionsKey", element: <ItemListView itemKind="Movie" paramName="libraryId" /> },
 						{ path: "/Movies/:libraryId", element: <ItemListView itemKind="Movie" paramName="libraryId" /> },

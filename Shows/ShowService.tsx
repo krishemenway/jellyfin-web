@@ -21,14 +21,13 @@ import { SortByOfficialRating } from "ItemList/ItemSortTypes/SortByOfficialRatin
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYear";
 import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
+import { CollectionTypeService } from "Collections/CollectionTypeService";
 
 export const ShowService: BaseItemKindService = {
 	kind: "Series",
 	findIcon: (props) => <ShowIcon {...props} />,
 	findUrl: (item) => `/Show/${item.Id}`,
-	listUrl: (libraryId) => `/Shows/${libraryId}`,
 	nameWithContext: (item) => `${item.Name} (${item.ProductionYear})`,
-	relevantPersonKinds: ["Actor", "Director", "Writer", "GuestStar", "Producer", "Editor"],
 	filterOptions: [
 		FilterByName,
 		FilterByGenre,
@@ -53,4 +52,10 @@ export const ShowService: BaseItemKindService = {
 		SortByProductionYear,
 		SortByTagCount,
 	],
+};
+
+export const ShowCollectionService: CollectionTypeService = {
+	type: "tvshows",
+	listUrl: (libraryId) => `/Shows/${libraryId}`,
+	findIcon: (props) => <ShowIcon {...props} />,
 };

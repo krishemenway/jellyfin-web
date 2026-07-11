@@ -7,7 +7,7 @@ import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
 import { ItemService } from "Items/ItemsService";
 import { ListOf } from "Common/ListOf";
 import { ItemsGridItem } from "ItemList/ItemGridItem";
-import { BaseItemDto, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto, PersonKind, UserDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { ItemImage } from "Items/ItemImage";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { ItemTags } from "Items/ItemTags";
@@ -191,6 +191,7 @@ const LoadedEpisode: React.FC<{ show: BaseItemDto; children: BaseItemDto[]; user
 	);
 };
 
+const showPersonKinds: PersonKind[] = ["Actor", "Director", "Writer", "GuestStar", "Producer", "Editor"];
 const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: UserDto; startSeasonOpened?: string; allEpisodes: BaseItemDto[]; reloadShow: () => void; }&EditableItemProps> = ({ show, seasons, startSeasonOpened, user, allEpisodes, isEditing, editableItem, reloadShow }) => {
 	const background = useBackgroundStyles();
 	const nextUpEpisode = React.useMemo(() => Nullable.Value(allEpisodes.max((e) => e.UserData?.LastPlayedDate ?? ""), undefined, (e) => allEpisodes[allEpisodes.indexOf(e)+1]), [allEpisodes]);
@@ -241,6 +242,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 				direction="row" wrap
 				linkProps={{ px: ".5em", py: ".5em", gap: ".25em" }}
 				isEditing={isEditing} editableItem={editableItem}
+				relevantPersonKinds={showPersonKinds}
 			/>
 
 			<ListOf
@@ -252,6 +254,7 @@ const ShowDetails: React.FC<{ show: BaseItemDto; seasons: BaseItemDto[]; user: U
 	)
 };
 
+const episodePersonKinds: PersonKind[] = ["Actor", "Director", "Writer", "GuestStar", "Producer"];
 const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: UserDto; remainingEpisodes: BaseItemDto[]; reloadShow: () => void; }&EditableItemProps> = ({ episode, show, user, isEditing, remainingEpisodes, reloadShow }) => {
 	const editableEpisode = useEditableItem(episode, user);
 	const background = useBackgroundStyles();
@@ -306,6 +309,7 @@ const EpisodeDetails: React.FC<{ episode: BaseItemDto; show: BaseItemDto; user: 
 				direction="row" wrap
 				linkProps={{ px: ".5em", py: ".5em", gap: ".25em" }}
 				isEditing={isEditing} editableItem={editableEpisode}
+				relevantPersonKinds={episodePersonKinds}
 			/>
 
 			<ItemMediaInfo item={episode} />

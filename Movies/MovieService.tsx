@@ -24,14 +24,13 @@ import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
 import { FilterByDuration } from "ItemList/ItemFilterTypes/FilterByDuration";
+import { CollectionTypeService } from "Collections/CollectionTypeService";
 
 export const MovieService: BaseItemKindService = {
 	kind: "Movie",
 	primaryShape: ImageShape.Portrait,
 	nameWithContext: (item) => `${item.Name} (${item.ProductionYear})`,
-	relevantPersonKinds: ["Actor", "Director", "Writer", "Producer", "Editor"],
 	findIcon: (props) => <MovieIcon {...props} />,
-	listUrl: (libraryId) => `/Movies/${libraryId}`,
 	filterOptions: [
 		FilterByName,
 		FilterByHasPlayed,
@@ -58,4 +57,10 @@ export const MovieService: BaseItemKindService = {
 		SortByRandom,
 		SortByTagCount,
 	],
+};
+
+export const MovieCollectionService: CollectionTypeService = {
+	type: "movies",
+	listUrl: (libraryId) => `/Movies/${libraryId}`,
+	findIcon: (props) => <MovieIcon {...props} />,
 };

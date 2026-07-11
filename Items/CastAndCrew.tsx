@@ -15,14 +15,12 @@ import { SelectFieldEditor } from "Common/SelectFieldEditor";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { Button } from "Common/Button";
 import { AddIcon } from "CommonIcons/AddIcon";
-import { BaseItemKindServiceFactory } from "Items/BaseItemKindServiceFactory";
 import { Collapsible } from "Common/Collapsible";
 import { SortByNumber } from "Common/ArrayPrototype";
 
-export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; classes?: string[]; linkProps?: StyleLayoutProps; startOpen?: boolean; }&EditableItemProps&StyleLayoutProps> = (props) => {
+export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; classes?: string[]; linkProps?: StyleLayoutProps; startOpen?: boolean; relevantPersonKinds?: PersonKind[]; }&EditableItemProps&StyleLayoutProps> = (props) => {
 	const [open, setOpen] = React.useState(props.startOpen ?? false);
 	const itemsPerRow = useBreakpointValues(1, 2, 3, 5);
-	const relevantPersonKinds = BaseItemKindServiceFactory.FindOrThrow(props.itemWithPeople.Type).relevantPersonKinds ?? [];
 	const orderedCastAndCrew = React.useMemo(() => (props.itemWithPeople.People ?? []).sort(SortByNumber((p) => sortPriorityByType[p.Type ?? "Unknown"])), [props.itemWithPeople.People]);
 
 	if (!props.isEditing && orderedCastAndCrew.length === 0) {
@@ -35,7 +33,7 @@ export const CastAndCrew: React.FC<{ itemWithPeople: BaseItemDto; classes?: stri
 
 			<Collapsible open={open}>
 				{props.isEditing && Nullable.HasValue(props.editableItem) ? (
-					<EditableCastAndCrew {...props} editableItem={props.editableItem} relevantPersonKinds={relevantPersonKinds} itemsPerRow={itemsPerRow} />
+					<EditableCastAndCrew {...props} editableItem={props.editableItem} relevantPersonKinds={props.relevantPersonKinds ?? []} itemsPerRow={itemsPerRow} />
 				) : (
 					<ReadOnlyCastAndCrew orderedCastAndCrew={orderedCastAndCrew} {...props} />
 				)}

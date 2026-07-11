@@ -32,133 +32,27 @@ import { ItemPremiereDate } from "Items/ItemPremiereDate";
 import { ItemDuration } from "Items/ItemDuration";
 import { ItemTags } from "Items/ItemTags";
 import { CastAndCrew } from "Items/CastAndCrew";
-import { ItemsGridItem } from "ItemList/ItemGridItem";
-import { ListOf } from "Common/ListOf";
-import { Nullable } from "Common/MissingJavascriptFunctions";
 import { LinkToItem } from "Items/LinkToItem";
 import { PageTitle } from "Common/PageTitle";
 
-export const PhotoAlbum: React.FC = () => {
-	const albumId = useParams().albumId!;
-	const photoId = useParams().photoId;
-
-	const reloadAlbum = React.useCallback(() => ItemService.Instance.FindOrCreateItemData(albumId).LoadItemWithAbort(true), [albumId]);
-	const reloadPhoto = React.useCallback(() => ItemService.Instance.FindOrCreateItemData(albumId).LoadChildrenWithAbort(undefined, undefined, undefined, true), [albumId]);
-
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(albumId).LoadItemWithAbort(), [albumId]);
-	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(albumId).LoadChildrenWithAbort(), [albumId]);
+export const Photo: React.FC = () => {
+	const photoId = useParams().photoId!;
+	const reloadPhoto = React.useCallback(() => ItemService.Instance.FindOrCreateItemData(photoId).LoadItemWithAbort(true), [photoId]);
+	React.useEffect(() => ItemService.Instance.FindOrCreateItemData(photoId).LoadItemWithAbort(), [photoId]);
 
 	return (
 		<PageWithNavigation icon="PhotoAlbum" content={(_, user) => (
 			<Loading
-				receivers={[ItemService.Instance.FindOrCreateItemData(albumId).Item, ItemService.Instance.FindOrCreateItemData(albumId).Children]}
+				receivers={[ItemService.Instance.FindOrCreateItemData(photoId).Item]}
 				whenLoading={<PageIsLoading />} whenNotStarted={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
-				whenReceived={(album, contents) => !Nullable.HasValue(photoId)
-					? <LoadedPhotoAlbum user={user} album={album} contents={contents} reloadAlbum={reloadAlbum} />
-					: <LoadedPhoto user={user} album={album} photo={contents.single(c => c.Id === photoId)} reloadPhoto={reloadPhoto} />}
+				whenReceived={(photo) => <LoadedPhoto user={user} photo={photo} reloadPhoto={reloadPhoto} />}
 			/>
 		)} />
 	);
 };
 
-const LoadedPhotoAlbum: React.FC<{ contents: BaseItemDto[]; album: BaseItemDto; user: UserDto; reloadAlbum: () => void; }> = ({ album, contents, user, reloadAlbum }) => {
-	const background = useBackgroundStyles();
-	const editableItem = useEditableItem(album, user);
-	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
-	const leftColumnWidth = useBreakpointValues(undefined, "20%", "20%", "20%");
-	const rootDirection = useBreakpointValues("column", "row", "row", "row");
-	const itemsPerRow = useBreakpointValues(2, 3, 5, 5);
-
-	return (
-		<Layout direction={rootDirection} gap="1em" py="1rem">
-			<Layout direction="column" maxWidth={leftColumnWidth} gap=".5rem">
-				<Layout direction="column">
-					<Layout direction="column" position="relative">
-						<ItemImage item={album} type="Primary" />
-						<ItemRating item={album} position="absolute" bottom=".5em" right=".5em" libraryId={album.ParentId!} isEditing={isEditing} editableItem={editableItem} />
-					</Layout>
-
-					<ChangeImageButton item={album} imageType="Primary" label="ButtonChangeImage" onChanged={() => reloadAlbum()} isEditing={isEditing} />
-					<ChangeImageButton item={album} imageType="Backdrop" label="ButtonChangeBackdrop" onChanged={() => reloadAlbum()} isEditing={isEditing} />
-				</Layout>
-
-				<ItemExternalLinks
-					item={album}
-					direction="row" gap=".5rem"
-					linkClasses={[background.button]}
-					linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
-					editableItem={editableItem} isEditing={isEditing}
-				/>
-
-				<ItemGenres
-					item={album}
-					direction="row" gap=".5rem"
-					linkClasses={[background.button]}
-					linkLayout={{ direction: "column", width: "100%", py: ".5rem", textAlign: "center", alignItems: "center", justifyContent: "center", grow: 1 }}
-					showMoreLimit={4}
-					editableItem={editableItem} isEditing={isEditing} libraryId={album.ParentId!}
-				/>
-			</Layout>
-			<Layout direction="column" grow gap="2rem">
-				<Layout direction="row" justifyContent="space-between" gap="1rem">
-					<ItemPageTitle item={album} editableItem={editableItem} isEditing={isEditing} />
-					<Layout direction="row" gap="1rem">
-						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
-						{isEditing && <ItemRefreshButton item={album} />}
-						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<SaveIcon />} onClick={() => { ItemEditorService.Instance.Save(reloadAlbum); }} />}
-						<ItemActionsMenu reloadItems={() => reloadAlbum()} filteredItems={[album]} user={user} actions={[
-							[
-								EditItemAction,
-								PlayVideoAction,
-								AddToFavoritesAction,
-								RemoveFromFavoritesAction,
-								MarkPlayedAction,
-								MarkUnplayedAction,
-								AddToCollectionAction,
-								AddToPlaylistAction,
-							]
-						]} />
-					</Layout>
-				</Layout>
-
-				<Layout direction="row" gap="1rem">
-					<ItemPremiereDate item={album} isEditing={isEditing} editableItem={editableItem} />
-					<ItemDuration item={album} />
-				</Layout>
-
-				<ItemSortName editableItem={editableItem} isEditing={isEditing} />
-				<ItemOverview item={album} editableItem={editableItem} isEditing={isEditing} />
-
-				<ItemTags
-					item={album}
-					isEditing={isEditing} editableItem={editableItem} libraryId={album.ParentId!}
-					direction="row" gap=".5rem" wrap
-					linkClasses={[background.button]}
-					linkLayout={{ px: ".25em", py: ".25em" }}
-					showMoreLimit={25}
-				/>
-
-				<CastAndCrew
-					itemWithPeople={album}
-					backgroundColor="Panel"
-					direction="row" wrap px=".5em" py="1em" bt br bb bl
-					linkProps={({ px: ".5em", py: ".5em", gap: ".25em" })}
-					editableItem={editableItem}
-					isEditing={isEditing}
-				/>
-
-				<ListOf
-					items={contents}
-					forEachItem={(item) => <ItemsGridItem key={item.Id!} item={item} itemsPerRow={itemsPerRow} />}
-					direction="row" wrap gap=".5rem"
-				/>
-			</Layout>
-		</Layout>
-	)
-};
-
-const LoadedPhoto: React.FC<{ album: BaseItemDto; photo: BaseItemDto; user: UserDto; reloadPhoto: () => void; }> = ({ album, photo, user, reloadPhoto }) => {
+const LoadedPhoto: React.FC<{ photo: BaseItemDto; user: UserDto; reloadPhoto: () => void; }> = ({ photo, user, reloadPhoto }) => {
 	const background = useBackgroundStyles();
 	const editableItem = useEditableItem(photo, user);
 	const isEditing = useObservable(ItemEditorService.Instance.IsEditing);
@@ -170,7 +64,6 @@ const LoadedPhoto: React.FC<{ album: BaseItemDto; photo: BaseItemDto; user: User
 			<Layout direction="column" maxWidth={leftColumnWidth} gap=".5rem">
 				<Layout direction="column">
 					<Layout direction="column" position="relative">
-						<ItemImage item={album} type="Primary" />
 						<ItemRating item={photo} position="absolute" bottom=".5em" right=".5em" libraryId={photo.ParentId!} isEditing={isEditing} editableItem={editableItem} />
 					</Layout>
 
@@ -197,7 +90,7 @@ const LoadedPhoto: React.FC<{ album: BaseItemDto; photo: BaseItemDto; user: User
 			</Layout>
 			<Layout direction="column" grow gap="1rem">
 				<Layout direction="row" justifyContent="space-between" gap="1rem">
-					<LinkToItem item={album} direction="row"><PageTitle text={album.Name} /></LinkToItem>
+					<LinkToItem item={photo} direction="row"><PageTitle text={photo.Name} /></LinkToItem>
 					<Layout direction="row" gap="1rem">
 						{isEditing && <Button type="button" alignItems="center" px=".5em" py=".5em" icon={<RevertIcon />} onClick={() => { ItemEditorService.Instance.Cancel(); }} />}
 						{isEditing && <ItemRefreshButton item={photo} />}
@@ -245,7 +138,9 @@ const LoadedPhoto: React.FC<{ album: BaseItemDto; photo: BaseItemDto; user: User
 					isEditing={isEditing}
 				/>
 
-				<ItemImage item={photo} type="Primary" maxWidth="100%" />
+				<Layout direction="column" width="100%" alignItems="center" justifyContent="center">
+					<ItemImage item={photo} type="Primary" maxWidth="100%" />
+				</Layout>
 			</Layout>
 		</Layout>
 	)

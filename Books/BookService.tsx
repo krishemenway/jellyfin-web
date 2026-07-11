@@ -1,5 +1,6 @@
 import * as React from "react";
 import { BaseItemKindService } from "Items/BaseItemKindService";
+import { CollectionTypeService } from "Collections/CollectionTypeService";
 import { BookIcon } from "Books/BookIcon";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { ServerService } from "Servers/ServerService";
@@ -26,9 +27,6 @@ import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 export const BookService: BaseItemKindService = {
 	kind: "Book",
 	findIcon: (props) => <BookIcon {...props} />,
-	listUrl: (libraryId) => `/Books/${libraryId}`,
-	loadList: (a, libraryId) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: libraryId, fields: ["DateCreated"], sortBy: [ItemSortBy.SortName], recursive: true }, { signal: a.signal }).then((response) => response.data.Items ?? []),
-	listTypes: [BaseItemKind.AudioBook, BaseItemKind.Book],
 	filterOptions: [
 		FilterByName,
 		FilterByHasPlayed,
@@ -51,4 +49,12 @@ export const BookService: BaseItemKindService = {
 		SortByRuntime,
 		SortByRandom,
 	],
+};
+
+export const BookCollectionService: CollectionTypeService = {
+	type: "books",
+	loadList: (a, libraryId) => getItemsApi(ServerService.Instance.CurrentApi).getItems({ parentId: libraryId, fields: ["DateCreated"], sortBy: [ItemSortBy.SortName], recursive: true }, { signal: a.signal }).then((response) => response.data.Items ?? []),
+	listTypes: [BaseItemKind.AudioBook, BaseItemKind.Book],
+	listUrl: (libraryId) => `/Books/${libraryId}`,
+	findIcon: (props) => <BookIcon {...props} />,
 };

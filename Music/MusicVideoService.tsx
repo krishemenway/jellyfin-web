@@ -24,14 +24,13 @@ import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { SortByRuntime } from "ItemList/ItemSortTypes/SortByRuntime";
 import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
+import { CollectionTypeService } from "Collections/CollectionTypeService";
 
 export const MusicVideoService: BaseItemKindService = {
 	kind: "MusicVideo",
 	findIcon: (props) => <MusicVideoIcon {...props} />,
-	listUrl: (libraryId) => `/MusicVideos/${libraryId}`,
 	nameWithContext: (item) => `${Nullable.StringValue(item.Artists?.join(", "), "", (artists) => artists + " - ")}${item.Name}`,
 	playerSecondaryHeadline: (item) => [item.Album, item.ProductionYear?.toString()].coalesce("", Nullable.StringHasValue) + Nullable.StringValue(item.Artists?.join(", "), "", (artists) => " - " + artists),
-	relevantPersonKinds: ["Actor", "Director", "Writer", "Producer", "Composer", "Editor"],
 	filterOptions: [
 		FilterByName,
 		FilterByHasPlayed,
@@ -58,4 +57,10 @@ export const MusicVideoService: BaseItemKindService = {
 		SortByRandom,
 		SortByTagCount,
 	],
+};
+
+export const MusicVideoCollectionService: CollectionTypeService = {
+	type: "musicvideos",
+	listUrl: (libraryId) => `/MusicVideos/${libraryId}`,
+	findIcon: (props) => <MusicVideoIcon {...props} />,
 };
