@@ -108,6 +108,9 @@ export const useGlobalStyles = createUseStyles({
 		"tbody tr:nth-child(odd)": {
 			background: "var(--TableOddRowBackgroundColor)",
 		},
+		".fullscreen-player-open": {
+			overflowY: "hidden",
+		},
 	},
 });
 

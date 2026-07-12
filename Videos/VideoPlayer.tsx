@@ -26,41 +26,41 @@ export const VideoPlayer: React.FC = () => {
 	const fullscreen = useObservable(VideoPlayerService.Instance.Playlist.Fullscreen);
 	const controlsVisible = useObservable(VideoPlayerService.Instance.ControlsVisible);
 
+	React.useEffect(() => { window.document.body.classList.toggle("fullscreen-player-open", fullscreen); }, [fullscreen]);
+
 	return (
-		<>
-			<Layout direction="row" gap=".75em" position="fixed" zIndex={DimensionZLayers.Player} px=".25em" py=".25em" bottom="0" left="0" right="0" top={fullscreen ? 0 : undefined} backgroundColor="Panel" bt br bb bl>
-				<Loading
-					receivers={[VideoPlayerService.Instance.PlaybackInfo]}
-					whenError={() => <></>}
-					whenLoading={<LoadingIcon alignSelf="center" size="4em" />} whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
-					whenReceived={(r) => <VideoElement playbackInfo={r} fullscreen={fullscreen} controlsVisible={controlsVisible} />}
+		<Layout direction="row" gap=".75em" position="fixed" zIndex={DimensionZLayers.Player} px=".25em" py=".25em" bottom="0" left="0" right="0" top={fullscreen ? 0 : undefined} backgroundColor="Panel" bt br bb bl>
+			<Loading
+				receivers={[VideoPlayerService.Instance.PlaybackInfo]}
+				whenError={() => <></>}
+				whenLoading={<LoadingIcon alignSelf="center" size="4em" />} whenNotStarted={<LoadingIcon alignSelf="center" size="4em" />}
+				whenReceived={(r) => <VideoElement playbackInfo={r} fullscreen={fullscreen} controlsVisible={controlsVisible} />}
+			/>
+
+			{!fullscreen && (
+				<Layout direction="column" backgroundColor="AlternatePanel" grow>
+					<VideoMetadata />
+				</Layout>
+			)}
+
+			{!fullscreen && (
+				<CurrentPlaylist backgroundColor="AlternatePanel" bt br bb bl playlist={VideoPlayerService.Instance.Playlist} />
+			)}
+
+			<Layout direction={fullscreen ? "row" : "column"} position={fullscreen ? "absolute" : undefined} top="1rem" right="1rem" gap="1rem" opacity={!fullscreen || controlsVisible ? 100 : 0}>
+				<Button
+					icon={fullscreen ? <ArrowDownIcon /> : <ArrowUpIcon />}
+					type="button" onClick={() => { VideoPlayerService.Instance.Playlist.Fullscreen.Value = !VideoPlayerService.Instance.Playlist.Fullscreen.Value; }}
+					px=".5em" py=".5em" height="100%" alignItems="center"
 				/>
 
-				{!fullscreen && (
-					<Layout direction="column" backgroundColor="AlternatePanel" grow>
-						<VideoMetadata />
-					</Layout>
-				)}
-
-				<CurrentPlaylist backgroundColor="AlternatePanel" bt br bb bl playlist={VideoPlayerService.Instance.Playlist} />
-
-				<Layout direction={fullscreen ? "row" : "column"} position={fullscreen ? "absolute" : undefined} top="1rem" right="1rem" gap="1rem" opacity={controlsVisible ? 100 : 0}>
-					<Button
-						icon={fullscreen ? <ArrowDownIcon /> : <ArrowUpIcon />}
-						type="button" onClick={() => { VideoPlayerService.Instance.Playlist.Fullscreen.Value = !VideoPlayerService.Instance.Playlist.Fullscreen.Value; }}
-						px=".5em" py=".5em" height="100%" alignItems="center"
-					/>
-
-					<Button
-						icon={<CloseIcon />}
-						type="button" onClick={() => { VideoPlayerService.Instance.Unload(); }}
-						px=".5em" py=".5em" height="100%" alignItems="center"
-					/>
-				</Layout>
+				<Button
+					icon={<CloseIcon />}
+					type="button" onClick={() => { VideoPlayerService.Instance.Unload(); }}
+					px=".5em" py=".5em" height="100%" alignItems="center"
+				/>
 			</Layout>
-
-			<Layout direction="row" height="10em" />
-		</>
+		</Layout>
 	);
 };
 
