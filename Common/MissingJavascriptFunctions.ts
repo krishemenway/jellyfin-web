@@ -1,3 +1,6 @@
+import { isValid } from "node_modules/date-fns/isValid";
+import { parseISO } from "node_modules/date-fns/parseISO";
+
 export class Nullable {
 	public static HasValue<T>(value: T|undefined|null) {
 		return value !== null && value !== undefined;
@@ -74,6 +77,20 @@ export class Bytes {
 }
 
 export class DateTime {
+	public static Validate(isRequired: boolean = true): (date: string) => string|undefined {
+		return (date: string) => {
+			if (!isRequired && date.length === 0) {
+				return undefined;
+			}
+
+			if (isValid(parseISO(date))) {
+				return undefined;
+			}
+
+			return "InvalidDateFormat";
+		};
+	}
+
 	public static ParseWithoutZone(date: string): Date {
 		if (date.endsWith("Z")) {
 			return new Date(date.slice(0, date.length - 2));

@@ -4,7 +4,7 @@ import { EditableField, IEditableField } from "Common/EditableField";
 import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { EditablePersonCredit } from "Items/EditablePersonCredit";
 import { EditableItemProvider } from "Items/EditableItemProvider";
-import { formatISO, isValid, parseISO } from "date-fns";
+import { formatISO } from "date-fns";
 
 export class EditableItem {
 	constructor(item: BaseItemDto) {
@@ -47,8 +47,8 @@ export class EditableItem {
 		this.ProductionLocation = new EditableField("ProductionLocations", Nullable.Value(item.ProductionLocations, undefined, (i) => i[0]));
 		this.Studios = new EditableField("Studios", Nullable.Value(item, [], (i) => i.Studios ?? []));
 
-		this.PremiereDate = new EditableField("Premiere", Nullable.Value(item?.PremiereDate, "", (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })), (d) => !isValid(parseISO(d)) ? "InvalidDateFormat" : "");
-		this.EndDate = new EditableField("EndDate", Nullable.Value(item?.EndDate, "", (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })), (d) => !isValid(parseISO(d)) ? "InvalidDateFormat" : "");
+		this.PremiereDate = new EditableField("Premiere", Nullable.Value(item?.PremiereDate, "", (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })), DateTime.Validate(false));
+		this.EndDate = new EditableField("EndDate", Nullable.Value(item?.EndDate, "", (date) => formatISO(DateTime.ParseWithoutZone(date), { representation: "date" })), DateTime.Validate(false));
 		this.DateCreated = new EditableField("DateCreated", Nullable.Value(item, undefined, (i) => i.DateCreated));
 
 		this.Height = new EditableField("Height", Nullable.Value(item, undefined, (i) => i.Height));
