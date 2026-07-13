@@ -12,6 +12,8 @@ export class EditableUser {
 		this.EnableRemoteAccess = new EditableField<boolean>("EnableRemoteAccess", user.Policy?.EnableRemoteAccess ?? false);
 		this.EnableCollectionManagement = new EditableField<boolean>("EnableCollectionManagement", user.Policy?.EnableCollectionManagement ?? false);
 		this.EnableSubtitleManagement = new EditableField<boolean>("EnableSubtitleManagement", user.Policy?.EnableSubtitleManagement ?? false);
+		this.EnableAllFolders = new EditableField<boolean>("EnableAllFolders", user.Policy?.EnableAllFolders ?? true);
+		this.EnabledFolders = new EditableField<string[]>("EnabledFolders", user.Policy?.EnabledFolders ?? []);
 
 		this.HasChanged = new Computed(() => this.AllFields().every(f => f.HasChanged.Value))
 		this.CanMakeRequest = new Computed(() => this.AllFields().every(f => f.CanMakeRequest()))
@@ -100,4 +102,7 @@ export class EditableUser {
 	public EnableCollectionManagement: EditableField<boolean>;
 	public EnableSubtitleManagement: EditableField<boolean>;
 	public EnableAutoLogin: EditableField<boolean>;
+
+	public EnableAllFolders: EditableField<boolean>;
+	public EnabledFolders: EditableField<string[]>;
 }

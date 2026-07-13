@@ -7,13 +7,15 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 interface FieldLabelProps {
 	classes?: string[];
 	field: IEditableField;
+	id?: string;
+	forId?: string;
 	textKey?: string;
 	text?: string;
 }
 
 export function FieldLabel(props: FieldLabelProps&StyleLayoutProps) {
 	return (
-		<label htmlFor={props.field.FieldId} className={props.classes?.join(" ")} style={ApplyLayoutStyleProps(props)}>
+		<label htmlFor={props.forId ?? props.field.FieldId} className={props.id ?? props.classes?.join(" ")} style={ApplyLayoutStyleProps(props)}>
 			<FieldLabelText textKey={props.textKey} text={props.text} field={props.field} />
 		</label>
 	);

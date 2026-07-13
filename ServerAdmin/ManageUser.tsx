@@ -20,8 +20,9 @@ import { useNavigate } from "node_modules/react-router-dom/dist";
 import { Loading, useIsBusy } from "Common/Loading";
 import { LoadingIcon } from "CommonIcons/LoadingIcon";
 import { EditableUser } from "Users/EditableUser";
-import { ToggleSwitch } from "Common/ToggleSwitch";
+import { ToggleSwitch, ToggleSwitches } from "Common/ToggleSwitch";
 import { LoadingErrorMessages } from "Common/LoadingErrorMessages";
+import { BaseItemDto } from "node_modules/@jellyfin/sdk/lib/generated-client";
 
 class ManageUserService {
 	constructor() {
@@ -67,14 +68,14 @@ export const ManageUser: React.FC = () => {
 	React.useEffect(() => ManageUserService.Instance.LoadWithAbort(userId), [userId]);
 
 	return (
-		<PageWithNavigation icon={<PeopleIcon />} content={() => (
+		<PageWithNavigation icon={<PeopleIcon />} content={(libraries) => (
 			<Loading
 				receivers={[ManageUserService.Instance.EditableUser]}
 				whenNotStarted={<PageIsLoading />} whenLoading={<PageIsLoading />}
 				whenError={(errors) => <LoadingErrorMessages errorTextKeys={errors} />}
 				whenReceived={(editableUser) => (
 					<Form onSubmit={() => ManageUserService.Instance.Save(navigate)} direction="column" bt br bb bl backgroundColor="Panel" gap="1rem" px="1rem" py=".5rem" my="1rem">
-						<TranslatedText textKey="ButtonAddUser" elementType="h1" layout={{ fontSizeREM: 1.2 }} />
+						<TranslatedText textKey="ButtonEditUser" elementType="h1" layout={{ fontSizeREM: 1.2 }} />
 
 						<Layout direction="column" gap=".5rem">
 							<FieldLabel field={editableUser.Name} textKey="LabelUsername" />
@@ -118,6 +119,8 @@ export const ManageUser: React.FC = () => {
 							<FieldError field={editableUser.EnableSubtitleManagement} showErrors={showErrors} />
 						</Layout>
 
+						<LibraryAccess editableUser={editableUser} libraries={libraries} />
+
 						<Layout direction="row" gap=".5rem" justifyContent="end">
 							<HyperLink to="/Dashboard" direction="row" label="ButtonCancel" classes={[background.button]} px=".25em" py=".25em" onClick={() => editableUser.Reset()} />
 							<Button type="submit" label="Save" px=".25em" py=".25em" disabled={isBusy} hiddenLabel={isBusy} icon={isBusy ? <LoadingIcon /> : <></>} />
@@ -126,5 +129,30 @@ export const ManageUser: React.FC = () => {
 				)}
 			/>
 		)} />
+	);
+};
+
+export const LibraryAccess: React.FC<{ editableUser: EditableUser; libraries: BaseItemDto[] }> = ({ editableUser, libraries }) => {
+	const allFoldersEnabled = useObservable(editableUser.EnableAllFolders.Current);
+
+	return (
+		<Layout direction="column" gap="2rem">
+			<Layout direction="row" gap=".5rem" alignItems="center">
+				<ToggleSwitch field={editableUser.EnableAllFolders} />
+				<FieldLabel field={editableUser.EnableAllFolders} textKey="OptionEnableAccessToAllLibraries" />
+			</Layout>
+
+			{!allFoldersEnabled && (
+				<Layout direction="column" gap=".5rem">
+					<ToggleSwitches
+						field={editableUser.EnabledFolders}
+						allValues={libraries}
+						getLabel={(i) => i.Name!}
+						getValue={(i) => i.Id!}
+						switchWrapperLayout={{ gap: ".5rem", alignItems: "center" }}
+					/>
+				</Layout>
+			)}
+		</Layout>
 	);
 };
