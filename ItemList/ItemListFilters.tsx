@@ -5,7 +5,7 @@ import { AnchoredModal } from "Common/Modal";
 import { AddIcon } from "CommonIcons/AddIcon";
 import { useObservable } from "@residualeffect/rereactor";
 import { ListOf } from "Common/ListOf";
-import { TranslatedText } from "Common/TranslatedText";
+import { TranslatedText, useTranslatedText } from "Common/TranslatedText";
 import { DeleteIcon } from "CommonIcons/DeleteIcon";
 import { useBreakpointValues } from "AppStyles";
 import { ArrowDownIcon } from "CommonIcons/ArrowDownIcon";
@@ -254,6 +254,7 @@ const SaveNewOptions: React.FC<{ itemList: ItemListService; settings: Settings; 
 
 const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions: ItemListViewOptions; baseUrl: string; settings: Settings; isSelected: boolean }> = ({ itemList, itemListViewOptions, baseUrl, settings, isSelected }) => {
 	const label = useObservable(itemListViewOptions.Label.Current);
+	const defaultText = useTranslatedText(itemListViewOptions.DefaultLabel);
 	const hasChanged = useObservable(itemListViewOptions.HasChanged);
 
 	return (
@@ -269,7 +270,7 @@ const PickOptionsLink: React.FC<{ itemList: ItemListService; itemListViewOptions
 					to={`${baseUrl}/${itemListViewOptions.Key}`}
 					direction="row" px=".5em" py=".5em" grow gap=".5rem" alignItems="center"
 					icon={isSelected ? <RadioCheckedIcon /> : <RadioUncheckedIcon />}
-					children={label}
+					children={itemListViewOptions.IsReadOnly ? defaultText : label}
 				/>
 			)}
 
