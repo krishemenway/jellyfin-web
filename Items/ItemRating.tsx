@@ -24,6 +24,7 @@ export const ItemRating: React.FC<{ item: BaseItemDto; libraryId: string; }&Edit
 							field={props.editableItem!.OfficialRating}
 							getLabel={(v) => v}
 							getValue={(v) => v ?? ""}
+							getKey={v => v}
 						/>
 					}
 				/>

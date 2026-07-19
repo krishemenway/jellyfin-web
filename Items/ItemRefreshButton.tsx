@@ -60,8 +60,9 @@ export const ItemRefreshButton: React.FC<{ item: BaseItemDto }> = ({ item }) => 
 							px=".5em" py=".25em"
 							field={refreshAction} 
 							allOptions={[MetadataRefreshMode.Default, MetadataRefreshMode.ValidationOnly, MetadataRefreshMode.FullRefresh]}
-							getLabel={(mode) => useTranslatedText({ Key: `RefreshMode-${mode}` })}
-							getValue={(mode) => mode}
+							getLabel={(m) => useTranslatedText({ Key: `RefreshMode-${m}` })}
+							getValue={(m) => m}
+							getKey={m => m}
 						/>
 					</Layout>
 

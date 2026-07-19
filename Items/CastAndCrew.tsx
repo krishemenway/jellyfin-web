@@ -85,8 +85,9 @@ const EditPersonCredit: React.FC<{ person: EditablePersonCredit; onDelete: () =>
 				<SelectFieldEditor
 					allOptions={props.relevantPersonKinds}
 					field={props.person.Type}
-					getValue={(k) => k}
-					getLabel={(p) => p.toString()}
+					getValue={o => o}
+					getLabel={o => o.toString()}
+					getKey={o => o}
 				/>
 
 				<Layout direction="row" grow><TextField field={props.person.Role} width="100%" bt br bb bl backgroundColor="Field" /></Layout>

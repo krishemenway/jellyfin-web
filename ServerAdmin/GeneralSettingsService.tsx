@@ -144,7 +144,8 @@ const LoadedSettings: React.FC<{ settings: EditableGeneralSettings; localization
 					field={props.settings.PreferredDisplayLanguage}
 					allOptions={props.localizationOptions}
 					getLabel={(lo) => lo.Name}
-					getValue={(lo) => lo.Value ?? ""}
+					getValue={(lo) => lo}
+					getKey={v => v.Value ?? ""}
 				/>
 
 				<FieldError field={props.settings.PreferredDisplayLanguage} showErrors={showErrors} />

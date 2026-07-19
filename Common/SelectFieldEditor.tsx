@@ -8,37 +8,40 @@ import { Nullable } from "Common/MissingJavascriptFunctions";
 import { EditableField } from "Common/EditableField";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
-interface SelectFieldEditorProps<TOption> extends LayoutWithoutChildrenProps {
+interface SelectFieldEditorProps<TOption, TValue> extends LayoutWithoutChildrenProps {
 	classes?: string[];
-	field: EditableField<TOption>;
+	field: EditableField<TValue>;
 	allOptions: TOption[];
-	getValue: (value: TOption) => string;
+	getKey: (value: TOption) => string|number;
+	getValue: (value: TOption) => TValue;
 	getLabel: (value: TOption) => React.ReactNode;
 }
 
-export function SelectFieldEditor<TOption>(props: SelectFieldEditorProps<TOption>): React.ReactNode {
-	const value = useObservable(props.field.Current);
+export function SelectFieldEditor<TOption, TValue>({ field, allOptions, getKey, getValue, getLabel, classes, ...props }: SelectFieldEditorProps<TOption, TValue>): React.ReactNode {
+	const value = useObservable(field.Current);
+	const optionForValue = allOptions.first(o => getValue(o) === value);
 
 	return (
-		<select className={props.classes?.join(" ")} value={props.getValue(value)} onChange={(evt) => { props.field.OnChange(props.allOptions.find((option) => props.getValue(option) === evt.currentTarget.value)!); }} style={ApplyLayoutStyleProps(props)}>
-			{props.allOptions.map((option) => <option key={props.getValue(option)} value={props.getValue(option)}>{props.getLabel(option)}</option>)}
+		<select className={classes?.join(" ")} id={field.FieldId} value={optionForValue !== undefined ? getKey(optionForValue) : undefined} onChange={(evt) => { field.OnChange(getValue(allOptions.single((option) => getKey(option) === evt.currentTarget.value))); }} style={ApplyLayoutStyleProps(props)}>
+			{allOptions.map((option) => <option key={getKey(option)} value={getKey(option)}>{getLabel(option)}</option>)}
 		</select>
 	);
 }
 
-export function AutoCompleteFieldEditor<TOption>(props: SelectFieldEditorProps<TOption>): React.ReactNode {
+export function AutoCompleteFieldEditor<TOption, TValue>(props: SelectFieldEditorProps<TOption, TValue>): React.ReactNode {
 	const theme = useObservable(ThemeService.Instance.CurrentTheme);
 	const current = useObservable(props.field.Current);
+	const currentKey = React.useMemo(() => Nullable.Value(props.allOptions.first(o => props.getValue(o) === current), undefined, o => props.getKey(o)), [props.getKey, props.allOptions, current]);
 
-	const allOptions = React.useMemo(() => props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getValue(o) })), [props.allOptions]);
-	const selectedOption = React.useMemo(() => Nullable.Value(current, undefined, (c) => allOptions.find((o) => o.value === props.getValue(c))), [allOptions, current]);
+	const allOptions = React.useMemo(() => props.allOptions.map((o) => ({ label: props.getLabel(o), value: props.getKey(o).toString() })), [props.allOptions]);
+	const selectedOption = React.useMemo(() => allOptions.first((o) => o.value === currentKey), [props.allOptions, current]);
 
 	return (
 		<Select
 			className={props.classes?.join(" ")}
 			options={allOptions}
 			value={selectedOption}
-			onChange={(newValue) => props.field.OnChange(props.allOptions.find((o) => props.getValue(o) === (newValue as SingleValue<{ value: string; label: string }>)?.value)!)}
+			onChange={(newValue) => props.field.OnChange(props.getValue(props.allOptions.find((o) => props.getKey(o) === (newValue as SingleValue<{ value: string; label: string }>)?.value)!))}
 			components={{ MenuList: MenuList }}
 			menuShouldScrollIntoView
 			styles={{

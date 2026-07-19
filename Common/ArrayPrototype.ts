@@ -25,7 +25,7 @@ declare global {
 		selectMany<T2 = T>(select: (t: T) => T2[]): T2[];
 		groupBy<TKey extends string|number|symbol, TValue = T>(keyFunc: (arrayValue: TValue) => TKey): Record<TKey, TValue[]>;
 		toRecord<TKey extends string|number|symbol = string>(getKey: (value: T) => TKey): Record<TKey, T>;
-		first(matchFunc?: (t: T) => boolean): T;
+		first(matchFunc?: (t: T) => boolean): T|undefined;
 		single(matchFunc?: (t: T) => boolean): T;
 		max(valueSelector: (t: T) => string|number|null|undefined): T|null;
 		min(valueSelector: (t: T) => string|number|null|undefined): T|null;
@@ -84,7 +84,7 @@ Array.prototype.toRecord = function toRecord<T, TKey extends string|number|symbo
 	return array.reduce((all, current) => { all[getKey(current)] = current; return all; }, {} as Record<TKey, T>);
 }
 
-Array.prototype.first = function first<T>(matchFunc?: (t: T) => boolean): T {
+Array.prototype.first = function first<T>(matchFunc?: (t: T) => boolean): T|undefined {
 	const array = this as T[];
 	return Nullable.Value(matchFunc, array, (match) => array.filter(match))[0];
 }

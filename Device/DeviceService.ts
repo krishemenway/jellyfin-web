@@ -1,6 +1,19 @@
+import { Receiver } from "Common/Receiver";
 import { Browser } from "Device/Browser";
+import { DeviceInfoDto } from "@jellyfin/sdk/lib/generated-client";
+import { getDevicesApi } from "@jellyfin/sdk/lib/utils/api";
+import { ServerService } from "Servers/ServerService";
 
 export class DeviceService {
+	constructor() {
+		this.ServerDevices = new Receiver("UnknownError");
+	}
+
+	public LoadDevicesWithAbort(): () => void {
+		this.ServerDevices.Start((a) => getDevicesApi(ServerService.Instance.CurrentApi).getDevices({ }, { signal: a.signal }).then(r => r.data.Items ?? []))
+		return () => this.ServerDevices.ResetIfLoading();
+	}
+
 	public get DeviceId(): string {
 		return this._deviceId ?? (this._deviceId = this.FindOrGenerateDeviceId());
 	}
@@ -27,7 +40,7 @@ export class DeviceService {
 	}
 
 	private CreateDeviceName(): string {
-		let deviceName = this._browsersToCheck.first((c) => c.checkFunc()).name;
+		let deviceName = this._browsersToCheck.first((c) => c.checkFunc())!.name;
 
 		if (Browser.ipad) {
 			deviceName += " iPad";
@@ -54,6 +67,8 @@ export class DeviceService {
 		{ checkFunc: () => Browser.safari, name: "Safari" },
 		{ checkFunc: () => true, name: "Web Browser" },
 	]
+
+	public ServerDevices: Receiver<DeviceInfoDto[]>;
 
 	private _deviceName: string|undefined;
 	private _deviceId: string|undefined;

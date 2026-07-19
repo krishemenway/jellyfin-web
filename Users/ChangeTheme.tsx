@@ -12,7 +12,8 @@ export const ChangeTheme: React.FC = () => {
 				field={ThemeService.Instance.ThemeField}
 				allOptions={ThemeService.Instance.AllThemes}
 				getLabel={(t) => t.Name}
-				getValue={(t) => t.Name}
+				getValue={(t) => t}
+				getKey={t => t.Name}
 			/>
 		</Layout>
 	);

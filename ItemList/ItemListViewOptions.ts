@@ -84,7 +84,7 @@ export class ItemListViewOptions {
 	}
 
 	public static CreateFavorites(): ItemListViewOptions {
-		return new ItemListViewOptions(FavoritesDataSource, { Key: "Favorites", Label: "Favorites", Filters: [], Sorts: [] }, true, { Key: "Favorites" });
+		return new ItemListViewOptions(FavoritesDataSource, { Key: "Favorites", Filters: [], Sorts: [] }, true, { Key: "Favorites" });
 	}
 
 	public static CreateRecentlyAdded(dataSource: ItemViewOptionDataSource, dataSourceName: string): ItemListViewOptions {

@@ -29,6 +29,11 @@ export const DateField: React.FC<DateFieldProps> = ({ field, disabled, ...props 
 
 		if (Nullable.HasValue(nextLiteral) && key === nextLiteral.value) {
 			const nextPart = nextParts.first((p) => p.type !== "literal");
+
+			if (nextPart === undefined) {
+				return true;
+			}
+
 			const nextPartIndex = dateParts.indexOf(nextPart);
 			const element = datePartRefsByIndex[nextPartIndex];
 

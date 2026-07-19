@@ -1440,6 +1440,7 @@
     "OptionEnableAccessFromAllDevices": "Enable access from all devices",
     "OptionEnableAccessToAllChannels": "Enable access to all channels",
     "OptionEnableAccessToAllLibraries": "Enable access to all libraries",
+    "OptionEnableContentDeletion": "Enable content deletion from libraries",
     "OptionEnableExternalContentInSuggestions": "Enable external content in suggestions",
     "OptionEnableExternalContentInSuggestionsHelp": "Allow internet trailers and live TV programs to be included within suggested content.",
     "OptionEnableForAllTuners": "Enable for all tuner devices",

@@ -149,6 +149,7 @@ const LoadedLibraryManager: React.FC<{ editableLibrary: EditableLibrary }> = ({ 
 						allOptions={[EmbeddedSubtitleOptions.AllowAll, EmbeddedSubtitleOptions.AllowText, EmbeddedSubtitleOptions.AllowImage, EmbeddedSubtitleOptions.AllowNone]}
 						getLabel={(l) => useTranslatedText({ Key: `AllowEmbeddedSubtitles${l}Option` })}
 						getValue={(l) => l}
+						getKey={l => l}
 					/>
 
 					<FieldLabel field={editableLibrary.AllowEmbeddedSubtitles} textKey="AllowEmbeddedSubtitles" />
@@ -207,6 +208,7 @@ const LanguageSelector: React.FC<{ languageField: EditableField<string> }> = ({ 
 			field={languageField}
 			getLabel={(l) => languageByCode[l].DisplayName}
 			getValue={(l) => l}
+			getKey={l => l}
 			px=".5em" py=".25em" maxWidth="25em"
 		/>
 	);
@@ -225,6 +227,7 @@ const CountrySelector: React.FC<{ countryField: EditableField<string> }> = ({ co
 			field={countryField}
 			getLabel={(l) => countriesByCode[l].DisplayName}
 			getValue={(l) => l}
+			getKey={l => l}
 			px=".5em" py=".25em" maxWidth="25em"
 		/>
 	);

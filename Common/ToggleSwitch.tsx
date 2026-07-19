@@ -34,18 +34,20 @@ interface ToggleSwitchesProps<TInput, TValue> {
 	switchWrapperLayout?: StyleLayoutProps;
 	switchLayout?: StyleLayoutProps;
 	labelLayout?: StyleLayoutProps;
+	canChange?: boolean;
 }
 
-export function ToggleSwitches<TInput, TValue = TInput>({ field, allValues, getLabel, getValue, switchWrapperLayout, switchLayout, labelLayout }: ToggleSwitchesProps<TInput, TValue>) {
+export function ToggleSwitches<TInput, TValue = TInput>({ field, allValues, getLabel, getValue, switchWrapperLayout, switchLayout, labelLayout, canChange }: ToggleSwitchesProps<TInput, TValue>) {
 	const toggledValues = useObservable(field.Current);
 
 	return (
 		<>
 			{allValues.map(av => (
-				<Layout direction="row" key={`${field.FieldId}-${av}`} {...switchWrapperLayout}>
+				<Layout direction="row" key={`${field.FieldId}-${getValue(av)}`} {...switchWrapperLayout}>
 					<BaseToggleSwitch
 						id={`${field.FieldId}-${getLabel(av)}`}
 						enabled={toggledValues.includes(getValue(av))}
+						canChange={canChange}
 						onChange={() => field.OnChange(toggledValues.toggleItem(getValue(av)))}
 						{...switchLayout}
 					/>
@@ -57,9 +59,9 @@ export function ToggleSwitches<TInput, TValue = TInput>({ field, allValues, getL
 	);
 }
 
-export const BaseToggleSwitch: React.FC<BaseToggleSwitchProps&{ enabled: boolean; onChange: (isEnabled: boolean) => void; }> = ({ enabled, onChange, enabledIcon, disabledIcon, ...props }) => {
+export const BaseToggleSwitch: React.FC<BaseToggleSwitchProps&{ enabled: boolean; canChange?: boolean; onChange: (isEnabled: boolean) => void; }> = ({ enabled, onChange, enabledIcon, disabledIcon, canChange, ...props }) => {
 	return (
-		<Button type="button" onClick={() => onChange(!enabled)} {...props}>
+		<Button type="button" onClick={() => onChange(!enabled)} disabled={canChange} {...props}>
 			{enabled ? (enabledIcon ?? <CheckIcon />) : (disabledIcon ?? <CheckIcon opacity={0} />)}
 		</Button>
 	);

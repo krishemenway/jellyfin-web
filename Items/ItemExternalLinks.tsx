@@ -74,8 +74,9 @@ const ExternalProviderEditors: React.FC<{ metadataInfo: MetadataEditorInfo; link
 					<SelectFieldEditor
 						field={selectNewProviderField}
 						allOptions={remainingProviders}
-						getLabel={(i) => i?.Name}
-						getValue={(i) => i?.Key ?? ""}
+						getLabel={i => i.Name}
+						getValue={i => i}
+						getKey={i => i.Key!}
 						py=".5em"
 						grow
 					/>

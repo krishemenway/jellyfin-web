@@ -66,6 +66,11 @@ export const VideoPlayer: React.FC = () => {
 
 const VideoElement: React.FC<{ playbackInfo: PlaybackInfoResponse; fullscreen: boolean; controlsVisible: boolean; }> = ({ playbackInfo, fullscreen, controlsVisible }) => {
 	const mediaSource = (playbackInfo.MediaSources ?? []).first();
+
+	if (mediaSource === undefined) {
+		throw new Error("Missing media source!");
+	}
+
 	const url = getUrlFromMediaSource(mediaSource);
 
 	return (

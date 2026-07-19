@@ -87,7 +87,8 @@ const AddHomeSectionButton: React.FC<{ currentOptions: ItemListViewOptions[]; ho
 				allOptions={filtered}
 				field={field}
 				getLabel={(o) => o.IsReadOnly ? <TranslatedText textKey={o.DefaultLabel?.Key ?? "Missing Default Label Key"} textProps={o.DefaultLabel?.KeyProps} /> : o.Label.Current.Value}
-				getValue={(o) => o.Key}
+				getValue={(o) => o}
+				getKey={(o => o.Key)}
 			/>
 
 			<Button

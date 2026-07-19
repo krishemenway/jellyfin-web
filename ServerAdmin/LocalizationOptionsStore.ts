@@ -1,5 +1,5 @@
 import { getLocalizationApi } from "@jellyfin/sdk/lib/utils/api";
-import { CountryInfo, CultureDto, LocalizationOption } from "@jellyfin/sdk/lib/generated-client/models";
+import { CountryInfo, CultureDto, LocalizationOption, ParentalRating } from "@jellyfin/sdk/lib/generated-client/models";
 import { Receiver } from "Common/Receiver";
 import { ServerService } from "Servers/ServerService";
 import { Nullable } from "Common/MissingJavascriptFunctions";
@@ -8,6 +8,7 @@ export class LocalizationOptionsStore {
 	constructor() {
 		this.LocalizationCountries = new Receiver("UnknownError");
 		this.LocalizationCultures = new Receiver("UnknownError");
+		this.ParentalRatings = new Receiver("UnknownError");
 		this.LocalizationOptions = new Receiver("UnknownError");
 		this.LocalizationOptions.OnReceived.push((lo) => window.localStorage.setItem("LocalizationOptions", JSON.stringify(lo)));
 	}
@@ -34,6 +35,11 @@ export class LocalizationOptionsStore {
 		return () => this.LocalizationCountries.ResetIfLoading();
 	}
 
+	public LoadParentalRatings(): () => void {
+		this.ParentalRatings.Start((a) => getLocalizationApi(ServerService.Instance.CurrentApi).getParentalRatings({ signal: a.signal }).then(r => r.data));
+		return () => this.ParentalRatings.ResetIfLoading();
+	}
+
 	public EmptyCulture: CultureDto = {
 		Name: "",
 		DisplayName: "",
@@ -52,6 +58,7 @@ export class LocalizationOptionsStore {
 	public LocalizationOptions: Receiver<LocalizationOption[]>;
 	public LocalizationCultures: Receiver<CultureDto[]>;
 	public LocalizationCountries: Receiver<CountryInfo[]>;
+	public ParentalRatings: Receiver<ParentalRating[]>;
 
 	static get Instance(): LocalizationOptionsStore {
 		return this._instance ?? (this._instance = new LocalizationOptionsStore());
