@@ -124,7 +124,7 @@ const LoadingSection: React.FC<{ label: string; itemsPerRow: number; viewOptions
 	return (
 		<Layout direction="column" gap=".25rem" width="100%">
 			<Layout direction="row" justifyContent="space-between" fontSizeREM={1.3}>
-				<HyperLink to={listUrl} direction="row" px=".25rem" py=".25rem" alignItems="end" children={label} />
+				<HyperLink to={listUrl} direction="row" px=".25rem" py=".25rem" alignItems="end" label={viewOptions.DefaultLabel} children={label} />
 			</Layout>
 
 			<ListOf
