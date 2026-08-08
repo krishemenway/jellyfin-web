@@ -1,6 +1,7 @@
 import { BaseItemDto, BaseItemKind, CollectionType } from "@jellyfin/sdk/lib/generated-client/models";
 import { IconProps } from "Common/IconProps";
 import { ItemFilterType } from "ItemList/ItemFilterType";
+import { ItemGroupByType } from "ItemList/ItemGroupByType";
 import { ItemSortType } from "ItemList/ItemSortType";
 import { ImageShape } from "Items/ItemImage";
 
@@ -13,6 +14,7 @@ export interface BaseItemKindService {
 
 	filterOptions?: ItemFilterType[];
 	sortOptions?: ItemSortType[];
+	groupByTypes?: ItemGroupByType[];
 
 	playerHeadline?: (item: BaseItemDto) => string;
 	playerSecondaryHeadline?: (item: BaseItemDto) => string;

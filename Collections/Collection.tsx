@@ -21,6 +21,7 @@ import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
 import { EditItemAction } from "MenuActions/EditItemAction";
 import { BaseItemDto, UserDto } from "node_modules/@jellyfin/sdk/lib/generated-client";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
+import { ItemGroupByTypeStore } from "ItemList/ItemGroupByTypeStore";
 import { Settings } from "Users/SettingsStore";
 import { ItemListService } from "ItemList/ItemListService";
 import { ItemFilterType } from "ItemList/ItemFilterType";
@@ -113,6 +114,7 @@ const LoadedCollection: React.FC<{ collection: BaseItemDto; itemList: ItemListSe
 				listOptions={listOptions}
 				filterTypes={FilterTypes}
 				sortTypes={SortTypes}
+				groupByTypes={ItemGroupByTypeStore.Instance.All}
 				getContent={(i) => (BaseItemKindServiceFactory.FindOrThrow(i.Type).nameWithContext ?? defaultNameFunc)(i)}
 				reloadItems={() => itemList.LoadWithAbort([], true)}
 				user={user}

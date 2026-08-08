@@ -26,6 +26,7 @@ import { SortByRandom } from "ItemList/ItemSortTypes/SortByRandom";
 import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
 import { SortByArtist } from "ItemList/ItemSortTypes/SortByArtist";
 import { CollectionTypeService } from "Collections/CollectionTypeService";
+import { ItemGroupByTypeStore } from "ItemList/ItemGroupByTypeStore";
 
 export const MusicVideoService: BaseItemKindService = {
 	kind: "MusicVideo",
@@ -59,6 +60,7 @@ export const MusicVideoService: BaseItemKindService = {
 		SortByTagCount,
 		SortByArtist,
 	],
+	groupByTypes: ItemGroupByTypeStore.Instance.All,
 };
 
 export const MusicVideoCollectionService: CollectionTypeService = {

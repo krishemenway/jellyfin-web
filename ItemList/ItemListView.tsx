@@ -21,8 +21,18 @@ import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { DataSourceType } from "ItemList/ItemListViewOptions";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { ItemSortType } from "ItemList/ItemSortType";
+import { ItemGroupByType } from "ItemList/ItemGroupByType";
 
-export const ItemListViewWithDataSource: React.FC<{ paramName: string; dataSource: DataSourceType; icon: React.ReactNode; filterTypes?: ItemFilterType[]; sortTypes?: ItemSortType[]; }> = ({ icon, paramName, dataSource,filterTypes, sortTypes }) => {
+interface ItemListViewWithDataSourceProps {
+	paramName: string;
+	dataSource: DataSourceType;
+	icon: React.ReactNode;
+	filterTypes?: ItemFilterType[];
+	sortTypes?: ItemSortType[];
+	groupByTypes?: ItemGroupByType[];
+}
+
+export const ItemListViewWithDataSource: React.FC<ItemListViewWithDataSourceProps> = ({ icon, paramName, dataSource, filterTypes, sortTypes, groupByTypes }) => {
 	const routeParams = useParams();
 	const dataSourceKey = routeParams[paramName]!;
 	const viewOptionsKey = routeParams.viewOptionsKey;
@@ -37,6 +47,7 @@ export const ItemListViewWithDataSource: React.FC<{ paramName: string; dataSourc
 				itemList={itemList}
 				filterTypes={filterTypes}
 				sortTypes={sortTypes}
+				groupByTypes={groupByTypes}
 				libraries={libraries}
 				user={user}
 				settings={settings}
@@ -60,6 +71,7 @@ export const ItemListView: React.FC<{ paramName: string; itemKind: BaseItemKind 
 				itemList={ItemService.Instance.FindOrCreateListFromLibrary(libraries.single(l => l.Id === libraryId))}
 				filterTypes={itemKindService.filterOptions}
 				sortTypes={itemKindService.sortOptions}
+				groupByTypes={itemKindService.groupByTypes}
 				libraries={libraries}
 				user={user}
 				settings={settings}
@@ -77,9 +89,10 @@ interface LoadedBasicItemListViewProps {
 	user: UserDto;
 	filterTypes?: ItemFilterType[];
 	sortTypes?: ItemSortType[];
+	groupByTypes?: ItemGroupByType[];
 }
 
-const LoadedBasicItemListView: React.FC<LoadedBasicItemListViewProps> = ({ libraries, user, settings, libraryId, itemList, viewOptionsKey, filterTypes, sortTypes }) => {
+const LoadedBasicItemListView: React.FC<LoadedBasicItemListViewProps> = ({ libraries, user, settings, libraryId, itemList, viewOptionsKey, filterTypes, sortTypes, groupByTypes }) => {
 	const listOptions = useObservable(itemList.ListOptions);
 	const library = libraries.single((l) => l.Id === libraryId);
 	const baseUrl = useUrlToItem(library);
@@ -103,6 +116,7 @@ const LoadedBasicItemListView: React.FC<LoadedBasicItemListViewProps> = ({ libra
 						settings={settings}
 						filterTypes={filterTypes ?? []}
 						sortTypes={sortTypes ?? []}
+						groupByTypes={groupByTypes ?? []}
 						fallbackItem={() => library}
 						user={user}
 						reloadItems={() => itemList.LoadWithAbort(undefined, true)}

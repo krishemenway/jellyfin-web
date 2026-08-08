@@ -33,12 +33,18 @@ import { VisibleIcon } from "CommonIcons/VisibleIcon";
 import { HyperLink } from "Common/HyperLink";
 import { QuestionMarkIcon } from "CommonIcons/QuestionMarkIcon";
 import { EditIcon } from "CommonIcons/EditIcon";
+import { CloseIcon } from "CommonIcons/CloseIcon";
+import { ItemGroupByModel } from "ItemList/ItemGroupByModel";
+import { ItemGroupByType } from "ItemList/ItemGroupByType";
+import { ItemGroupByTypeStore } from "ItemList/ItemGroupByTypeStore";
+import { SortIcon } from "CommonIcons/SortIcon";
 
 export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
 	itemList: ItemListService;
 	sortTypes: ItemSortType[];
 	filterTypes: ItemFilterType[];
+	groupByTypes: ItemGroupByType[];
 	settings: Settings;
 	items: BaseItemDto[];
 	remaining: number;
@@ -46,14 +52,19 @@ export interface ItemListFiltersProps {
 	baseUrl: string;
 }
 
-export const ItemListFilters: React.FC<ItemListFiltersProps> = ({ listOptions, itemList, sortTypes, filterTypes, items, remaining, additionalButtons, ...props }) => {
+export const ItemListFilters: React.FC<ItemListFiltersProps> = ({ listOptions, itemList, sortTypes, filterTypes, groupByTypes, items, remaining, additionalButtons, ...props }) => {
 	const [addFilterOpen, setAddFilterOpen] = React.useState(false);
 	const [addSortOpen, setAddSortOpen] = React.useState(false);
+	const [addGroupByOpen, setGroupByOpen] = React.useState(false);
+	const [groupBySortOpen, setGroupBySortOpen] = React.useState(false);
 	const sorts = useObservable(listOptions.SortBy);
 	const filters = useObservable(listOptions.Filters);
 	const newFilter = useObservable(listOptions.NewFilter);
+	const groupBy = useObservable(listOptions.GroupBy);
+	const [pickGroupBySortRef, setPickGroupBySortRef] = React.useState<HTMLButtonElement|null>(null);
 	const [filterButtonRef, setFilterButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [sortButtonRef, setSortButtonRef] = React.useState<HTMLButtonElement|null>(null);
+	const [groupByButtonRef, setGroupByButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [optionsListButtonRef, setOptionsListButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const currentOptionLabel = useObservable(listOptions.Label.Current);
 	const confirmDelete = useObservable(itemList.ConfirmDeleteOptions);
@@ -89,12 +100,39 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = ({ listOptions, i
 					</Layout>
 				)}
 
+				{groupByTypes.length > 0 && (
+					<Layout direction="row" gap=".5em" alignItems="center">
+						<TranslatedText textKey="GroupBy" formatText={(t) => `${t}:`} />
+
+						{Nullable.Value(groupBy, (
+							<Button
+								icon={<AddIcon />} px=".25em" py=".25em"
+								type="button" onClick={() => setGroupByOpen(true)} ref={(element) => { setGroupByButtonRef(element); }}
+							/>
+						), g => (
+							<Layout direction="row" gap=".5em" alignItems="center">
+								<TranslatedText textKey={g.GroupByType.TypeLabel.Key} textProps={g.GroupByType.TypeLabel.KeyProps} />
+								<Button type="button" onClick={() => setGroupBySortOpen(true)} ref={(element) => setPickGroupBySortRef(element)} icon={<SortIcon />} label="Sort" hiddenLabel alignItems="center" />
+								<Button type="button" onClick={() => listOptions.GroupBy.Value = undefined} icon={<CloseIcon />} label="Delete" hiddenLabel alignItems="center" />
+							</Layout>
+						))}
+					</Layout>
+				)}
+
 				<Layout direction="row">{items.length === remaining ? items.length : `${items.length} - ${items.length - remaining} = ${remaining}`}</Layout>
 
 				<Layout direction="column" grow></Layout>
 
 				{additionalButtons}
 			</Layout>
+
+			<AnchoredModal backgroundColor="Panel" anchorElement={groupByButtonRef} open={addGroupByOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => { setGroupByOpen(false); }}>
+				<PickGroupByModal groupByTypes={groupByTypes} onPicked={(groupByType) => listOptions.GroupBy.Value = new ItemGroupByModel(groupByType.GroupByType)} onClosed={() => { setGroupByOpen(false); }} />
+			</AnchoredModal>
+
+			<AnchoredModal backgroundColor="Panel" anchorElement={pickGroupBySortRef} open={groupBySortOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => { setGroupBySortOpen(false); }}>
+				<PickGroupBySortModal onPicked={(sortType) => listOptions.GroupBy.Value!.SortGroups.OnChange(sortType)} onClosed={() => { setGroupBySortOpen(false); }} />
+			</AnchoredModal>
 
 			<AnchoredModal backgroundColor="Panel" anchorElement={filterButtonRef} open={addFilterOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => { setAddFilterOpen(false); }}>
 				<PickFilterModal filterTypes={filterTypes} onPicked={(option) => listOptions.CreateNewFilter(option)} onClosed={() => { setAddFilterOpen(false); }} />
@@ -174,6 +212,44 @@ const PickSortOptionModal: React.FC<{ sortTypes: ItemSortType[]; onPicked: (opti
 					key={sortOption.labelKey} label={{ Key: sortOption.labelKey }}
 					type="button" onClick={() => { onPicked(sortOption); onClosed(); }}
 					direction="column" width={{ itemsPerRow: itemsPerRow, gap: "1em" }} px=".25em" py=".5em"
+				/>
+			)}
+		/>
+	);
+};
+
+const PickGroupByModal: React.FC<{ groupByTypes: ItemGroupByType[]; onPicked: (option: ItemGroupByType) => void; onClosed: () => void; }> = (props) => {
+	const itemsPerRow = useBreakpointValues(1, 2, 2, 2);
+
+	return (
+		<ListOf
+			items={props.groupByTypes}
+			direction="row" wrap
+			px="1em" py="1em" gap="1em" grow width="25rem"
+			forEachItem={(groupByType) => (
+				<Button
+					key={groupByType.GroupByType} label={{ Key: groupByType.TypeLabel.Key, KeyProps: groupByType.TypeLabel.KeyProps }}
+					type="button" onClick={() => { props.onPicked(groupByType); props.onClosed(); }}
+					direction="column" width={{ itemsPerRow: itemsPerRow, gap: "1em" }} px=".5em" py=".5em"
+				/>
+			)}
+		/>
+	);
+};
+
+const PickGroupBySortModal: React.FC<{ onPicked: (option: string) => void; onClosed: () => void; }> = (props) => {
+	const itemsPerRow = useBreakpointValues(1, 2, 2, 2);
+
+	return (
+		<ListOf
+			items={ItemGroupByTypeStore.Instance.AllSortTypes}
+			direction="row" wrap
+			px="1em" py="1em" gap="1em" grow width="25rem"
+			forEachItem={(groupBySortType) => (
+				<Button
+					key={groupBySortType} label={{ Key: `GroupBySortType-${groupBySortType}` }}
+					type="button" onClick={() => { props.onPicked(groupBySortType); props.onClosed(); }}
+					direction="column" width={{ itemsPerRow: itemsPerRow, gap: "1em" }} px=".5em" py=".5em"
 				/>
 			)}
 		/>

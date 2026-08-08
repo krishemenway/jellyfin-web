@@ -17,6 +17,8 @@ import { Button } from "Common/Button";
 import { ItemMenuAction } from "Items/ItemMenuAction";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
 import { useSelectModeActions } from "MenuActions/SelectModeActions";
+import { ItemGroupByType } from "ItemList/ItemGroupByType";
+import { GroupedItems, ItemGroupByTypeStore } from "ItemList/ItemGroupByTypeStore";
 
 interface LoadedItemsViewProps {
 	baseUrl: string;
@@ -26,6 +28,7 @@ interface LoadedItemsViewProps {
 	settings: Settings;
 	filterTypes: ItemFilterType[];
 	sortTypes: ItemSortType[];
+	groupByTypes: ItemGroupByType[];
 	additionalButtons?: React.ReactNode;
 	reloadItems: () => void;
 	user: UserDto;
@@ -34,12 +37,13 @@ interface LoadedItemsViewProps {
 	menuActions?: ItemMenuAction[][];
 }
 
-export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, itemList, items, listOptions, settings, filterTypes, sortTypes, additionalButtons, fallbackItem, getContent, menuActions, user, reloadItems }) => {
+export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, itemList, items, listOptions, settings, filterTypes, sortTypes, groupByTypes, additionalButtons, fallbackItem, getContent, menuActions, user, reloadItems }) => {
 	const sorts = useObservable(listOptions.SortBy);
 	const itemsPerRow = useBreakpointValues(2, 4, 7, 9);
 	const selectModeEnabled = useObservable(itemList.SelectModeEnabled);
 	const selectedItems = useObservable(itemList.SelectedItems);
 	const selectModeActions = useSelectModeActions(selectModeEnabled, itemList);
+	const groupBy = useObservable(listOptions.GroupBy);
 	const filteredAndSortedItems = useComputed(() => {
 		if (listOptions === null) {
 			return items;
@@ -50,6 +54,16 @@ export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, i
 
 		return items.filter(filterFunc).sort(sortFunc);
 	}, [items, listOptions]);
+
+	const groupedItems = useComputed(() => {
+		if (groupBy === undefined) {
+			return [];
+		}
+
+		const groupedItems = filteredAndSortedItems.groupBy(groupBy.GroupByType.FindKey);
+		const sortFunc = ItemGroupByTypeStore.Instance.CreateSortFunc(groupBy.SortGroups.Current.Value);
+		return Object.keys(groupedItems).map((gi) => ({ Label: gi, Items: groupedItems[gi], ItemsCount: groupedItems[gi].length }) as GroupedItems).sort(sortFunc);
+	}, [groupBy, filteredAndSortedItems]);
 
 	return (
 		<>
@@ -69,6 +83,7 @@ export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, i
 				remaining={filteredAndSortedItems.length}
 				filterTypes={filterTypes}
 				sortTypes={sortTypes}
+				groupByTypes={groupByTypes}
 				additionalButtons={(
 					<>
 						{additionalButtons}
@@ -83,23 +98,46 @@ export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, i
 				)}
 			/>
 
-			<ListOf
-				items={filteredAndSortedItems}
-				direction="row" wrap gap=".5em"
-				forEachItem={(item, index) => (
-					<ItemsGridItem
-						key={item.Id ?? index.toString()}
-						item={item}
-						fallback={Nullable.Value(fallbackItem, undefined, (fallbackItemFunc) => fallbackItemFunc(item))}
-						itemsPerRow={itemsPerRow}
-						additionalFields={sorts}
-						getContent={getContent}
-						selectModeEnabled={selectModeEnabled}
-						selectedItems={selectedItems}
-						toggleSelectedItem={(item) => itemList.SelectedItems.toggle(item)}
+			{groupBy === undefined ? (
+				<ListOf
+					items={filteredAndSortedItems}
+					direction="row" wrap gap=".5em"
+					forEachItem={(item, index) => (
+						<ItemsGridItem
+							key={item.Id ?? index.toString()}
+							item={item}
+							fallback={Nullable.Value(fallbackItem, undefined, (fallbackItemFunc) => fallbackItemFunc(item))}
+							itemsPerRow={itemsPerRow}
+							additionalFields={sorts}
+							getContent={getContent}
+							selectModeEnabled={selectModeEnabled}
+							selectedItems={selectedItems}
+							toggleSelectedItem={(item) => itemList.SelectedItems.toggle(item)}
+						/>
+					)}
+				/>
+			) : groupedItems.map((group) => (
+				<Layout direction="column" gap=".25rem">
+					<Layout direction="row" fontSizeREM={1.1}>{group.Label}</Layout>
+					<ListOf
+						items={group.Items}
+						direction="row" wrap gap=".5em"
+						forEachItem={(item, index) => (
+							<ItemsGridItem
+								key={item.Id ?? index.toString()}
+								item={item}
+								fallback={Nullable.Value(fallbackItem, undefined, (fallbackItemFunc) => fallbackItemFunc(item))}
+								itemsPerRow={itemsPerRow}
+								additionalFields={sorts}
+								getContent={getContent}
+								selectModeEnabled={selectModeEnabled}
+								selectedItems={selectedItems}
+								toggleSelectedItem={(item) => itemList.SelectedItems.toggle(item)}
+							/>
+						)}
 					/>
-				)}
-			/>
+				</Layout>
+			))}
 		</>
 	);
 };

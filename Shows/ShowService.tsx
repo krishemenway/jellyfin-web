@@ -22,6 +22,7 @@ import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { SortByProductionYear } from "ItemList/ItemSortTypes/SortByProductionYear";
 import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
 import { CollectionTypeService } from "Collections/CollectionTypeService";
+import { ItemGroupByTypeStore } from "ItemList/ItemGroupByTypeStore";
 
 export const ShowService: BaseItemKindService = {
 	kind: "Series",
@@ -52,6 +53,7 @@ export const ShowService: BaseItemKindService = {
 		SortByProductionYear,
 		SortByTagCount,
 	],
+	groupByTypes: ItemGroupByTypeStore.Instance.All,
 };
 
 export const ShowCollectionService: CollectionTypeService = {

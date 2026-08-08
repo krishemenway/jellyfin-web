@@ -25,6 +25,7 @@ import { SortByPremiereDate } from "ItemList/ItemSortTypes/SortByPremiereDate";
 import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
 import { FilterByDuration } from "ItemList/ItemFilterTypes/FilterByDuration";
 import { CollectionTypeService } from "Collections/CollectionTypeService";
+import { ItemGroupByTypeStore } from "ItemList/ItemGroupByTypeStore";
 
 export const MovieService: BaseItemKindService = {
 	kind: "Movie",
@@ -57,6 +58,7 @@ export const MovieService: BaseItemKindService = {
 		SortByRandom,
 		SortByTagCount,
 	],
+	groupByTypes: ItemGroupByTypeStore.Instance.All,
 };
 
 export const MovieCollectionService: CollectionTypeService = {

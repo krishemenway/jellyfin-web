@@ -23,7 +23,7 @@ declare global {
 
 		distinct<TKey extends string|number|symbol>(getKeyFunc?: (item: T) => TKey): Array<T>;
 		selectMany<T2 = T>(select: (t: T) => T2[]): T2[];
-		groupBy<TKey extends string|number|symbol, TValue = T>(keyFunc: (arrayValue: TValue) => TKey): Record<TKey, TValue[]>;
+		groupBy<TKey extends string|number|symbol, TValue = T>(keyFunc: (arrayValue: TValue) => TKey|Array<TKey>): Record<TKey, TValue[]>;
 		toRecord<TKey extends string|number|symbol = string>(getKey: (value: T) => TKey): Record<TKey, T>;
 		first(matchFunc?: (t: T) => boolean): T|undefined;
 		single(matchFunc?: (t: T) => boolean): T;
@@ -57,12 +57,22 @@ Array.prototype.swap = function swap<T>(indexA: number, indexB: number): Array<T
 	return array;
 }
 
-Array.prototype.groupBy = function groupBy<TKey extends string|number|symbol, T>(keyFunc: (arrayValue: T) => TKey): Record<TKey, T[]> {
+Array.prototype.groupBy = function groupBy<TKey extends string|number|symbol, T>(keyFunc: (arrayValue: T) => TKey|Array<TKey>): Record<TKey, T[]> {
 	const array = this as T[];
 	return array.reduce((grouped, current) => {
-		const key = keyFunc(current);
-		grouped[key] = grouped[key] ?? [];
-		grouped[key].push(current);
+		const keyResult = keyFunc(current);
+
+		if (Array.isArray(keyResult)) {
+			for (let i = 0; i < keyResult.length; i++) {
+				const key = keyResult[i];
+				grouped[key] = grouped[key] ?? [];
+				grouped[key].push(current);
+			}
+		} else {
+			grouped[keyResult] = grouped[keyResult] ?? [];
+			grouped[keyResult].push(current);
+		}
+
 		return grouped;
 	}, {} as Record<TKey, T[]>);
 }

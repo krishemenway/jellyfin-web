@@ -11,6 +11,7 @@ import { ItemFilterTypeStore, ItemFilterData } from "ItemList/ItemFilterTypeStor
 import { ItemSortTypeModel } from "ItemList/ItemSortTypeModel";
 import { SortByDatePlayed } from "ItemList/ItemSortTypes/SortByDatePlayed";
 import { TranslationRequest } from "Common/TranslatedText";
+import { ItemGroupByModel } from "ItemList/ItemGroupByModel";
 
 export const ResumeDataSource: ItemViewOptionDataSource = { DataSource: "Resume", DataSourceKey: "Resume" };
 export const FavoritesDataSource: ItemViewOptionDataSource = { DataSource: "Favorites", DataSourceKey: "Favorites" };
@@ -33,6 +34,8 @@ export class ItemListViewOptions {
 
 		this.SortBy = new ObservableArray(Nullable.Value(data?.Sorts, [], (d) => d).map(d => new ItemSortTypeModel(ItemSortTypeStore.Instance.FindOrThrow(d.SortType), d)));
 		this.SortKeys = new EditableField<string[]>("SortKeys", this.SortBy.Value.map(s => s.Key));
+
+		this.GroupBy = new Observable(Nullable.Value(data?.GroupBy, undefined, (data) => new ItemGroupByModel(data.GroupByType, data)));
 
 		this.FilterFunc = new Computed(() => (item) => this.Filters.Value.every(f => f.Filter.Value(item)))
 		this.SortByFunc = new Computed(() => SortByObjectsFunc(this.SortBy.Value.map((sb) => sb.SortFunc.Value).concat([SortByName.sortFunc])));
@@ -98,6 +101,7 @@ export class ItemListViewOptions {
 			Label: this.Label.Current.Value,
 			Filters: this.Filters.Value.map((i) => i.CreateRequest()),
 			Sorts: this.SortBy.Value.map((s) => s.CreateRequest()),
+			GroupBy: this.GroupBy.Value?.CreateRequest(),
 		};
 	}
 
@@ -113,6 +117,11 @@ export class ItemListViewOptions {
 			this.FilterKeys,
 			this.SortKeys,
 		];
+
+		Nullable.TryExecute(this.GroupBy.Value, (g) => {
+			fields.push(g.IsNew);
+			fields.push(g.SortGroups);
+		});
 
 		return fields.concat(allFieldsFromFilters).concat(allFieldsFromSorts);
 	}
@@ -135,6 +144,8 @@ export class ItemListViewOptions {
 	public SortBy: ObservableArray<ItemSortTypeModel>;
 	public SortKeys: EditableField<string[]>;
 
+	public GroupBy: Observable<ItemGroupByModel|undefined>;
+
 	public FilterFunc: Computed<(item: BaseItemDto) => boolean>;
 	public SortByFunc: Computed<(a: BaseItemDto, b: BaseItemDto) => number>;
 }
@@ -155,6 +166,11 @@ export interface ItemViewOptionSortData {
 	Hidden: boolean;
 }
 
+export interface ItemViewOptionGroupByData {
+	GroupByType: string;
+	GroupBySortType: string;
+}
+
 export type DataSourceType = "Tag"|"Resume"|"Favorites"|"Genre"|"Studio"|"Collection"|"Studios"|"MusicArtists"|"MusicSongs";
 
 export interface ItemViewOptionDataSource {
@@ -168,4 +184,5 @@ export interface ItemViewOptionsData {
 	DataSource: ItemViewOptionDataSource;
 	Filters: ItemFilterData[];
 	Sorts: ItemViewOptionSortData[];
+	GroupBy: ItemViewOptionGroupByData|undefined;
 }

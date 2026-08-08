@@ -31,6 +31,7 @@ import { useObservable } from "@residualeffect/rereactor";
 import { ItemListService } from "ItemList/ItemListService";
 import { Settings } from "Users/SettingsStore";
 import { ItemGridWithFilters } from "ItemList/ItemGridWithFilters";
+import { ItemGroupByTypeStore } from "ItemList/ItemGroupByTypeStore";
 import { BaseItemKindServiceFactory, defaultNameFunc } from "Items/BaseItemKindServiceFactory";
 import { AddToCollectionAction } from "MenuActions/AddToCollectionAction";
 import { AddToPlaylistAction } from "MenuActions/AddToPlaylistAction";
@@ -107,6 +108,7 @@ const ListViewOptions: React.FC<ListViewOptionsProps> = ({ studio, viewOptionsKe
 				listOptions={listOptions}
 				filterTypes={FilterTypes}
 				sortTypes={SortTypes}
+				groupByTypes={ItemGroupByTypeStore.Instance.All}
 				getContent={(i) => (BaseItemKindServiceFactory.FindOrThrow(i.Type).nameWithContext ?? defaultNameFunc)(i)}
 				reloadItems={() => itemList.LoadWithAbort([], true)}
 				user={user}
