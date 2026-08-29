@@ -7,7 +7,7 @@ export const GroupByArtist: ItemGroupByType = {
 };
 
 export const GroupByAlbumArtist: ItemGroupByType = {
-	GroupByType: "Artist",
-	TypeLabel: { Key: "Artists" },
+	GroupByType: "AlbumArtist",
+	TypeLabel: { Key: "AlbumArtist" },
 	FindKey: (item) => item.AlbumArtists?.map(aa => aa.Name!) ?? ["N/A"],
 };
