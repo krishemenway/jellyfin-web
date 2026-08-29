@@ -4,6 +4,7 @@ import { GroupByGenre } from "ItemList/ItemGroupByTypes/GroupByGenre";
 import { GroupByStudio } from "ItemList/ItemGroupByTypes/GroupByStudio";
 import { GroupByPremiereYear } from "ItemList/ItemGroupByTypes/GroupByPremiereYear";
 import { GroupByPremiereDecade } from "ItemList/ItemGroupByTypes/GroupByPremiereDecade";
+import { GroupByAlbumArtist, GroupByArtist } from "ItemList/ItemGroupByTypes/GroupByArtist";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client";
 import { ReverseSort, SortByNumber, SortByString, SortFunc } from "Common/ArrayPrototype";
 import { RandomStore } from "Common/RandomStore";
@@ -47,6 +48,8 @@ export class ItemGroupByTypeStore {
 		GroupByStudio,
 		GroupByPremiereYear,
 		GroupByPremiereDecade,
+		GroupByArtist,
+		GroupByAlbumArtist,
 	];
 
 	public AllSortTypes: string[] = [
