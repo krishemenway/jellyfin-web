@@ -12,7 +12,7 @@ import { ItemFilterType } from "ItemList/ItemFilterType";
 import { ItemSortType } from "ItemList/ItemSortType";
 import { Nullable } from "Common/MissingJavascriptFunctions";
 import { Layout } from "Common/Layout";
-import { TranslatedText } from "Common/TranslatedText";
+import { TranslatedNumber, TranslatedText } from "Common/TranslatedText";
 import { Button } from "Common/Button";
 import { ItemMenuAction } from "Items/ItemMenuAction";
 import { ItemActionsMenu } from "Items/ItemActionsMenu";
@@ -118,7 +118,11 @@ export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, i
 				/>
 			) : groupedItems.map((group) => (
 				<Layout direction="column" gap=".25rem">
-					<Layout direction="row" fontSizeREM={1.1}>{group.Label}</Layout>
+					<Layout direction="row" gap=".25rem">
+						<Layout direction="row" children={group.Label} fontSizeREM={1.3} />
+						<TranslatedNumber numberValue={group.ItemsCount} formatText={(t) => `(${t})`} />
+					</Layout>
+
 					<ListOf
 						items={group.Items}
 						direction="row" wrap gap=".5em"

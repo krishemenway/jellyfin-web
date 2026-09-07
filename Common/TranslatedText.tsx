@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useObservable } from "@residualeffect/rereactor";
 import { Computed, Observable } from "@residualeffect/reactor";
 import { Loading, useDataOrNull } from "Common/Loading";
 import { Receiver } from "Common/Receiver";
@@ -74,6 +75,27 @@ export function useTranslatedText(request: TranslationRequest|undefined|string):
 	return textFromStore;
 }
 
+export function useTranslatedNumber(numberValue: number, formatOptions?: Intl.NumberFormatOptions): string {
+	const culture = useObservable(TranslationService.Instance.CurrentCulture);
+	const translated = React.useMemo(() => new Intl.NumberFormat(culture, formatOptions).format(numberValue), [culture, numberValue, formatOptions]);
+
+	return translated;
+}
+
+export function useTranslatedDate(date?: Date, formatOptions?: Intl.DateTimeFormatOptions): string {
+	const culture = useObservable(TranslationService.Instance.CurrentCulture);
+	const formattedDate = React.useMemo(() => Nullable.Value(date, "", (d) => new Intl.DateTimeFormat(culture, formatOptions).format(d)), [culture, date]);
+
+	return formattedDate;
+}
+
+export function useTranslatedDuration(duration: Partial<Record<Intl.DurationFormatUnit, number>>, durationFormat?: Intl.DurationFormatOptions): string {
+	const culture = useObservable(TranslationService.Instance.CurrentCulture);
+	const translated = React.useMemo(() => new Intl.DurationFormat(culture, durationFormat).format(duration), [culture, duration, durationFormat]);
+
+	return translated;
+}
+
 interface TranslatedTextProps {
 	textKey: string|TranslationRequest;
 	textProps?: string[];
@@ -101,6 +123,48 @@ export const TranslatedText: React.FC<TranslatedTextProps> = ({ textKey, textPro
 		return React.createElement(elementType, { className: classes?.join(" "), style: ApplyLayoutStyleProps(layout) }, <>{translated}</>);
 	} else {
 		return <>{translated}</>;
+	}
+};
+
+export const TranslatedDate: React.FC<{ date?: Date, classes?: string[]; elementType?: string; layout?: StyleLayoutProps; formatText?: (translatedText?: string) => string; }&Intl.DateTimeFormatOptions> = ({ date, classes, elementType, layout, formatText, ...props }) => {
+	let formattedDate = useTranslatedDate(date, props);
+
+	if (formatText !== undefined) {
+		formattedDate = formatText(formattedDate);
+	}
+
+	if (elementType !== undefined) {
+		return React.createElement(elementType, { className: classes?.join(" "), style: ApplyLayoutStyleProps(layout) }, <>{formattedDate}</>);
+	} else {
+		return <>{formattedDate}</>;
+	}
+};
+
+export const TranslatedDuration: React.FC<{ classes?: string[]; elementType?: string; layout?: StyleLayoutProps; duration: Partial<Record<Intl.DurationFormatUnit, number>>; durationFormat?: Intl.DurationFormatOptions; formatText?: (translatedText?: string) => string; }> = ({ classes, elementType, layout, duration, durationFormat, formatText }) => {
+	let formattedDuration = useTranslatedDuration(duration, durationFormat);
+
+	if (formatText !== undefined) {
+		formattedDuration = formatText(formattedDuration);
+	}
+
+	if (elementType !== undefined) {
+		return React.createElement(elementType, { className: classes?.join(" "), style: ApplyLayoutStyleProps(layout) }, <>{formattedDuration}</>);
+	} else {
+		return <>{formattedDuration}</>;
+	}
+};
+
+export const TranslatedNumber: React.FC<{ classes?: string[]; elementType?: string; layout?: StyleLayoutProps; numberValue: number; numberFormat?: Intl.NumberFormatOptions; formatText?: (translatedText?: string) => string; }> = ({ classes, elementType, layout, numberValue, numberFormat, formatText }) => {
+	let formattedNumber = useTranslatedNumber(numberValue, numberFormat);
+
+	if (formatText !== undefined) {
+		formattedNumber = formatText(formattedNumber);
+	}
+
+	if (elementType !== undefined) {
+		return React.createElement(elementType, { className: classes?.join(" "), style: ApplyLayoutStyleProps(layout) }, <>{formattedNumber}</>);
+	} else {
+		return <>{formattedNumber}</>;
 	}
 };
 

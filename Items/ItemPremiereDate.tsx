@@ -4,12 +4,11 @@ import { Layout } from "Common/Layout";
 import { EditableItemProps } from "Items/EditableItemProps";
 import { DateTime, Nullable } from "Common/MissingJavascriptFunctions";
 import { FieldLabel } from "Common/FieldLabel";
-import { TranslatedText } from "Common/TranslatedText";
+import { TranslatedDate, TranslatedText } from "Common/TranslatedText";
 import { DateField } from "Common/DateField";
-import { formatDate } from "date-fns";
 
 export const ItemPremiereDate: React.FC<{ item: BaseItemDto; }&EditableItemProps> = (props) => {
-	const premiereDate = React.useMemo(() => Nullable.StringValue(props.item.PremiereDate, "", (date) => formatDate(DateTime.ParseWithoutZone(date), "PPP")), [props.item.PremiereDate]);
+	const premiereDate = React.useMemo(() => Nullable.StringValue(props.item.PremiereDate, null, (date) => DateTime.ParseWithoutZone(date)), [props.item.PremiereDate]);
 
 	if (props.isEditing && Nullable.HasValue(props.editableItem)) {
 		return (
@@ -20,10 +19,10 @@ export const ItemPremiereDate: React.FC<{ item: BaseItemDto; }&EditableItemProps
 		);
 	}
 
-	return Nullable.StringValue(premiereDate, <></>, (premiereDate) => (
+	return Nullable.Value(premiereDate, <></>, (premiereDate) => (
 		<Layout direction="row" gap=".5em" alignItems="center">
 			<TranslatedText textKey="Premiere" elementType="div" />
-			<Layout direction="row">{premiereDate}</Layout>
+			<TranslatedDate elementType="div" date={premiereDate} year="numeric" month="long" day="numeric" />
 		</Layout>
 	));
 };
