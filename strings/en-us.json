@@ -1569,6 +1569,7 @@
     "PreferNonstandardArtistsTagHelp": "Use the non-standard ARTISTS tag instead of ARTIST tag when available.",
     "PreferSystemNativeHwDecoder": "Prefer OS native DXVA or VA-API hardware decoders",
     "Premiere": "Premiere",
+    "PremiereDate": "Premiere Date",
     "PremiereYear": "Premiere Year",
     "PremiereDecade": "Premiere Decade",
     "Premieres": "Premieres",

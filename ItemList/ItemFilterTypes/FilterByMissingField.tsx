@@ -28,6 +28,8 @@ const missingFieldOptions: Record<string, (item: BaseItemDto) => boolean> = {
 	"Actors": (item) => (item.People?.filter((p) => p.Type === "Actor" || p.Type === "GuestStar").length ?? 0) === 0,
 	"Directors": (item) => (item.People?.filter((p) => p.Type === "Director").length ?? 0) === 0,
 	"Writers": (item) => (item.People?.filter((p) => p.Type === "Writer").length ?? 0) === 0,
+	"PremiereDate": (item) => !Nullable.StringHasValue(item.PremiereDate),
+	"PremiereYear": (item) => !Nullable.HasValue(item.ProductionYear),
 };
 
 export class FilterByMissingFieldModel implements IFilterModel {
