@@ -171,9 +171,7 @@ const ConfiguredFilter: React.FC<{ filter: IFilterModel; listOptions: ItemListVi
 			</Layout>
 
 			<AnchoredModal anchorElement={editRef} open={editRef !== null} onClosed={() => { setEditRef(null); }} opensInDirection="right">
-				<Layout py="1em" px="1em" gap="1em" direction="column" minWidth="20em" maxWidth="26em">
-					{filter.Editor(items)}
-				</Layout>
+				<Layout py="1em" px="1em" gap="1em" direction="column" minWidth="20em" maxWidth="26em" backgroundColor="Panel" bl br bt bb children={filter.Editor(items)} />
 			</AnchoredModal>
 
 			<Button type="button" onClick={(button) => setEditRef(button)} icon={<EditIcon />} px=".25em" py=".25em" />
