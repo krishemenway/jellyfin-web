@@ -44,6 +44,7 @@ export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, i
 	const selectedItems = useObservable(itemList.SelectedItems);
 	const selectModeActions = useSelectModeActions(selectModeEnabled, itemList);
 	const groupBy = useObservable(listOptions.GroupBy);
+	const layout = useObservable(listOptions.ListLayout.Current);
 	const filteredAndSortedItems = useComputed(() => {
 		if (listOptions === null) {
 			return items;
@@ -84,6 +85,7 @@ export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, i
 				filterTypes={filterTypes}
 				sortTypes={sortTypes}
 				groupByTypes={groupByTypes}
+				layout={layout}
 				additionalButtons={(
 					<>
 						{additionalButtons}
@@ -113,11 +115,12 @@ export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, i
 							selectModeEnabled={selectModeEnabled}
 							selectedItems={selectedItems}
 							toggleSelectedItem={(item) => itemList.SelectedItems.toggle(item)}
+							layout={layout}
 						/>
 					)}
 				/>
 			) : groupedItems.map((group) => (
-				<Layout direction="column" gap=".25rem">
+				<Layout direction="column" gap=".25rem" key={group.Label}>
 					<Layout direction="row" gap=".25rem">
 						<Layout direction="row" children={group.Label} fontSizeREM={1.3} />
 						<TranslatedNumber numberValue={group.ItemsCount} formatText={(t) => `(${t})`} />
@@ -137,6 +140,7 @@ export const ItemGridWithFilters: React.FC<LoadedItemsViewProps> = ({ baseUrl, i
 								selectModeEnabled={selectModeEnabled}
 								selectedItems={selectedItems}
 								toggleSelectedItem={(item) => itemList.SelectedItems.toggle(item)}
+								layout={layout}
 							/>
 						)}
 					/>

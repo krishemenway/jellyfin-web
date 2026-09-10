@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BaseItemDto, ImageType } from "@jellyfin/sdk/lib/generated-client/models";
+import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { useBackgroundStyles } from "AppStyles";
 import { ItemImage } from "Items/ItemImage";
 import { LinkToItem } from "Items/LinkToItem";
@@ -12,11 +12,12 @@ import { useObservable } from "@residualeffect/rereactor";
 import { defaultNameFunc } from "Items/BaseItemKindServiceFactory";
 import { Button } from "Common/Button";
 import { CheckIcon } from "CommonIcons/CheckIcon";
+import { ListLayout } from "ItemList/ItemListViewOptions";
 
 interface ItemsGridItemProps {
 	item: BaseItemDto;
 	fallback?: BaseItemDto;
-	imageType?: ImageType;
+	layout?: ListLayout;
 	itemsPerRow: number;
 	additionalFields?: readonly ItemSortTypeModel[];
 	getContent?: (item: BaseItemDto) => string|undefined;
@@ -25,7 +26,7 @@ interface ItemsGridItemProps {
 	toggleSelectedItem?: (item: BaseItemDto) => void;
 }
 
-export const ItemsGridItem: React.FC<ItemsGridItemProps> = ({ item, fallback, imageType, itemsPerRow, additionalFields, getContent, selectModeEnabled, selectedItems, toggleSelectedItem }) => {
+export const ItemsGridItem: React.FC<ItemsGridItemProps> = ({ item, fallback, itemsPerRow, additionalFields, getContent, selectModeEnabled, selectedItems, toggleSelectedItem, layout }) => {
 	const background = useBackgroundStyles();
 
 	if (selectModeEnabled === true && Nullable.HasValue(toggleSelectedItem) && Nullable.HasValue(selectedItems)) {
@@ -41,7 +42,11 @@ export const ItemsGridItem: React.FC<ItemsGridItemProps> = ({ item, fallback, im
 			>
 				<ItemIsSelectedMarker selectedItems={selectedItems} item={item} />
 				<ItemPlayedMarker item={item} />
-				<ItemImage item={item} fallback={fallback} type={imageType ?? ImageType.Primary} lazy objectFit="cover" maxWidth="100%" grow />
+
+				{(layout === "TileWithLandscape" || layout === "TileWithPortrait" || layout === undefined) && (
+					<ItemImage item={item} fallback={fallback} type={layout === "TileWithLandscape" ? "Thumb" : "Primary"} lazy objectFit="cover" maxWidth="100%" grow />
+				)}
+
 				<GridItemField item={item} getContent={getContent ?? defaultNameFunc} />
 				{(additionalFields ?? []).map((sortTypeModel) => <AdditionalField key={sortTypeModel.Key} sortTypeModel={sortTypeModel} item={item} fontSizeREM={.9} fontColor="Secondary" />)}
 			</Button>
@@ -59,7 +64,11 @@ export const ItemsGridItem: React.FC<ItemsGridItemProps> = ({ item, fallback, im
 			onDragStart={PlaylistDragItemsFunc(() => [item])}
 		>
 			<ItemPlayedMarker item={item} />
-			<ItemImage item={item} fallback={fallback} type={imageType ?? ImageType.Primary} lazy objectFit="cover" maxWidth="100%" grow />
+
+			{(layout === "TileWithLandscape" || layout === "TileWithPortrait" || layout === undefined) && (
+				<ItemImage item={item} fallback={fallback} type={layout === "TileWithLandscape" ? "Thumb" : "Primary"} lazy objectFit="cover" maxWidth="100%" grow />
+			)}
+
 			<GridItemField item={item} getContent={getContent ?? defaultNameFunc} />
 			{(additionalFields ?? []).map((sortTypeModel) => <AdditionalField key={sortTypeModel.Key} sortTypeModel={sortTypeModel} item={item} fontSizeREM={.9} fontColor="Secondary" />)}
 		</LinkToItem>

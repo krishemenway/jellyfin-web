@@ -14,7 +14,7 @@ import { LoadViewOptionsIcon } from "ItemList/LoadViewOptionsIcon";
 import { ItemFilterType } from "ItemList/ItemFilterType";
 import { ItemSortType } from "ItemList/ItemSortType";
 import { IFilterModel } from "ItemList/ItemFilterType";
-import { ItemListViewOptions } from "ItemList/ItemListViewOptions";
+import { ItemListViewOptions, ListLayout } from "ItemList/ItemListViewOptions";
 import { ItemSortTypeModel } from "ItemList/ItemSortTypeModel";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
 import { Form } from "Common/Form";
@@ -38,6 +38,7 @@ import { ItemGroupByModel } from "ItemList/ItemGroupByModel";
 import { ItemGroupByType } from "ItemList/ItemGroupByType";
 import { ItemGroupByTypeStore } from "ItemList/ItemGroupByTypeStore";
 import { SortIcon } from "CommonIcons/SortIcon";
+import { LayoutIcon } from "CommonIcons/LayoutIcon";
 
 export interface ItemListFiltersProps {
 	listOptions: ItemListViewOptions;
@@ -50,13 +51,15 @@ export interface ItemListFiltersProps {
 	remaining: number;
 	additionalButtons?: React.ReactNode;
 	baseUrl: string;
+	layout: ListLayout;
 }
 
-export const ItemListFilters: React.FC<ItemListFiltersProps> = ({ listOptions, itemList, sortTypes, filterTypes, groupByTypes, items, remaining, additionalButtons, ...props }) => {
+export const ItemListFilters: React.FC<ItemListFiltersProps> = ({ listOptions, itemList, sortTypes, filterTypes, groupByTypes, items, remaining, additionalButtons, layout, ...props }) => {
 	const [addFilterOpen, setAddFilterOpen] = React.useState(false);
 	const [addSortOpen, setAddSortOpen] = React.useState(false);
 	const [addGroupByOpen, setGroupByOpen] = React.useState(false);
 	const [groupBySortOpen, setGroupBySortOpen] = React.useState(false);
+	const [changeLayoutOpen, setChangeLayoutOpen] = React.useState(false);
 	const sorts = useObservable(listOptions.SortBy);
 	const filters = useObservable(listOptions.Filters);
 	const newFilter = useObservable(listOptions.NewFilter);
@@ -66,6 +69,7 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = ({ listOptions, i
 	const [sortButtonRef, setSortButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [groupByButtonRef, setGroupByButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const [optionsListButtonRef, setOptionsListButtonRef] = React.useState<HTMLButtonElement|null>(null);
+	const [changeLayoutButtonRef, setChangeLayoutButtonRef] = React.useState<HTMLButtonElement|null>(null);
 	const currentOptionLabel = useObservable(listOptions.Label.Current);
 	const confirmDelete = useObservable(itemList.ConfirmDeleteOptions);
 
@@ -75,6 +79,8 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = ({ listOptions, i
 				<Button type="button" px=".5em" py=".25em" justifyContent="center" alignItems="center" onClick={(button) => { setOptionsListButtonRef(button)}} icon={<LoadViewOptionsIcon />} />
 
 				{Nullable.StringValue(currentOptionLabel, <></>, (label) => <Layout direction="column">{label}</Layout>)}
+
+				<Button px=".25em" py=".25em" type="button" onClick={() => setChangeLayoutOpen(true)} ref={(element) => { setChangeLayoutButtonRef(element); }} icon={<LayoutIcon />} />
 
 				{filterTypes.length > 0 && (
 					<Layout direction="row" gap=".5em" alignItems="center">
@@ -146,6 +152,10 @@ export const ItemListFilters: React.FC<ItemListFiltersProps> = ({ listOptions, i
 				<PickSortOptionModal sortTypes={sortTypes} onPicked={(option) => listOptions.AddSort(option)} onClosed={() => setAddSortOpen(false)} />
 			</AnchoredModal>
 
+			<AnchoredModal backgroundColor="Panel" anchorElement={changeLayoutButtonRef} open={changeLayoutOpen} anchorAlignment="center" opensInDirection="right" onClosed={() => setChangeLayoutOpen(false)} maxWidth="20%">
+				<PickLayoutModal layout={layout} onPicked={(option) => listOptions.ListLayout.OnChange(option)} onClosed={() => setChangeLayoutOpen(false)} />
+			</AnchoredModal>
+
 			<AnchoredModal backgroundColor="Panel" anchorElement={optionsListButtonRef} open={optionsListButtonRef !== null} anchorAlignment="center" opensInDirection="right" onClosed={() => { setOptionsListButtonRef(null); itemList.ConfirmDeleteOptions.Value = null; listOptions.ShowErrors.Value = false; }}>
 				{confirmDelete === null && <PickOptionsModal {...props} itemList={itemList} onClosed={() => setOptionsListButtonRef(null)} />}
 				{confirmDelete !== null && <ConfirmDelete {...props} itemList={itemList} options={confirmDelete} onClosed={() => { setOptionsListButtonRef(null); itemList.ConfirmDeleteOptions.Value = null; } } />}
@@ -209,6 +219,33 @@ const PickSortOptionModal: React.FC<{ sortTypes: ItemSortType[]; onPicked: (opti
 				<Button
 					key={sortOption.labelKey} label={{ Key: sortOption.labelKey }}
 					type="button" onClick={() => { onPicked(sortOption); onClosed(); }}
+					direction="column" width={{ itemsPerRow: itemsPerRow, gap: "1em" }} px=".25em" py=".5em"
+				/>
+			)}
+		/>
+	);
+};
+
+const Layouts: ListLayout[] = [
+	"TileWithPortrait",
+	"TileWithLandscape",
+	"TileWithoutImage",
+	"Details",
+];
+
+const PickLayoutModal: React.FC<{ layout: ListLayout; onPicked: (option: ListLayout) => void; onClosed: () => void; }> = ({ layout, onPicked, onClosed }) => {
+	const itemsPerRow = useBreakpointValues(1, 2, 2, 2);
+
+	return (
+		<ListOf
+			items={Layouts}
+			direction="row" wrap
+			px="1em" py="1em" gap="1em" width="25rem"
+			forEachItem={(l) => (
+				<Button
+					key={l} label={{ Key: "ListLayout-" + l }}
+					type="button" onClick={() => { onPicked(l); onClosed(); }}
+					selected={l === layout} disabled={l === layout}
 					direction="column" width={{ itemsPerRow: itemsPerRow, gap: "1em" }} px=".25em" py=".5em"
 				/>
 			)}

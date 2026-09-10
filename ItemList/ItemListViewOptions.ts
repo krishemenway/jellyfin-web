@@ -36,6 +36,7 @@ export class ItemListViewOptions {
 		this.SortKeys = new EditableField<string[]>("SortKeys", this.SortBy.Value.map(s => s.Key));
 
 		this.GroupBy = new Observable(Nullable.Value(data?.GroupBy, undefined, (data) => new ItemGroupByModel(data.GroupByType, data)));
+		this.ListLayout = new EditableField("ListLayout", data?.ListLayout ?? "TileWithPortrait");
 
 		this.FilterFunc = new Computed(() => (item) => this.Filters.Value.every(f => f.Filter.Value(item)))
 		this.SortByFunc = new Computed(() => SortByObjectsFunc(this.SortBy.Value.map((sb) => sb.SortFunc.Value).concat([SortByName.sortFunc])));
@@ -102,6 +103,7 @@ export class ItemListViewOptions {
 			Filters: this.Filters.Value.map((i) => i.CreateRequest()),
 			Sorts: this.SortBy.Value.map((s) => s.CreateRequest()),
 			GroupBy: this.GroupBy.Value?.CreateRequest(),
+			ListLayout: this.ListLayout.Current.Value,
 		};
 	}
 
@@ -114,6 +116,7 @@ export class ItemListViewOptions {
 		const allFieldsFromSorts = this.SortBy.Value.selectMany((sortModel) => sortModel.AllFields.Value);
 		const fields: IEditableField[] = [
 			this.Label,
+			this.ListLayout,
 			this.FilterKeys,
 			this.SortKeys,
 		];
@@ -145,10 +148,13 @@ export class ItemListViewOptions {
 	public SortKeys: EditableField<string[]>;
 
 	public GroupBy: Observable<ItemGroupByModel|undefined>;
+	public ListLayout: EditableField<ListLayout>;
 
 	public FilterFunc: Computed<(item: BaseItemDto) => boolean>;
 	public SortByFunc: Computed<(a: BaseItemDto, b: BaseItemDto) => number>;
 }
+
+export type ListLayout = "TileWithPortrait" | "TileWithLandscape" | "TileWithoutImage";
 
 export const ContinuingSorts: ItemViewOptionSortData[] = [
 	{ Hidden: false, Reversed: true, SortType: SortByDatePlayed.field },
@@ -185,4 +191,5 @@ export interface ItemViewOptionsData {
 	Filters: ItemFilterData[];
 	Sorts: ItemViewOptionSortData[];
 	GroupBy: ItemViewOptionGroupByData|undefined;
+	ListLayout: ListLayout|undefined;
 }
