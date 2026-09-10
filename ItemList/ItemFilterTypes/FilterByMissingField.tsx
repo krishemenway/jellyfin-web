@@ -35,6 +35,7 @@ const missingFieldOptions: Record<string, (item: BaseItemDto) => boolean> = {
 	"AlbumArtist": (item) => (item.AlbumArtists?.length ?? 0) === 0,
 	"ParentalRating": (item) => !Nullable.StringHasValue(item.OfficialRating),
 	"CommunityRating": (item) => !Nullable.HasValue(item.CommunityRating),
+	"Studios": (item) => (item.Studios?.length ?? 0) === 0,
 };
 
 export class FilterByMissingFieldModel implements IFilterModel {
