@@ -70,7 +70,7 @@ export class FilterByTagModel implements IFilterModel {
 }
 
 const TagEditor: React.FC<{ tagsField: EditableField<string[]>; inverseField: EditableField<boolean>; items: BaseItemDto[]; }> = ({ tagsField, inverseField, items }) => {
-	const tags = React.useMemo(() => items.selectMany(i => i.Tags ?? []).sort(SortByString(s => s)), [items]);
+	const tags = React.useMemo(() => items.selectMany(i => i.Tags ?? []).distinct().sort(SortByString(s => s)), [items]);
 
 	return (
 		<>
