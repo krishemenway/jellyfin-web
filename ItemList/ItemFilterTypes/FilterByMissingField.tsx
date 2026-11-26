@@ -30,7 +30,7 @@ const missingFieldOptions: Record<string, (item: BaseItemDto) => boolean> = {
 	"Writers": (item) => (item.People?.filter((p) => p.Type === "Writer").length ?? 0) === 0,
 	"PremiereDate": (item) => !Nullable.StringHasValue(item.PremiereDate),
 	"PremiereYear": (item) => !Nullable.HasValue(item.ProductionYear),
-	"Artists": (item) => item.ArtistCount === 0,
+	"Artists": (item) => (item.Artists?.length ?? 0) === 0,
 	"Album": (item) => !Nullable.StringHasValue(item.Album),
 	"AlbumArtist": (item) => (item.AlbumArtists?.length ?? 0) === 0,
 	"ParentalRating": (item) => !Nullable.StringHasValue(item.OfficialRating),
