@@ -4,6 +4,7 @@ import { MediaPlayerType } from "MediaPlayer/MediaPlayerType";
 import { MediaPlaylistItem } from "MediaPlayer/MediaPlaylistItem";
 import { ServerService } from "Servers/ServerService";
 import { MediaPlayerPlaylist } from "MediaPlayer/MediaPlayerPlaylist";
+import BrowserDeviceProfile from "Device/BrowserDeviceProfile";
 
 export class MusicPlayerService {
 	constructor() {
@@ -65,24 +66,26 @@ export class MusicPlayerService {
 
 	private CreateAudioUrl(item: BaseItemDto): string {
 		const api = ServerService.Instance.CurrentApi;
+		const url = 'Audio/' + item.Id + '/universal';
+		const audioDeviceProfile = getAudioDeviceProfile();
 
-		const queryParams = new URLSearchParams({
+		return api.getUri(url, {
 			UserId: ServerService.Instance.CurrentUserId.Value,
 			DeviceId: api.deviceInfo.id,
-			MaxStreamingBitrate: "321754827",
-			Container: "opus,webm|opus,ts|mp3,mp3,aac,m4a|aac,m4b|aac,flac,webma,webm|webma,wav,ogg",
-			TranscodingContainer: "mp4",
-			TranscodingProtocol: "hls",
-			AudioCodec: "aac",
-			api_key: api.accessToken,
+			MaxStreamingBitrate: audioDeviceProfile.maxAudioBitrate ?? 150000000,
+			Container: audioDeviceProfile.directPlayContainers,
+			TranscodingContainer: audioDeviceProfile.transcodingProfile.Container ?? null,
+			TranscodingProtocol: audioDeviceProfile.transcodingProfile.Protocol ?? null,
+			AudioCodec: audioDeviceProfile.transcodingProfile.AudioCodec,
+			MaxAudioSampleRate: audioDeviceProfile.maxAudioSampleRate,
+			MaxAudioBitDepth: audioDeviceProfile.maxAudioBitDepth,
+			ApiKey: api.accessToken,
 			PlaySessionId: this.Playlist.PlaySessionId,
-			StartTimeTicks: "0",
-			EnableRedirection: "true",
-			EnableRemoteMedia: "false",
-			EnableAudioVbrEncoding: "true"
+			StartTimeTicks: 0,
+			EnableRedirection: true,
+			EnableRemoteMedia: false,
+			EnableAudioVbrEncoding: audioDeviceProfile.transcodingProfile.EnableAudioVbrEncoding
 		});
-
-		return `${ServerService.Instance.CurrentApi.basePath}/Audio/${item.Id}/universal?${queryParams.toString()}`;
 	}
 
 	public Playlist: MediaPlayerPlaylist;
@@ -94,4 +97,51 @@ export class MusicPlayerService {
 	}
 
 	private static _instance: MusicPlayerService;
+}
+
+function getAudioDeviceProfile() {
+	const deviceProfile = BrowserDeviceProfile();
+
+	let maxAudioSampleRate = null;
+	let maxAudioBitDepth = null;
+	let maxAudioBitrate = null;
+	let directPlayContainers = "";
+
+	(deviceProfile.CodecProfiles ?? []).forEach(codecProfile => {
+		if (codecProfile.Type === 'Audio') {
+			(codecProfile.Conditions || []).forEach(condition => {
+				if (condition.Condition === 'LessThanEqual' && condition.Property === 'AudioBitDepth') {
+					maxAudioBitDepth = condition.Value;
+				} else if (condition.Condition === 'LessThanEqual' && condition.Property === 'AudioSampleRate') {
+					maxAudioSampleRate = condition.Value;
+				} else if (condition.Condition === 'LessThanEqual' && condition.Property === 'AudioBitrate') {
+					maxAudioBitrate = condition.Value;
+				}
+			});
+		}
+	});
+
+	(deviceProfile.DirectPlayProfiles ?? []).forEach(p => {
+		if (p.Type === 'Audio') {
+			if (directPlayContainers) {
+				directPlayContainers += ',' + p.Container;
+			} else {
+				directPlayContainers = p.Container ?? "";
+			}
+
+			if (p.AudioCodec) {
+				directPlayContainers += '|' + p.AudioCodec;
+			}
+		}
+	});
+
+	return {
+		maxAudioSampleRate: maxAudioSampleRate,
+		maxAudioBitDepth: maxAudioBitDepth,
+		maxAudioBitrate: maxAudioBitrate,
+		directPlayContainers: directPlayContainers,
+		transcodingProfile: (deviceProfile.TranscodingProfiles ?? []).filter(function (p) {
+			return p.Type === 'Audio' && p.Context === 'Streaming';
+		})[0],
+	};
 }
