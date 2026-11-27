@@ -27,6 +27,7 @@ import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
 import { SortByArtist } from "ItemList/ItemSortTypes/SortByArtist";
 import { CollectionTypeService } from "Collections/CollectionTypeService";
 import { ItemGroupByTypeStore } from "ItemList/ItemGroupByTypeStore";
+import { FilterByPlayCount } from "ItemList/ItemFilterTypes/FilterByPlayCount";
 
 export const MusicVideoService: BaseItemKindService = {
 	kind: "MusicVideo",
@@ -45,6 +46,7 @@ export const MusicVideoService: BaseItemKindService = {
 		FilterByTagCount,
 		FilterByMissingField,
 		FilterByDuration,
+		FilterByPlayCount,
 	],
 	sortOptions: [
 		SortByName,

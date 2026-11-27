@@ -13,6 +13,7 @@ import { FilterByType, FilterByTypeData } from "ItemList/ItemFilterTypes/FilterB
 import { FilterByTagCount, FilterByTagCountData } from "ItemList/ItemFilterTypes/FilterByTagCount";
 import { FilterByMissingField, FilterByMissingFieldData } from "ItemList/ItemFilterTypes/FilterByMissingField";
 import { FilterByDuration, FilterByDurationData } from "ItemList/ItemFilterTypes/FilterByDuration";
+import { FilterByPlayCount, FilterByPlayCountData } from "ItemList/ItemFilterTypes/FilterByPlayCount";
 
 export type ItemFilterData = 
 	FilterByTypeData
@@ -27,7 +28,8 @@ export type ItemFilterData =
 	| FilterByNameData
 	| FilterByTagCountData
 	| FilterByMissingFieldData
-	| FilterByDurationData;
+	| FilterByDurationData
+	| FilterByPlayCountData;
 
 export class ItemFilterTypeStore {
 	public FindOrThrow(filterType: string): ItemFilterType {
@@ -54,6 +56,7 @@ export class ItemFilterTypeStore {
 		FilterByTagCount,
 		FilterByMissingField,
 		FilterByDuration,
+		FilterByPlayCount,
 	].toRecord((t) => t.FilterType);
 	
 	static get Instance(): ItemFilterTypeStore {

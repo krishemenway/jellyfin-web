@@ -26,6 +26,7 @@ import { SortByTagCount } from "ItemList/ItemSortTypes/SortByTagCount";
 import { FilterByDuration } from "ItemList/ItemFilterTypes/FilterByDuration";
 import { CollectionTypeService } from "Collections/CollectionTypeService";
 import { ItemGroupByTypeStore } from "ItemList/ItemGroupByTypeStore";
+import { FilterByPlayCount } from "ItemList/ItemFilterTypes/FilterByPlayCount";
 
 export const MovieService: BaseItemKindService = {
 	kind: "Movie",
@@ -44,6 +45,7 @@ export const MovieService: BaseItemKindService = {
 		FilterByTagCount,
 		FilterByMissingField,
 		FilterByDuration,
+		FilterByPlayCount,
 	],
 	sortOptions: [
 		SortByName,
